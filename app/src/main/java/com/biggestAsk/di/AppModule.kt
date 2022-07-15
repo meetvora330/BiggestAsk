@@ -16,5 +16,4 @@ class AppModule {
     @Singleton
     fun getPreferenceManager(@ApplicationContext appContext: Context) =
         PreferenceProvider(appContext)
-
 }

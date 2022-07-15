@@ -3,6 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/TheBiggestAsk/app/src/main/res/drawable/img_verify_screen.xml" value="0.222" />
+        <entry key="..\:/TheBiggestAsk/app/src/main/res/font/montserrat.xml" value="0.378974358974359" />
+        <entry key="..\:/TheBiggestAsk/app/src/main/res/font/open_sans.xml" value="0.378974358974359" />
         <entry key="..\:/Users/Admin/AndroidStudioProjects/Biggest Ask/app/src/main/java/com/biggestAsk/ui/homeScreen/HomeScreen.kt" value="0.1443384487764413" />
         <entry key="..\:/Users/Admin/AndroidStudioProjects/Biggest Ask/app/src/main/java/com/biggestAsk/ui/homeScreen/drawerScreens/IntendParents.kt" value="0.27398408043569333" />
         <entry key="..\:/Users/Admin/AndroidStudioProjects/Biggest Ask/app/src/main/java/com/biggestAsk/ui/homeScreen/drawerScreens/YourAccount.kt" value="0.2919983242563888" />

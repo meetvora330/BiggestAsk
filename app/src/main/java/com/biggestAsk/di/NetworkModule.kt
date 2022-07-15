@@ -78,14 +78,6 @@ class NetworkModule {
         return Interceptor { chain: Interceptor.Chain ->
             val request: Request.Builder = chain.request()
                 .newBuilder()
-                .header(
-                    "buildNumber",
-                    BuildConfig.VERSION_CODE.toString() + ""
-                )
-                .header(
-                    "Authorization",
-                    Constants.AUTHORISATION_TOKEN
-                )
             chain.proceed(request.build())
         }
     }
