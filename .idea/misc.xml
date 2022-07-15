@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/Biggest Ask/app/src/main/java/com/biggestAsk/ui/homeScreen/HomeScreen.kt" value="0.1443384487764413" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/Biggest Ask/app/src/main/java/com/biggestAsk/ui/homeScreen/drawerScreens/IntendParents.kt" value="0.27398408043569333" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/Biggest Ask/app/src/main/java/com/biggestAsk/ui/homeScreen/drawerScreens/YourAccount.kt" value="0.2919983242563888" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/Biggest Ask/app/src/main/res/drawable/ic_baseline_arrow_drop_down_24.xml" value="0.1825" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/Biggest Ask/app/src/main/res/drawable/ic_icon_clock_detailed_setting.xml" value="0.1435" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/Biggest Ask/app/src/main/res/drawable/ic_icon_search_notification_tb.xml" value="0.201" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/Biggest Ask/app/src/main/res/drawable/ic_img_add_your_surrogate_mother.xml" value="0.201" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/Biggest Ask/app/src/main/res/drawable/ic_img_bottom_sheet_opener.xml" value="0.192" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/Biggest Ask/app/src/main/res/drawable/ic_seting_about_app_browser_icon.xml" value="0.1" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/Biggest Ask/app/src/main/res/layout/activity_final.xml" value="0.30520833333333336" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/Biggest Ask/app/src/main/res/layout/activity_login.xml" value="0.30520833333333336" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/Biggest Ask/app/src/main/res/layout/activity_sign_up.xml" value="0.30520833333333336" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/Biggest Ask/app/src/main/res/layout/activity_splash.xml" value="0.30520833333333336" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/Biggest Ask/app/src/main/res/layout/item_hot_product.xml" value="0.30520833333333336" />
+        <entry key="..\:/Users/Admin/AndroidStudioProjects/Biggest Ask/app/src/main/res/layout/layout_profile.xml" value="0.30520833333333336" />
+      </map>
+    </option>
+  </component>
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

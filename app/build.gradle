@@ -1,0 +1,145 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
+}
+
+android {
+    compileSdkVersion 32
+    buildToolsVersion "30.0.3"
+
+    defaultConfig {
+        applicationId "com.biggestAsk"
+        minSdkVersion 21
+        targetSdkVersion 32
+        versionCode 4
+        versionName "1.3"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+        vectorDrawables {
+            useSupportLibrary true
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    buildFeatures.dataBinding = true
+    buildFeatures.viewBinding = true
+    buildFeatures.compose = true
+
+    dataBinding {
+        enabled = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.1.1'
+    }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+}
+
+dependencies {
+
+    debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
+    def nav_version = "2.4.2"
+
+    implementation 'androidx.core:core-ktx:1.8.0'
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'com.google.android.material:material:1.6.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation "androidx.compose.ui:ui:$compose_version"
+    implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
+    //Hilt
+    implementation("com.google.dagger:hilt-android:2.42")
+    kapt("com.google.dagger:hilt-android-compiler:2.42")
+    implementation 'androidx.activity:activity-ktx:1.4.0'
+    implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'
+
+    //ViewModel
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.1'
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1"
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.1'
+
+    //Retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.google.code.gson:gson:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2'
+
+    //Coroutines
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0'
+
+    //Glide
+//    implementation "com.google.accompanist:accompanist-systemuicontroller:v0.4.2"
+    implementation "dev.chrisbanes.accompanist:accompanist-glide:0.4.0"
+
+    //for image rendering
+    implementation 'io.coil-kt:coil:1.3.2'
+
+    //Preference
+    implementation "androidx.preference:preference-ktx:1.2.0"
+
+    // Integration with activities
+    implementation 'androidx.activity:activity-compose:1.4.0'
+    // Compose Material Design
+    implementation 'androidx.compose.material:material:1.1.1'
+    // Animations
+    implementation 'androidx.compose.animation:animation:1.1.1'
+    // Tooling support (Previews, etc.)
+    implementation 'androidx.compose.ui:ui-tooling:1.1.1'
+    // Integration with ViewModels
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1'
+    // UI Tests
+    androidTestImplementation 'androidx.compose.ui:ui-test-junit4:1.1.1'
+    //Multidex
+//    implementation 'com.android.support:multidex:1.0.3'
+    //System UI Controller
+    implementation 'com.google.accompanist:accompanist-systemuicontroller:0.24.7-alpha'
+    //ViewPager
+    implementation "com.google.accompanist:accompanist-pager:0.24.7-alpha"
+    //Pager And Indicators - Accompanist
+    implementation "com.google.accompanist:accompanist-pager-indicators:0.24.7-alpha"
+    //Constraint Layout
+    implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
+    //Navigation Graph
+    implementation "androidx.navigation:navigation-compose:$nav_version"
+    //Material Icon
+    //noinspection GradleDependency
+    implementation "androidx.compose.material:material-icons-extended:$compose_version"
+    //Insets
+    implementation "com.google.accompanist:accompanist-insets:0.22.0-rc"
+    //DataStore Preference
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
+    //Activity Ktx
+    implementation "androidx.activity:activity-ktx:1.4.0"
+    //DatePicker
+    implementation "io.github.vanpra.compose-material-dialogs:color:0.7.2"
+
+    //Coil
+    implementation "io.coil-kt:coil-compose:1.4.0"
+
+    //Preferences DataStore
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
+
+}

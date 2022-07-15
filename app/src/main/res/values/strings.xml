@@ -1,0 +1,187 @@
+<resources>
+    <string name="full_app_name">Biggest Ask App</string>
+    <string name="app_name">BiggestAsk</string>
+
+    <!--  Common Used -->
+    <string name="accept_terms">You have to accept term of service</string>
+    <string name="password_not_match">Password does not match</string>
+    <string name="add_answer">Add Answer</string>
+    <string name="answer_the_question">Answer the Question</string>
+    <string name="add_new_milestone">Add New Milestone</string>
+    <string name="select_all">Select All</string>
+    <string name="ask_surrogate">Ask Surrogate</string>
+    <string name="reset_milestone">Reset milestones</string>
+    <string name="are_you_sure_reset_milestone">You sure you want to Reset all\nmilestones?</string>
+    <string name="negative_btn_text">No</string>
+    <string name="positive_btn_text">Yes</string>
+    <string name="reset_milestone_success_message">All Milestone Reset Successfully</string>
+    <string name="new_question">New questions:</string>
+    <string name="tittle">Title</string>
+    <string name="enter_tittle">Enter tittle</string>
+    <string name="add_logo">Add Logo</string>
+    <string name="share">Share</string>
+    <string name="call">Call</string>
+    <string name="receive_notification">Receive Notifications</string>
+    <string name="receive_newsletters">Receive Newsletters</string>
+    <string name="changes_saved_success_message">Changes saved with Success</string>
+    <string name="just_now">Just Now</string>
+    <string name="enabled">Enabled</string>
+    <string name="disabled">Disabled</string>
+    <string name="logout">Logout</string>
+    <string name="enter_mobile">Mobile Number</string>
+    <string name="enter_password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="don_t_have_an_account_create_now">Not a member yet? </string>
+    <string name="already_have_account">Already have an account? </string>
+    <string name="please_enter_mobile_number">Please enter mobile number</string>
+    <string name="please_enter_valid_mobile_number">Please enter valid mobile number</string>
+    <string name="please_enter_password">Please enter password</string>
+    <string name="home">Home</string>
+    <string name="profile">Profile</string>
+    <string name="category">TOP CATEGORIES</string>
+    <string name="orders">Orders</string>
+    <string name="Rs">\u20B9</string>
+    <string name="view_all">VIEW ALL</string>
+    <string name="hot_products">HOT PRODUCTS</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="enter_name">Name</string>
+    <string name="enter_email">Email</string>
+    <string name="referral_code">Referral Code</string>
+    <string name="sign_in">Sign In</string>
+    <string name="register_tittle">Get Started</string>
+    <string name="register_sub_tittle">Wait for client suggestions</string>
+    <string name="register_cb_surrogate_mother">I am surrogate Mother</string>
+    <string name="register_tv_name">Full name</string>
+    <string name="register_et_hint_full_name">Full name</string>
+    <string name="please_enter_name">Please enter name</string>
+    <string name="please_enter_email">Please enter email</string>
+    <string name="confirm_password_not_match">Confirm password not match</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="enter_phone_number">Enter phone number</string>
+    <string name="all_field_compulsory">All field compulsory</string>
+    <string name="please_try_again">Please try again later</string>
+
+
+    <!-- Intro Screen   -->
+    <string name="intro_screen_btn_next_text">Next</string>
+
+    <!-- Email Verification   -->
+    <string name="email_verification_text_login">Login</string>
+    <string name="email_verification_tittle">Enter Your Email</string>
+    <string name="email_verification_sub_tittle">Please enter your email address to proceed!</string>
+    <string name="email_verification_valid_email_text">Please enter valid email.</string>
+    <string name="email_verification_btn_verify_text">Verify</string>
+
+    <!-- Login Screen   -->
+    <string name="login_screen_text_signup">Signup</string>
+    <string name="login_tv_text_tittle">Log in</string>
+    <string name="login_tv_text_sub_tittle">Welcome to\nThe Biggest Ask</string>
+    <string name="login_tv_email_text">Email</string>
+    <string name="login_tv_password_text">Password</string>
+    <string name="login_tv_forgot_password_text">I forgot my password</string>
+    <string name="login_btn_login_text">Login</string>
+
+    <!--  Payment Screen  -->
+    <string name="payment_bs_tittle">App Store</string>
+    <string name="payment_bs_close_text">Cancel</string>
+    <string name="payment_bs_app_for">Applications for Surrogate Parents</string>
+    <string name="payment_bs_tittle_account">Account</string>
+    <string name="payment_bs_tittle_price">PRICE</string>
+    <string name="payment_tv_text_description">Lorem Ipsum is simply dummy text of the\nprinting and typesetting industry.Lorem \nIpsum has been the industry\'s standard\ndummy text ever since the 1500s.</string>
+    <string name="payment_tv_text_option1">Option 1</string>
+    <string name="payment_tv_text_option1_trial">Trial free version</string>
+    <string name="payment_tv_text_option1_use_app">You can use the app for 7 days</string>
+    <string name="payment_tv_text_option2">Option 2</string>
+    <string name="payment_tv_text_option2_price">$3</string>
+    <string name="payment_tv_text_option2_12_subscription">12 month subscription</string>
+    <string name="payment_tv_text_option2_app_av_365">Application available 365 days</string>
+    <string name="payment_bs_subscribe_btn_text">Subscribe</string>
+
+    <!--   Register Screen  -->
+    <string name="register_radio_btn_surrogate_mother_text">Surrogate Mother</string>
+    <string name="register_radio_btn_intend_parents_text">Intend Parent</string>
+    <string name="please_enter_valid_email_address">Please enter valid email address</string>
+    <string name="invalid_email_or_password">Invalid username or password</string>
+    <string name="invalid_email">Invalid email</string>
+    <string name="register_tv_email_text">Email</string>
+    <string name="register_tv_password_text">Password</string>
+    <string name="register_tv_re_password_text">Re-Enter Password</string>
+    <string name="invalid_password">Invalid password</string>
+    <string name="permission_denied_by_system">Permission denied by system</string>
+    <string name="permission_denied">Permission denied</string>
+    <string name="register_error_text_name">Please enter full name</string>
+    <string name="register_error_text_email">Please enter email</string>
+    <string name="register_error_text_valid_email">Please enter valid email</string>
+    <string name="register_error_text_pass">Please enter password</string>
+    <string name="register_error_text_re_enter_pass">Please Re-enter-password</string>
+    <string name="register_error_text_cb_terms_policy">You Have To Accept Terms And Policy</string>
+    <string name="register_btn_signup_text">Sign up</string>
+
+    <!--  Verify Screen  -->
+    <string name="tv_text_verify_screen_tittle">Verify your email address</string>
+    <string name="tv_text_verify_screen_sub_tittle">We have sent the code Verification to Your\nEmail Address</string>
+    <string name="btn_text_verify_screen_continue">Continue</string>
+    <string name="btn_text_verify_screen_resend">Resend Otp</string>
+    <string name="verify_screen_valid_otp_text">Please enter valid OTP</string>
+
+    <!--  Bottom Home Screen -->
+    <string name="text_home_bottom_sheet_answer">Answer</string>
+    <string name="text_home_bottom_sheet_parent">Parents</string>
+    <string name="bottom_home_screen_pregnancy_milestone">Pregnancy milestone</string>
+    <string name="bottom_home_screen_next_milestone">Next Milestone</string>
+    <string name="bottom_home_screen_your_last_question">Your last questions</string>
+    <string name="bottom_home_screen_latest_question_tittle">Your latest questions</string>
+    <string name="bottom_home_screen_latest_question_sub_tittle">Do you like sports? \nIf so, who is your favorite sports team?</string>
+    <string name="bottom_home_screen_your_surrogate_mother">Your Surrogate Mother:</string>
+    <string name="text_home_bottom_nav_milestone">Milestones</string>
+    <string name="text_home_bottom_nav_home">Home</string>
+    <string name="text_home_bottom_nav_question">Questions</string>
+
+    <!-- Bottom Milestone Screen   -->
+    <string name="tittle_bottom_milestone">Euismod eget auctor eget risus tristique ipsum urna.</string>
+
+    <!-- Bottom Question Screen    -->
+    <string name="bottom_ques_screen_desc"> The intended parents and the surrogate will answer the same questions so they would know each other better.Come back often- more interesting questions will be unlocked as your journey moves forward!</string>
+    <string name="bottom_ques_new_ques_pro">New questions in the profile</string>
+    <string name="bottom_ques_freq_ques_pro">Frequency of the questions:</string>
+    <string name="bottom_ques_exist_ques">Existing questions in the profile</string>
+    <string name="bottom_ques_drop_down_hint_day">Days</string>
+
+    <!--  Question Screen   -->
+    <string name="question_tv_tittle_text">Please select the frequency of question</string>
+    <string name="question_rb_everyday">Every day</string>
+    <string name="question_rb_3_days">Every 3 days</string>
+    <string name="question_rb_week">Every week</string>
+    <string name="question_tv_card_name">The Biggest Ask</string>
+    <string name="question_tv_text_enter_answer">Enter your answer</string>
+    <string name="question_btn_text_submit_frequency">Submit</string>
+    <string name="question_btn_text_skip">Skip</string>
+
+    <!--Bottom Question Screen Bottom Sheet    -->
+    <string name="bottom_ques_bottom_sheet_new_question_desc">Do you like sports?\nIf so, who is your favorite sports team?</string>
+    <string name="title_activity_home">HomeActivity</string>
+
+    <!-- Setting Screen   -->
+    <string name="setting_about_app_tittle">About BiggestAsk App</string>
+    <string name="setting_about_app_desc">A Privacy Policy is a legal statement that\nspecifies what the business owner does with\nthe personal data collected from users, along\nwith how the data is processed. This marks the\nstart of what we know now as a "Privacy\nPolicy." While the name "Privacy Policy" refers\nto the legal agreement.</string>
+    <string name="setting_about_app_more_info_tittle">More information</string>
+    <string name="setting_about_app_more_information_desc">You can find more information about us</string>
+    <string name="setting_terms_of_service_tittle">Terms</string>
+    <string name="setting_terms_of_service_desc">A Privacy Policy is a legal statement that\nspecifies what the business owner does with\nthe personal data collected from users, along\nwith how the data is processed.</string>
+    <string name="setting_terms_of_service_service_tittle">Service</string>
+    <string name="setting_terms_of_service_service_desc">A Privacy Policy is a legal statement that\nspecifies what the business owner does with\nthe personal data collected from users, along\nwith how the data is processed.</string>
+    <string name="setting_privacy_policy_tittle">Privacy Policy</string>
+    <string name="setting_privacy_policy_desc">A Privacy Policy is a legal statement that\nspecifies what the business owner does with\nthe personal data collected from users, along\nwith how the data is processed. This marks the\nstart of what we know now as a "Privacy\nPolicy." While the name "Privacy Policy" refers\nto the legal agreement.\n\nA Privacy Policy is a legal statement that\nspecifies what the business owner does with\nthe personal data collected from users, along\nwith how the data is processed.</string>
+
+    <!--  Your Surrogate Mother -->
+    <string name="your_surrogate_mother_invitation_sent">Except Your\nSurrogate Mother</string>
+    <string name="your_surrogate_mother_invitation_not_sent">You don\'t have a surrogate\nmother yet.Add a Surrogate\nMother to your profile</string>
+    <string name="add_surrogate_mother">Add Surrogate Mother</string>
+    <string name="invite_surrogate_dialog_tittle">Invite Surrogate</string>
+    <string name="invite_surrogate_dialog_phone_number_text">Surrogate\'s Phone Number</string>
+    <string name="invite_surrogate_phone_number_hint">+34 968 89 89</string>
+    <string name="invite_surrogate_dialog_btn_text">Send invitation</string>
+
+</resources>
