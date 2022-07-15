@@ -1,12 +1,17 @@
 package com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph
 
+import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.biggestAsk.ui.homeScreen.bottomNavScreen.*
+import com.biggestAsk.ui.HomeActivity
+import com.biggestAsk.ui.homeScreen.bottomNavScreen.AddNewMilestoneScreen
+import com.biggestAsk.ui.homeScreen.bottomNavScreen.BottomHomeScreen
+import com.biggestAsk.ui.homeScreen.bottomNavScreen.BottomQuestionScreen
+import com.biggestAsk.ui.homeScreen.bottomNavScreen.MilestonesScreen
 import com.biggestAsk.ui.homeScreen.drawerScreens.community.Community
 import com.biggestAsk.ui.homeScreen.drawerScreens.contactYourProvider.ContactYourProvider
 import com.biggestAsk.ui.homeScreen.drawerScreens.intendParents.IntendParentsScreen
@@ -14,12 +19,17 @@ import com.biggestAsk.ui.homeScreen.drawerScreens.notification.*
 import com.biggestAsk.ui.homeScreen.drawerScreens.settingScreens.*
 import com.biggestAsk.ui.homeScreen.drawerScreens.yourAccount.YourAccountScreen
 import com.biggestAsk.ui.homeScreen.drawerScreens.yourSurrogateMother.YourSurrogateMother
+import com.biggestAsk.ui.main.viewmodel.BottomHomeViewModel
+import com.biggestAsk.ui.main.viewmodel.HomeViewModel
 import com.biggestAsk.ui.main.viewmodel.MainViewModel
 
 @Composable
 fun BottomNavigationDrawerGraph(
     navHostController: NavHostController,
-    mainViewModel: MainViewModel
+    mainViewModel: MainViewModel,
+    context: Context,
+    homeActivity: HomeActivity,
+    bottomHomeViewModel: BottomHomeViewModel
 ) {
     NavHost(
         navController = navHostController, startDestination = BottomNavScreen.Home.route
@@ -32,7 +42,12 @@ fun BottomNavigationDrawerGraph(
         composable(
             route = BottomNavScreen.Home.route
         ) {
-            BottomHomeScreen(navHostController = navHostController)
+            BottomHomeScreen(
+                navHostController = navHostController,
+                context = context,
+                homeActivity = homeActivity,
+                bottomHomeViewModel = bottomHomeViewModel
+            )
         }
         composable(
             route = BottomNavScreen.Question.route
@@ -55,7 +70,7 @@ fun BottomNavigationDrawerGraph(
         composable(route = NavDrawerItem.IntendedParents.route) {
             IntendParentsScreen(viewModel = mainViewModel)
         }
-        composable(route = NavDrawerItem.YourSurrogateMother.route){
+        composable(route = NavDrawerItem.YourSurrogateMother.route) {
             YourSurrogateMother(mainViewModel)
         }
         composable(route = NavDrawerItem.Community.route) {

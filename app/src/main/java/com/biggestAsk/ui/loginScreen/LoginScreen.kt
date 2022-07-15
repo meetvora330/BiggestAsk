@@ -389,6 +389,7 @@ private fun handleUserData(
                     val provider = PreferenceProvider(context)
                     provider.setValue("user_id", result.data.user_id)
                     provider.setValue("type", result.data.type)
+                    provider.setValue("partner_id",result.data.partner_id)
                     Log.d("TAG", "handleUserData: ${result.data}")
                 }
             }

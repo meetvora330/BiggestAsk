@@ -2,12 +2,13 @@ package com.biggestAsk.data.repository
 
 import android.content.Context
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.*
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.biggestAsk.data.model.request.*
-import com.biggestAsk.data.model.response.BaseScreenQuestionResponse
-import com.biggestAsk.data.model.response.LoginBodyResponse
-import com.biggestAsk.data.model.response.SendOtpResponse
+import com.biggestAsk.data.model.response.*
 import com.biggestAsk.data.source.network.ApiService
 import com.biggestAsk.data.source.network.BaseApiResponse
 import com.biggestAsk.data.source.network.NetworkResult
@@ -92,6 +93,43 @@ class HomeRepository @Inject constructor(
     suspend fun screenQuestionStatus(screenQuestionStatusRequest: ScreenQuestionStatusRequest): Flow<NetworkResult<SendOtpResponse>> {
         return flow {
             emit(safeApiCall { apiService.screenQuestionStatus(screenQuestionStatusRequest) })
+        }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun getPregnancyMilestone(getPregnancyMilestoneRequest: GetPregnancyMilestoneRequest): Flow<NetworkResult<GetPregnancyMilestoneResponse>> {
+        return flow {
+            emit(safeApiCall { apiService.getPregnancyMilestone(getPregnancyMilestoneRequest) })
+        }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun getHomeScreenQuestion(getPregnancyMilestoneRequest: GetPregnancyMilestoneRequest): Flow<NetworkResult<GetHomeScreenQuestionResponse>> {
+        return flow {
+            emit(safeApiCall {
+                apiService.getHomeScreenQuestion(
+                    user_id = getPregnancyMilestoneRequest.user_id,
+                    type = getPregnancyMilestoneRequest.type
+                )
+            })
+        }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun getIntendedParentQuestionAns(intendedParentQuestionAnsRequest: IntendedParentQuestionAnsRequest): Flow<NetworkResult<IntendedParentQuestionResponse>> {
+        return flow {
+            emit(safeApiCall {
+                apiService.getIntendedParentQuestionAns(
+                    user_id = intendedParentQuestionAnsRequest.user_id,
+                    partner_id = intendedParentQuestionAnsRequest.partner_id,
+                    type = intendedParentQuestionAnsRequest.type
+                )
+            })
+        }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun getNearestMilestone(getPregnancyMilestoneRequest: GetPregnancyMilestoneRequest):Flow<NetworkResult<GetNearestMilestoneResponse>>{
+        return flow {
+            emit(safeApiCall {
+                apiService.getNearestMilestone(user_id = getPregnancyMilestoneRequest.user_id, type = getPregnancyMilestoneRequest.type)
+            })
         }.flowOn(Dispatchers.IO)
     }
 

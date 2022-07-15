@@ -3,6 +3,8 @@
 package com.biggestAsk.ui.homeScreen
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,7 +24,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -32,13 +33,17 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
+import com.biggestAsk.ui.HomeActivity
+import com.biggestAsk.ui.MainActivity
 import com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph.*
 import com.biggestAsk.ui.homeScreen.drawerScreens.community.AddCommunityDialog
 import com.biggestAsk.ui.homeScreen.drawerScreens.notification.NotificationDetailScreenRoute
 import com.biggestAsk.ui.homeScreen.drawerScreens.settingScreens.SettingSubScreen
+import com.biggestAsk.ui.introScreen.findActivity
+import com.biggestAsk.ui.main.viewmodel.BottomHomeViewModel
 import com.biggestAsk.ui.main.viewmodel.MainViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
+import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -46,8 +51,13 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalComposeUiApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun HomeScreen(navController: NavHostController) {
-    val mainViewModel = MainViewModel()
+fun HomeScreen(
+    navController: NavHostController,
+    context: Context,
+    homeActivity: HomeActivity,
+    mainViewModel: MainViewModel,
+    bottomHomeViewModel: BottomHomeViewModel
+) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
     val openDialogCustomCommunity = remember { mutableStateOf(false) }
@@ -327,7 +337,13 @@ fun HomeScreen(navController: NavHostController) {
             }
         },
         content = {
-            BottomNavigationDrawerGraph(navHostController = navController, mainViewModel)
+            BottomNavigationDrawerGraph(
+                navHostController = navController,
+                mainViewModel = mainViewModel,
+                context = context,
+                homeActivity = homeActivity,
+                bottomHomeViewModel = bottomHomeViewModel
+            )
         },
         bottomBar = {
             BottomNavigation(
@@ -341,6 +357,7 @@ fun HomeScreen(navController: NavHostController) {
                 navController = navController,
                 scaffoldState = scaffoldState,
                 scope = scope,
+                context = context
             )
         })
 }
@@ -619,6 +636,7 @@ fun NavigationDrawerContent(
     navController: NavHostController,
     scaffoldState: ScaffoldState,
     scope: CoroutineScope,
+    context: Context
 ) {
     val navDrawerItems = mutableListOf(
         NavDrawerItem.YourSurrogateMother,
@@ -765,8 +783,11 @@ fun NavigationDrawerContent(
                 modifier = Modifier
                     .padding(start = 16.dp, bottom = 3.dp)
                     .clickable(indication = null, interactionSource = MutableInteractionSource()) {
-//                        context.findActivity()?.finish()
-//                        context.startActivity(Intent(context, MainActivity::class.java).putExtra("screen","login_screen"))
+//                        context.startActivity(Intent(context.applicationContext.findActivity(), MainActivity::class.java))
+//                        context.applicationContext
+//                            .findActivity()
+//                            ?.finish()
+//                        PreferenceProvider(context).clear()
                     },
                 text = "Log out",
                 style = MaterialTheme.typography.body1,
@@ -850,19 +871,3 @@ fun BottomNavigation(navController: NavController, viewModel: MainViewModel) {
     }
 }
 
-
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun NavDrawerPreview() {
-    NavigationDrawerContent(
-        rememberNavController(),
-        rememberScaffoldState(),
-        rememberCoroutineScope(),
-    )
-}
-
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun BottomNavPreview() {
-    HomeScreen(navController = rememberNavController())
-}

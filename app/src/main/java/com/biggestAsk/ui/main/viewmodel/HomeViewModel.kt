@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.biggestAsk.data.model.request.*
 import com.biggestAsk.data.model.response.BaseScreenQuestionResponse
+import com.biggestAsk.data.model.response.GetPregnancyMilestoneResponse
 import com.biggestAsk.data.model.response.LoginBodyResponse
 import com.biggestAsk.data.model.response.SendOtpResponse
 import com.biggestAsk.data.repository.HomeRepository
@@ -14,6 +15,7 @@ import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -55,6 +57,7 @@ class HomeViewModel @Inject constructor(
 
     var storeQuestionAns: MutableLiveData<NetworkResult<StoreQuestionAnsRequest>> =
         MutableLiveData()
+
 
     //Intro Screen
     private val _isLoading: MutableState<Boolean> = mutableStateOf(true)
@@ -144,6 +147,5 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
-
 
 }

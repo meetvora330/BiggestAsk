@@ -8,6 +8,7 @@ import com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph.MilestoneDetails
 import com.biggestAsk.ui.questionScreen.ListQuestions
 import com.biggestAsk.ui.questionScreen.Questions
 import com.example.biggestAsk.R
+import dagger.hilt.android.lifecycle.HiltViewModel
 
 class MainViewModel : ViewModel() {
     //Register Screen

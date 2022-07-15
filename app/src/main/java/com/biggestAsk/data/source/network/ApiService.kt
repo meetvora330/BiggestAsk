@@ -1,14 +1,13 @@
 package com.biggestAsk.data.source.network
 
 import com.biggestAsk.data.model.request.*
-import com.biggestAsk.data.model.response.BaseScreenQuestionResponse
-import com.biggestAsk.data.model.response.LoginBodyResponse
-import com.biggestAsk.data.model.response.SendOtpResponse
+import com.biggestAsk.data.model.response.*
 import com.biggestAsk.util.Constants
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface ApiService {
 
@@ -35,4 +34,28 @@ interface ApiService {
 
     @POST(Constants.SCREEN_QUESTION_STATUS)
     suspend fun screenQuestionStatus(@Body screenQuestionStatusRequest: ScreenQuestionStatusRequest): Response<SendOtpResponse>
+
+    @POST(Constants.GET_PREGNANCY_MILESTONE)
+    suspend fun getPregnancyMilestone(@Body getPregnancyMilestoneRequest: GetPregnancyMilestoneRequest): Response<GetPregnancyMilestoneResponse>
+
+    @GET(Constants.GET_HOME_SCREEN_QUESTION)
+    suspend fun getHomeScreenQuestion(
+        @Query("user_id") user_id: Int,
+        @Query("type") type: String
+    ): Response<GetHomeScreenQuestionResponse>
+
+    @GET(Constants.INTENDED_PARTNER_QUESTION_ANS)
+    suspend fun getIntendedParentQuestionAns(
+        @Query("user_id") user_id: Int,
+        @Query("partner_id") partner_id: Int,
+        @Query("type") type: String
+    ): Response<IntendedParentQuestionResponse>
+
+    @GET(Constants.GET_NEAREST_MILESTONE)
+    suspend fun getNearestMilestone(
+        @Query("user_id") user_id: Int,
+        @Query("type") type: String
+    ):Response<GetNearestMilestoneResponse>
+
+
 }
