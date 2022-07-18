@@ -36,6 +36,7 @@ class BottomHomeViewModel @Inject constructor(
     var nearestMilestoneTittle: String by mutableStateOf("")
     var nearestMilestoneDate: String by mutableStateOf("")
     var nearestMilestoneTime: String by mutableStateOf("")
+    var isAllDataLoaded: Boolean by mutableStateOf(true)
     var isPregnancyDataLoaded: Boolean by mutableStateOf(true)
     var isHomeScreenQuestionDataLoaded: Boolean by mutableStateOf(true)
     var isIntendedParentQuestionDataLoaded: Boolean by mutableStateOf(true)
@@ -46,7 +47,8 @@ class BottomHomeViewModel @Inject constructor(
         MutableLiveData()
     var intendedPartnerQuestionAnsResponse: MutableLiveData<NetworkResult<IntendedParentQuestionResponse>> =
         MutableLiveData()
-    var getNearestMilestoneResponse:MutableLiveData<NetworkResult<GetNearestMilestoneResponse>> = MutableLiveData()
+    var getNearestMilestoneResponse: MutableLiveData<NetworkResult<GetNearestMilestoneResponse>> =
+        MutableLiveData()
 
     fun getPregnancyMilestone(getPregnancyMilestoneRequest: GetPregnancyMilestoneRequest) {
         getPregnancyMilestoneResponse.value = NetworkResult.Loading()
@@ -75,7 +77,7 @@ class BottomHomeViewModel @Inject constructor(
         }
     }
 
-    fun getNearestMilestone(getPregnancyMilestoneRequest: GetPregnancyMilestoneRequest){
+    fun getNearestMilestone(getPregnancyMilestoneRequest: GetPregnancyMilestoneRequest) {
         getNearestMilestoneResponse.value = NetworkResult.Loading()
         viewModelScope.launch {
             homeRepository.getNearestMilestone(getPregnancyMilestoneRequest).collect {

@@ -37,6 +37,7 @@ import com.biggestAsk.data.model.response.GetPregnancyMilestoneResponse
 import com.biggestAsk.data.model.response.IntendedParentQuestionResponse
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.ui.HomeActivity
+import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
 import com.biggestAsk.ui.main.viewmodel.BottomHomeViewModel
 import com.biggestAsk.ui.main.viewmodel.MainViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
@@ -67,13 +68,19 @@ fun BottomHomeScreen(
         val userId = provider.getIntValue("user_id", 0)
         val type = provider.getValue("type", "")
         val partnerId = provider.getIntValue("partner_id", 0)
-        Log.d("TAG", "BottomHomeScreen: $userId")
-        Log.d("TAG", "BottomHomeScreen: $type")
-        Log.d("TAG", "BottomHomeScreen: $partnerId")
+        Log.d("TAG", "BottomHomeScreen: User Id $userId")
+        Log.d("TAG", "BottomHomeScreen: Type $type")
+        Log.d("TAG", "BottomHomeScreen: Partner Id $partnerId")
         bottomHomeViewModel.getPregnancyMilestone(
             GetPregnancyMilestoneRequest(
                 user_id = userId,
                 type = type!!
+            )
+        )
+        bottomHomeViewModel.getNearestMilestone(
+            GetPregnancyMilestoneRequest(
+                user_id = userId,
+                type = type
             )
         )
         bottomHomeViewModel.getHomeScreenQuestion(
@@ -84,46 +91,16 @@ fun BottomHomeScreen(
         )
         bottomHomeViewModel.getIntendedParentQuestionAns(
             IntendedParentQuestionAnsRequest(
-                user_id = userId,
-                partner_id = partnerId,
-                type = type
-            )
-        )
-        bottomHomeViewModel.getNearestMilestone(
-            GetPregnancyMilestoneRequest(
-                user_id = 2,
-                type = type
+                user_id = 1,
+                partner_id = 2,
+                type = "parent"
             )
         )
         bottomHomeViewModel.getPregnancyMilestoneResponse.observe(homeActivity) {
             if (it != null) {
                 handlePregnancyMilestoneData(
-                    navHostController = navHostController,
                     result = it,
                     bottomHomeViewModel = bottomHomeViewModel,
-                    viewModel = viewModel,
-                    context = context
-                )
-            }
-        }
-        bottomHomeViewModel.getHomeScreenQuestionResponse.observe(homeActivity) {
-            if (it != null) {
-                handleHomeQuestionData(
-                    navHostController = navHostController,
-                    result = it,
-                    bottomHomeViewModel = bottomHomeViewModel,
-                    viewModel = viewModel,
-                    context = context
-                )
-            }
-        }
-        bottomHomeViewModel.intendedPartnerQuestionAnsResponse.observe(homeActivity) {
-            if (it != null) {
-                handleIntendedParentQuestionAnsData(
-                    navHostController = navHostController,
-                    result = it,
-                    bottomHomeViewModel = bottomHomeViewModel,
-                    viewModel = viewModel,
                     context = context
                 )
             }
@@ -131,10 +108,26 @@ fun BottomHomeScreen(
         bottomHomeViewModel.getNearestMilestoneResponse.observe(homeActivity) {
             if (it != null) {
                 handleNearestMilestoneData(
-                    navHostController = navHostController,
                     result = it,
                     bottomHomeViewModel = bottomHomeViewModel,
-                    viewModel = viewModel,
+                    context = context
+                )
+            }
+        }
+        bottomHomeViewModel.getHomeScreenQuestionResponse.observe(homeActivity) {
+            if (it != null) {
+                handleHomeQuestionData(
+                    result = it,
+                    bottomHomeViewModel = bottomHomeViewModel,
+                    context = context
+                )
+            }
+        }
+        bottomHomeViewModel.intendedPartnerQuestionAnsResponse.observe(homeActivity) {
+            if (it != null) {
+                handleIntendedParentQuestionAnsData(
+                    result = it,
+                    bottomHomeViewModel = bottomHomeViewModel,
                     context = context
                 )
             }
@@ -328,7 +321,7 @@ fun BottomHomeScreen(
 
                 }
             }
-            if (!bottomHomeViewModel.isNearestMilestoneDataLoaded){
+            if (!bottomHomeViewModel.isNearestMilestoneDataLoaded) {
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -374,7 +367,11 @@ fun BottomHomeScreen(
                         )
                         Row {
                             Image(
-                                modifier = Modifier.padding(top = 15.dp, start = 24.dp, bottom = 26.dp),
+                                modifier = Modifier.padding(
+                                    top = 15.dp,
+                                    start = 24.dp,
+                                    bottom = 26.dp
+                                ),
                                 painter = painterResource(id = R.drawable.img_medical_calender_icon),
                                 contentDescription = ""
                             )
@@ -405,7 +402,12 @@ fun BottomHomeScreen(
                     color = Color(0xFF4479CC),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 24.dp, end = 24.dp, top = 16.dp)
+                        .padding(
+                            start = 24.dp,
+                            end = 24.dp,
+                            top = 16.dp,
+                            bottom = if (bottomHomeViewModel.isIntendedParentQuestionDataLoaded) 70.dp else 0.dp
+                        )
                 ) {
                     Column(
                         verticalArrangement = Arrangement.Center,
@@ -513,7 +515,7 @@ fun BottomHomeScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(top = 10.dp, end = 24.dp),
-                                text = "1 Day ago",
+                                text = "${bottomHomeViewModel.intendedParentDays} Day ago",
                                 color = Color(0xFF9F9D9B),
                                 style = MaterialTheme.typography.body2,
                                 fontSize = 14.sp,
@@ -534,13 +536,14 @@ fun BottomHomeScreen(
             }
         }
     }, sheetShape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp))
+    if (bottomHomeViewModel.isAllDataLoaded) {
+        ProgressBarTransparentBackground("Loading....")
+    }
 }
 
 private fun handlePregnancyMilestoneData(
-    navHostController: NavHostController,
     result: NetworkResult<GetPregnancyMilestoneResponse>,
     bottomHomeViewModel: BottomHomeViewModel,
-    viewModel: MainViewModel,
     context: Context
 ) {
     when (result) {
@@ -548,6 +551,7 @@ private fun handlePregnancyMilestoneData(
             // show a progress bar
             Log.e("TAG", "handleUserData() --> Loading  $result")
             bottomHomeViewModel.isPregnancyDataLoaded = true
+            bottomHomeViewModel.isAllDataLoaded = true
         }
         is NetworkResult.Success -> {
             // bind data to the view
@@ -556,6 +560,7 @@ private fun handlePregnancyMilestoneData(
             bottomHomeViewModel.pregnancyTittle = result.data!!.title
             bottomHomeViewModel.pregnancyDescription = result.data.description
             bottomHomeViewModel.pregnancyImageUrl = result.data.image
+            bottomHomeViewModel.isAllDataLoaded = false
             bottomHomeViewModel.isPregnancyDataLoaded = false
 
         }
@@ -563,22 +568,22 @@ private fun handlePregnancyMilestoneData(
             // show error message
             Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
             Log.e("TAG", "handleUserData() --> Error ${result.message}")
-            bottomHomeViewModel.isPregnancyDataLoaded = false
+            bottomHomeViewModel.isAllDataLoaded = false
+            bottomHomeViewModel.isPregnancyDataLoaded = true
         }
     }
 }
 
 private fun handleHomeQuestionData(
-    navHostController: NavHostController,
     result: NetworkResult<GetHomeScreenQuestionResponse>,
     bottomHomeViewModel: BottomHomeViewModel,
-    viewModel: MainViewModel,
     context: Context
 ) {
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
             Log.e("TAG", "handleUserData() --> Loading  $result")
+            bottomHomeViewModel.isAllDataLoaded = true
             bottomHomeViewModel.isHomeScreenQuestionDataLoaded = true
         }
         is NetworkResult.Success -> {
@@ -587,6 +592,7 @@ private fun handleHomeQuestionData(
             Log.i("TAG", result.message.toString())
             bottomHomeViewModel.homeScreenLatestQuestion = result.data?.data?.question.toString()
             Log.d("TAG", "handleHomeQuestionData: ${result.data?.data?.question}")
+            bottomHomeViewModel.isAllDataLoaded = false
             bottomHomeViewModel.isHomeScreenQuestionDataLoaded = false
 
         }
@@ -594,22 +600,55 @@ private fun handleHomeQuestionData(
             // show error message
             Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
             Log.e("TAG", "handleUserData() --> Error ${result.message}")
-            bottomHomeViewModel.isHomeScreenQuestionDataLoaded = false
+            bottomHomeViewModel.isAllDataLoaded = false
+            bottomHomeViewModel.isHomeScreenQuestionDataLoaded = true
         }
     }
 }
 
-private fun handleIntendedParentQuestionAnsData(
-    navHostController: NavHostController,
-    result: NetworkResult<IntendedParentQuestionResponse>,
+
+private fun handleNearestMilestoneData(
+    result: NetworkResult<GetNearestMilestoneResponse>,
     bottomHomeViewModel: BottomHomeViewModel,
-    viewModel: MainViewModel,
     context: Context
 ) {
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
             Log.e("TAG", "handleUserData() --> Loading  $result")
+            bottomHomeViewModel.isAllDataLoaded = true
+            bottomHomeViewModel.isNearestMilestoneDataLoaded = true
+        }
+        is NetworkResult.Success -> {
+            // bind data to the view
+            Log.e("TAG", "handleUserData() --> Success  $result")
+            Log.i("TAG", result.message.toString())
+            bottomHomeViewModel.nearestMilestoneTittle = result.data?.title!!
+            bottomHomeViewModel.nearestMilestoneDate = result.data.date
+            bottomHomeViewModel.nearestMilestoneTime = result.data.time
+            bottomHomeViewModel.isAllDataLoaded = false
+            bottomHomeViewModel.isNearestMilestoneDataLoaded = false
+        }
+        is NetworkResult.Error -> {
+            // show error message
+            Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
+            Log.e("TAG", "handleUserData() --> Error ${result.message}")
+            bottomHomeViewModel.isAllDataLoaded = false
+            bottomHomeViewModel.isNearestMilestoneDataLoaded = true
+        }
+    }
+}
+
+private fun handleIntendedParentQuestionAnsData(
+    result: NetworkResult<IntendedParentQuestionResponse>,
+    bottomHomeViewModel: BottomHomeViewModel,
+    context: Context
+) {
+    when (result) {
+        is NetworkResult.Loading -> {
+            // show a progress bar
+            Log.e("TAG", "handleUserData() --> Loading  $result")
+            bottomHomeViewModel.isAllDataLoaded = true
             bottomHomeViewModel.isIntendedParentQuestionDataLoaded = true
         }
         is NetworkResult.Success -> {
@@ -620,6 +659,7 @@ private fun handleIntendedParentQuestionAnsData(
             bottomHomeViewModel.intendedParentUserName = result.data.user_name
             bottomHomeViewModel.intendedParentAnswer = result.data.data.answer
             bottomHomeViewModel.intendedParentDays = result.data.day
+            bottomHomeViewModel.isAllDataLoaded = false
             bottomHomeViewModel.isIntendedParentQuestionDataLoaded = false
 
         }
@@ -627,40 +667,9 @@ private fun handleIntendedParentQuestionAnsData(
             // show error message
             Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
             Log.e("TAG", "handleUserData() --> Error ${result.message}")
-            bottomHomeViewModel.isIntendedParentQuestionDataLoaded = false
+            bottomHomeViewModel.isAllDataLoaded = false
+            bottomHomeViewModel.isIntendedParentQuestionDataLoaded = true
         }
     }
 }
-
-private fun handleNearestMilestoneData(
-    navHostController: NavHostController,
-    result: NetworkResult<GetNearestMilestoneResponse>,
-    bottomHomeViewModel: BottomHomeViewModel,
-    viewModel: MainViewModel,
-    context: Context
-) {
-    when (result) {
-        is NetworkResult.Loading -> {
-            // show a progress bar
-            Log.e("TAG", "handleUserData() --> Loading  $result")
-            bottomHomeViewModel.isNearestMilestoneDataLoaded = true
-        }
-        is NetworkResult.Success -> {
-            // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
-            Log.i("TAG", result.message.toString())
-            bottomHomeViewModel.nearestMilestoneTittle = result.data?.data?.title!!
-            bottomHomeViewModel.nearestMilestoneDate = result.data.data.date
-            bottomHomeViewModel.nearestMilestoneTime = result.data.data.time
-            bottomHomeViewModel.isNearestMilestoneDataLoaded = false
-        }
-        is NetworkResult.Error -> {
-            // show error message
-            Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
-            bottomHomeViewModel.isNearestMilestoneDataLoaded = false
-        }
-    }
-}
-
 

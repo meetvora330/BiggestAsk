@@ -55,7 +55,6 @@ interface ApiService {
     suspend fun getNearestMilestone(
         @Query("user_id") user_id: Int,
         @Query("type") type: String
-    ):Response<GetNearestMilestoneResponse>
-
+    ): Response<GetNearestMilestoneResponse>
 
 }

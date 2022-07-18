@@ -305,7 +305,7 @@ fun LoginScreen(
                             TextUtils.isEmpty(viewModel.loginTextPass) -> {
                                 viewModel.isLoginPassEmpty = true
                             }
-                            !Patterns.EMAIL_ADDRESS.matcher(viewModel.loginTextEmail).matches() -> {
+                            !Patterns.EMAIL_ADDRESS.matcher(viewModel.loginTextEmail.trim()).matches() -> {
                                 viewModel.isLoginEmailValid = true
                             }
                             else -> {
