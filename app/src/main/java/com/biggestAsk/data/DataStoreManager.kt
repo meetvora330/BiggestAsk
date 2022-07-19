@@ -27,7 +27,7 @@ class DataStoreManager(val context: Context) {
             it[loginIsPaymentDone] = loginBodyResponse.is_payment_done
             it[loginIsQuestionAnswered] = loginBodyResponse.is_question_answered
             it[loginMessage] = loginBodyResponse.message
-            it[loginPartnerId] = loginBodyResponse.partner_id as Int
+            it[loginPartnerId] = loginBodyResponse.partner_id
             it[loginStatus] = loginBodyResponse.status
             it[loginType] = loginBodyResponse.type
             it[loginUserId] = loginBodyResponse.user_id

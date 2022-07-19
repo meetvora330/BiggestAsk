@@ -20,6 +20,7 @@ import com.biggestAsk.ui.homeScreen.drawerScreens.settingScreens.*
 import com.biggestAsk.ui.homeScreen.drawerScreens.yourAccount.YourAccountScreen
 import com.biggestAsk.ui.homeScreen.drawerScreens.yourSurrogateMother.YourSurrogateMother
 import com.biggestAsk.ui.main.viewmodel.BottomHomeViewModel
+import com.biggestAsk.ui.main.viewmodel.BottomMilestoneViewModel
 import com.biggestAsk.ui.main.viewmodel.HomeViewModel
 import com.biggestAsk.ui.main.viewmodel.MainViewModel
 
@@ -29,7 +30,8 @@ fun BottomNavigationDrawerGraph(
     mainViewModel: MainViewModel,
     context: Context,
     homeActivity: HomeActivity,
-    bottomHomeViewModel: BottomHomeViewModel
+    bottomHomeViewModel: BottomHomeViewModel,
+    bottomMilestoneViewModel: BottomMilestoneViewModel
 ) {
     NavHost(
         navController = navHostController, startDestination = BottomNavScreen.Home.route
@@ -37,7 +39,7 @@ fun BottomNavigationDrawerGraph(
         composable(
             route = BottomNavScreen.MileStones.route
         ) {
-            MilestonesScreen(navHostController = navHostController, viewModel = mainViewModel)
+            MilestonesScreen(navHostController = navHostController, viewModel = mainViewModel, milestoneViewModel = bottomMilestoneViewModel, homeActivity = homeActivity)
         }
         composable(
             route = BottomNavScreen.Home.route

@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import androidx.compose.runtime.*
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.biggestAsk.data.model.response.GetMilestoneResponse
 import com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph.MilestoneDetails
 import com.biggestAsk.ui.questionScreen.ListQuestions
 import com.biggestAsk.ui.questionScreen.Questions
@@ -83,14 +84,9 @@ class MainViewModel : ViewModel() {
     var btnSaveNotes: Boolean by mutableStateOf(false)
 
     //Add New Milestone BottomSheet
-    var addNewMilestoneTittle: MutableState<String> = mutableStateOf("")
-    var addNewMilestoneTittleEmpty: MutableState<Boolean> = mutableStateOf(false)
-    var addNewMilestoneDate: MutableState<String> = mutableStateOf("")
-    var addNewMilestoneDateEmpty: MutableState<Boolean> = mutableStateOf(false)
-    var addNewMilestoneTime: MutableState<String> = mutableStateOf("")
-    var addNewMilestoneTimeEmpty: MutableState<Boolean> = mutableStateOf(false)
-    var addNewMilestoneLocationB: MutableState<String> = mutableStateOf("")
-    var addNewMilestoneLocationBEmpty: MutableState<Boolean> = mutableStateOf(false)
+
+
+
     val imageList = mutableStateListOf<Bitmap>()
     var imageListIndex = mutableStateOf<Int>(-1)
     val tittleMilestone: MutableState<String> = mutableStateOf("")
@@ -104,7 +100,7 @@ class MainViewModel : ViewModel() {
     var isFatherClicked: Boolean by mutableStateOf(true)
     var isMotherClicked: Boolean by mutableStateOf(false)
 
-    var list by mutableStateOf(listOf<MilestoneDetails>())
+    var list by mutableStateOf(listOf<GetMilestoneResponse>())
     var isSelected: Boolean by mutableStateOf(false)
     var emptyList = mutableStateListOf<MilestoneDetails>(
 

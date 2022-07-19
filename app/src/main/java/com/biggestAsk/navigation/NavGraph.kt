@@ -27,6 +27,7 @@ import com.biggestAsk.ui.introScreen.IntroScreen
 import com.biggestAsk.ui.introScreen.onBoardItem
 import com.biggestAsk.ui.loginScreen.LoginScreen
 import com.biggestAsk.ui.main.viewmodel.HomeViewModel
+import com.biggestAsk.ui.main.viewmodel.IntroViewModel
 import com.biggestAsk.ui.main.viewmodel.MainViewModel
 import com.biggestAsk.ui.paymentScreen.PaymentScreen
 import com.biggestAsk.ui.questionScreen.QuestionScreenF
@@ -42,9 +43,11 @@ fun SetUpNavGraph(
     viewModel: MainViewModel,
     homeViewModel: HomeViewModel,
     mainActivity: MainActivity,
+    introViewModel: IntroViewModel,
     startDestination: String,
     dataStoreManager: DataStoreManager,
-    context: Context
+    context: Context,
+
 ) {
     val pagerState = rememberPagerState()
     val context = LocalContext.current
@@ -60,7 +63,7 @@ fun SetUpNavGraph(
             if (configuration.screenHeightDp > 700) {
                 IntroScreen(
                     state = pagerState,
-                    homeViewModel = homeViewModel,
+                    introViewModel = introViewModel,
                     items = onBoardItem,
                     scope = rememberCoroutineScope(),
                     modifier = Modifier.fillMaxWidth(),
@@ -68,20 +71,22 @@ fun SetUpNavGraph(
                     modifier_indicator = Modifier.padding(bottom = 80.dp),
                     modifier_img = Modifier.fillMaxHeight(0.6f),
                     navController = navHostController,
-                    context = context
+                    context = context,
+                    mainActivity = mainActivity
                 )
             } else {
                 IntroScreen(
                     state = pagerState,
                     items = onBoardItem,
-                    homeViewModel = homeViewModel,
+                    introViewModel = introViewModel,
                     scope = rememberCoroutineScope(),
                     modifier = Modifier.fillMaxWidth(),
                     modifierBox = Modifier.padding(bottom = 50.dp),
                     modifier_indicator = Modifier.padding(bottom = 70.dp),
                     modifier_img = Modifier.fillMaxHeight(0.5f),
                     navController = navHostController,
-                    context = context
+                    context = context,
+                    mainActivity = mainActivity
                 )
             }
         }

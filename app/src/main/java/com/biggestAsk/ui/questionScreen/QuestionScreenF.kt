@@ -177,7 +177,7 @@ fun QuestionScreenF(
                 val type = provider.getValue("type", "")
                 val userId = provider.getIntValue("user_id", 0)
                 val frequency =
-                    if (homeViewModel.selectedValueEveryDayRb.value) "Everyday" else if (homeViewModel.selectedValueEvery3DaysRb.value) "Every 3 day" else "Every week"
+                    if (homeViewModel.selectedValueEveryDayRb.value) "everyday" else if (homeViewModel.selectedValueEvery3DaysRb.value) "every_3_day" else "every_week"
                 Log.d("TAG", "QuestionScreenF: $frequency")
                 homeViewModel.screenQuestionStatus(
                     ScreenQuestionStatusRequest(

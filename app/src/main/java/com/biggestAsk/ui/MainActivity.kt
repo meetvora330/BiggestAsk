@@ -1,31 +1,48 @@
 package com.biggestAsk.ui
 
+import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.util.Log
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.Composable
+import androidx.compose.material.Text
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.biggestAsk.data.DataStoreManager
+import com.biggestAsk.data.model.response.IntroInfoResponse
+import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.navigation.Screen
 import com.biggestAsk.navigation.SetUpNavGraph
 import com.biggestAsk.ui.base.BaseActivity
 import com.biggestAsk.ui.introScreen.LockScreenOrientation
 import com.biggestAsk.ui.main.viewmodel.HomeViewModel
+import com.biggestAsk.ui.main.viewmodel.IntroViewModel
 import com.biggestAsk.ui.main.viewmodel.MainViewModel
 import com.biggestAsk.ui.ui.theme.BasicStructureTheme
 import com.biggestAsk.util.PreferenceProvider
+import com.example.biggestAsk.R
 import com.google.accompanist.insets.ProvideWindowInsets
-import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 
@@ -34,13 +51,15 @@ class MainActivity : BaseActivity() {
     lateinit var navController: NavHostController
     private val homeViewModel: HomeViewModel by viewModels()
     private val viewModel: MainViewModel by viewModels()
-    lateinit var dataStoreManager: DataStoreManager
+    private val introViewModel: IntroViewModel by viewModels()
+    private lateinit var dataStoreManager: DataStoreManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
         homeViewModel.isLoadingIntro
         setContent {
+            val focusManager = LocalFocusManager.current
             val systemUiController = rememberSystemUiController()
             val useDarkIcons = MaterialTheme.colors.isLight
             dataStoreManager = DataStoreManager(this)
@@ -52,8 +71,9 @@ class MainActivity : BaseActivity() {
                     darkIcons = useDarkIcons
                 )
             }
+            LaunchedEffect(Unit) {
 
-            val focusManager = LocalFocusManager.current
+            }
             ProvideWindowInsets(
                 windowInsetsAnimationsEnabled = true
             ) {
@@ -76,43 +96,108 @@ class MainActivity : BaseActivity() {
                     finish()
                     val intent = Intent(this, HomeActivity::class.java)
                     startActivity(intent)
-                } else {
-                    BasicStructureTheme {
-                        navController = rememberNavController()
-                        LockScreenOrientation(orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
-                        focusManager.clearFocus()
-                        SetUpNavGraph(
-                            navHostController = navController,
-                            viewModel = viewModel,
-                            homeViewModel = homeViewModel,
-                            this,
-                            startDestination = startDestination,
-                            dataStoreManager = dataStoreManager,
-                            context = this
-                        )
+                } else if (!isIntroDone) {
+                    LaunchedEffect(Unit) {
+                        introViewModel.getIntroInfo()
+                        introViewModel.getIntroInfoResponse.observe(this@MainActivity) {
+                            if (it != null) {
+                                handleUserData(
+                                    result = it,
+                                    context = this@MainActivity,
+                                    introViewModel = introViewModel
+                                )
+                            }
+                        }
                     }
+                    if (!introViewModel.isIntroDataLoaded) {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Image(
+                                modifier = Modifier
+                                    .width(80.dp)
+                                    .height(80.dp),
+                                painter = painterResource(id = R.drawable.ic_img_question_card_logo),
+                                contentDescription = ""
+                            )
+                            Text(
+                                text = "The Biggest Ask",
+                                modifier = Modifier.fillMaxWidth(),
+                                style = MaterialTheme.typography.body2.copy(
+                                    color = Color.Black,
+                                    textAlign = TextAlign.Center,
+                                    fontSize = 20.sp
+                                )
+                            )
+                            if (!introViewModel.isAPILoadingFailed) {
+                                CircularProgressIndicator(
+                                    // below line is use to add padding
+                                    // to our progress bar.
+                                    modifier = Modifier.padding(top = 15.dp),
+                                    // below line is use to add color
+                                    // to our progress bar.
+                                    color = colorResource(id = R.color.custom_blue),
+
+                                    // below line is use to add stroke
+                                    // width to our progress bar.
+                                    strokeWidth = Dp(value = 3F)
+                                )
+                            }
+                        }
+                    }
+                }
+                BasicStructureTheme {
+                    navController = rememberNavController()
+                    LockScreenOrientation(orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+                    focusManager.clearFocus()
+                    SetUpNavGraph(
+                        navHostController = navController,
+                        viewModel = viewModel,
+                        homeViewModel = homeViewModel,
+                        this,
+                        startDestination = startDestination,
+                        dataStoreManager = dataStoreManager,
+                        context = this,
+                        introViewModel = introViewModel,
+                    )
                 }
             }
         }
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-@Suppress("OPT_IN_IS_NOT_ENABLED")
-@OptIn(ExperimentalPagerApi::class)
-fun DefaultPreview() {
-    BasicStructureTheme {
-//        IntroScreen(
-//            state = rememberPagerState(),
-//            items = onBoardItem,
-//            scope = rememberCoroutineScope(),
-//            modifier = Modifier.fillMaxWidth(),
-//            modifierBox = Modifier.padding(bottom = 56.dp),
-//            modifier_indicator = Modifier.padding(bottom = 85.dp),
-//            modifier_img = Modifier.fillMaxHeight(0.6f),
-//            navController = rememberNavController()
-//        )
+private fun handleUserData(
+    result: NetworkResult<IntroInfoResponse>,
+    context: Context,
+    introViewModel: IntroViewModel
+) {
+    when (result) {
+        is NetworkResult.Loading -> {
+            // show a progress bar
+            Log.e("TAG", "handleUserData() --> Loading  $result")
+            introViewModel.isIntroDataLoaded = false
+            introViewModel.isAPILoadingFailed = false
+        }
+        is NetworkResult.Success -> {
+            // bind data to the view
+            Log.e("TAG", "handleUserData() --> Success  $result")
+            Log.d("TAG", "handleUserData: ${result.data?.data!![0].title}")
+            introViewModel.introInfoDetailList = result.data.data.toMutableList()
+            introViewModel.isIntroDataLoaded = true
+            introViewModel.isAPILoadingFailed = false
+            Log.d(
+                "TAG",
+                "handleUserData: from viewModel ${introViewModel.introInfoDetailList[0].title}"
+            )
+        }
+        is NetworkResult.Error -> {
+            // show error message
+            Log.e("TAG", "handleUserData() --> Error ${result.message}")
+            Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
+            introViewModel.isIntroDataLoaded = false
+            introViewModel.isAPILoadingFailed = true
+        }
     }
-
 }

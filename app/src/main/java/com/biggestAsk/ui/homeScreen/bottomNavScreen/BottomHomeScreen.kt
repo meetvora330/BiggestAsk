@@ -85,15 +85,15 @@ fun BottomHomeScreen(
         )
         bottomHomeViewModel.getHomeScreenQuestion(
             GetPregnancyMilestoneRequest(
-                user_id = 2,
+                user_id = userId,
                 type = type
             )
         )
         bottomHomeViewModel.getIntendedParentQuestionAns(
             IntendedParentQuestionAnsRequest(
-                user_id = 1,
-                partner_id = 2,
-                type = "parent"
+                user_id = userId,
+                partner_id =partnerId,
+                type = type
             )
         )
         bottomHomeViewModel.getPregnancyMilestoneResponse.observe(homeActivity) {
@@ -593,7 +593,8 @@ private fun handleHomeQuestionData(
             bottomHomeViewModel.homeScreenLatestQuestion = result.data?.data?.question.toString()
             Log.d("TAG", "handleHomeQuestionData: ${result.data?.data?.question}")
             bottomHomeViewModel.isAllDataLoaded = false
-            bottomHomeViewModel.isHomeScreenQuestionDataLoaded = false
+            bottomHomeViewModel.isHomeScreenQuestionDataLoaded = result.data?.data?.question == null
+
 
         }
         is NetworkResult.Error -> {

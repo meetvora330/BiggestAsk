@@ -183,5 +183,6 @@
     <string name="invite_surrogate_dialog_phone_number_text">Surrogate\'s Phone Number</string>
     <string name="invite_surrogate_phone_number_hint">+34 968 89 89</string>
     <string name="invite_surrogate_dialog_btn_text">Send invitation</string>
+    <string name="title_activity_splash">SplashActivity</string>
 
 </resources>

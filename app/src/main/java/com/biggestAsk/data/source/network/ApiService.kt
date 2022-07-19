@@ -11,6 +11,9 @@ import retrofit2.http.Query
 
 interface ApiService {
 
+    @GET(Constants.INTRO_SCREEN)
+    suspend fun getIntroInfo(): Response<IntroInfoResponse>
+
     @POST(Constants.SEND_OTP)
     suspend fun sendOtp(@Body email: SendOtpRequest): Response<SendOtpResponse>
 
@@ -28,9 +31,6 @@ interface ApiService {
 
     @GET(Constants.GET_MONTH_QUESTION)
     suspend fun getBaseScreenQuestion(): Response<List<BaseScreenQuestionResponse>>
-
-    @POST(Constants.STORE_QUESTION_ANS)
-    suspend fun storeQuestionAns(@Body storeQuestionAnsRequest: StoreQuestionAnsRequest): Response<SendOtpResponse>
 
     @POST(Constants.SCREEN_QUESTION_STATUS)
     suspend fun screenQuestionStatus(@Body screenQuestionStatusRequest: ScreenQuestionStatusRequest): Response<SendOtpResponse>
@@ -56,5 +56,14 @@ interface ApiService {
         @Query("user_id") user_id: Int,
         @Query("type") type: String
     ): Response<GetNearestMilestoneResponse>
+
+    @GET(Constants.GET_MILESTONE)
+    suspend fun getMilestones(
+        @Query("user_id") user_id: Int,
+        @Query("type") type: String
+    ): Response<GetMilestoneResponse>
+
+    @POST(Constants.CREATE_MILESTONE)
+    suspend fun createMilestone(@Body createMilestoneRequest: CreateMilestoneRequest):Response<SendOtpResponse>
 
 }

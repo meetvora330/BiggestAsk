@@ -53,6 +53,12 @@ class HomeRepository @Inject constructor(
             }
     }
 
+    suspend fun getIntroInfo(): Flow<NetworkResult<IntroInfoResponse>> {
+        return flow {
+            emit(safeApiCall { apiService.getIntroInfo() })
+        }.flowOn(Dispatchers.IO)
+    }
+
 
     suspend fun sendOtp(sendOtpRequest: SendOtpRequest): Flow<NetworkResult<SendOtpResponse>> {
         return flow {
@@ -125,11 +131,31 @@ class HomeRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    suspend fun getNearestMilestone(getPregnancyMilestoneRequest: GetPregnancyMilestoneRequest):Flow<NetworkResult<GetNearestMilestoneResponse>>{
+    suspend fun getNearestMilestone(getPregnancyMilestoneRequest: GetPregnancyMilestoneRequest): Flow<NetworkResult<GetNearestMilestoneResponse>> {
         return flow {
             emit(safeApiCall {
-                apiService.getNearestMilestone(user_id = getPregnancyMilestoneRequest.user_id, type = getPregnancyMilestoneRequest.type)
+                apiService.getNearestMilestone(
+                    user_id = getPregnancyMilestoneRequest.user_id,
+                    type = getPregnancyMilestoneRequest.type
+                )
             })
+        }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun getMilestones(getPregnancyMilestoneRequest: GetPregnancyMilestoneRequest): Flow<NetworkResult<GetMilestoneResponse>> {
+        return flow {
+            emit(safeApiCall {
+                apiService.getMilestones(
+                    getPregnancyMilestoneRequest.user_id,
+                    getPregnancyMilestoneRequest.type
+                )
+            })
+        }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun createMilestone(createMilestoneRequest: CreateMilestoneRequest): Flow<NetworkResult<SendOtpResponse>> {
+        return flow {
+            emit(safeApiCall { apiService.createMilestone(createMilestoneRequest) })
         }.flowOn(Dispatchers.IO)
     }
 

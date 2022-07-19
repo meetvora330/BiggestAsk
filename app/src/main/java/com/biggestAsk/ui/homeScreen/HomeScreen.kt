@@ -41,6 +41,7 @@ import com.biggestAsk.ui.homeScreen.drawerScreens.notification.NotificationDetai
 import com.biggestAsk.ui.homeScreen.drawerScreens.settingScreens.SettingSubScreen
 import com.biggestAsk.ui.introScreen.findActivity
 import com.biggestAsk.ui.main.viewmodel.BottomHomeViewModel
+import com.biggestAsk.ui.main.viewmodel.BottomMilestoneViewModel
 import com.biggestAsk.ui.main.viewmodel.MainViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.util.PreferenceProvider
@@ -56,7 +57,8 @@ fun HomeScreen(
     context: Context,
     homeActivity: HomeActivity,
     mainViewModel: MainViewModel,
-    bottomHomeViewModel: BottomHomeViewModel
+    bottomHomeViewModel: BottomHomeViewModel,
+    bottomMilestoneViewModel: BottomMilestoneViewModel
 ) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
@@ -342,7 +344,8 @@ fun HomeScreen(
                 mainViewModel = mainViewModel,
                 context = context,
                 homeActivity = homeActivity,
-                bottomHomeViewModel = bottomHomeViewModel
+                bottomHomeViewModel = bottomHomeViewModel,
+                bottomMilestoneViewModel = bottomMilestoneViewModel
             )
         },
         bottomBar = {
@@ -371,7 +374,7 @@ fun currentRoute(
     when (navController.currentDestination?.route) {
         BottomNavItems.Home.navRoute -> {
             viewModel.toolbarTittle = "Home"
-            viewModel.list = viewModel.emptyList
+//            viewModel.list = viewModel.emptyList
             viewModel.isCommunityScreen.value = false
             viewModel.isContactProvidersScreen.value = false
             viewModel.isYourAccountScreen.value = false
@@ -387,7 +390,7 @@ fun currentRoute(
         BottomNavItems.Questions.navRoute -> {
             viewModel.imageList.clear()
             viewModel.toolbarTittle = "Questions"
-            viewModel.list = viewModel.emptyList
+//            viewModel.list = viewModel.emptyList
             viewModel.isCommunityScreen.value = false
             viewModel.isContactProvidersScreen.value = false
             viewModel.isYourAccountScreen.value = false
@@ -423,7 +426,7 @@ fun currentRoute(
         }
         NavDrawerItem.YourSurrogateMother.route -> {
             viewModel.imageList.clear()
-            viewModel.list = viewModel.emptyList
+//            viewModel.list = viewModel.emptyList
             viewModel.toolbarTittle = "Your Surrogate Mother"
             viewModel.isCommunityScreen.value = false
             viewModel.isContactProvidersScreen.value = false
@@ -440,7 +443,7 @@ fun currentRoute(
         }
         NavDrawerItem.IntendedParents.route -> {
             viewModel.imageList.clear()
-            viewModel.list = viewModel.emptyList
+//            viewModel.list = viewModel.emptyList
             viewModel.toolbarTittle = "Intended Parents"
             viewModel.isCommunityScreen.value = false
             viewModel.isContactProvidersScreen.value = false
@@ -457,7 +460,7 @@ fun currentRoute(
         }
         NavDrawerItem.Community.route -> {
             viewModel.toolbarTittle = "Community"
-            viewModel.list = viewModel.emptyList
+//            viewModel.list = viewModel.emptyList
             viewModel.isContactProvidersScreen.value = false
             viewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
@@ -473,7 +476,7 @@ fun currentRoute(
         }
         NavDrawerItem.ContactYourProviders.route -> {
             viewModel.toolbarTittle = "Contact Your Providers"
-            viewModel.list = viewModel.emptyList
+//            viewModel.list = viewModel.emptyList
             viewModel.isCommunityScreen.value = false
             viewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
@@ -489,7 +492,7 @@ fun currentRoute(
         }
         NavDrawerItem.Notifications.route -> {
             viewModel.toolbarTittle = "Notifications"
-            viewModel.list = viewModel.emptyList
+//            viewModel.list = viewModel.emptyList
             viewModel.isCommunityScreen.value = false
             viewModel.isContactProvidersScreen.value = false
             viewModel.isYourAccountScreen.value = false
@@ -505,7 +508,7 @@ fun currentRoute(
         }
         NavDrawerItem.Settings.route -> {
             viewModel.toolbarTittle = "Settings"
-            viewModel.list = viewModel.emptyList
+//            viewModel.list = viewModel.emptyList
             viewModel.isCommunityScreen.value = false
             viewModel.isContactProvidersScreen.value = false
             viewModel.isYourAccountScreen.value = false
@@ -521,7 +524,7 @@ fun currentRoute(
         }
         MyAccount.MyAccountScreen.route -> {
             viewModel.toolbarTittle = "Your Account"
-            viewModel.list = viewModel.emptyList
+//            viewModel.list = viewModel.emptyList
             viewModel.isCommunityScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isContactProvidersScreen.value = false
@@ -537,8 +540,7 @@ fun currentRoute(
         }
         BottomNavScreen.AddNewMileStones.route -> {
             viewModel.toolbarTittle = "Add New Milestone"
-            viewModel.list = viewModel.emptyList
-            viewModel.list = viewModel.emptyList
+//            viewModel.list = viewModel.emptyList
             viewModel.isYourAccountScreen.value = false
             viewModel.isCommunityScreen.value = false
             viewModel.isEditable.value = false
@@ -554,7 +556,7 @@ fun currentRoute(
         }
         NotificationDetailScreenRoute.NotificationDetails.route -> {
             viewModel.toolbarTittle = "Notifications"
-            viewModel.list = viewModel.emptyList
+//            viewModel.list = viewModel.emptyList
             viewModel.isCommunityScreen.value = false
             viewModel.isContactProvidersScreen.value = false
             viewModel.isYourAccountScreen.value = false
@@ -570,7 +572,7 @@ fun currentRoute(
         }
         SettingSubScreen.AboutApp.route -> {
             viewModel.toolbarTittle = "About App"
-            viewModel.list = viewModel.emptyList
+//            viewModel.list = viewModel.emptyList
             viewModel.isCommunityScreen.value = false
             viewModel.isContactProvidersScreen.value = false
             viewModel.isYourAccountScreen.value = false
@@ -585,7 +587,7 @@ fun currentRoute(
         }
         SettingSubScreen.DetailedSetting.route -> {
             viewModel.toolbarTittle = "Detailed Settings"
-            viewModel.list = viewModel.emptyList
+//            viewModel.list = viewModel.emptyList
             viewModel.isCommunityScreen.value = false
             viewModel.isContactProvidersScreen.value = false
             viewModel.isYourAccountScreen.value = false
@@ -600,7 +602,7 @@ fun currentRoute(
         }
         SettingSubScreen.PrivacyPolicy.route -> {
             viewModel.toolbarTittle = "Privacy Policy"
-            viewModel.list = viewModel.emptyList
+//            viewModel.list = viewModel.emptyList
             viewModel.isCommunityScreen.value = false
             viewModel.isContactProvidersScreen.value = false
             viewModel.isYourAccountScreen.value = false
@@ -615,7 +617,7 @@ fun currentRoute(
         }
         SettingSubScreen.TermsOfService.route -> {
             viewModel.toolbarTittle = "Terms of Service"
-            viewModel.list = viewModel.emptyList
+//            viewModel.list = viewModel.emptyList
             viewModel.isCommunityScreen.value = false
             viewModel.isContactProvidersScreen.value = false
             viewModel.isYourAccountScreen.value = false

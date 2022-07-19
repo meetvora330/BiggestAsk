@@ -2,6 +2,8 @@ package com.biggestAsk.ui.introScreen
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,6 +12,7 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -19,12 +22,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import com.biggestAsk.data.model.response.DataXX
+import com.biggestAsk.data.model.response.IntroInfoResponse
+import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.navigation.Screen
-import com.biggestAsk.ui.main.viewmodel.HomeViewModel
+import com.biggestAsk.ui.MainActivity
+import com.biggestAsk.ui.main.viewmodel.IntroViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.Light_Gray
 import com.biggestAsk.ui.ui.theme.Orange
@@ -42,15 +48,16 @@ import kotlinx.coroutines.launch
 fun Intro(
     state: PagerState,
     items: List<SampleOnBoard>,
+    detailsItem: List<DataXX>,
     modifierImg: Modifier = Modifier,
     modifier: Modifier = Modifier,
 ) {
+    Log.d("TAG", "Intro: ${detailsItem.size}")
     HorizontalPager(
-        count = items.size,
+        count = detailsItem.size,
         state = state,
         verticalAlignment = Alignment.Top,
         modifier = modifier
-
     ) { page ->
         Column(
             verticalArrangement = Arrangement.Center
@@ -68,18 +75,17 @@ fun Intro(
                     .fillMaxWidth()
                     .padding(bottom = 8.dp)
                     .fillMaxHeight(0.25f),
-                text = items[page].tittle,
+                text = detailsItem[page].title,
                 style = MaterialTheme.typography.h2.copy(
                     fontSize = 24.sp,
                     lineHeight = 32.sp,
                     textAlign = TextAlign.Center,
                     color = Color.Black
                 ),
-
-                )
+            )
             Text(
                 maxLines = 5,
-                text = items[page].description,
+                text = detailsItem[page].info,
                 modifier = modifier
                     .fillMaxWidth()
                     .fillMaxHeight(0.55f),
@@ -100,8 +106,8 @@ fun Intro(
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun IntroScreen(
-    navController: NavController,
-    homeViewModel: HomeViewModel,
+    navController: NavHostController,
+    introViewModel: IntroViewModel,
     state: PagerState,
     items: List<SampleOnBoard>,
     modifierBox: Modifier = Modifier,
@@ -109,7 +115,8 @@ fun IntroScreen(
     modifier: Modifier = Modifier,
     scope: CoroutineScope,
     modifier_img: Modifier = Modifier,
-    context: Context
+    context: Context,
+    mainActivity: MainActivity,
 ) {
 
     Box(
@@ -117,10 +124,9 @@ fun IntroScreen(
             .fillMaxWidth()
             .fillMaxHeight()
     ) {
-
         Column(verticalArrangement = Arrangement.Center) {
             Intro(
-                state = state, items = items, modifier = modifier, modifierImg = modifier_img
+                state = state, items = items, modifier = modifier, modifierImg = modifier_img, detailsItem = introViewModel.introInfoDetailList
             )
             HorizontalPagerIndicator(
                 pagerState = state,
@@ -131,61 +137,51 @@ fun IntroScreen(
                 inactiveColor = Light_Gray,
             )
         }
-
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
-                .padding(start = 20.dp, end = 10.dp)
-                .align(Alignment.BottomCenter),
-            enabled = true,
-            elevation = ButtonDefaults.elevation(
-                defaultElevation = 0.dp,
-                pressedElevation = 0.dp,
-                disabledElevation = 0.dp,
-                hoveredElevation = 0.dp,
-                focusedElevation = 0.dp
-            ),
-            shape = RoundedCornerShape(30),
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = Custom_Blue,
-            ),
-            onClick = {
-                scope.launch {
-                    if (state.currentPage < 3) {
-                        state.scrollToPage(
-                            state.currentPage + 1
-                        )
-                    } else {
+        if (introViewModel.isIntroDataLoaded){
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .padding(start = 20.dp, end = 10.dp)
+                    .align(Alignment.BottomCenter),
+                enabled = true,
+                elevation = ButtonDefaults.elevation(
+                    defaultElevation = 0.dp,
+                    pressedElevation = 0.dp,
+                    disabledElevation = 0.dp,
+                    hoveredElevation = 0.dp,
+                    focusedElevation = 0.dp
+                ),
+                shape = RoundedCornerShape(30),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = Custom_Blue,
+                ),
+                onClick = {
+                    scope.launch {
+                        if (state.currentPage < 3) {
+                            state.scrollToPage(
+                                state.currentPage + 1
+                            )
+                        } else {
 //                        homeViewModel.saveOnBoardingState(completed = true)
-                        PreferenceProvider(context).setValue("isIntroDone",true)
-                        navController.popBackStack()
-                        navController.navigate(route = Screen.VerifyEmail.route)
+                            PreferenceProvider(context).setValue("isIntroDone", true)
+                            navController.popBackStack()
+                            navController.navigate(route = Screen.VerifyEmail.route)
+                        }
                     }
-                }
-            }) {
-            Text(
-                text = stringResource(id = R.string.intro_screen_btn_next_text),
-                color = Color.White,
-                style = MaterialTheme.typography.body2,
-                lineHeight = 28.sp,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.W900
-            )
+                }) {
+                Text(
+                    text = stringResource(id = R.string.intro_screen_btn_next_text),
+                    color = Color.White,
+                    style = MaterialTheme.typography.body2,
+                    lineHeight = 28.sp,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.W900
+                )
+            }
         }
+
     }
 }
 
 
-@OptIn(ExperimentalPagerApi::class)
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun MainPreview() {
-//    IntroScreen(
-//        state = rememberPagerState1(),
-//        items = onBoardItem,
-//        scope = rememberCoroutineScope(),
-//        navController = rememberNavController(),
-//        homeViewModel = HomeViewModel(HomeRepository(ApiService)),
-//    )
-}
