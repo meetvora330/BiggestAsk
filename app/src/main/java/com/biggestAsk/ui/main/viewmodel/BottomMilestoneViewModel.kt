@@ -30,6 +30,7 @@ class BottomMilestoneViewModel @Inject constructor(
     var milestoneList by mutableStateOf(listOf<Milestone>())
     var emptyList by mutableStateOf(listOf<Milestone>())
     var isAllMilestoneLoaded: Boolean by mutableStateOf(false)
+    var isAnyErrorOccurred: Boolean by mutableStateOf(false)
     var addNewMilestoneTittle: MutableState<String> = mutableStateOf("")
     var addNewMilestoneTittleEmpty: MutableState<Boolean> = mutableStateOf(false)
     var addNewMilestoneDate: MutableState<String> = mutableStateOf("")

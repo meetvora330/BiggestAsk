@@ -64,6 +64,15 @@ interface ApiService {
     ): Response<GetMilestoneResponse>
 
     @POST(Constants.CREATE_MILESTONE)
-    suspend fun createMilestone(@Body createMilestoneRequest: CreateMilestoneRequest):Response<SendOtpResponse>
+    suspend fun createMilestone(@Body createMilestoneRequest: CreateMilestoneRequest): Response<SendOtpResponse>
 
+    @GET(Constants.EDIT_MILESTONE)
+    suspend fun editMilestone(
+        @Query("type") type: String,
+        @Query("user_id") user_id: Int,
+        @Query("milestone_id") milestone_id: Int
+    ): Response<EditMilestoneResponse>
+
+    @POST(Constants.UPDATE_MILESTONE_ANS_INFO)
+    suspend fun updateMilestoneAnsInfo(@Body updateMilestoneAnsInfoRequest: UpdateMilestoneAnsInfoRequest): Response<SendOtpResponse>
 }

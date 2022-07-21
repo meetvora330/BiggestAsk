@@ -80,6 +80,7 @@ fun MilestonesScreen(
     val mHour = c[Calendar.HOUR_OF_DAY]
     val mMinute = c[Calendar.MINUTE]
     val openDialogReset = remember { mutableStateOf(false) }
+
     val focusManager = LocalFocusManager.current
 //    viewModel.list = viewModel.listData
     LaunchedEffect(Unit) {
@@ -94,7 +95,7 @@ fun MilestonesScreen(
     BottomSheetScaffold(
         scaffoldState = addNewMilestoneBottomSheetState,
         sheetContent = {
-            if (milestoneViewModel.isNewMilestoneAdded.value){
+            if (milestoneViewModel.isNewMilestoneAdded.value) {
                 ProgressBarTransparentBackground(loadingText = "Adding...")
             }
             Column(
@@ -224,9 +225,9 @@ fun MilestonesScreen(
                                 val datePickerDialog = DatePickerDialog(
                                     context,
                                     R.style.CalenderViewCustom,
-                                    { _: DatePicker, day: Int, month: Int, year: Int ->
+                                    { _: DatePicker, year: Int, month: Int, day: Int ->
                                         milestoneViewModel.addNewMilestoneDate.value =
-                                            "$year-$month-$day"
+                                            "$year/$month/$day"
                                     }, year, month, day
                                 )
                                 datePickerDialog.show()
@@ -460,7 +461,7 @@ fun MilestonesScreen(
                                         user_id = userId,
                                         date = milestoneViewModel.addNewMilestoneDate.value,
                                         time = milestoneViewModel.addNewMilestoneTime.value,
-                                        location = "Grand Rapids 3230 Eagle Park Drive NE, Suite 100",
+                                        location = milestoneViewModel.addNewMilestoneLocationB.value,
                                         longitude = "",
                                         latitude = ""
                                     )
@@ -507,6 +508,25 @@ fun MilestonesScreen(
             }
         }, sheetPeekHeight = 40.dp,
         content = {
+            if (milestoneViewModel.isAnyErrorOccurred) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 24.dp, end = 24.dp, top = 10.dp),
+                        text = stringResource(id = R.string.no_data_found),
+                        style = MaterialTheme.typography.body2,
+                        textAlign = TextAlign.Center,
+                        fontSize = 24.sp,
+                        color = Color.Black,
+                        fontWeight = FontWeight.W600
+                    )
+                }
+            }
             if (milestoneViewModel.isAllMilestoneLoaded) {
                 ProgressBarTransparentBackground("Loading....")
             }
@@ -666,6 +686,7 @@ fun MilestonesScreen(
                                         .padding(start = 24.dp, end = 24.dp)
                                         .combinedClickable(
                                             onClick = {
+//                                                Log.d("TAG", "MilestonesScreen: ${milestoneViewModel.milestoneList[index]}")
 //                                                if (viewModel.isSelected) {
 //                                                    coroutineScope.launch {
 //                                                        viewModel.list[index].show =
@@ -683,7 +704,11 @@ fun MilestonesScreen(
                                                     BottomNavScreen.AddNewMileStones.route,
                                                     true
                                                 )
-                                                navHostController.navigate(route = "add_new_milestone/${milestoneViewModel.milestoneList[index].title}")
+                                                navHostController.navigate(
+                                                    route = BottomNavScreen.AddNewMileStones.editMilestone(
+                                                        id = milestoneViewModel.milestoneList[index].id
+                                                    )
+                                                )
 //                                                }
                                             },
                                             onLongClick = {
@@ -865,24 +890,24 @@ fun getMilestones(
 ) {
     val userId = PreferenceProvider(context).getIntValue("user_id", 0)
     val type = PreferenceProvider(context).getValue("type", "")
-    if (milestoneViewModel.milestoneList.isEmpty()) {
-        milestoneViewModel.getMilestones(
-            GetPregnancyMilestoneRequest(
-                user_id = userId,
-                type = type!!
-            )
+//    if (milestoneViewModel.milestoneList.isEmpty()) {
+    milestoneViewModel.getMilestones(
+        GetPregnancyMilestoneRequest(
+            user_id = userId,
+            type = type!!
         )
-        milestoneViewModel.getMilestoneResponse.observe(homeActivity) {
-            if (it != null) {
-                handleGetMilestoneData(
-                    navHostController = navHostController,
-                    result = it,
-                    context = context,
-                    milestoneViewModel = milestoneViewModel
-                )
-            }
+    )
+    milestoneViewModel.getMilestoneResponse.observe(homeActivity) {
+        if (it != null) {
+            handleGetMilestoneData(
+                navHostController = navHostController,
+                result = it,
+                context = context,
+                milestoneViewModel = milestoneViewModel
+            )
         }
     }
+//    }
 }
 
 @Composable
@@ -992,18 +1017,20 @@ private fun handleGetMilestoneData(
             // show a progress bar
             Log.e("TAG", "handleUserData() --> Loading  $result")
             milestoneViewModel.isAllMilestoneLoaded = true
+            milestoneViewModel.isAnyErrorOccurred = false
         }
         is NetworkResult.Success -> {
             // bind data to the view
             Log.e("TAG", "handleUserData() --> Success  $result")
             milestoneViewModel.isAllMilestoneLoaded = false
+            milestoneViewModel.isAnyErrorOccurred = false
             milestoneViewModel.milestoneList = result.data?.milestone!!
         }
         is NetworkResult.Error -> {
             // show error message
             Log.e("TAG", "handleUserData() --> Error ${result.message}")
-            Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
             milestoneViewModel.isAllMilestoneLoaded = false
+            milestoneViewModel.isAnyErrorOccurred = true
         }
     }
 }

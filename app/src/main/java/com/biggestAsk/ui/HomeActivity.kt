@@ -3,7 +3,6 @@ package com.biggestAsk.ui
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.WindowManager
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.material.MaterialTheme
@@ -15,7 +14,7 @@ import com.biggestAsk.ui.homeScreen.HomeScreen
 import com.biggestAsk.ui.introScreen.LockScreenOrientation
 import com.biggestAsk.ui.main.viewmodel.BottomHomeViewModel
 import com.biggestAsk.ui.main.viewmodel.BottomMilestoneViewModel
-import com.biggestAsk.ui.main.viewmodel.HomeViewModel
+import com.biggestAsk.ui.main.viewmodel.EditMilestoneViewModel
 import com.biggestAsk.ui.main.viewmodel.MainViewModel
 import com.biggestAsk.ui.ui.theme.BasicStructureTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -24,6 +23,7 @@ class HomeActivity : BaseActivity() {
     private val mainViewModel: MainViewModel by viewModels()
     private val bottomHomeViewModel: BottomHomeViewModel by viewModels()
     private val bottomMilestoneViewModel: BottomMilestoneViewModel by viewModels()
+    private val editMilestoneViewModel: EditMilestoneViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
@@ -48,7 +48,8 @@ class HomeActivity : BaseActivity() {
                     homeActivity = this,
                     mainViewModel = mainViewModel,
                     bottomHomeViewModel = bottomHomeViewModel,
-                    bottomMilestoneViewModel = bottomMilestoneViewModel
+                    bottomMilestoneViewModel = bottomMilestoneViewModel,
+                    editMilestoneViewModel = editMilestoneViewModel
                 )
             }
         }

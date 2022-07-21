@@ -27,6 +27,8 @@ object Constants {
     const val GET_NEAREST_MILESTONE = "get_nearest_milestone"
     const val CREATE_MILESTONE = "create_milestone"
     const val GET_MILESTONE = "get_milestone"
+    const val EDIT_MILESTONE = "edit_milestone"
+    const val UPDATE_MILESTONE_ANS_INFO="update_milestone_ans_info"
 
 
     // error body

@@ -62,6 +62,7 @@
     <string name="enter_phone_number">Enter phone number</string>
     <string name="all_field_compulsory">All field compulsory</string>
     <string name="please_try_again">Please try again later</string>
+    <string name="no_data_found">No data found</string>
 
 
     <!-- Intro Screen   -->

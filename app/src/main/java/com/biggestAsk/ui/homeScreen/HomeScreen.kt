@@ -42,6 +42,7 @@ import com.biggestAsk.ui.homeScreen.drawerScreens.settingScreens.SettingSubScree
 import com.biggestAsk.ui.introScreen.findActivity
 import com.biggestAsk.ui.main.viewmodel.BottomHomeViewModel
 import com.biggestAsk.ui.main.viewmodel.BottomMilestoneViewModel
+import com.biggestAsk.ui.main.viewmodel.EditMilestoneViewModel
 import com.biggestAsk.ui.main.viewmodel.MainViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.util.PreferenceProvider
@@ -58,7 +59,8 @@ fun HomeScreen(
     homeActivity: HomeActivity,
     mainViewModel: MainViewModel,
     bottomHomeViewModel: BottomHomeViewModel,
-    bottomMilestoneViewModel: BottomMilestoneViewModel
+    bottomMilestoneViewModel: BottomMilestoneViewModel,
+    editMilestoneViewModel: EditMilestoneViewModel
 ) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
@@ -345,7 +347,8 @@ fun HomeScreen(
                 context = context,
                 homeActivity = homeActivity,
                 bottomHomeViewModel = bottomHomeViewModel,
-                bottomMilestoneViewModel = bottomMilestoneViewModel
+                bottomMilestoneViewModel = bottomMilestoneViewModel,
+                editMilestoneViewModel = editMilestoneViewModel
             )
         },
         bottomBar = {
@@ -539,7 +542,7 @@ fun currentRoute(
             viewModel.isYourAccountScreen.value = true
         }
         BottomNavScreen.AddNewMileStones.route -> {
-            viewModel.toolbarTittle = "Add New Milestone"
+            viewModel.toolbarTittle = "Edit milestone"
 //            viewModel.list = viewModel.emptyList
             viewModel.isYourAccountScreen.value = false
             viewModel.isCommunityScreen.value = false

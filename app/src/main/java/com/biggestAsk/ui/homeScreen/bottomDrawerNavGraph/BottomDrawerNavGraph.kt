@@ -1,6 +1,7 @@
 package com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -8,9 +9,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.biggestAsk.ui.HomeActivity
-import com.biggestAsk.ui.homeScreen.bottomNavScreen.AddNewMilestoneScreen
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.BottomHomeScreen
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.BottomQuestionScreen
+import com.biggestAsk.ui.homeScreen.bottomNavScreen.EditMilestoneScreen
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.MilestonesScreen
 import com.biggestAsk.ui.homeScreen.drawerScreens.community.Community
 import com.biggestAsk.ui.homeScreen.drawerScreens.contactYourProvider.ContactYourProvider
@@ -21,7 +22,7 @@ import com.biggestAsk.ui.homeScreen.drawerScreens.yourAccount.YourAccountScreen
 import com.biggestAsk.ui.homeScreen.drawerScreens.yourSurrogateMother.YourSurrogateMother
 import com.biggestAsk.ui.main.viewmodel.BottomHomeViewModel
 import com.biggestAsk.ui.main.viewmodel.BottomMilestoneViewModel
-import com.biggestAsk.ui.main.viewmodel.HomeViewModel
+import com.biggestAsk.ui.main.viewmodel.EditMilestoneViewModel
 import com.biggestAsk.ui.main.viewmodel.MainViewModel
 
 @Composable
@@ -31,7 +32,8 @@ fun BottomNavigationDrawerGraph(
     context: Context,
     homeActivity: HomeActivity,
     bottomHomeViewModel: BottomHomeViewModel,
-    bottomMilestoneViewModel: BottomMilestoneViewModel
+    bottomMilestoneViewModel: BottomMilestoneViewModel,
+    editMilestoneViewModel: EditMilestoneViewModel
 ) {
     NavHost(
         navController = navHostController, startDestination = BottomNavScreen.Home.route
@@ -39,7 +41,12 @@ fun BottomNavigationDrawerGraph(
         composable(
             route = BottomNavScreen.MileStones.route
         ) {
-            MilestonesScreen(navHostController = navHostController, viewModel = mainViewModel, milestoneViewModel = bottomMilestoneViewModel, homeActivity = homeActivity)
+            MilestonesScreen(
+                navHostController = navHostController,
+                viewModel = mainViewModel,
+                milestoneViewModel = bottomMilestoneViewModel,
+                homeActivity = homeActivity
+            )
         }
         composable(
             route = BottomNavScreen.Home.route
@@ -59,14 +66,17 @@ fun BottomNavigationDrawerGraph(
         composable(
             route = BottomNavScreen.AddNewMileStones.route,
             arguments = listOf(
-                navArgument(ADD_NEW_MILESTONE_ARGS_NAME) {
-                    type = NavType.StringType
+                 navArgument(ADD_NEW_MILESTONE_ARGS_ID){
+                    type = NavType.IntType
                 })
         ) {
-            AddNewMilestoneScreen(
+            Log.d("TAG", "BottomNavigationDrawerGraph: ${it.arguments?.getInt(ADD_NEW_MILESTONE_ARGS_ID)}")
+            EditMilestoneScreen(
                 navHostController,
                 mainViewModel,
-                it.arguments?.getString(ADD_NEW_MILESTONE_ARGS_NAME).toString()
+                it.arguments?.getInt(ADD_NEW_MILESTONE_ARGS_ID)!!,
+                editMilestoneViewModel,
+                homeActivity = homeActivity
             )
         }
         composable(route = NavDrawerItem.IntendedParents.route) {

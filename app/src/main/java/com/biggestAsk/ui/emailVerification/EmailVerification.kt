@@ -58,7 +58,9 @@ fun EmailVerification(
         mutableStateOf(false)
     }
     val context = LocalContext.current
-
+    LaunchedEffect(Unit){
+        homeViewModel.textEmailVerify = ""
+    }
     Box {
         Image(
             modifier = Modifier.fillMaxSize(),
@@ -85,7 +87,6 @@ fun EmailVerification(
                 .padding(top = 144.dp)
                 .align(Alignment.TopCenter)
         ) {
-
             Image(
                 painter = painterResource(id = R.drawable.img_login_tittle),
                 contentDescription = "login_img_up",
@@ -271,11 +272,11 @@ fun EmailVerification(
 }
 
 @Composable
-fun ProgressBarTransparentBackground(loadingText: String) {
+fun ProgressBarTransparentBackground(loadingText: String, id: Int = R.color.custom_white) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = colorResource(id = R.color.custom_white))
+            .background(color = colorResource(id = id))
             .clickable(indication = null, interactionSource = MutableInteractionSource()) {},
         contentAlignment = Alignment.Center
     ) {

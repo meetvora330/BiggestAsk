@@ -37,10 +37,11 @@ class BottomHomeViewModel @Inject constructor(
     var nearestMilestoneDate: String by mutableStateOf("")
     var nearestMilestoneTime: String by mutableStateOf("")
     var isAllDataLoaded: Boolean by mutableStateOf(true)
-    var isPregnancyDataLoaded: Boolean by mutableStateOf(true)
-    var isHomeScreenQuestionDataLoaded: Boolean by mutableStateOf(true)
-    var isIntendedParentQuestionDataLoaded: Boolean by mutableStateOf(true)
-    var isNearestMilestoneDataLoaded: Boolean by mutableStateOf(true)
+    var isErrorOccurred: Boolean by mutableStateOf(false)
+    var isPregnancyDataLoaded: Boolean by mutableStateOf(false)
+    var isHomeScreenQuestionDataLoaded: Boolean by mutableStateOf(false)
+    var isIntendedParentQuestionDataLoaded: Boolean by mutableStateOf(false)
+    var isNearestMilestoneDataLoaded: Boolean by mutableStateOf(false)
     var getPregnancyMilestoneResponse: MutableLiveData<NetworkResult<GetPregnancyMilestoneResponse>> =
         MutableLiveData()
     var getHomeScreenQuestionResponse: MutableLiveData<NetworkResult<GetHomeScreenQuestionResponse>> =

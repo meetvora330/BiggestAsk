@@ -159,4 +159,22 @@ class HomeRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
+    suspend fun editMilestone(editMilestoneRequest: EditMilestoneRequest): Flow<NetworkResult<EditMilestoneResponse>> {
+        return flow {
+            emit(safeApiCall {
+                apiService.editMilestone(
+                    editMilestoneRequest.type,
+                    editMilestoneRequest.user_id,
+                    editMilestoneRequest.milestone_id
+                )
+            })
+        }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun updateMilestoneAnsInfo(updateMilestoneAnsInfoRequest: UpdateMilestoneAnsInfoRequest): Flow<NetworkResult<SendOtpResponse>> {
+        return flow {
+            emit(safeApiCall { apiService.updateMilestoneAnsInfo(updateMilestoneAnsInfoRequest) })
+        }.flowOn(Dispatchers.IO)
+    }
+
 }

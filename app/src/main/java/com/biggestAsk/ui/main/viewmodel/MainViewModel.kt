@@ -79,7 +79,7 @@ class MainViewModel : ViewModel() {
     var milestoneName: MutableState<String> = mutableStateOf("")
     var checkBoxShareWithParents: Boolean by mutableStateOf(true)
     var checkBoxShareWithBiggestAsk: Boolean by mutableStateOf(false)
-    var addNewMilestoneNotes: MutableState<String> = mutableStateOf("")
+
     var addNewMilestoneLocation: MutableState<String> = mutableStateOf("")
     var btnSaveNotes: Boolean by mutableStateOf(false)
 
