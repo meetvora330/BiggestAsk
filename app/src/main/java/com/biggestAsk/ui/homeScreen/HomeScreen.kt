@@ -4,7 +4,6 @@ package com.biggestAsk.ui.homeScreen
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,18 +33,12 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.biggestAsk.ui.HomeActivity
-import com.biggestAsk.ui.MainActivity
 import com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph.*
 import com.biggestAsk.ui.homeScreen.drawerScreens.community.AddCommunityDialog
 import com.biggestAsk.ui.homeScreen.drawerScreens.notification.NotificationDetailScreenRoute
 import com.biggestAsk.ui.homeScreen.drawerScreens.settingScreens.SettingSubScreen
-import com.biggestAsk.ui.introScreen.findActivity
-import com.biggestAsk.ui.main.viewmodel.BottomHomeViewModel
-import com.biggestAsk.ui.main.viewmodel.BottomMilestoneViewModel
-import com.biggestAsk.ui.main.viewmodel.EditMilestoneViewModel
-import com.biggestAsk.ui.main.viewmodel.MainViewModel
+import com.biggestAsk.ui.main.viewmodel.*
 import com.biggestAsk.ui.ui.theme.Custom_Blue
-import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -60,7 +53,8 @@ fun HomeScreen(
     mainViewModel: MainViewModel,
     bottomHomeViewModel: BottomHomeViewModel,
     bottomMilestoneViewModel: BottomMilestoneViewModel,
-    editMilestoneViewModel: EditMilestoneViewModel
+    editMilestoneViewModel: EditMilestoneViewModel,
+    yourAccountViewModel: YourAccountViewModel
 ) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
@@ -93,7 +87,11 @@ fun HomeScreen(
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
-            currentRoute(navController = navController, viewModel = mainViewModel)
+            currentRoute(
+                navController = navController,
+                viewModel = mainViewModel,
+                yourAccountViewModel = yourAccountViewModel
+            )
             ConstraintLayout(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -225,7 +223,7 @@ fun HomeScreen(
                         .alpha(
                             if (mainViewModel.isCommunityScreen.value == true ||
                                 mainViewModel.isContactProvidersScreen.value == true ||
-                                mainViewModel.isYourAccountScreen.value == true ||
+                                yourAccountViewModel.isYourAccountScreen.value == true ||
                                 mainViewModel.isNotificationScreen.value == true
                             ) 1f else 0f
                         )
@@ -245,9 +243,9 @@ fun HomeScreen(
                             if (mainViewModel.isContactProvidersScreen.value == true) {
                                 openDialogCustomContact.value = true
                             }
-                            if (mainViewModel.isYourAccountScreen.value == true) {
-                                mainViewModel.isEditable.value =
-                                    mainViewModel.isEditable.value != true
+                            if (yourAccountViewModel.isYourAccountScreen.value == true) {
+                                yourAccountViewModel.isEditable.value =
+                                    yourAccountViewModel.isEditable.value != true
                             }
 //                            if (mainViewModel.isNotificationScreen.value == true) {
 //
@@ -261,7 +259,7 @@ fun HomeScreen(
                             mainViewModel.isContactProvidersScreen.value -> {
                                 R.drawable.ic_icon_toolbar_add
                             }
-                            mainViewModel.isYourAccountScreen.value -> {
+                            yourAccountViewModel.isYourAccountScreen.value -> {
                                 R.drawable.ic_icon_your_account_edit_disable
                             }
                             mainViewModel.isNotificationScreen.value -> {
@@ -348,7 +346,8 @@ fun HomeScreen(
                 homeActivity = homeActivity,
                 bottomHomeViewModel = bottomHomeViewModel,
                 bottomMilestoneViewModel = bottomMilestoneViewModel,
-                editMilestoneViewModel = editMilestoneViewModel
+                editMilestoneViewModel = editMilestoneViewModel,
+                yourAccountViewModel = yourAccountViewModel
             )
         },
         bottomBar = {
@@ -372,6 +371,7 @@ fun HomeScreen(
 fun currentRoute(
     navController: NavHostController,
     viewModel: MainViewModel,
+    yourAccountViewModel: YourAccountViewModel
 ): String? {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     when (navController.currentDestination?.route) {
@@ -380,7 +380,7 @@ fun currentRoute(
 //            viewModel.list = viewModel.emptyList
             viewModel.isCommunityScreen.value = false
             viewModel.isContactProvidersScreen.value = false
-            viewModel.isYourAccountScreen.value = false
+            yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
             viewModel.isNotificationScreen.value = false
@@ -391,12 +391,12 @@ fun currentRoute(
             viewModel.isSettingSubPrivacyPolicyScreen.value = false
         }
         BottomNavItems.Questions.navRoute -> {
-            viewModel.imageList.clear()
+//            viewModel.imageList.clear()
             viewModel.toolbarTittle = "Questions"
 //            viewModel.list = viewModel.emptyList
             viewModel.isCommunityScreen.value = false
             viewModel.isContactProvidersScreen.value = false
-            viewModel.isYourAccountScreen.value = false
+            yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
             viewModel.isNotificationScreen.value = false
@@ -408,7 +408,7 @@ fun currentRoute(
             viewModel.isSettingSubPrivacyPolicyScreen.value = false
         }
         BottomNavItems.Milestones.navRoute -> {
-            viewModel.imageList.clear()
+//            viewModel.imageList.clear()
             viewModel.listData.forEachIndexed { index, _ ->
                 viewModel.listData[index].show = false
             }
@@ -416,7 +416,7 @@ fun currentRoute(
             viewModel.toolbarTittle = "Milestones"
             viewModel.isCommunityScreen.value = false
             viewModel.isContactProvidersScreen.value = false
-            viewModel.isYourAccountScreen.value = false
+            yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
             viewModel.isNotificationScreen.value = false
@@ -428,12 +428,12 @@ fun currentRoute(
             viewModel.isSettingSubPrivacyPolicyScreen.value = false
         }
         NavDrawerItem.YourSurrogateMother.route -> {
-            viewModel.imageList.clear()
+//            viewModel.imageList.clear()
 //            viewModel.list = viewModel.emptyList
             viewModel.toolbarTittle = "Your Surrogate Mother"
             viewModel.isCommunityScreen.value = false
             viewModel.isContactProvidersScreen.value = false
-            viewModel.isYourAccountScreen.value = false
+            yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
             viewModel.isNotificationScreen.value = false
@@ -445,12 +445,12 @@ fun currentRoute(
             viewModel.isSettingSubPrivacyPolicyScreen.value = false
         }
         NavDrawerItem.IntendedParents.route -> {
-            viewModel.imageList.clear()
+//            viewModel.imageList.clear()
 //            viewModel.list = viewModel.emptyList
             viewModel.toolbarTittle = "Intended Parents"
             viewModel.isCommunityScreen.value = false
             viewModel.isContactProvidersScreen.value = false
-            viewModel.isYourAccountScreen.value = false
+            yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
             viewModel.isNotificationScreen.value = false
@@ -465,7 +465,7 @@ fun currentRoute(
             viewModel.toolbarTittle = "Community"
 //            viewModel.list = viewModel.emptyList
             viewModel.isContactProvidersScreen.value = false
-            viewModel.isYourAccountScreen.value = false
+            yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
             viewModel.isNotificationScreen.value = false
@@ -481,7 +481,7 @@ fun currentRoute(
             viewModel.toolbarTittle = "Contact Your Providers"
 //            viewModel.list = viewModel.emptyList
             viewModel.isCommunityScreen.value = false
-            viewModel.isYourAccountScreen.value = false
+            yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
             viewModel.isNotificationScreen.value = false
@@ -498,7 +498,7 @@ fun currentRoute(
 //            viewModel.list = viewModel.emptyList
             viewModel.isCommunityScreen.value = false
             viewModel.isContactProvidersScreen.value = false
-            viewModel.isYourAccountScreen.value = false
+            yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
             viewModel.isNotificationDetailsScreen.value = false
@@ -514,7 +514,7 @@ fun currentRoute(
 //            viewModel.list = viewModel.emptyList
             viewModel.isCommunityScreen.value = false
             viewModel.isContactProvidersScreen.value = false
-            viewModel.isYourAccountScreen.value = false
+            yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
             viewModel.isNotificationScreen.value = false
@@ -539,12 +539,12 @@ fun currentRoute(
             viewModel.isSettingSubDetailedSettingScreen.value = false
             viewModel.isSettingSubTermsOfServiceScreen.value = false
             viewModel.isSettingSubPrivacyPolicyScreen.value = false
-            viewModel.isYourAccountScreen.value = true
+            yourAccountViewModel.isYourAccountScreen.value = true
         }
         BottomNavScreen.AddNewMileStones.route -> {
             viewModel.toolbarTittle = "Edit milestone"
 //            viewModel.list = viewModel.emptyList
-            viewModel.isYourAccountScreen.value = false
+            yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isCommunityScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isContactProvidersScreen.value = false
@@ -562,7 +562,7 @@ fun currentRoute(
 //            viewModel.list = viewModel.emptyList
             viewModel.isCommunityScreen.value = false
             viewModel.isContactProvidersScreen.value = false
-            viewModel.isYourAccountScreen.value = false
+            yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
             viewModel.isNotificationScreen.value = false
@@ -578,7 +578,7 @@ fun currentRoute(
 //            viewModel.list = viewModel.emptyList
             viewModel.isCommunityScreen.value = false
             viewModel.isContactProvidersScreen.value = false
-            viewModel.isYourAccountScreen.value = false
+            yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
             viewModel.isNotificationScreen.value = false
@@ -593,7 +593,7 @@ fun currentRoute(
 //            viewModel.list = viewModel.emptyList
             viewModel.isCommunityScreen.value = false
             viewModel.isContactProvidersScreen.value = false
-            viewModel.isYourAccountScreen.value = false
+            yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
             viewModel.isNotificationScreen.value = false
@@ -608,7 +608,7 @@ fun currentRoute(
 //            viewModel.list = viewModel.emptyList
             viewModel.isCommunityScreen.value = false
             viewModel.isContactProvidersScreen.value = false
-            viewModel.isYourAccountScreen.value = false
+            yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
             viewModel.isNotificationScreen.value = false
@@ -623,7 +623,7 @@ fun currentRoute(
 //            viewModel.list = viewModel.emptyList
             viewModel.isCommunityScreen.value = false
             viewModel.isContactProvidersScreen.value = false
-            viewModel.isYourAccountScreen.value = false
+            yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
             viewModel.isNotificationScreen.value = false

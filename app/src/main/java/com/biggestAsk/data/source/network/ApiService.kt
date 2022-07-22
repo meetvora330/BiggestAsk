@@ -3,11 +3,9 @@ package com.biggestAsk.data.source.network
 import com.biggestAsk.data.model.request.*
 import com.biggestAsk.data.model.response.*
 import com.biggestAsk.util.Constants
+import okhttp3.MultipartBody
 import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Query
+import retrofit2.http.*
 
 interface ApiService {
 
@@ -75,4 +73,29 @@ interface ApiService {
 
     @POST(Constants.UPDATE_MILESTONE_ANS_INFO)
     suspend fun updateMilestoneAnsInfo(@Body updateMilestoneAnsInfoRequest: UpdateMilestoneAnsInfoRequest): Response<SendOtpResponse>
+
+    @POST(Constants.SAVE_NOTE)
+    suspend fun saveNote(@Body saveNoteRequest: SaveNoteRequest): Response<SendOtpResponse>
+
+
+
+
+    @POST(Constants.GET_USER_DETAIL)
+    suspend fun getUserDetails(@Body user: GetUserDetailsRequest): Response<GetUserDetailsResponse>
+
+    @Multipart
+    @POST(Constants.USER_PROFILE_UPDATE+"{id}")
+    suspend fun updateUserProfile(
+        @Path("id") userId: Int?,
+        @Part name: MultipartBody.Part?,
+        @Part email: MultipartBody.Part?,
+        @Part password: MultipartBody.Part?,
+        @Part number: MultipartBody.Part?,
+        @Part address: MultipartBody.Part?,
+        @Part date_of_birth: MultipartBody.Part?,
+        @Part partner_name: MultipartBody.Part?,
+        @Part imgFileName1: MultipartBody.Part?,
+        @Part imgFileName2: MultipartBody.Part?,
+        @Part type: MultipartBody.Part?,
+    ): Response<UpdateUserProfileResponse>
 }

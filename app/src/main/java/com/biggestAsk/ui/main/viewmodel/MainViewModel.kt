@@ -1,15 +1,11 @@
 package com.biggestAsk.ui.main.viewmodel
 
-import android.graphics.Bitmap
 import androidx.compose.runtime.*
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.biggestAsk.data.model.response.GetMilestoneResponse
 import com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph.MilestoneDetails
-import com.biggestAsk.ui.questionScreen.ListQuestions
-import com.biggestAsk.ui.questionScreen.Questions
 import com.example.biggestAsk.R
-import dagger.hilt.android.lifecycle.HiltViewModel
 
 class MainViewModel : ViewModel() {
     //Register Screen
@@ -18,7 +14,7 @@ class MainViewModel : ViewModel() {
 
     //Otp Verification
     var isOtpValueVerified: Boolean by mutableStateOf(false)
-    var ticks:Int by mutableStateOf(60)
+    var ticks: Int by mutableStateOf(60)
 
     var textFullName: String by mutableStateOf("")
     var textEmail: String by mutableStateOf("")
@@ -54,24 +50,6 @@ class MainViewModel : ViewModel() {
     val communityLinkForum: MutableLiveData<String> = MutableLiveData("")
     val communityLinkInstagram: MutableLiveData<String> = MutableLiveData("")
 
-    //Your Account Screen
-    val isYourAccountScreen: MutableLiveData<Boolean> = MutableLiveData(false)
-    var yourAccountFullName: MutableState<String> = mutableStateOf("Marina Kotenko")
-    var yourAccountFullNameEmpty: Boolean by mutableStateOf(false)
-    var yourAccountPhoneNumber: MutableState<String> = mutableStateOf("+880 9589876")
-    var yourAccountPhoneNumberEmpty: Boolean by mutableStateOf(false)
-    var yourAccountEmail: MutableState<String> = mutableStateOf("mailmarina.@mail.com")
-    var yourAccountEmailIsValid: Boolean by mutableStateOf(false)
-    var yourAccountEmailEmpty: Boolean by mutableStateOf(false)
-    var yourAccountHomeAddress: MutableState<String> =
-        mutableStateOf("888 Main St, Seattle, WA 98006")
-    var yourAccountHomeAddressEmpty: Boolean by mutableStateOf(false)
-    var yourAccountDateOfBirth: MutableState<String> = mutableStateOf("01/02/1988")
-    var yourAccountDateOfBirthEmpty: Boolean by mutableStateOf(false)
-    var yourAccountPartnerName: MutableState<String> = mutableStateOf("Tom Doe")
-    var yourAccountPartnerNameEmpty: Boolean by mutableStateOf(false)
-    var yourAccountPassword: MutableState<String> = mutableStateOf("...........")
-    var yourAccountPasswordEmpty: Boolean by mutableStateOf(false)
     var isEditable: MutableState<Boolean> = mutableStateOf(false)
 
     //Add Milestone Screen
@@ -85,10 +63,6 @@ class MainViewModel : ViewModel() {
 
     //Add New Milestone BottomSheet
 
-
-
-    val imageList = mutableStateListOf<Bitmap>()
-    var imageListIndex = mutableStateOf<Int>(-1)
     val tittleMilestone: MutableState<String> = mutableStateOf("")
     val timeMilestone: MutableState<String> = mutableStateOf("")
 
@@ -156,7 +130,6 @@ class MainViewModel : ViewModel() {
     //Your Surrogate Mother
     var textSurrogateDialogPhoneNo = mutableStateOf("")
     val invitationSend: MutableState<Boolean> = mutableStateOf(false)
-
 
 
 }

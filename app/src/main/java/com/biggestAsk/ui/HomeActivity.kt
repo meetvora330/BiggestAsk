@@ -12,10 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import com.biggestAsk.ui.base.BaseActivity
 import com.biggestAsk.ui.homeScreen.HomeScreen
 import com.biggestAsk.ui.introScreen.LockScreenOrientation
-import com.biggestAsk.ui.main.viewmodel.BottomHomeViewModel
-import com.biggestAsk.ui.main.viewmodel.BottomMilestoneViewModel
-import com.biggestAsk.ui.main.viewmodel.EditMilestoneViewModel
-import com.biggestAsk.ui.main.viewmodel.MainViewModel
+import com.biggestAsk.ui.main.viewmodel.*
 import com.biggestAsk.ui.ui.theme.BasicStructureTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
@@ -24,6 +21,7 @@ class HomeActivity : BaseActivity() {
     private val bottomHomeViewModel: BottomHomeViewModel by viewModels()
     private val bottomMilestoneViewModel: BottomMilestoneViewModel by viewModels()
     private val editMilestoneViewModel: EditMilestoneViewModel by viewModels()
+    val yourAccountViewModel: YourAccountViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
@@ -49,7 +47,8 @@ class HomeActivity : BaseActivity() {
                     mainViewModel = mainViewModel,
                     bottomHomeViewModel = bottomHomeViewModel,
                     bottomMilestoneViewModel = bottomMilestoneViewModel,
-                    editMilestoneViewModel = editMilestoneViewModel
+                    editMilestoneViewModel = editMilestoneViewModel,
+                    yourAccountViewModel = yourAccountViewModel
                 )
             }
         }

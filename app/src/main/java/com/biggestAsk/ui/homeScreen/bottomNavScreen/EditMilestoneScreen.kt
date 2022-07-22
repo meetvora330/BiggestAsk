@@ -32,7 +32,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -49,6 +48,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import com.biggestAsk.data.model.request.EditMilestoneRequest
+import com.biggestAsk.data.model.request.SaveNoteRequest
 import com.biggestAsk.data.model.request.UpdateMilestoneAnsInfoRequest
 import com.biggestAsk.data.model.response.EditMilestoneResponse
 import com.biggestAsk.data.model.response.SendOtpResponse
@@ -63,6 +63,7 @@ import com.biggestAsk.ui.ui.theme.CheckBox_Check
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.ET_Bg
 import com.biggestAsk.ui.ui.theme.Text_Color
+import com.biggestAsk.util.PathUtil
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 import kotlinx.coroutines.CoroutineScope
@@ -87,7 +88,7 @@ fun EditMilestoneScreen(
     val day = c.get(Calendar.DAY_OF_MONTH)
     val mHour = c[Calendar.HOUR_OF_DAY]
     val mMinute = c[Calendar.MINUTE]
-
+    var uriPath: String? = null
     val stroke = Stroke(
         width = 5f,
         pathEffect = PathEffect.dashPathEffect(floatArrayOf(8f, 8f), 0f),
@@ -101,28 +102,29 @@ fun EditMilestoneScreen(
     ) { uri: Uri? ->
         if (uri != null) {
             Log.i("TAG", uri.toString())
+            uriPath = uri.let { it1 -> PathUtil.getPath(context, it1) }
             if (Build.VERSION.SDK_INT < 28) {
-                if (viewModel.imageListIndex.value != -1) {
-                    viewModel.imageList[viewModel.imageListIndex.value] =
-                        MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+                if (editMilestoneViewModel.imageListIndex.value != -1) {
+//                    editMilestoneViewModel.imageList[editMilestoneViewModel.imageListIndex.value] =
+//                        MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
                 } else {
-                    viewModel.imageList.add(
-                        MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
-                    )
+//                    editMilestoneViewModel.imageList.add(
+//                        MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+//                    )
                 }
             } else {
                 val source = ImageDecoder.createSource(context.contentResolver, uri)
-                if (viewModel.imageListIndex.value != -1) {
-                    viewModel.imageList[viewModel.imageListIndex.value] =
-                        ImageDecoder.decodeBitmap(source)
+                if (editMilestoneViewModel.imageListIndex.value != -1) {
+//                    editMilestoneViewModel.imageList[editMilestoneViewModel.imageListIndex.value] =
+//                        ImageDecoder.decodeBitmap(source)
                 } else {
-                    viewModel.imageList.add(
-                        ImageDecoder.decodeBitmap(source)
-                    )
+//                    editMilestoneViewModel.imageList.add(
+//                        ImageDecoder.decodeBitmap(source)
+//                    )
                 }
             }
-            viewModel.imageListIndex.value = -1
-            Log.i("TAG", viewModel.imageList.size.toString())
+            editMilestoneViewModel.imageListIndex.value = -1
+            Log.i("TAG", editMilestoneViewModel.imageList.size.toString())
         }
     }
     val isPicAvailable = remember {
@@ -153,7 +155,7 @@ fun EditMilestoneScreen(
             }
         }
     }
-    if (!editMilestoneViewModel.isEditMilestoneDataLoaded.value){
+    if (!editMilestoneViewModel.isEditMilestoneDataLoaded.value) {
         BottomSheetScaffold(
             scaffoldState = editMilestoneBottomSheetState,
             sheetContent = {
@@ -496,7 +498,8 @@ fun EditMilestoneScreen(
                                         editMilestoneViewModel.editMilestoneTittleEmpty.value = true
                                         editMilestoneViewModel.editMilestoneDateEmpty.value = true
                                         editMilestoneViewModel.editMilestoneTimeEmpty.value = true
-                                        editMilestoneViewModel.editMilestoneLocationBEmpty.value = true
+                                        editMilestoneViewModel.editMilestoneLocationBEmpty.value =
+                                            true
                                     }
                                     TextUtils.isEmpty(editMilestoneViewModel.editMilestoneTittle.value) -> {
                                         editMilestoneViewModel.editMilestoneTittleEmpty.value = true
@@ -508,7 +511,8 @@ fun EditMilestoneScreen(
                                         editMilestoneViewModel.editMilestoneTimeEmpty.value = true
                                     }
                                     TextUtils.isEmpty(editMilestoneViewModel.editMilestoneLocationB.value) -> {
-                                        editMilestoneViewModel.editMilestoneLocationBEmpty.value = true
+                                        editMilestoneViewModel.editMilestoneLocationBEmpty.value =
+                                            true
                                     }
                                     else -> {
                                         val type = PreferenceProvider(context).getValue("type", "")
@@ -655,8 +659,11 @@ fun EditMilestoneScreen(
                             }
                         }
                     }
-                    items(viewModel.imageList.size) { index ->
-                        Log.i("TAG", "List Size From Inner ${viewModel.imageList.size}")
+                    items(editMilestoneViewModel.imageList.size) { index ->
+                        Log.i(
+                            "TAG",
+                            "List Size From Inner ${editMilestoneViewModel.imageList.size}"
+                        )
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -676,7 +683,7 @@ fun EditMilestoneScreen(
                                         .height(25.dp)
                                         .background(Color(0xFFF34646), RoundedCornerShape(12.dp))
                                         .clickable {
-                                            viewModel.imageList.removeAt(index)
+                                            editMilestoneViewModel.imageList.removeAt(index)
                                         },
                                     imageVector = Icons.Default.Close,
                                     tint = Color.White,
@@ -698,15 +705,21 @@ fun EditMilestoneScreen(
                                 modifier = Modifier.height(190.dp),
                                 shape = RoundedCornerShape(10.dp)
                             ) {
-                                Image(
+                                com.skydoves.landscapist.glide.GlideImage(
                                     modifier = Modifier
                                         .fillMaxWidth(),
-                                    bitmap = viewModel.imageList[index].asImageBitmap(),
                                     contentDescription = "",
+                                    imageModel = editMilestoneViewModel.imageList[index].image,
                                     contentScale = ContentScale.Crop
                                 )
+//                                Image(
+//                                    modifier = Modifier
+//                                        .fillMaxWidth(),
+//                                    bitmap = editMilestoneViewModel.imageList[index].asImageBitmap(),
+//                                    contentDescription = "",
+//                                    contentScale = ContentScale.Crop
+//                                )
                             }
-
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -731,7 +744,7 @@ fun EditMilestoneScreen(
                                     shape = RoundedCornerShape(13.dp),
                                     enabled = true,
                                     onClick = {
-                                        viewModel.imageListIndex.value = index
+                                        editMilestoneViewModel.imageListIndex.value = index
                                         Log.i("TAG", index.toString())
                                         launcher.launch("image/*")
                                     }) {
@@ -840,14 +853,14 @@ fun EditMilestoneScreen(
                                 shape = RoundedCornerShape(13.dp),
                                 enabled = true,
                                 onClick = {
-                                    if (viewModel.imageList.size > 4) {
+                                    if (editMilestoneViewModel.imageList.size > 4) {
                                         Toast.makeText(
                                             context,
                                             "You can select maximum 5 images.",
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     } else {
-                                        viewModel.imageListIndex.value = -1
+                                        editMilestoneViewModel.imageListIndex.value = -1
                                         launcher.launch("image/*")
                                     }
                                 }) {
@@ -924,7 +937,29 @@ fun EditMilestoneScreen(
                             Button(
                                 modifier = Modifier
                                     .padding(top = 30.dp),
-                                onClick = { },
+                                onClick = {
+                                    if (!TextUtils.isEmpty(editMilestoneViewModel.addNewMilestoneNotes.value)) {
+                                        editMilestoneViewModel.saveNote(
+                                            SaveNoteRequest(
+                                                milestone_id = milestoneId,
+                                                note = editMilestoneViewModel.addNewMilestoneNotes.value,
+                                                type = type!!
+                                            )
+                                        )
+                                        editMilestoneViewModel.saveNoteResponse.observe(homeActivity) {
+                                            if (it != null) {
+                                                handleSaveNoteData(
+                                                    result = it,
+                                                    editMilestoneViewModel = editMilestoneViewModel,
+                                                    context = context
+                                                )
+                                            }
+                                        }
+                                    } else {
+                                        Toast.makeText(context, "Enter note", Toast.LENGTH_SHORT)
+                                            .show()
+                                    }
+                                },
                                 shape = RoundedCornerShape(12.dp),
                                 colors = ButtonDefaults.buttonColors(
                                     backgroundColor = Custom_Blue
@@ -937,7 +972,8 @@ fun EditMilestoneScreen(
                                 )
                             ) {
                                 Text(
-                                    text = "Save notes", style = MaterialTheme.typography.body1.copy(
+                                    text = "Save notes",
+                                    style = MaterialTheme.typography.body1.copy(
                                         fontSize = 16.sp,
                                         color = Color.White,
                                         lineHeight = 24.sp,
@@ -953,7 +989,8 @@ fun EditMilestoneScreen(
                                 ),
                                     checked = viewModel.checkBoxShareWithParents,
                                     colors = CheckboxDefaults.colors(
-                                        checkedColor = CheckBox_Check, uncheckedColor = Color.DarkGray
+                                        checkedColor = CheckBox_Check,
+                                        uncheckedColor = Color.DarkGray
                                     ),
                                     onCheckedChange = {
                                         viewModel.checkBoxShareWithParents = it
@@ -978,7 +1015,8 @@ fun EditMilestoneScreen(
                                 ),
                                     checked = viewModel.checkBoxShareWithBiggestAsk,
                                     colors = CheckboxDefaults.colors(
-                                        checkedColor = CheckBox_Check, uncheckedColor = Color.DarkGray
+                                        checkedColor = CheckBox_Check,
+                                        uncheckedColor = Color.DarkGray
                                     ),
                                     onCheckedChange = {
                                         viewModel.checkBoxShareWithBiggestAsk = it
@@ -1053,8 +1091,8 @@ fun EditMilestoneScreen(
     if (editMilestoneViewModel.isEditMilestoneDataLoaded.value) {
         ProgressBarTransparentBackground(loadingText = "Loading...")
     }
-    if (editMilestoneViewModel.isMilestoneDataUpdated.value) {
-        ProgressBarTransparentBackground(loadingText = "Updating...")
+    if (editMilestoneViewModel.isMilestoneDataUpdated.value || editMilestoneViewModel.isNoteSaved.value) {
+        ProgressBarTransparentBackground(loadingText = if (editMilestoneViewModel.isMilestoneDataUpdated.value) "Updating..." else "Saving")
     }
 }
 
@@ -1110,7 +1148,9 @@ private fun handleEditMilestoneData(
             editMilestoneViewModel.isMilestoneTittleEditable.value =
                 result.data.milestone[0].type == "common"
             editMilestoneViewModel.milestoneId.value = result.data.milestone[0].milestone_id!!
+            editMilestoneViewModel.imageList = result.data.milestone_image.toMutableList()
             editMilestoneViewModel.isEditMilestoneDataLoaded.value = false
+            Log.d("TAG", "handleEditMilestoneData: ${result.data.milestone_image.size}")
         }
         is NetworkResult.Error -> {
             // show error message
@@ -1153,4 +1193,29 @@ private fun handleUpdateMilestoneData(
     }
 }
 
+private fun handleSaveNoteData(
+    result: NetworkResult<SendOtpResponse>,
+    editMilestoneViewModel: EditMilestoneViewModel,
+    context: Context
+) {
+    when (result) {
+        is NetworkResult.Loading -> {
+            // show a progress bar
+            editMilestoneViewModel.isNoteSaved.value = true
+            Log.e("TAG", "handleUserData() --> Loading  $result")
+        }
+        is NetworkResult.Success -> {
+            // bind data to the view
+            editMilestoneViewModel.isNoteSaved.value = false
+            Log.e("TAG", "handleUserData() --> Success  $result")
+            Toast.makeText(context, result.data?.message, Toast.LENGTH_SHORT).show()
+
+        }
+        is NetworkResult.Error -> {
+            // show error message
+            Log.e("TAG", "handleUserData() --> Error ${result.message}")
+            editMilestoneViewModel.isNoteSaved.value = false
+        }
+    }
+}
 

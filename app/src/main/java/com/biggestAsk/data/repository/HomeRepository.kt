@@ -177,4 +177,10 @@ class HomeRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
+    suspend fun saveNote(saveNoteRequest: SaveNoteRequest): Flow<NetworkResult<SendOtpResponse>> {
+        return flow {
+            emit(safeApiCall { apiService.saveNote(saveNoteRequest) })
+        }.flowOn(Dispatchers.IO)
+    }
+
 }
