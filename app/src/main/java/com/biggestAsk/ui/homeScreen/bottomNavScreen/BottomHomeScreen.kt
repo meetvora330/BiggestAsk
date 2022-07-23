@@ -101,7 +101,6 @@ fun BottomHomeScreen(
                 handlePregnancyMilestoneData(
                     result = it,
                     bottomHomeViewModel = bottomHomeViewModel,
-                    context = context
                 )
             }
         }
@@ -110,7 +109,6 @@ fun BottomHomeScreen(
                 handleNearestMilestoneData(
                     result = it,
                     bottomHomeViewModel = bottomHomeViewModel,
-                    context = context
                 )
             }
         }
@@ -119,7 +117,6 @@ fun BottomHomeScreen(
                 handleHomeQuestionData(
                     result = it,
                     bottomHomeViewModel = bottomHomeViewModel,
-                    context = context
                 )
             }
         }
@@ -128,7 +125,6 @@ fun BottomHomeScreen(
                 handleIntendedParentQuestionAnsData(
                     result = it,
                     bottomHomeViewModel = bottomHomeViewModel,
-                    context = context
                 )
             }
         }
@@ -576,7 +572,6 @@ fun BottomHomeScreen(
 private fun handlePregnancyMilestoneData(
     result: NetworkResult<GetPregnancyMilestoneResponse>,
     bottomHomeViewModel: BottomHomeViewModel,
-    context: Context
 ) {
     when (result) {
         is NetworkResult.Loading -> {
@@ -611,7 +606,6 @@ private fun handlePregnancyMilestoneData(
 private fun handleHomeQuestionData(
     result: NetworkResult<GetHomeScreenQuestionResponse>,
     bottomHomeViewModel: BottomHomeViewModel,
-    context: Context
 ) {
     when (result) {
         is NetworkResult.Loading -> {
@@ -645,7 +639,6 @@ private fun handleHomeQuestionData(
 private fun handleNearestMilestoneData(
     result: NetworkResult<GetNearestMilestoneResponse>,
     bottomHomeViewModel: BottomHomeViewModel,
-    context: Context
 ) {
     when (result) {
         is NetworkResult.Loading -> {
@@ -679,7 +672,6 @@ private fun handleNearestMilestoneData(
 private fun handleIntendedParentQuestionAnsData(
     result: NetworkResult<IntendedParentQuestionResponse>,
     bottomHomeViewModel: BottomHomeViewModel,
-    context: Context
 ) {
     when (result) {
         is NetworkResult.Loading -> {

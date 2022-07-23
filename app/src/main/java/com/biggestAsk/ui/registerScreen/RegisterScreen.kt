@@ -46,8 +46,8 @@ import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.navigation.Screen
 import com.biggestAsk.ui.MainActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
-import com.biggestAsk.ui.main.viewmodel.HomeViewModel
 import com.biggestAsk.ui.main.viewmodel.MainViewModel
+import com.biggestAsk.ui.main.viewmodel.RegisterViewModel
 import com.biggestAsk.ui.ui.theme.*
 import com.example.biggestAsk.R
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -58,8 +58,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 fun RegisterScreen(
     navHostController: NavHostController,
     email: String,
-    viewModel: MainViewModel,
-    homeViewModel: HomeViewModel,
+    registerViewModel: RegisterViewModel,
     mainActivity: MainActivity
 ) {
     val systemUiController = rememberSystemUiController()
@@ -105,10 +104,10 @@ fun RegisterScreen(
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
                 },
-                selected = viewModel.selectedValueIntendParentRb.value,
+                selected = registerViewModel.selectedValueIntendParentRb.value,
                 onClick = {
-                    viewModel.selectedValueIntendParentRb.value = true
-                    viewModel.selectedValueSurrogateMotherRb.value = false
+                    registerViewModel.selectedValueIntendParentRb.value = true
+                    registerViewModel.selectedValueSurrogateMotherRb.value = false
                 },
                 colors = RadioButtonDefaults.colors(
                     selectedColor = Custom_Blue
@@ -123,10 +122,10 @@ fun RegisterScreen(
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
                 },
-                selected = viewModel.selectedValueSurrogateMotherRb.value,
+                selected = registerViewModel.selectedValueSurrogateMotherRb.value,
                 onClick = {
-                    viewModel.selectedValueIntendParentRb.value = false
-                    viewModel.selectedValueSurrogateMotherRb.value = true
+                    registerViewModel.selectedValueIntendParentRb.value = false
+                    registerViewModel.selectedValueSurrogateMotherRb.value = true
                 },
                 colors = RadioButtonDefaults.colors(
                     selectedColor = Custom_Blue
@@ -160,10 +159,10 @@ fun RegisterScreen(
                     }, color = Color.Black
             )
             TextField(
-                value = viewModel.textFullName,
+                value = registerViewModel.textFullName,
                 onValueChange = {
-                    viewModel.textFullName = it
-                    viewModel.isNameEmpty = false
+                    registerViewModel.textFullName = it
+                    registerViewModel.isNameEmpty = false
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text, imeAction = ImeAction.Next
@@ -178,9 +177,9 @@ fun RegisterScreen(
                         end.linkTo(parent.end)
                     },
                 textStyle = MaterialTheme.typography.body2,
-                isError = viewModel.isNameEmpty,
+                isError = registerViewModel.isNameEmpty,
                 trailingIcon = {
-                    if (viewModel.isNameEmpty) {
+                    if (registerViewModel.isNameEmpty) {
                         Icon(
                             imageVector = Icons.Filled.Error,
                             "error",
@@ -204,7 +203,7 @@ fun RegisterScreen(
                 ),
                 maxLines = 1,
             )
-            if (viewModel.isNameEmpty) {
+            if (registerViewModel.isNameEmpty) {
                 Text(
                     text = stringResource(id = R.string.register_error_text_name),
                     color = MaterialTheme.colors.error,
@@ -272,10 +271,10 @@ fun RegisterScreen(
                     }, color = Color.Black
             )
             TextField(
-                value = viewModel.textPass,
+                value = registerViewModel.textPass,
                 onValueChange = {
-                    viewModel.textPass = it
-                    viewModel.isPassEmpty = false
+                    registerViewModel.textPass = it
+                    registerViewModel.isPassEmpty = false
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -286,9 +285,9 @@ fun RegisterScreen(
                         top.linkTo(tv_password.bottom)
                         end.linkTo(parent.end)
                     },
-                isError = viewModel.isPassEmpty,
+                isError = registerViewModel.isPassEmpty,
                 trailingIcon = {
-                    if (viewModel.isPassEmpty) {
+                    if (registerViewModel.isPassEmpty) {
                         Icon(
                             imageVector = Icons.Filled.Error,
                             "error",
@@ -317,7 +316,7 @@ fun RegisterScreen(
                     unfocusedIndicatorColor = Color.Transparent
                 ),
             )
-            if (viewModel.isPassEmpty) {
+            if (registerViewModel.isPassEmpty) {
                 Text(
                     text = stringResource(id = R.string.register_error_text_pass),
                     color = MaterialTheme.colors.error,
@@ -341,10 +340,10 @@ fun RegisterScreen(
                     }, color = Color.Black
             )
             TextField(
-                value = viewModel.textReEnterPass,
+                value = registerViewModel.textReEnterPass,
                 onValueChange = {
-                    viewModel.textReEnterPass = it
-                    viewModel.isRePassEmpty = false
+                    registerViewModel.textReEnterPass = it
+                    registerViewModel.isRePassEmpty = false
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -362,9 +361,9 @@ fun RegisterScreen(
                     focusManager.clearFocus()
                 }),
                 textStyle = MaterialTheme.typography.body2,
-                isError = viewModel.isRePassEmpty,
+                isError = registerViewModel.isRePassEmpty,
                 trailingIcon = {
-                    if (viewModel.isRePassEmpty) {
+                    if (registerViewModel.isRePassEmpty) {
                         Icon(
                             imageVector = Icons.Filled.Error,
                             "error",
@@ -389,7 +388,7 @@ fun RegisterScreen(
                     unfocusedIndicatorColor = Color.Transparent
                 ),
             )
-            if (viewModel.isRePassEmpty) {
+            if (registerViewModel.isRePassEmpty) {
                 Text(
                     text = stringResource(id = R.string.register_error_text_re_enter_pass),
                     color = MaterialTheme.colors.error,
@@ -414,58 +413,58 @@ fun RegisterScreen(
                     Checkbox(modifier = Modifier.padding(
                         start = 25.54.dp, top = 18.dp, bottom = 10.dp, end = 5.dp
                     ),
-                        checked = viewModel.termCheckedState,
+                        checked = registerViewModel.termCheckedState,
                         colors = CheckboxDefaults.colors(
                             checkedColor = CheckBox_Check, uncheckedColor = Color.DarkGray
                         ),
                         onCheckedChange = {
-                            viewModel.termCheckedState = it
+                            registerViewModel.termCheckedState = it
                         })
                 }
                 AnnotatedClickableText(context = context)
             }
             Button(onClick = {
                 when {
-                    TextUtils.isEmpty(viewModel.textFullName) && TextUtils.isEmpty(
-                        viewModel.textPass
+                    TextUtils.isEmpty(registerViewModel.textFullName) && TextUtils.isEmpty(
+                        registerViewModel.textPass
                     ) && TextUtils.isEmpty(
-                        viewModel.textReEnterPass
+                        registerViewModel.textReEnterPass
                     ) -> {
-                        viewModel.isNameEmpty = true
-                        viewModel.isPassEmpty = true
-                        viewModel.isRePassEmpty = true
+                        registerViewModel.isNameEmpty = true
+                        registerViewModel.isPassEmpty = true
+                        registerViewModel.isRePassEmpty = true
                     }
-                    TextUtils.isEmpty(viewModel.textFullName) -> {
-                        viewModel.isNameEmpty = true
+                    TextUtils.isEmpty(registerViewModel.textFullName) -> {
+                        registerViewModel.isNameEmpty = true
                     }
-                    TextUtils.isEmpty(viewModel.textPass) -> {
-                        viewModel.isPassEmpty = true
+                    TextUtils.isEmpty(registerViewModel.textPass) -> {
+                        registerViewModel.isPassEmpty = true
                     }
-                    TextUtils.isEmpty(viewModel.textReEnterPass) -> {
-                        viewModel.isRePassEmpty = true
+                    TextUtils.isEmpty(registerViewModel.textReEnterPass) -> {
+                        registerViewModel.isRePassEmpty = true
                     }
-                    !viewModel.termCheckedState -> {
+                    !registerViewModel.termCheckedState -> {
                         Toast.makeText(
                             context, R.string.accept_terms, Toast.LENGTH_SHORT
                         ).show()
                     }
                     else -> {
-                        if (viewModel.textPass == viewModel.textReEnterPass) {
+                        if (registerViewModel.textPass == registerViewModel.textReEnterPass) {
                             val value =
-                                if (viewModel.selectedValueIntendParentRb.value) "parent" else "surrogate"
+                                if (registerViewModel.selectedValueIntendParentRb.value) "parent" else "surrogate"
                             val registrationBodyRequest = RegistrationBodyRequest(
                                 type = value,
-                                name = viewModel.textFullName,
+                                name = registerViewModel.textFullName,
                                 email = email,
-                                password = viewModel.textPass
+                                password = registerViewModel.textPass
                             )
-                            homeViewModel.registration(registrationBodyRequest = registrationBodyRequest)
-                            homeViewModel.registerScreen.observe(mainActivity) {
+                            registerViewModel.registration(registrationBodyRequest = registrationBodyRequest)
+                            registerViewModel.registerScreen.observe(mainActivity) {
                                 if (it != null) {
                                     handleUserData(
                                         navHostController = navHostController,
                                         result = it,
-                                        homeViewModel = homeViewModel,
+                                        registerViewModel = registerViewModel,
                                         context = context
                                     )
                                 }
@@ -508,7 +507,7 @@ fun RegisterScreen(
             }
         }
     }
-    if (homeViewModel.isLoading) {
+    if (registerViewModel.isLoading) {
         ProgressBarTransparentBackground("Please wait....")
     }
 }
@@ -516,19 +515,19 @@ fun RegisterScreen(
 private fun handleUserData(
     navHostController: NavHostController,
     result: NetworkResult<SendOtpResponse>,
-    homeViewModel: HomeViewModel,
+    registerViewModel: RegisterViewModel,
     context: Context
 ) {
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
-            homeViewModel.isLoading = true
+            registerViewModel.isLoading = true
             Log.e("TAG", "handleUserData() --> Loading  $result")
         }
         is NetworkResult.Success -> {
             // bind data to the view
             Log.e("TAG", "handleUserData() --> Success  $result")
-            homeViewModel.isLoading = false
+            registerViewModel.isLoading = false
             navHostController.popBackStack()
             navHostController.navigate(
                 Screen.Login.route
@@ -537,7 +536,7 @@ private fun handleUserData(
         }
         is NetworkResult.Error -> {
             // show error message
-            homeViewModel.isLoading = false
+            registerViewModel.isLoading = false
             Log.e("TAG", "handleUserData() --> Error ${result.message}")
         }
     }

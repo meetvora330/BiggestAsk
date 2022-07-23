@@ -2,7 +2,6 @@
 
 package com.biggestAsk.navigation
 
-import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,19 +19,16 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.biggestAsk.data.DataStoreManager
 import com.biggestAsk.ui.MainActivity
 import com.biggestAsk.ui.emailVerification.EmailVerification
 import com.biggestAsk.ui.introScreen.IntroScreen
 import com.biggestAsk.ui.introScreen.onBoardItem
 import com.biggestAsk.ui.loginScreen.LoginScreen
-import com.biggestAsk.ui.main.viewmodel.HomeViewModel
-import com.biggestAsk.ui.main.viewmodel.IntroViewModel
-import com.biggestAsk.ui.main.viewmodel.MainViewModel
+import com.biggestAsk.ui.main.viewmodel.*
 import com.biggestAsk.ui.paymentScreen.PaymentScreen
 import com.biggestAsk.ui.questionScreen.QuestionScreenF
 import com.biggestAsk.ui.registerScreen.RegisterScreen
-import com.biggestAsk.ui.verifyScreen.VerifyScreen
+import com.biggestAsk.ui.verifyOtpScreen.VerifyOtpScreen
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
 
@@ -45,8 +41,10 @@ fun SetUpNavGraph(
     mainActivity: MainActivity,
     introViewModel: IntroViewModel,
     startDestination: String,
-    dataStoreManager: DataStoreManager,
-    context: Context,
+    loginViewModel: LoginViewModel,
+    registerViewModel: RegisterViewModel,
+    emailVerificationViewModel: EmailVerificationViewModel,
+    verifyOtpViewModel: VerifyOtpViewModel
 
 ) {
     val pagerState = rememberPagerState()
@@ -93,8 +91,8 @@ fun SetUpNavGraph(
         composable(Screen.VerifyEmail.route) {
             EmailVerification(
                 navHostController = navHostController,
-                homeViewModel = homeViewModel,
-                mainActivity = mainActivity
+                mainActivity = mainActivity,
+                emailVerificationViewModel = emailVerificationViewModel
             )
         }
         composable(
@@ -105,9 +103,8 @@ fun SetUpNavGraph(
             RegisterScreen(
                 navHostController,
                 email = it.arguments?.getString(EMAIL_VERIFICATION).toString(),
-                viewModel = viewModel,
-                homeViewModel = homeViewModel,
-                mainActivity = mainActivity
+                mainActivity = mainActivity,
+                registerViewModel = registerViewModel
             )
         }
         composable(Screen.Verify.route, arguments = listOf(
@@ -115,38 +112,35 @@ fun SetUpNavGraph(
         )) {
             val configuration = LocalConfiguration.current
             if (configuration.screenHeightDp > 700) {
-                VerifyScreen(
+                VerifyOtpScreen(
                     email = it.arguments?.getString(EMAIL_VERIFICATION).toString(),
                     navHostController, modifierTimerText = Modifier
                         .wrapContentWidth(Alignment.CenterHorizontally)
                         .padding(top = 24.dp, bottom = 130.dp),
                     viewModel = homeViewModel,
                     mainActivity = mainActivity,
-                    mainViewModel = viewModel
+                    verifyOtpViewModel = verifyOtpViewModel
                 )
             } else {
-                VerifyScreen(
+                VerifyOtpScreen(
                     email = it.arguments?.getString(EMAIL_VERIFICATION).toString(),
                     navHostController, modifierTimerText = Modifier
                         .wrapContentWidth(Alignment.CenterHorizontally)
                         .padding(top = 24.dp, bottom = 30.dp),
                     viewModel = homeViewModel,
                     mainActivity = mainActivity,
-                    mainViewModel = viewModel
+                    verifyOtpViewModel = verifyOtpViewModel
                 )
             }
-
         }
         composable(
             Screen.Login.route
         ) {
             LoginScreen(
                 navHostController = navHostController,
-                viewModel = viewModel,
-                homeViewModel = homeViewModel,
                 mainActivity = mainActivity,
                 context = context,
-                dataStoreManager = dataStoreManager
+                loginViewModel = loginViewModel
             )
         }
         composable(

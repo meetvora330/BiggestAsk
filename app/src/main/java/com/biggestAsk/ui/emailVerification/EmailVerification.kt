@@ -5,7 +5,6 @@ import android.content.Context
 import android.text.TextUtils
 import android.util.Log
 import android.util.Patterns
-import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -29,7 +28,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,7 +37,7 @@ import com.biggestAsk.data.model.response.SendOtpResponse
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.navigation.Screen
 import com.biggestAsk.ui.MainActivity
-import com.biggestAsk.ui.main.viewmodel.HomeViewModel
+import com.biggestAsk.ui.main.viewmodel.EmailVerificationViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.ET_Bg
 import com.biggestAsk.ui.ui.theme.Login_Sub_Tittle
@@ -50,7 +48,7 @@ import com.example.biggestAsk.R
 @Composable
 fun EmailVerification(
     navHostController: NavHostController,
-    homeViewModel: HomeViewModel,
+    emailVerificationViewModel: EmailVerificationViewModel,
     mainActivity: MainActivity
 ) {
     val focusManager = LocalFocusManager.current
@@ -58,8 +56,8 @@ fun EmailVerification(
         mutableStateOf(false)
     }
     val context = LocalContext.current
-    LaunchedEffect(Unit){
-        homeViewModel.textEmailVerify = ""
+    LaunchedEffect(Unit) {
+        emailVerificationViewModel.textEmailVerify = ""
     }
     Box {
         Image(
@@ -158,9 +156,9 @@ fun EmailVerification(
                             start = 24.dp,
                             end = 24.dp,
                         ),
-                    value = homeViewModel.textEmailVerify,
+                    value = emailVerificationViewModel.textEmailVerify,
                     onValueChange = {
-                        homeViewModel.textEmailVerify = it
+                        emailVerificationViewModel.textEmailVerify = it
                         if (isEmailVerified) {
                             isEmailVerified = false
                         }
@@ -216,21 +214,25 @@ fun EmailVerification(
                 Button(
                     onClick = {
                         isEmailVerified =
-                            if (TextUtils.isEmpty(homeViewModel.textEmailVerify)) {
+                            if (TextUtils.isEmpty(emailVerificationViewModel.textEmailVerify)) {
                                 true
                             } else if (!Patterns.EMAIL_ADDRESS.matcher(
-                                    homeViewModel.textEmailVerify.trim()
+                                    emailVerificationViewModel.textEmailVerify.trim()
                                 ).matches()
                             ) {
                                 true
                             } else {
-                                homeViewModel.sendOtp(SendOtpRequest(homeViewModel.textEmailVerify))
-                                homeViewModel.sendOtpResponse.observe(mainActivity) {
+                                emailVerificationViewModel.sendOtp(
+                                    SendOtpRequest(
+                                        emailVerificationViewModel.textEmailVerify
+                                    )
+                                )
+                                emailVerificationViewModel.sendOtpResponse.observe(mainActivity) {
                                     if (it != null) {
                                         handleUserData(
                                             navHostController = navHostController,
                                             result = it,
-                                            homeViewModel = homeViewModel,
+                                            emailVerificationViewModel = emailVerificationViewModel,
                                             context = context
                                         )
                                     }
@@ -265,7 +267,7 @@ fun EmailVerification(
                 }
             }
         }
-        if (homeViewModel.isLoading) {
+        if (emailVerificationViewModel.isLoading) {
             ProgressBarTransparentBackground("Please wait....")
         }
     }
@@ -310,38 +312,27 @@ fun ProgressBarTransparentBackground(loadingText: String, id: Int = R.color.cust
 private fun handleUserData(
     navHostController: NavHostController,
     result: NetworkResult<SendOtpResponse>,
-    homeViewModel: HomeViewModel,
+    emailVerificationViewModel: EmailVerificationViewModel,
     context: Context
 ) {
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
-            homeViewModel.isLoading = true
+            emailVerificationViewModel.isLoading = true
             Log.e("TAG", "handleUserData() --> Loading  $result")
         }
         is NetworkResult.Success -> {
             // bind data to the view
             Log.e("TAG", "handleUserData() --> Success  $result")
-            homeViewModel.isLoading = false
-            navHostController.navigate(Screen.Verify.emailVerification(email = homeViewModel.textEmailVerify))
+            emailVerificationViewModel.isLoading = false
+            navHostController.navigate(Screen.Verify.emailVerification(email = emailVerificationViewModel.textEmailVerify))
         }
         is NetworkResult.Error -> {
             // show error message
-            homeViewModel.isLoading = false
+            emailVerificationViewModel.isLoading = false
             Log.e("TAG", "handleUserData() --> Error ${result.message}")
-            Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
         }
     }
 }
 
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun EmailVerificationPreview() {
-//    val context = LocalContext.current.applicationContext
-//    EmailVerification(
-//        navHostController = rememberNavController(),HomeViewModel(
-//            homeRepository = HomeRepository(apiService  = )
-//        )
-//    )
-}

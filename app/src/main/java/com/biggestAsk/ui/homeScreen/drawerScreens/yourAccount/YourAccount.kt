@@ -57,6 +57,7 @@ import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.ET_Bg
 import com.biggestAsk.ui.ui.theme.Text_Accept_Terms
 import com.biggestAsk.util.PathUtil
+import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -99,6 +100,10 @@ fun YourAccountScreen(
         }
     }
     LaunchedEffect(Unit) {
+        val provider = PreferenceProvider(context)
+        val userId = provider.getIntValue("user_id", 0)
+//        val userId =0
+        val type = provider.getValue("type", "")
         yourAccountViewModel.getUserDetails(GetUserDetailsRequest(1, "surrogate"))
         yourAccountViewModel.getUserDetailResponse.observe(homeActivity) {
             if (it != null) {

@@ -36,12 +36,10 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.biggestAsk.data.DataStoreManager
 import com.biggestAsk.data.model.request.LoginBodyRequest
 import com.biggestAsk.data.model.response.LoginBodyResponse
 import com.biggestAsk.data.source.network.NetworkResult
@@ -50,8 +48,7 @@ import com.biggestAsk.ui.HomeActivity
 import com.biggestAsk.ui.MainActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
 import com.biggestAsk.ui.introScreen.findActivity
-import com.biggestAsk.ui.main.viewmodel.HomeViewModel
-import com.biggestAsk.ui.main.viewmodel.MainViewModel
+import com.biggestAsk.ui.main.viewmodel.LoginViewModel
 import com.biggestAsk.ui.ui.theme.*
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
@@ -62,11 +59,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun LoginScreen(
     navHostController: NavHostController = rememberNavController(),
-    homeViewModel: HomeViewModel,
-    viewModel: MainViewModel,
+    loginViewModel: LoginViewModel,
     mainActivity: MainActivity,
     context: Context,
-    dataStoreManager: DataStoreManager
 ) {
     val focusManager = LocalFocusManager.current
     Image(
@@ -141,11 +136,11 @@ fun LoginScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 12.dp, start = 24.dp, end = 24.dp),
-                    value = viewModel.loginTextEmail.trim(),
+                    value = loginViewModel.loginTextEmail.trim(),
                     onValueChange = {
-                        viewModel.loginTextEmail = it
-                        viewModel.isLoginEmailEmpty = false
-                        viewModel.isLoginEmailValid = false
+                        loginViewModel.loginTextEmail = it
+                        loginViewModel.isLoginEmailEmpty = false
+                        loginViewModel.isLoginEmailValid = false
                     },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Email,
@@ -168,9 +163,9 @@ fun LoginScreen(
                     ),
                     maxLines = 1,
                     textStyle = MaterialTheme.typography.body2,
-                    isError = viewModel.isLoginEmailEmpty,
+                    isError = loginViewModel.isLoginEmailEmpty,
                     trailingIcon = {
-                        if (viewModel.isLoginEmailEmpty) {
+                        if (loginViewModel.isLoginEmailEmpty) {
                             Icon(
                                 imageVector = Icons.Filled.Error,
                                 "error",
@@ -179,7 +174,7 @@ fun LoginScreen(
                         }
                     }
                 )
-                if (viewModel.isLoginEmailEmpty) {
+                if (loginViewModel.isLoginEmailEmpty) {
                     Text(
                         text = stringResource(id = R.string.register_error_text_email),
                         color = MaterialTheme.colors.error,
@@ -191,7 +186,7 @@ fun LoginScreen(
                         textAlign = TextAlign.Left
                     )
                 }
-                if (viewModel.isLoginEmailValid) {
+                if (loginViewModel.isLoginEmailValid) {
                     Text(
                         text = stringResource(id = R.string.register_error_text_valid_email),
                         color = MaterialTheme.colors.error,
@@ -215,10 +210,10 @@ fun LoginScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 12.dp, start = 24.dp, end = 24.dp),
-                    value = viewModel.loginTextPass,
+                    value = loginViewModel.loginTextPass,
                     onValueChange = {
-                        viewModel.loginTextPass = it
-                        viewModel.isLoginPassEmpty = false
+                        loginViewModel.loginTextPass = it
+                        loginViewModel.isLoginPassEmpty = false
                     },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Password,
@@ -245,9 +240,9 @@ fun LoginScreen(
                         textColor = Color.Black
                     ),
                     maxLines = 1,
-                    isError = viewModel.isLoginPassEmpty,
+                    isError = loginViewModel.isLoginPassEmpty,
                     trailingIcon = {
-                        if (viewModel.isLoginPassEmpty) {
+                        if (loginViewModel.isLoginPassEmpty) {
                             Icon(
                                 imageVector = Icons.Filled.Error,
                                 "error",
@@ -256,7 +251,7 @@ fun LoginScreen(
                         }
                     }
                 )
-                if (viewModel.isLoginPassEmpty) {
+                if (loginViewModel.isLoginPassEmpty) {
                     Text(
                         text = stringResource(id = R.string.register_error_text_pass),
                         color = MaterialTheme.colors.error,
@@ -293,36 +288,35 @@ fun LoginScreen(
                 Button(
                     onClick = {
                         when {
-                            TextUtils.isEmpty(viewModel.loginTextEmail) && TextUtils.isEmpty(
-                                viewModel.loginTextPass
+                            TextUtils.isEmpty(loginViewModel.loginTextEmail) && TextUtils.isEmpty(
+                                loginViewModel.loginTextPass
                             ) -> {
-                                viewModel.isLoginEmailEmpty = true
-                                viewModel.isLoginPassEmpty = true
+                                loginViewModel.isLoginEmailEmpty = true
+                                loginViewModel.isLoginPassEmpty = true
                             }
-                            TextUtils.isEmpty(viewModel.loginTextEmail) -> {
-                                viewModel.isLoginEmailEmpty = true
+                            TextUtils.isEmpty(loginViewModel.loginTextEmail) -> {
+                                loginViewModel.isLoginEmailEmpty = true
                             }
-                            TextUtils.isEmpty(viewModel.loginTextPass) -> {
-                                viewModel.isLoginPassEmpty = true
+                            TextUtils.isEmpty(loginViewModel.loginTextPass) -> {
+                                loginViewModel.isLoginPassEmpty = true
                             }
-                            !Patterns.EMAIL_ADDRESS.matcher(viewModel.loginTextEmail.trim()).matches() -> {
-                                viewModel.isLoginEmailValid = true
+                            !Patterns.EMAIL_ADDRESS.matcher(loginViewModel.loginTextEmail.trim())
+                                .matches() -> {
+                                loginViewModel.isLoginEmailValid = true
                             }
                             else -> {
                                 val loginDetails = LoginBodyRequest(
-                                    email = viewModel.loginTextEmail.trim(),
-                                    password = viewModel.loginTextPass.trim()
+                                    email = loginViewModel.loginTextEmail.trim(),
+                                    password = loginViewModel.loginTextPass.trim()
                                 )
-                                homeViewModel.login(loginBodyRequest = loginDetails)
-                                homeViewModel.loginScreen.observe(mainActivity) {
+                                loginViewModel.login(loginBodyRequest = loginDetails)
+                                loginViewModel.loginScreen.observe(mainActivity) {
                                     if (it != null) {
                                         handleUserData(
                                             navHostController = navHostController,
                                             result = it,
-                                            homeViewModel = homeViewModel,
-                                            viewModel = viewModel,
+                                            loginViewModel = loginViewModel,
                                             context = context,
-                                            dataStoreManager = dataStoreManager
                                         )
                                     }
                                 }
@@ -357,7 +351,7 @@ fun LoginScreen(
             }
         }
     }
-    if (homeViewModel.isLoading) {
+    if (loginViewModel.isLoading) {
         ProgressBarTransparentBackground("Please wait....")
     }
 }
@@ -366,15 +360,13 @@ fun LoginScreen(
 private fun handleUserData(
     navHostController: NavHostController,
     result: NetworkResult<LoginBodyResponse>,
-    homeViewModel: HomeViewModel,
-    viewModel: MainViewModel,
+    loginViewModel: LoginViewModel,
     context: Context,
-    dataStoreManager: DataStoreManager
 ) {
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
-            homeViewModel.isLoading = true
+            loginViewModel.isLoading = true
             Log.e("TAG", "handleUserData() --> Loading  $result")
         }
         is NetworkResult.Success -> {
@@ -382,14 +374,14 @@ private fun handleUserData(
 
             Log.e("TAG", "handleUserData() --> Success  $result")
             Log.i("TAG", result.message.toString())
-            homeViewModel.isLoading = false
+            loginViewModel.isLoading = false
             Log.d("TAG", "handleUserData: ${result.data?.type}")
             GlobalScope.launch {
                 result.data?.let {
                     val provider = PreferenceProvider(context)
                     provider.setValue("user_id", result.data.user_id)
                     provider.setValue("type", result.data.type)
-                    provider.setValue("partner_id",result.data.partner_id)
+                    provider.setValue("partner_id", result.data.partner_id)
                     Log.d("TAG", "handleUserData: ${result.data}")
                 }
             }
@@ -429,15 +421,9 @@ private fun handleUserData(
         }
         is NetworkResult.Error -> {
             // show error message
-            homeViewModel.isLoading = false
+            loginViewModel.isLoading = false
             Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
             Log.e("TAG", "handleUserData() --> Error ${result.message}")
         }
     }
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun LoginPreview() {
-//    LoginScreen(navHostController = rememberNavController())
 }

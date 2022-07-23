@@ -40,6 +40,7 @@ class EditMilestoneViewModel @Inject constructor(
     var isMilestoneDataUpdated: MutableState<Boolean> = mutableStateOf(false)
     var isNoteSaved: MutableState<Boolean> = mutableStateOf(false)
     var imageList = mutableListOf<EditMilestoneImageResponse>()
+    var tempImageList = mutableListOf<Bitmap>()
     var imageListIndex = mutableStateOf<Int>(-1)
     var editMilestoneResponse: MutableLiveData<NetworkResult<EditMilestoneResponse>> =
         MutableLiveData()

@@ -66,29 +66,7 @@ class HomeRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    suspend fun resendOtp(sendOtpRequest: SendOtpRequest): Flow<NetworkResult<SendOtpResponse>> {
-        return flow {
-            emit(safeApiCall { apiService.resendOtp(sendOtpRequest) })
-        }.flowOn(Dispatchers.IO)
-    }
 
-    suspend fun checkOtp(checkOtpRequest: CheckOtpRequest): Flow<NetworkResult<SendOtpResponse>> {
-        return flow {
-            emit(safeApiCall { apiService.checkOtp(checkOtpRequest) })
-        }.flowOn(Dispatchers.IO)
-    }
-
-    suspend fun registration(registrationBodyRequest: RegistrationBodyRequest): Flow<NetworkResult<SendOtpResponse>> {
-        return flow {
-            emit(safeApiCall { apiService.registration(registrationBodyRequest) })
-        }.flowOn(Dispatchers.IO)
-    }
-
-    suspend fun login(loginBodyRequest: LoginBodyRequest): Flow<NetworkResult<LoginBodyResponse>> {
-        return flow {
-            emit(safeApiCall { apiService.login(loginBodyRequest) })
-        }.flowOn(Dispatchers.IO)
-    }
 
     suspend fun getBaseScreenQuestion(): Flow<NetworkResult<List<BaseScreenQuestionResponse>>> {
         return flow {

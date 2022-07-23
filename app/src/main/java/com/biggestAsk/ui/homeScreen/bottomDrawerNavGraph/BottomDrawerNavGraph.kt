@@ -19,8 +19,10 @@ import com.biggestAsk.ui.homeScreen.drawerScreens.intendParents.IntendParentsScr
 import com.biggestAsk.ui.homeScreen.drawerScreens.notification.*
 import com.biggestAsk.ui.homeScreen.drawerScreens.settingScreens.*
 import com.biggestAsk.ui.homeScreen.drawerScreens.yourAccount.YourAccountScreen
+import com.biggestAsk.ui.homeScreen.drawerScreens.yourSurrogateMother.SurrogateMotherPresent
 import com.biggestAsk.ui.homeScreen.drawerScreens.yourSurrogateMother.YourSurrogateMother
 import com.biggestAsk.ui.main.viewmodel.*
+import com.biggestAsk.util.PreferenceProvider
 
 @Composable
 fun BottomNavigationDrawerGraph(
@@ -49,12 +51,33 @@ fun BottomNavigationDrawerGraph(
         composable(
             route = BottomNavScreen.Home.route
         ) {
-            BottomHomeScreen(
-                navHostController = navHostController,
-                context = context,
-                homeActivity = homeActivity,
-                bottomHomeViewModel = bottomHomeViewModel
-            )
+            val provider = PreferenceProvider(context)
+            val type = provider.getValue("type", "")
+            val partnerId = provider.getIntValue("partner_id", 0)
+            if (type == "parent") {
+                Log.d("TAG", "BottomNavigationDrawerGraph: $partnerId")
+                if (partnerId == 0) {
+                    YourSurrogateMother(mainViewModel)
+                }else{
+                    BottomHomeScreen(
+                        navHostController = navHostController,
+                        context = context,
+                        homeActivity = homeActivity,
+                        bottomHomeViewModel = bottomHomeViewModel
+                    )
+                }
+            } else {
+                if (partnerId == 0) {
+                    SurrogateMotherPresent()
+                }else{
+                    BottomHomeScreen(
+                        navHostController = navHostController,
+                        context = context,
+                        homeActivity = homeActivity,
+                        bottomHomeViewModel = bottomHomeViewModel
+                    )
+                }
+            }
         }
         composable(
             route = BottomNavScreen.Question.route
@@ -64,11 +87,14 @@ fun BottomNavigationDrawerGraph(
         composable(
             route = BottomNavScreen.AddNewMileStones.route,
             arguments = listOf(
-                 navArgument(ADD_NEW_MILESTONE_ARGS_ID){
+                navArgument(ADD_NEW_MILESTONE_ARGS_ID) {
                     type = NavType.IntType
                 })
         ) {
-            Log.d("TAG", "BottomNavigationDrawerGraph: ${it.arguments?.getInt(ADD_NEW_MILESTONE_ARGS_ID)}")
+            Log.d(
+                "TAG",
+                "BottomNavigationDrawerGraph: ${it.arguments?.getInt(ADD_NEW_MILESTONE_ARGS_ID)}"
+            )
             EditMilestoneScreen(
                 navHostController,
                 mainViewModel,
@@ -138,7 +164,11 @@ fun BottomNavigationDrawerGraph(
             DetailedSettings()
         }
         composable(route = MyAccount.MyAccountScreen.route) {
-            YourAccountScreen(navHostController = navHostController, yourAccountViewModel = yourAccountViewModel, homeActivity = homeActivity)
+            YourAccountScreen(
+                navHostController = navHostController,
+                yourAccountViewModel = yourAccountViewModel,
+                homeActivity = homeActivity
+            )
         }
 
     }

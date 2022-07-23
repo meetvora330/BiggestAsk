@@ -9,28 +9,14 @@ import com.example.biggestAsk.R
 
 class MainViewModel : ViewModel() {
     //Register Screen
-    val selectedValueIntendParentRb = mutableStateOf(true)
-    val selectedValueSurrogateMotherRb = mutableStateOf(false)
+
 
     //Otp Verification
-    var isOtpValueVerified: Boolean by mutableStateOf(false)
-    var ticks: Int by mutableStateOf(60)
 
-    var textFullName: String by mutableStateOf("")
-    var textEmail: String by mutableStateOf("")
-    var isValidEmail: Boolean by mutableStateOf(false)
-    var textPass: String by mutableStateOf("")
-    var textReEnterPass: String by mutableStateOf("")
-    var termCheckedState: Boolean by mutableStateOf(false)
+
+
     var isNameEmpty: Boolean by mutableStateOf(false)
-    var isEmailEmpty: Boolean by mutableStateOf(false)
-    var isPassEmpty: Boolean by mutableStateOf(false)
-    var isRePassEmpty: Boolean by mutableStateOf(false)
-    var loginTextEmail: String by mutableStateOf("")
-    var loginTextPass: String by mutableStateOf("")
-    var isLoginEmailEmpty: Boolean by mutableStateOf(false)
-    var isLoginEmailValid: Boolean by mutableStateOf(false)
-    var isLoginPassEmpty: Boolean by mutableStateOf(false)
+
 
 
     var toolbarTittle: String by mutableStateOf("Home")

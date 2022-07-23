@@ -14,12 +14,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -27,6 +27,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.biggestAsk.data.DataStoreManager
@@ -36,9 +39,7 @@ import com.biggestAsk.navigation.Screen
 import com.biggestAsk.navigation.SetUpNavGraph
 import com.biggestAsk.ui.base.BaseActivity
 import com.biggestAsk.ui.introScreen.LockScreenOrientation
-import com.biggestAsk.ui.main.viewmodel.HomeViewModel
-import com.biggestAsk.ui.main.viewmodel.IntroViewModel
-import com.biggestAsk.ui.main.viewmodel.MainViewModel
+import com.biggestAsk.ui.main.viewmodel.*
 import com.biggestAsk.ui.ui.theme.BasicStructureTheme
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
@@ -52,7 +53,10 @@ class MainActivity : BaseActivity() {
     private val homeViewModel: HomeViewModel by viewModels()
     private val viewModel: MainViewModel by viewModels()
     private val introViewModel: IntroViewModel by viewModels()
-    private lateinit var dataStoreManager: DataStoreManager
+    private val loginViewModel: LoginViewModel by viewModels()
+    private val registerViewModel: RegisterViewModel by viewModels()
+    private val emailVerificationViewModel: EmailVerificationViewModel by viewModels()
+    private val verifyOtpViewModel: VerifyOtpViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -62,7 +66,6 @@ class MainActivity : BaseActivity() {
             val focusManager = LocalFocusManager.current
             val systemUiController = rememberSystemUiController()
             val useDarkIcons = MaterialTheme.colors.isLight
-            dataStoreManager = DataStoreManager(this)
             SideEffect {
                 // Update all of the system bar colors to be transparent, and use
                 // dark icons if we're in light theme
@@ -70,9 +73,6 @@ class MainActivity : BaseActivity() {
                     color = Color.Transparent,
                     darkIcons = useDarkIcons
                 )
-            }
-            LaunchedEffect(Unit) {
-
             }
             ProvideWindowInsets(
                 windowInsetsAnimationsEnabled = true
@@ -158,12 +158,32 @@ class MainActivity : BaseActivity() {
                         homeViewModel = homeViewModel,
                         this,
                         startDestination = startDestination,
-                        dataStoreManager = dataStoreManager,
-                        context = this,
                         introViewModel = introViewModel,
+                        loginViewModel = loginViewModel,
+                        registerViewModel = registerViewModel,
+                        emailVerificationViewModel = emailVerificationViewModel,
+                        verifyOtpViewModel = verifyOtpViewModel
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun OnLifecycleEvent(onEvent: (owner: LifecycleOwner, event: Lifecycle.Event) -> Unit) {
+    val eventHandler = rememberUpdatedState(onEvent)
+    val lifecycleOwner = rememberUpdatedState(LocalLifecycleOwner.current)
+
+    DisposableEffect(lifecycleOwner.value) {
+        val lifecycle = lifecycleOwner.value.lifecycle
+        val observer = LifecycleEventObserver { owner, event ->
+            eventHandler.value(owner, event)
+        }
+
+        lifecycle.addObserver(observer)
+        onDispose {
+            lifecycle.removeObserver(observer)
         }
     }
 }

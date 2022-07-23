@@ -3,7 +3,6 @@ package com.biggestAsk.ui.introScreen
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,7 +11,6 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -26,8 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.biggestAsk.data.model.response.DataXX
-import com.biggestAsk.data.model.response.IntroInfoResponse
-import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.navigation.Screen
 import com.biggestAsk.ui.MainActivity
 import com.biggestAsk.ui.main.viewmodel.IntroViewModel
@@ -88,8 +84,8 @@ fun Intro(
                 text = detailsItem[page].info,
                 modifier = modifier
                     .fillMaxWidth()
-                    .fillMaxHeight(0.55f),
-
+                    .fillMaxHeight(0.55f)
+                    .padding(start = 24.dp, end = 24.dp),
                 style = MaterialTheme.typography.body1.copy(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.W400,
@@ -126,7 +122,11 @@ fun IntroScreen(
     ) {
         Column(verticalArrangement = Arrangement.Center) {
             Intro(
-                state = state, items = items, modifier = modifier, modifierImg = modifier_img, detailsItem = introViewModel.introInfoDetailList
+                state = state,
+                items = items,
+                modifier = modifier,
+                modifierImg = modifier_img,
+                detailsItem = introViewModel.introInfoDetailList
             )
             HorizontalPagerIndicator(
                 pagerState = state,
@@ -137,7 +137,7 @@ fun IntroScreen(
                 inactiveColor = Light_Gray,
             )
         }
-        if (introViewModel.isIntroDataLoaded){
+        if (introViewModel.isIntroDataLoaded) {
             Button(
                 modifier = Modifier
                     .fillMaxWidth()

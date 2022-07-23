@@ -33,10 +33,8 @@ class HomeViewModel @Inject constructor(
     var sendOtpResponse: MutableLiveData<NetworkResult<SendOtpResponse>> = MutableLiveData()
 
     //Verify Email Check Otp Screen
-    var checkOtpResponse: MutableLiveData<NetworkResult<SendOtpResponse>> = MutableLiveData()
 
     //Re-send Otp
-    var reSendOtpResponse: MutableLiveData<NetworkResult<SendOtpResponse>> = MutableLiveData()
 
     //Register Screen
     var registerScreen: MutableLiveData<NetworkResult<SendOtpResponse>> = MutableLiveData()
@@ -94,41 +92,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun resendOtp(sendOtpRequest: SendOtpRequest) {
-        reSendOtpResponse.value = NetworkResult.Loading()
-        viewModelScope.launch {
-            homeRepository.resendOtp(sendOtpRequest = sendOtpRequest).collect {
-                reSendOtpResponse.value = it
-            }
-        }
-    }
 
-    fun checkOtp(checkOtpRequest: CheckOtpRequest) {
-        viewModelScope.launch {
-            checkOtpResponse.value = NetworkResult.Loading()
-            homeRepository.checkOtp(checkOtpRequest).collect {
-                checkOtpResponse.value = it
-            }
-        }
-    }
-
-    fun registration(registrationBodyRequest: RegistrationBodyRequest) {
-        viewModelScope.launch {
-            registerScreen.value = NetworkResult.Loading()
-            homeRepository.registration(registrationBodyRequest).collect {
-                registerScreen.value = it
-            }
-        }
-    }
-
-    fun login(loginBodyRequest: LoginBodyRequest) {
-        viewModelScope.launch {
-            loginScreen.value = NetworkResult.Loading()
-            homeRepository.login(loginBodyRequest).collect {
-                loginScreen.value = it
-            }
-        }
-    }
 
     fun getBaseScreenQuestion() {
         viewModelScope.launch {
