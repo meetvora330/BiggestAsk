@@ -32,7 +32,6 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.biggestAsk.data.DataStoreManager
 import com.biggestAsk.data.model.response.IntroInfoResponse
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.navigation.Screen
@@ -49,7 +48,6 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @Suppress("OPT_IN_IS_NOT_ENABLED")
 class MainActivity : BaseActivity() {
-    lateinit var navController: NavHostController
     private val homeViewModel: HomeViewModel by viewModels()
     private val viewModel: MainViewModel by viewModels()
     private val introViewModel: IntroViewModel by viewModels()
@@ -66,6 +64,8 @@ class MainActivity : BaseActivity() {
             val focusManager = LocalFocusManager.current
             val systemUiController = rememberSystemUiController()
             val useDarkIcons = MaterialTheme.colors.isLight
+            val navController = rememberNavController()
+            focusManager.clearFocus()
             SideEffect {
                 // Update all of the system bar colors to be transparent, and use
                 // dark icons if we're in light theme
@@ -74,24 +74,14 @@ class MainActivity : BaseActivity() {
                     darkIcons = useDarkIcons
                 )
             }
+            LockScreenOrientation(orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
             ProvideWindowInsets(
                 windowInsetsAnimationsEnabled = true
             ) {
-                val isIntroDone = PreferenceProvider(this).getBooleanValue("isIntroDone", false)
-                val paymentDone = PreferenceProvider(this).getValue("is_payment_screen", false)
-                val questionDone = PreferenceProvider(this).getValue("question_screen", false)
+                val provider = PreferenceProvider(this)
+                val isIntroDone = provider.getBooleanValue("isIntroDone", false)
                 val isQuestionScreen =
                     PreferenceProvider(this).getValue("isQuestionAnswered", false)
-                var startDestination = Screen.Intro.route
-                if (isIntroDone) {
-                    startDestination = Screen.VerifyEmail.route
-                }
-                if (paymentDone) {
-                    startDestination = Screen.PaymentScreen.route
-                }
-                if (questionDone) {
-                    startDestination = Screen.QuestionScreen.route
-                }
                 if (isQuestionScreen) {
                     finish()
                     val intent = Intent(this, HomeActivity::class.java)
@@ -149,7 +139,6 @@ class MainActivity : BaseActivity() {
                     }
                 }
                 BasicStructureTheme {
-                    navController = rememberNavController()
                     LockScreenOrientation(orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
                     focusManager.clearFocus()
                     SetUpNavGraph(
@@ -157,7 +146,6 @@ class MainActivity : BaseActivity() {
                         viewModel = viewModel,
                         homeViewModel = homeViewModel,
                         this,
-                        startDestination = startDestination,
                         introViewModel = introViewModel,
                         loginViewModel = loginViewModel,
                         registerViewModel = registerViewModel,
@@ -169,6 +157,7 @@ class MainActivity : BaseActivity() {
         }
     }
 }
+
 
 @Composable
 fun OnLifecycleEvent(onEvent: (owner: LifecycleOwner, event: Lifecycle.Event) -> Unit) {

@@ -12,7 +12,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -29,6 +28,7 @@ import com.biggestAsk.ui.paymentScreen.PaymentScreen
 import com.biggestAsk.ui.questionScreen.QuestionScreenF
 import com.biggestAsk.ui.registerScreen.RegisterScreen
 import com.biggestAsk.ui.verifyOtpScreen.VerifyOtpScreen
+import com.biggestAsk.util.PreferenceProvider
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
 
@@ -40,15 +40,27 @@ fun SetUpNavGraph(
     homeViewModel: HomeViewModel,
     mainActivity: MainActivity,
     introViewModel: IntroViewModel,
-    startDestination: String,
     loginViewModel: LoginViewModel,
     registerViewModel: RegisterViewModel,
     emailVerificationViewModel: EmailVerificationViewModel,
     verifyOtpViewModel: VerifyOtpViewModel
-
 ) {
+    var startDestination = Screen.Intro.route
+    val provider = PreferenceProvider(mainActivity.applicationContext)
+    val isIntroDone = provider.getBooleanValue("isIntroDone", false)
+    val paymentDone = provider.getValue("is_payment_screen", false)
+    val questionDone = provider.getValue("question_screen", false)
+    if (isIntroDone) {
+        startDestination = Screen.VerifyEmail.route
+    }
+    if (paymentDone) {
+        startDestination = Screen.PaymentScreen.route
+    }
+    if (questionDone) {
+        startDestination = Screen.QuestionScreen.route
+    }
     val pagerState = rememberPagerState()
-    val context = LocalContext.current
+
     NavHost(
         navController = navHostController,
         startDestination = startDestination
@@ -69,7 +81,7 @@ fun SetUpNavGraph(
                     modifier_indicator = Modifier.padding(bottom = 80.dp),
                     modifier_img = Modifier.fillMaxHeight(0.6f),
                     navController = navHostController,
-                    context = context,
+                    context = mainActivity.applicationContext,
                     mainActivity = mainActivity
                 )
             } else {
@@ -83,7 +95,7 @@ fun SetUpNavGraph(
                     modifier_indicator = Modifier.padding(bottom = 70.dp),
                     modifier_img = Modifier.fillMaxHeight(0.5f),
                     navController = navHostController,
-                    context = context,
+                    context = mainActivity.applicationContext,
                     mainActivity = mainActivity
                 )
             }
@@ -139,7 +151,7 @@ fun SetUpNavGraph(
             LoginScreen(
                 navHostController = navHostController,
                 mainActivity = mainActivity,
-                context = context,
+                context = mainActivity.applicationContext,
                 loginViewModel = loginViewModel
             )
         }
@@ -150,7 +162,7 @@ fun SetUpNavGraph(
                 navHostController = navHostController,
                 mainViewModel = viewModel,
                 homeViewModel = homeViewModel,
-                context = context
+                context = mainActivity.applicationContext
             )
         }
         composable(
