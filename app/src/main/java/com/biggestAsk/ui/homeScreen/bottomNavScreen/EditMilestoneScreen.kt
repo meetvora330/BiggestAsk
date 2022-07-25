@@ -32,6 +32,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -50,6 +51,7 @@ import androidx.navigation.NavHostController
 import com.biggestAsk.data.model.request.EditMilestoneRequest
 import com.biggestAsk.data.model.request.SaveNoteRequest
 import com.biggestAsk.data.model.request.UpdateMilestoneAnsInfoRequest
+import com.biggestAsk.data.model.response.EditMilestoneImageResponse
 import com.biggestAsk.data.model.response.EditMilestoneResponse
 import com.biggestAsk.data.model.response.SendOtpResponse
 import com.biggestAsk.data.source.network.NetworkResult
@@ -88,7 +90,7 @@ fun EditMilestoneScreen(
     val day = c.get(Calendar.DAY_OF_MONTH)
     val mHour = c[Calendar.HOUR_OF_DAY]
     val mMinute = c[Calendar.MINUTE]
-    var uriPath: String? = null
+
     val stroke = Stroke(
         width = 5f,
         pathEffect = PathEffect.dashPathEffect(floatArrayOf(8f, 8f), 0f),
@@ -102,26 +104,15 @@ fun EditMilestoneScreen(
     ) { uri: Uri? ->
         if (uri != null) {
             Log.i("TAG", uri.toString())
-            uriPath = uri.let { it1 -> PathUtil.getPath(context, it1) }
-            if (Build.VERSION.SDK_INT < 28) {
-                if (editMilestoneViewModel.imageListIndex.value != -1) {
-//                    editMilestoneViewModel.imageList[editMilestoneViewModel.imageListIndex.value] =
-//                        MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
-                } else {
-//                    editMilestoneViewModel.imageList.add(
-//                        MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
-//                    )
-                }
+            val uriPath = uri.let { it1 -> PathUtil.getPath(context, it1) }
+            if (editMilestoneViewModel.imageListIndex.value != -1) {
+                editMilestoneViewModel.imageList[editMilestoneViewModel.imageListIndex.value].uriPath = uriPath
+                editMilestoneViewModel.imageList[editMilestoneViewModel.imageListIndex.value].imageUri = uri
+                editMilestoneViewModel.imageList[editMilestoneViewModel.imageListIndex.value].is_need_to_upload = true
             } else {
-                val source = ImageDecoder.createSource(context.contentResolver, uri)
-                if (editMilestoneViewModel.imageListIndex.value != -1) {
-//                    editMilestoneViewModel.imageList[editMilestoneViewModel.imageListIndex.value] =
-//                        ImageDecoder.decodeBitmap(source)
-                } else {
-//                    editMilestoneViewModel.imageList.add(
-//                        ImageDecoder.decodeBitmap(source)
-//                    )
-                }
+                editMilestoneViewModel.imageList.add(
+                    EditMilestoneImageResponse("", 0, "", 0, "", "", 0,uriPath, uri, true)
+                )
             }
             editMilestoneViewModel.imageListIndex.value = -1
             Log.i("TAG", editMilestoneViewModel.imageList.size.toString())
@@ -137,7 +128,7 @@ fun EditMilestoneScreen(
         Log.d("TAG", "EditMilestoneScreen: $milestoneId")
 
         val userId = PreferenceProvider(context).getIntValue("user_id", 0)
-        editMilestoneViewModel.editMilestone(
+        editMilestoneViewModel.getMilestoneDetails(
             EditMilestoneRequest(
                 type = type!!,
                 user_id = userId,
@@ -705,20 +696,47 @@ fun EditMilestoneScreen(
                                 modifier = Modifier.height(190.dp),
                                 shape = RoundedCornerShape(10.dp)
                             ) {
-                                com.skydoves.landscapist.glide.GlideImage(
-                                    modifier = Modifier
-                                        .fillMaxWidth(),
-                                    contentDescription = "",
-                                    imageModel = editMilestoneViewModel.imageList[index].image,
-                                    contentScale = ContentScale.Crop
-                                )
-//                                Image(
-//                                    modifier = Modifier
-//                                        .fillMaxWidth(),
-//                                    bitmap = editMilestoneViewModel.imageList[index].asImageBitmap(),
-//                                    contentDescription = "",
-//                                    contentScale = ContentScale.Crop
-//                                )
+                                editMilestoneViewModel.imageList[index].is_need_to_upload.let {
+                                    if (it) {
+                                        if (Build.VERSION.SDK_INT < 28) {
+                                            Image(
+                                                modifier = Modifier
+                                                    .fillMaxWidth(),
+                                                bitmap = MediaStore.Images.Media.getBitmap(
+                                                    context.contentResolver,
+                                                    editMilestoneViewModel.imageList[index].imageUri
+                                                ).asImageBitmap(),
+                                                contentDescription = "",
+                                                contentScale = ContentScale.Crop
+                                            )
+                                        } else {
+                                            editMilestoneViewModel.imageList[index].imageUri?.let { imageUri ->
+                                                val source = ImageDecoder.createSource(
+                                                    context.contentResolver,
+                                                    imageUri
+                                                )
+                                                Image(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth(),
+                                                    bitmap = ImageDecoder.decodeBitmap(source)
+                                                        .asImageBitmap(),
+                                                    contentDescription = "",
+                                                    contentScale = ContentScale.Crop
+                                                )
+                                            }
+                                        }
+                                    } else {
+                                        com.skydoves.landscapist.glide.GlideImage(
+                                            modifier = Modifier
+                                                .fillMaxWidth(),
+                                            contentDescription = "",
+                                            imageModel = editMilestoneViewModel.imageList[index].image,
+                                            contentScale = ContentScale.Crop
+                                        )
+                                    }
+                                }
+
+
                             }
                             Row(
                                 modifier = Modifier

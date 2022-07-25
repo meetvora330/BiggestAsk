@@ -16,6 +16,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
+import okhttp3.MultipartBody
 import java.io.IOException
 import javax.inject.Inject
 
@@ -161,4 +162,27 @@ class HomeRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
+    suspend fun storeMilestoneAns(
+        note: MultipartBody.Part?,
+        images: List<MultipartBody.Part?>,
+        user_id: MultipartBody.Part?,
+        type: MultipartBody.Part?,
+        milestone_id: MultipartBody.Part?,
+        note_status: MultipartBody.Part?,
+        note_biggest: MultipartBody.Part?
+    ): Flow<NetworkResult<UpdateUserProfileResponse>> {
+        return flow {
+            emit(safeApiCall {
+                apiService.storeMilestoneAns(
+                    note,
+                    images,
+                    user_id,
+                    type,
+                    milestone_id,
+                    note_status,
+                    note_biggest
+                )
+            })
+        }.flowOn(Dispatchers.IO)
+    }
 }

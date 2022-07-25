@@ -102,4 +102,16 @@ interface ApiService {
         @Part imgFileName2: MultipartBody.Part?,
         @Part type: MultipartBody.Part?,
     ): Response<UpdateUserProfileResponse>
+
+    @Multipart
+    @POST(Constants.STORE_MILESTONE_ANS)
+    suspend fun storeMilestoneAns(
+        @Part note: MultipartBody.Part?,
+        @Part images: List<MultipartBody.Part?>,
+        @Part user_id: MultipartBody.Part?,
+        @Part type: MultipartBody.Part?,
+        @Part milestone_id: MultipartBody.Part?,
+        @Part note_status: MultipartBody.Part?,
+        @Part note_biggest: MultipartBody.Part?
+    ): Response<UpdateUserProfileResponse>
 }

@@ -1,9 +1,7 @@
 package com.biggestAsk.ui.main.viewmodel
 
 import android.app.Application
-import android.graphics.Bitmap
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -14,10 +12,12 @@ import com.biggestAsk.data.model.request.UpdateMilestoneAnsInfoRequest
 import com.biggestAsk.data.model.response.EditMilestoneImageResponse
 import com.biggestAsk.data.model.response.EditMilestoneResponse
 import com.biggestAsk.data.model.response.SendOtpResponse
+import com.biggestAsk.data.model.response.UpdateUserProfileResponse
 import com.biggestAsk.data.repository.HomeRepository
 import com.biggestAsk.data.source.network.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
 import javax.inject.Inject
 
 @HiltViewModel
@@ -47,8 +47,9 @@ class EditMilestoneViewModel @Inject constructor(
     var updateMilestoneAnsInfoResponse: MutableLiveData<NetworkResult<SendOtpResponse>> =
         MutableLiveData()
     var saveNoteResponse: MutableLiveData<NetworkResult<SendOtpResponse>> = MutableLiveData()
+    var updateMilestoneResponse: MutableLiveData<NetworkResult<UpdateUserProfileResponse>> = MutableLiveData()
 
-    fun editMilestone(editMilestoneRequest: EditMilestoneRequest) {
+    fun getMilestoneDetails(editMilestoneRequest: EditMilestoneRequest) {
         editMilestoneResponse.value = NetworkResult.Loading()
         viewModelScope.launch {
             homeRepository.editMilestone(editMilestoneRequest).collect {
@@ -71,6 +72,31 @@ class EditMilestoneViewModel @Inject constructor(
         viewModelScope.launch {
             homeRepository.saveNote(saveNoteRequest).collect {
                 saveNoteResponse.value = it
+            }
+        }
+    }
+
+    fun storeMilestoneAns(
+        note: MultipartBody.Part?,
+        images: List<MultipartBody.Part?>,
+        user_id: MultipartBody.Part?,
+        type: MultipartBody.Part?,
+        milestone_id: MultipartBody.Part?,
+        note_status: MultipartBody.Part?,
+        note_biggest: MultipartBody.Part?
+    ) {
+        updateMilestoneResponse.value = NetworkResult.Loading()
+        viewModelScope.launch {
+            homeRepository.storeMilestoneAns(
+                note,
+                images,
+                user_id,
+                type,
+                milestone_id,
+                note_status,
+                note_biggest
+            ).collect {
+                updateMilestoneResponse.value = it
             }
         }
     }

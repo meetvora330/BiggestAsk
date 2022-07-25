@@ -33,6 +33,7 @@ object Constants {
     const val INVITE_SURROGATE = "invite_surrogate/"
     const val GET_USER_DETAIL = "get_user_detail"
     const val USER_PROFILE_UPDATE = "user_profile_update/"
+    const val STORE_MILESTONE_ANS = "store_milestone_ans"
 
 
     // error body
