@@ -22,6 +22,7 @@ class HomeActivity : BaseActivity() {
     private val bottomMilestoneViewModel: BottomMilestoneViewModel by viewModels()
     private val editMilestoneViewModel: EditMilestoneViewModel by viewModels()
     val yourAccountViewModel: YourAccountViewModel by viewModels()
+    val surrogateViewModel: YourSurrogateViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
@@ -48,7 +49,8 @@ class HomeActivity : BaseActivity() {
                     bottomHomeViewModel = bottomHomeViewModel,
                     bottomMilestoneViewModel = bottomMilestoneViewModel,
                     editMilestoneViewModel = editMilestoneViewModel,
-                    yourAccountViewModel = yourAccountViewModel
+                    yourAccountViewModel = yourAccountViewModel,
+                    surrogateViewModel = surrogateViewModel
                 )
             }
         }

@@ -33,7 +33,8 @@ fun BottomNavigationDrawerGraph(
     bottomHomeViewModel: BottomHomeViewModel,
     bottomMilestoneViewModel: BottomMilestoneViewModel,
     editMilestoneViewModel: EditMilestoneViewModel,
-    yourAccountViewModel: YourAccountViewModel
+    yourAccountViewModel: YourAccountViewModel,
+    surrogateViewModel: YourSurrogateViewModel
 ) {
     NavHost(
         navController = navHostController, startDestination = BottomNavScreen.Home.route
@@ -57,7 +58,7 @@ fun BottomNavigationDrawerGraph(
             if (type == "parent") {
                 Log.d("TAG", "BottomNavigationDrawerGraph: $partnerId")
                 if (partnerId == 0) {
-                    YourSurrogateMother(mainViewModel)
+                    YourSurrogateMother(surrogateViewModel = surrogateViewModel, context = context, homeActivity = homeActivity)
                 }else{
                     BottomHomeScreen(
                         navHostController = navHostController,
@@ -107,7 +108,7 @@ fun BottomNavigationDrawerGraph(
             IntendParentsScreen(viewModel = mainViewModel)
         }
         composable(route = NavDrawerItem.YourSurrogateMother.route) {
-            YourSurrogateMother(mainViewModel)
+            YourSurrogateMother(surrogateViewModel, context, homeActivity = homeActivity)
         }
         composable(route = NavDrawerItem.Community.route) {
             Community()

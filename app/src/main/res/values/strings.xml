@@ -63,6 +63,7 @@
     <string name="all_field_compulsory">All field compulsory</string>
     <string name="please_try_again">Please try again later</string>
     <string name="no_data_found">No data found</string>
+    <string name="alert_dialog_text_logout">Are you sure want to logout?</string>
 
 
     <!-- Intro Screen   -->
@@ -181,7 +182,7 @@
     <string name="your_surrogate_mother_invitation_not_sent">You don\'t have a surrogate\nmother yet.Add a Surrogate\nMother to your profile</string>
     <string name="add_surrogate_mother">Add Surrogate Mother</string>
     <string name="invite_surrogate_dialog_tittle">Invite Surrogate</string>
-    <string name="invite_surrogate_dialog_phone_number_text">Surrogate\'s Phone Number</string>
+    <string name="invite_surrogate_dialog_email_text">Surrogate\'s Email</string>
     <string name="invite_surrogate_phone_number_hint">+34 968 89 89</string>
     <string name="invite_surrogate_dialog_btn_text">Send invitation</string>
     <string name="title_activity_splash">SplashActivity</string>

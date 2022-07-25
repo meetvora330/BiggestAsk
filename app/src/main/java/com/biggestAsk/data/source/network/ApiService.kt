@@ -77,14 +77,18 @@ interface ApiService {
     @POST(Constants.SAVE_NOTE)
     suspend fun saveNote(@Body saveNoteRequest: SaveNoteRequest): Response<SendOtpResponse>
 
-
+    @POST(Constants.INVITE_SURROGATE + "{id}")
+    suspend fun inviteSurrogate(
+        @Path("id") user_id: Int,
+        @Body inviteSurrogateRequest: InviteSurrogateRequest
+    ):Response<InviteSurrogateResponse>
 
 
     @POST(Constants.GET_USER_DETAIL)
     suspend fun getUserDetails(@Body user: GetUserDetailsRequest): Response<GetUserDetailsResponse>
 
     @Multipart
-    @POST(Constants.USER_PROFILE_UPDATE+"{id}")
+    @POST(Constants.USER_PROFILE_UPDATE + "{id}")
     suspend fun updateUserProfile(
         @Path("id") userId: Int?,
         @Part name: MultipartBody.Part?,

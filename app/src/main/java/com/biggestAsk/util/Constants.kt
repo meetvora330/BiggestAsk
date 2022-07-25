@@ -30,6 +30,7 @@ object Constants {
     const val EDIT_MILESTONE = "edit_milestone"
     const val UPDATE_MILESTONE_ANS_INFO="update_milestone_ans_info"
     const val SAVE_NOTE = "save_note"
+    const val INVITE_SURROGATE = "invite_surrogate/"
     const val GET_USER_DETAIL = "get_user_detail"
     const val USER_PROFILE_UPDATE = "user_profile_update/"
 

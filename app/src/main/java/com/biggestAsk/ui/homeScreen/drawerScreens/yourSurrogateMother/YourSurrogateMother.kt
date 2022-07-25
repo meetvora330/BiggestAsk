@@ -1,6 +1,9 @@
 package com.biggestAsk.ui.homeScreen.drawerScreens.yourSurrogateMother
 
+import android.content.Context
 import android.text.TextUtils
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -27,21 +30,30 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
-import com.biggestAsk.ui.main.viewmodel.MainViewModel
+import com.biggestAsk.data.model.request.InviteSurrogateRequest
+import com.biggestAsk.data.model.response.InviteSurrogateResponse
+import com.biggestAsk.data.source.network.NetworkResult
+import com.biggestAsk.ui.HomeActivity
+import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
+import com.biggestAsk.ui.main.viewmodel.YourSurrogateViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.ET_Bg
+import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun YourSurrogateMother(viewModel: MainViewModel) {
+fun YourSurrogateMother(
+    surrogateViewModel: YourSurrogateViewModel,
+    context: Context,
+    homeActivity: HomeActivity
+) {
     val openDialogSurrogateMother = remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
@@ -77,28 +89,28 @@ fun YourSurrogateMother(viewModel: MainViewModel) {
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                         top.linkTo(
-                            if (viewModel.invitationSend.value) parent.top else tv_tittle_your_surrogate_mother.top,
-                            margin = if (viewModel.invitationSend.value) 40.dp else 0.dp
+                            if (surrogateViewModel.invitationSend.value) parent.top else tv_tittle_your_surrogate_mother.top,
+                            margin = if (surrogateViewModel.invitationSend.value) 40.dp else 0.dp
                         )
                     },
-                painter = painterResource(id = if (viewModel.invitationSend.value) R.drawable.ic_img_invitation_send_your_surrogate_mother else R.drawable.ic_img_add_your_surrogate_mother),
+                painter = painterResource(id = if (surrogateViewModel.invitationSend.value) R.drawable.ic_img_invitation_send_your_surrogate_mother else R.drawable.ic_img_add_your_surrogate_mother),
                 contentDescription = "",
                 contentScale = ContentScale.FillBounds
             )
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = if (viewModel.invitationSend.value) 60.dp else 22.dp)
+                    .padding(top = if (surrogateViewModel.invitationSend.value) 60.dp else 22.dp)
                     .constrainAs(tv_tittle_your_surrogate_mother) {
                         top.linkTo(img_icon_your_surrogate_mother.bottom, margin = 2.dp)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                     },
-                text = if (viewModel.invitationSend.value) stringResource(id = R.string.your_surrogate_mother_invitation_sent) else stringResource(
+                text = if (surrogateViewModel.invitationSend.value) stringResource(id = R.string.your_surrogate_mother_invitation_sent) else stringResource(
                     id = R.string.your_surrogate_mother_invitation_not_sent
                 ),
                 style = MaterialTheme.typography.body2.copy(
-                    color = if (viewModel.invitationSend.value) Custom_Blue else Color.Black,
+                    color = if (surrogateViewModel.invitationSend.value) Custom_Blue else Color.Black,
                     fontWeight = FontWeight.W900,
                     fontSize = 20.sp,
                     textAlign = TextAlign.Center,
@@ -118,10 +130,10 @@ fun YourSurrogateMother(viewModel: MainViewModel) {
                         end.linkTo(parent.end)
                         top.linkTo(
                             img_main_your_surrogate_mother.bottom,
-                            margin = if (viewModel.invitationSend.value) 60.dp else 19.dp
+                            margin = if (surrogateViewModel.invitationSend.value) 60.dp else 19.dp
                         )
                     },
-                enabled = !viewModel.invitationSend.value,
+                enabled = !surrogateViewModel.invitationSend.value,
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = Custom_Blue,
@@ -162,26 +174,30 @@ fun YourSurrogateMother(viewModel: MainViewModel) {
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         YourSurrogateDialog(
-                            viewModel = viewModel,
-                            openDialogCustom = openDialogSurrogateMother
+                            surrogateViewModel = surrogateViewModel,
+                            openDialogCustom = openDialogSurrogateMother,
+                            context = context,
+                            homeActivity = homeActivity
                         )
                     }
                 }
             }
-
         }
+    }
+    if (surrogateViewModel.isSurrogateInvited.value) {
+        ProgressBarTransparentBackground(loadingText = "Connecting...")
     }
 
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun YourSurrogateMotherPreview() {
-    YourSurrogateMother(MainViewModel())
-}
 
 @Composable
-fun YourSurrogateDialog(viewModel: MainViewModel, openDialogCustom: MutableState<Boolean>) {
+fun YourSurrogateDialog(
+    surrogateViewModel: YourSurrogateViewModel,
+    openDialogCustom: MutableState<Boolean>,
+    context: Context,
+    homeActivity: HomeActivity
+) {
     val isPhoneEmpty = remember {
         mutableStateOf(false)
     }
@@ -231,7 +247,7 @@ fun YourSurrogateDialog(viewModel: MainViewModel, openDialogCustom: MutableState
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 24.dp, start = 12.dp),
-            text = stringResource(id = R.string.invite_surrogate_dialog_phone_number_text),
+            text = stringResource(id = R.string.invite_surrogate_dialog_email_text),
             style = MaterialTheme.typography.body2.copy(
                 color = Color.Black,
                 fontSize = 16.sp,
@@ -243,9 +259,9 @@ fun YourSurrogateDialog(viewModel: MainViewModel, openDialogCustom: MutableState
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 12.dp, start = 12.dp, end = 12.dp),
-            value = viewModel.textSurrogateDialogPhoneNo.value,
+            value = surrogateViewModel.textSurrogateDialogEmail.value,
             onValueChange = {
-                viewModel.textSurrogateDialogPhoneNo.value = it
+                surrogateViewModel.textSurrogateDialogEmail.value = it
                 isPhoneEmpty.value = false
             },
             textStyle = MaterialTheme.typography.body2.copy(
@@ -295,11 +311,31 @@ fun YourSurrogateDialog(viewModel: MainViewModel, openDialogCustom: MutableState
                 .height(80.dp)
                 .padding(top = 24.dp, start = 12.dp, end = 12.dp, bottom = 13.dp),
             onClick = {
-                if (TextUtils.isEmpty(viewModel.textSurrogateDialogPhoneNo.value)) {
+                if (TextUtils.isEmpty(surrogateViewModel.textSurrogateDialogEmail.value)) {
                     isPhoneEmpty.value = true
                 } else {
-                    viewModel.invitationSend.value = true
+                    surrogateViewModel.invitationSend.value = true
                     openDialogCustom.value = false
+                    val provider = PreferenceProvider(context)
+                    val userId = provider.getIntValue("user_id", 0)
+                    val type = provider.getValue("type", "")
+                    val inviteSurrogateRequest = InviteSurrogateRequest(
+                        email = surrogateViewModel.textSurrogateDialogEmail.value,
+                        type = type!!
+                    )
+                    surrogateViewModel.inviteSurrogate(
+                        userId = userId,
+                        inviteSurrogateRequest = inviteSurrogateRequest
+                    )
+                    surrogateViewModel.inviteSurrogateResponse.observe(homeActivity) {
+                        if (it != null) {
+                            handleUserData(
+                                result = it,
+                                surrogateViewModel = surrogateViewModel,
+                                context = context
+                            )
+                        }
+                    }
                 }
             }, elevation = ButtonDefaults.elevation(
                 defaultElevation = 0.dp,
@@ -325,8 +361,30 @@ fun YourSurrogateDialog(viewModel: MainViewModel, openDialogCustom: MutableState
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun YourSurrogateMotherDialog() {
-    YourSurrogateDialog(MainViewModel(), remember { mutableStateOf(true) })
+private fun handleUserData(
+    result: NetworkResult<InviteSurrogateResponse>,
+    surrogateViewModel: YourSurrogateViewModel,
+    context: Context
+) {
+    when (result) {
+        is NetworkResult.Loading -> {
+            // show a progress bar
+            Log.e("TAG", "handleUserData() --> Loading  $result")
+            surrogateViewModel.isSurrogateInvited.value = true
+        }
+
+        is NetworkResult.Success -> {
+            // bind data to the view
+            Log.e("TAG", "handleUserData() --> Success  $result")
+            Toast.makeText(context, result.data?.message, Toast.LENGTH_SHORT).show()
+            surrogateViewModel.isSurrogateInvited.value = false
+        }
+
+        is NetworkResult.Error -> {
+            // show error message
+            Log.e("TAG", "handleUserData() --> Error ${result.message}")
+            surrogateViewModel.isSurrogateInvited.value = false
+        }
+    }
 }
+

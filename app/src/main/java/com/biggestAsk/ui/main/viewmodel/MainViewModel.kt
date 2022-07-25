@@ -113,9 +113,6 @@ class MainViewModel : ViewModel() {
     val isSettingSubTermsOfServiceScreen: MutableState<Boolean> = mutableStateOf(false)
     val isSettingSubPrivacyPolicyScreen: MutableState<Boolean> = mutableStateOf(false)
 
-    //Your Surrogate Mother
-    var textSurrogateDialogPhoneNo = mutableStateOf("")
-    val invitationSend: MutableState<Boolean> = mutableStateOf(false)
 
 
 }

@@ -4,6 +4,7 @@ package com.biggestAsk.ui.homeScreen
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,12 +34,16 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.biggestAsk.ui.HomeActivity
+import com.biggestAsk.ui.MainActivity
 import com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph.*
+import com.biggestAsk.ui.homeScreen.bottomNavScreen.ResetMilestoneMilestone
 import com.biggestAsk.ui.homeScreen.drawerScreens.community.AddCommunityDialog
 import com.biggestAsk.ui.homeScreen.drawerScreens.notification.NotificationDetailScreenRoute
 import com.biggestAsk.ui.homeScreen.drawerScreens.settingScreens.SettingSubScreen
+import com.biggestAsk.ui.introScreen.findActivity
 import com.biggestAsk.ui.main.viewmodel.*
 import com.biggestAsk.ui.ui.theme.Custom_Blue
+import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -54,7 +59,8 @@ fun HomeScreen(
     bottomHomeViewModel: BottomHomeViewModel,
     bottomMilestoneViewModel: BottomMilestoneViewModel,
     editMilestoneViewModel: EditMilestoneViewModel,
-    yourAccountViewModel: YourAccountViewModel
+    yourAccountViewModel: YourAccountViewModel,
+    surrogateViewModel: YourSurrogateViewModel
 ) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
@@ -347,7 +353,8 @@ fun HomeScreen(
                 bottomHomeViewModel = bottomHomeViewModel,
                 bottomMilestoneViewModel = bottomMilestoneViewModel,
                 editMilestoneViewModel = editMilestoneViewModel,
-                yourAccountViewModel = yourAccountViewModel
+                yourAccountViewModel = yourAccountViewModel,
+                surrogateViewModel = surrogateViewModel
             )
         },
         bottomBar = {
@@ -362,7 +369,8 @@ fun HomeScreen(
                 navController = navController,
                 scaffoldState = scaffoldState,
                 scope = scope,
-                context = context
+                context = context,
+                homeActivity = homeActivity
             )
         })
 }
@@ -409,9 +417,9 @@ fun currentRoute(
         }
         BottomNavItems.Milestones.navRoute -> {
 //            viewModel.imageList.clear()
-            viewModel.listData.forEachIndexed { index, _ ->
-                viewModel.listData[index].show = false
-            }
+//            viewModel.listData.forEachIndexed { index, _ ->
+//                viewModel.listData[index].show = false
+//            }
             viewModel.isSelected = false
             viewModel.toolbarTittle = "Milestones"
             viewModel.isCommunityScreen.value = false
@@ -641,10 +649,15 @@ fun NavigationDrawerContent(
     navController: NavHostController,
     scaffoldState: ScaffoldState,
     scope: CoroutineScope,
-    context: Context
+    context: Context,
+    homeActivity: HomeActivity
 ) {
+    val provider = PreferenceProvider(context)
+    val type = provider.getValue("type", "")
+    val isSurrogate =
+        if (type == "parent") NavDrawerItem.YourSurrogateMother else NavDrawerItem.IntendedParents
     val navDrawerItems = mutableListOf(
-        NavDrawerItem.YourSurrogateMother,
+        isSurrogate,
         NavDrawerItem.Community,
         NavDrawerItem.ContactYourProviders,
         NavDrawerItem.Notifications,
@@ -788,11 +801,14 @@ fun NavigationDrawerContent(
                 modifier = Modifier
                     .padding(start = 16.dp, bottom = 3.dp)
                     .clickable(indication = null, interactionSource = MutableInteractionSource()) {
-//                        context.startActivity(Intent(context.applicationContext.findActivity(), MainActivity::class.java))
-//                        context.applicationContext
-//                            .findActivity()
-//                            ?.finish()
-//                        PreferenceProvider(context).clear()
+                        PreferenceProvider(context).setValue("user_logout", true)
+                        val intent = Intent(homeActivity, MainActivity::class.java)
+                        context.startActivity(intent)
+                        context
+                            .findActivity()
+                            ?.finish()
+                        PreferenceProvider(context).clear()
+                        PreferenceProvider(context).setValue("isIntroDone", true)
                     },
                 text = "Log out",
                 style = MaterialTheme.typography.body1,

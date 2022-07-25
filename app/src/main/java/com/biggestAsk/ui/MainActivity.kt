@@ -30,11 +30,9 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.biggestAsk.data.model.response.IntroInfoResponse
 import com.biggestAsk.data.source.network.NetworkResult
-import com.biggestAsk.navigation.Screen
 import com.biggestAsk.navigation.SetUpNavGraph
 import com.biggestAsk.ui.base.BaseActivity
 import com.biggestAsk.ui.introScreen.LockScreenOrientation

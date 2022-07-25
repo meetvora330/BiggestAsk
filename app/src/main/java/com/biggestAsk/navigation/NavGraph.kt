@@ -50,6 +50,10 @@ fun SetUpNavGraph(
     val isIntroDone = provider.getBooleanValue("isIntroDone", false)
     val paymentDone = provider.getValue("is_payment_screen", false)
     val questionDone = provider.getValue("question_screen", false)
+    val isUserLogout = provider.getBooleanValue("user_logout", false)
+    if (isUserLogout) {
+        startDestination = Screen.Login.route
+    }
     if (isIntroDone) {
         startDestination = Screen.VerifyEmail.route
     }
