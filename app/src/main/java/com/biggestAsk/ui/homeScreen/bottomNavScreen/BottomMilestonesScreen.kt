@@ -533,7 +533,6 @@ fun MilestonesScreen(
                 if (milestoneViewModel.isAllMilestoneLoaded) {
                     ProgressBarTransparentBackground("Loading....")
                 }
-
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
@@ -758,12 +757,14 @@ fun MilestonesScreen(
                                                     painter = painterResource(id = R.drawable.img_medical_calender_icon),
                                                     contentDescription = ""
                                                 )
+                                                val dateTime =
+                                                    if (milestoneViewModel.milestoneList[index].date == null && milestoneViewModel.milestoneList[index].time == null) "N/A" else "${milestoneViewModel.milestoneList[index].date} at ${milestoneViewModel.milestoneList[index].time}"
                                                 Text(
                                                     modifier = Modifier.padding(
                                                         start = 8.dp,
                                                         top = 35.dp
                                                     ),
-                                                    text = "${milestoneViewModel.milestoneList[index].date} at ${milestoneViewModel.milestoneList[index].time}",
+                                                    text = dateTime,
                                                     style = MaterialTheme.typography.body2,
                                                     color = Color(0xFF9F9D9B),
                                                     fontSize = 13.sp,
@@ -880,8 +881,6 @@ fun MilestonesScreen(
                         }
                     }
                 }
-
-
             },
             sheetShape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp)
         )

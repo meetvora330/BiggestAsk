@@ -120,7 +120,8 @@ fun SetUpNavGraph(
                 navHostController,
                 email = it.arguments?.getString(EMAIL_VERIFICATION).toString(),
                 mainActivity = mainActivity,
-                registerViewModel = registerViewModel
+                registerViewModel = registerViewModel,
+                emailVerificationViewModel = emailVerificationViewModel
             )
         }
         composable(Screen.Verify.route, arguments = listOf(

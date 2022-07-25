@@ -5,6 +5,7 @@ import android.content.Context
 import android.text.TextUtils
 import android.util.Log
 import android.util.Patterns
+import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -56,9 +57,6 @@ fun EmailVerification(
         mutableStateOf(false)
     }
     val context = LocalContext.current
-    LaunchedEffect(Unit) {
-        emailVerificationViewModel.textEmailVerify = ""
-    }
     Box {
         Image(
             modifier = Modifier.fillMaxSize(),
@@ -330,6 +328,7 @@ private fun handleUserData(
         is NetworkResult.Error -> {
             // show error message
             emailVerificationViewModel.isLoading = false
+            Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
             Log.e("TAG", "handleUserData() --> Error ${result.message}")
         }
     }

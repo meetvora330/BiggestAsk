@@ -128,14 +128,16 @@ fun IntroScreen(
                 modifierImg = modifier_img,
                 detailsItem = introViewModel.introInfoDetailList
             )
-            HorizontalPagerIndicator(
-                pagerState = state,
-                modifier = Modifier
-                    .align(CenterHorizontally)
-                    .padding(top = 16.dp),
-                activeColor = Orange,
-                inactiveColor = Light_Gray,
-            )
+            if (introViewModel.isIntroDataLoaded) {
+                HorizontalPagerIndicator(
+                    pagerState = state,
+                    modifier = Modifier
+                        .align(CenterHorizontally)
+                        .padding(top = 16.dp),
+                    activeColor = Orange,
+                    inactiveColor = Light_Gray,
+                )
+            }
         }
         if (introViewModel.isIntroDataLoaded) {
             Button(

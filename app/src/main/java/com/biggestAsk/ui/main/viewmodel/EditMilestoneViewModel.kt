@@ -1,6 +1,7 @@
 package com.biggestAsk.ui.main.viewmodel
 
 import android.app.Application
+import android.graphics.Bitmap
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
@@ -47,7 +48,8 @@ class EditMilestoneViewModel @Inject constructor(
     var updateMilestoneAnsInfoResponse: MutableLiveData<NetworkResult<SendOtpResponse>> =
         MutableLiveData()
     var saveNoteResponse: MutableLiveData<NetworkResult<SendOtpResponse>> = MutableLiveData()
-    var updateMilestoneResponse: MutableLiveData<NetworkResult<UpdateUserProfileResponse>> = MutableLiveData()
+    var updateMilestoneResponse: MutableLiveData<NetworkResult<UpdateUserProfileResponse>> =
+        MutableLiveData()
 
     fun getMilestoneDetails(editMilestoneRequest: EditMilestoneRequest) {
         editMilestoneResponse.value = NetworkResult.Loading()

@@ -55,6 +55,9 @@ fun YourSurrogateMother(
     homeActivity: HomeActivity
 ) {
     val openDialogSurrogateMother = remember { mutableStateOf(false) }
+    val isSurrogateConnected =
+        PreferenceProvider(context).getBooleanValue("is_surrogate_connected", false)
+    surrogateViewModel.invitationSend.value = isSurrogateConnected
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -185,7 +188,7 @@ fun YourSurrogateMother(
         }
     }
     if (surrogateViewModel.isSurrogateInvited.value) {
-        ProgressBarTransparentBackground(loadingText = "Connecting...")
+        ProgressBarTransparentBackground(loadingText = "Adding...")
     }
 
 }
@@ -271,7 +274,7 @@ fun YourSurrogateDialog(
             ),
             placeholder = {
                 Text(
-                    text = stringResource(id = R.string.invite_surrogate_phone_number_hint),
+                    text = stringResource(id = R.string.invite_surrogate_email_hint),
                     style = MaterialTheme.typography.body1.copy(
                         color = Color.Gray,
                         fontSize = 16.sp,
@@ -288,7 +291,7 @@ fun YourSurrogateDialog(
                 unfocusedIndicatorColor = Color.Transparent,
             ),
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Phone,
+                keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Done
             ),
             keyboardActions = KeyboardActions(onDone = {
@@ -314,7 +317,6 @@ fun YourSurrogateDialog(
                 if (TextUtils.isEmpty(surrogateViewModel.textSurrogateDialogEmail.value)) {
                     isPhoneEmpty.value = true
                 } else {
-                    surrogateViewModel.invitationSend.value = true
                     openDialogCustom.value = false
                     val provider = PreferenceProvider(context)
                     val userId = provider.getIntValue("user_id", 0)
@@ -332,7 +334,8 @@ fun YourSurrogateDialog(
                             handleUserData(
                                 result = it,
                                 surrogateViewModel = surrogateViewModel,
-                                context = context
+                                context = context,
+                                openDialogCustom = openDialogCustom
                             )
                         }
                     }
@@ -364,7 +367,8 @@ fun YourSurrogateDialog(
 private fun handleUserData(
     result: NetworkResult<InviteSurrogateResponse>,
     surrogateViewModel: YourSurrogateViewModel,
-    context: Context
+    context: Context,
+    openDialogCustom: MutableState<Boolean>
 ) {
     when (result) {
         is NetworkResult.Loading -> {
@@ -377,12 +381,16 @@ private fun handleUserData(
             // bind data to the view
             Log.e("TAG", "handleUserData() --> Success  $result")
             Toast.makeText(context, result.data?.message, Toast.LENGTH_SHORT).show()
+            PreferenceProvider(context).setValue("is_surrogate_connected", true)
+            surrogateViewModel.invitationSend.value = true
             surrogateViewModel.isSurrogateInvited.value = false
         }
 
         is NetworkResult.Error -> {
             // show error message
             Log.e("TAG", "handleUserData() --> Error ${result.message}")
+            Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
+            openDialogCustom.value = true
             surrogateViewModel.isSurrogateInvited.value = false
         }
     }

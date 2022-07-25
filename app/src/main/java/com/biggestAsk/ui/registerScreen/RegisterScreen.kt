@@ -46,6 +46,7 @@ import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.navigation.Screen
 import com.biggestAsk.ui.MainActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
+import com.biggestAsk.ui.main.viewmodel.EmailVerificationViewModel
 import com.biggestAsk.ui.main.viewmodel.MainViewModel
 import com.biggestAsk.ui.main.viewmodel.RegisterViewModel
 import com.biggestAsk.ui.ui.theme.*
@@ -59,7 +60,8 @@ fun RegisterScreen(
     navHostController: NavHostController,
     email: String,
     registerViewModel: RegisterViewModel,
-    mainActivity: MainActivity
+    mainActivity: MainActivity,
+    emailVerificationViewModel: EmailVerificationViewModel
 ) {
     val systemUiController = rememberSystemUiController()
     val useDarkIcons = MaterialTheme.colors.isLight
@@ -465,7 +467,8 @@ fun RegisterScreen(
                                         navHostController = navHostController,
                                         result = it,
                                         registerViewModel = registerViewModel,
-                                        context = context
+                                        context = context,
+                                        emailVerificationViewModel = emailVerificationViewModel
                                     )
                                 }
                             }
@@ -516,6 +519,7 @@ private fun handleUserData(
     navHostController: NavHostController,
     result: NetworkResult<SendOtpResponse>,
     registerViewModel: RegisterViewModel,
+    emailVerificationViewModel: EmailVerificationViewModel,
     context: Context
 ) {
     when (result) {
@@ -532,6 +536,7 @@ private fun handleUserData(
             navHostController.navigate(
                 Screen.Login.route
             )
+            emailVerificationViewModel.textEmailVerify = ""
             Toast.makeText(context, "User Registered Successfully", Toast.LENGTH_SHORT).show()
         }
         is NetworkResult.Error -> {
@@ -586,16 +591,4 @@ fun AnnotatedClickableText(context: Context) {
                 context.startActivity(intent)
             }
         })
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun RegisterScreenPreview() {
-//    RegisterScreen(rememberNavController(), "")
-}
-
-@Preview(showBackground = true, showSystemUi = true, device = Devices.PIXEL_2)
-@Composable
-fun RegisterSmallScreenPreview() {
-//    RegisterScreen(rememberNavController(), "")
 }

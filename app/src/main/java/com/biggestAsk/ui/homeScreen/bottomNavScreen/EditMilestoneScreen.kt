@@ -106,12 +106,15 @@ fun EditMilestoneScreen(
             Log.i("TAG", uri.toString())
             val uriPath = uri.let { it1 -> PathUtil.getPath(context, it1) }
             if (editMilestoneViewModel.imageListIndex.value != -1) {
-                editMilestoneViewModel.imageList[editMilestoneViewModel.imageListIndex.value].uriPath = uriPath
-                editMilestoneViewModel.imageList[editMilestoneViewModel.imageListIndex.value].imageUri = uri
-                editMilestoneViewModel.imageList[editMilestoneViewModel.imageListIndex.value].is_need_to_upload = true
+                editMilestoneViewModel.imageList[editMilestoneViewModel.imageListIndex.value].uriPath =
+                    uriPath
+                editMilestoneViewModel.imageList[editMilestoneViewModel.imageListIndex.value].imageUri =
+                    uri
+                editMilestoneViewModel.imageList[editMilestoneViewModel.imageListIndex.value].is_need_to_upload =
+                    true
             } else {
                 editMilestoneViewModel.imageList.add(
-                    EditMilestoneImageResponse("", 0, "", 0, "", "", 0,uriPath, uri, true)
+                    EditMilestoneImageResponse("", 0, "", 0, "", "", 0, uriPath, uri, true)
                 )
             }
             editMilestoneViewModel.imageListIndex.value = -1
@@ -629,6 +632,8 @@ fun EditMilestoneScreen(
                                         )
                                     )
                                     Row(modifier = Modifier.padding(top = 32.dp, start = 16.dp)) {
+                                        val dateTime =
+                                            if (editMilestoneViewModel.editMilestoneDate.value == "" && editMilestoneViewModel.editMilestoneTime.value == "") "N/A" else "${editMilestoneViewModel.editMilestoneDate.value} at ${editMilestoneViewModel.editMilestoneTime.value}"
                                         Image(
                                             painter = painterResource(id = R.drawable.img_medical_calender_icon),
                                             contentDescription = ""
@@ -637,7 +642,7 @@ fun EditMilestoneScreen(
                                             modifier = Modifier
                                                 .wrapContentWidth()
                                                 .padding(start = 8.dp, top = 2.dp),
-                                            text = "${editMilestoneViewModel.editMilestoneDate.value} at ${editMilestoneViewModel.editMilestoneTime.value}",
+                                            text = dateTime,
                                             style = MaterialTheme.typography.body2.copy(
                                                 color = Color(0xFF9F9D9B),
                                                 fontSize = 14.sp,
@@ -1105,7 +1110,6 @@ fun EditMilestoneScreen(
             sheetShape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp)
         )
     }
-
     if (editMilestoneViewModel.isEditMilestoneDataLoaded.value) {
         ProgressBarTransparentBackground(loadingText = "Loading...")
     }
