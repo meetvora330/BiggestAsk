@@ -26,6 +26,7 @@ object Constants {
     const val INTENDED_PARTNER_QUESTION_ANS = "intended_partner_que_ans"
     const val GET_NEAREST_MILESTONE = "get_nearest_milestone"
     const val CREATE_MILESTONE = "create_milestone"
+    const val RESET_MILESTONE = "reset_milsestone"
     const val GET_MILESTONE = "get_milestone"
     const val EDIT_MILESTONE = "edit_milestone"
     const val UPDATE_MILESTONE_ANS_INFO="update_milestone_ans_info"

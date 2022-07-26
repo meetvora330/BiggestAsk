@@ -138,6 +138,12 @@ class HomeRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
+    suspend fun resetMilestone(resetMilestoneRequest: ResetMilestoneRequest): Flow<NetworkResult<SendOtpResponse>> {
+        return flow {
+            emit(safeApiCall { apiService.resetMilestone(resetMilestoneRequest) })
+        }.flowOn(Dispatchers.IO)
+    }
+
     suspend fun editMilestone(editMilestoneRequest: EditMilestoneRequest): Flow<NetworkResult<EditMilestoneResponse>> {
         return flow {
             emit(safeApiCall {

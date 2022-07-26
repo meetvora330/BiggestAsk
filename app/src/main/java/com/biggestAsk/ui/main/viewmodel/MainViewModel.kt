@@ -60,49 +60,6 @@ class MainViewModel : ViewModel() {
     var isFatherClicked: Boolean by mutableStateOf(true)
     var isMotherClicked: Boolean by mutableStateOf(false)
 
-    var list by mutableStateOf(listOf<GetMilestoneResponse>())
-    var isSelected: Boolean by mutableStateOf(false)
-    var emptyList = mutableStateListOf<MilestoneDetails>(
-
-    )
-    var listData = mutableStateListOf<MilestoneDetails>(
-        MilestoneDetails(
-            "Milestone clearance exam",
-            R.drawable.img_medical_calender_icon,
-            "09/22/2021 at 9:30AM",
-            R.drawable.img_milestone_location,
-            false
-        ),
-        MilestoneDetails(
-            "Embryo transfer",
-            R.drawable.img_medical_calender_icon,
-            "09/22/2021 at 9:30AM",
-            R.drawable.img_milestone_location,
-            false
-        ),
-        MilestoneDetails(
-            "Beta test 1",
-            R.drawable.img_medical_calender_icon,
-            "09/22/2021 at 9:30AM",
-            R.drawable.img_milestone_location,
-            false
-        ),
-        MilestoneDetails(
-            "Beta test 2",
-            R.drawable.img_medical_calender_icon,
-            "09/22/2021 at 9:30AM",
-            R.drawable.img_milestone_location,
-            false
-        ),
-        MilestoneDetails(
-            "Beta test 3",
-            R.drawable.img_medical_calender_icon,
-            "09/22/2021 at 9:30AM",
-            R.drawable.img_milestone_location,
-            false
-        )
-    )
-
     //Notification & Notification Details
     val isNotificationScreen: MutableLiveData<Boolean> = MutableLiveData(false)
     val isNotificationDetailsScreen: MutableState<Boolean> = mutableStateOf(false)

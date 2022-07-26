@@ -41,6 +41,7 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import com.biggestAsk.data.model.request.CreateMilestoneRequest
 import com.biggestAsk.data.model.request.GetPregnancyMilestoneRequest
+import com.biggestAsk.data.model.request.ResetMilestoneRequest
 import com.biggestAsk.data.model.response.GetMilestoneResponse
 import com.biggestAsk.data.model.response.SendOtpResponse
 import com.biggestAsk.data.source.network.NetworkResult
@@ -87,8 +88,7 @@ fun MilestonesScreen(
         getMilestones(
             milestoneViewModel = milestoneViewModel,
             context = context,
-            homeActivity = homeActivity,
-            navHostController = navHostController
+            homeActivity = homeActivity
         )
     }
     if (milestoneViewModel.isAnyErrorOccurred) {
@@ -540,7 +540,7 @@ fun MilestonesScreen(
                             Color.White
                         ), contentPadding = PaddingValues(bottom = 70.dp)
                 ) {
-                    if (!viewModel.isSelected) item {
+                    if (!milestoneViewModel.isSelected) item {
                         Column(
                             modifier = Modifier.background(
                                 Color(0xFFF4F4F4)
@@ -629,7 +629,7 @@ fun MilestonesScreen(
                             }
                         }
                     }
-                    if (viewModel.isSelected) item {
+                    if (milestoneViewModel.isSelected) item {
                         Column(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalAlignment = Alignment.End,
@@ -640,9 +640,13 @@ fun MilestonesScreen(
                                     .padding(end = 23.dp)
                                     .combinedClickable(
                                         onClick = {
-                                            viewModel.list.forEachIndexed { index, _ ->
-//                                            milestoneViewModel.list[index].show = true
+                                            milestoneViewModel.milestoneList.forEachIndexed { index, _ ->
+                                                milestoneViewModel.milestoneList[index].show = true
                                             }
+                                            val milestoneListNew =
+                                                milestoneViewModel.milestoneList.toList()
+                                            milestoneViewModel.milestoneList.clear()
+                                            milestoneViewModel.milestoneList.addAll(milestoneListNew)
                                         },
                                     ),
                                 text = stringResource(id = R.string.select_all),
@@ -690,60 +694,74 @@ fun MilestonesScreen(
                                             .padding(start = 24.dp, end = 24.dp)
                                             .combinedClickable(
                                                 onClick = {
-//                                                Log.d("TAG", "MilestonesScreen: ${milestoneViewModel.milestoneList[index]}")
-//                                                if (viewModel.isSelected) {
-//                                                    coroutineScope.launch {
-//                                                        viewModel.list[index].show =
-//                                                            !viewModel.list[index].show
-//                                                        viewModel.list.forEach {
-//                                                            if (it.show) {
-//                                                                viewModel.isSelected = true
-//                                                                return@launch
-//                                                            }
-//                                                        }
-//                                                        viewModel.isSelected = false
-//                                                    }
-//                                                } else {
-                                                    navHostController.popBackStack(
-                                                        BottomNavScreen.AddNewMileStones.route,
-                                                        true
+                                                    Log.d(
+                                                        "TAG",
+                                                        "MilestonesScreen: ${milestoneViewModel.milestoneList[index]}"
                                                     )
-                                                    navHostController.navigate(
-                                                        route = BottomNavScreen.AddNewMileStones.editMilestone(
-                                                            id = milestoneViewModel.milestoneList[index].id
+                                                    if (milestoneViewModel.isSelected) {
+                                                        coroutineScope.launch {
+                                                            milestoneViewModel.milestoneList[index] =
+                                                                milestoneViewModel.milestoneList[index].copy(
+                                                                    show = !milestoneViewModel.milestoneList[index].show
+                                                                )
+                                                            milestoneViewModel.milestoneList.forEach {
+                                                                if (it.show) {
+                                                                    milestoneViewModel.isSelected = true
+                                                                    return@launch
+                                                                }
+                                                            }
+                                                            milestoneViewModel.isSelected = false
+                                                        }
+                                                    } else {
+                                                        navHostController.popBackStack(
+                                                            BottomNavScreen.AddNewMileStones.route,
+                                                            true
                                                         )
-                                                    )
-//                                                }
+                                                        milestoneViewModel.milestoneList[index].id
+                                                            ?.let { it1 ->
+                                                                BottomNavScreen.AddNewMileStones.editMilestone(
+                                                                    id = it1
+                                                                )
+                                                            }
+                                                            ?.let { it2 ->
+                                                                navHostController.navigate(
+                                                                    route = it2
+                                                                )
+                                                            }
+                                                    }
                                                 },
                                                 onLongClick = {
-//                                                        coroutineScope.launch {
-//                                                if (!viewModel.isSelected) {
-//                                                    viewModel.list[index].show = true
-//                                                    viewModel.isSelected = true
-//                                                }
-                                                    // viewModel.list = viewModel.listMilestoneDetails
-//                                                        }
+                                                    coroutineScope.launch {
+                                                        if (!milestoneViewModel.isSelected) {
+                                                            milestoneViewModel.milestoneList[index].show =
+                                                                true
+                                                            milestoneViewModel.isSelected = true
+                                                        }
+                                                        //  viewModel.list = viewModel.listMilestoneDetails
+                                                    }
                                                 }
                                             ),
                                         shape = RoundedCornerShape(15.dp),
-//                                    border = BorderStroke(
-//                                        width = if (viewModel.list[index].show) 1.5.dp else (-1).dp,
-//                                        color = Color(0xFF3870C9)
-//                                    )
+                                        border = BorderStroke(
+                                            width = if (milestoneViewModel.milestoneList[index].show) 1.5.dp else (-1).dp,
+                                            color = Color(0xFF3870C9)
+                                        )
                                     ) {
                                         Column(
                                             modifier = Modifier.background(Color.White)
                                         ) {
-                                            Text(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(start = 24.dp, top = 16.dp),
-                                                text = milestoneViewModel.milestoneList[index].title,
-                                                style = MaterialTheme.typography.body2,
-                                                fontWeight = FontWeight.Bold,
-                                                color = Color.Black,
-                                                fontSize = 20.sp
-                                            )
+                                            milestoneViewModel.milestoneList[index].title?.let { it1 ->
+                                                Text(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .padding(start = 24.dp, top = 16.dp),
+                                                    text = it1,
+                                                    style = MaterialTheme.typography.body2,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = Color.Black,
+                                                    fontSize = 20.sp
+                                                )
+                                            }
                                             Row(
                                                 modifier = Modifier
                                                     .fillMaxWidth()
@@ -757,18 +775,29 @@ fun MilestonesScreen(
                                                     painter = painterResource(id = R.drawable.img_medical_calender_icon),
                                                     contentDescription = ""
                                                 )
-                                                val dateTime =
-                                                    if (milestoneViewModel.milestoneList[index].date == null && milestoneViewModel.milestoneList[index].time == null) "N/A" else "${milestoneViewModel.milestoneList[index].date} at ${milestoneViewModel.milestoneList[index].time}"
-                                                Text(
-                                                    modifier = Modifier.padding(
-                                                        start = 8.dp,
-                                                        top = 35.dp
-                                                    ),
-                                                    text = dateTime,
-                                                    style = MaterialTheme.typography.body2,
-                                                    color = Color(0xFF9F9D9B),
-                                                    fontSize = 13.sp,
-                                                )
+                                                if (milestoneViewModel.milestoneList[index].date == null || milestoneViewModel.milestoneList[index].time == null) {
+                                                    Text(
+                                                        modifier = Modifier.padding(
+                                                            start = 8.dp,
+                                                            top = 35.dp
+                                                        ),
+                                                        text = "N/A",
+                                                        style = MaterialTheme.typography.body2,
+                                                        color = Color(0xFF9F9D9B),
+                                                        fontSize = 13.sp,
+                                                    )
+                                                } else {
+                                                    Text(
+                                                        modifier = Modifier.padding(
+                                                            start = 8.dp,
+                                                            top = 35.dp
+                                                        ),
+                                                        text = "${milestoneViewModel.milestoneList[index].date} at ${milestoneViewModel.milestoneList[index].time}",
+                                                        style = MaterialTheme.typography.body2,
+                                                        color = Color(0xFF9F9D9B),
+                                                        fontSize = 13.sp,
+                                                    )
+                                                }
                                                 Row(
                                                     modifier = Modifier.fillMaxWidth(),
                                                     verticalAlignment = Alignment.Top,
@@ -817,7 +846,7 @@ fun MilestonesScreen(
                             }
                         }
                     }
-                    if (viewModel.isSelected) item {
+                    if (milestoneViewModel.isSelected) item {
                         ConstraintLayout(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -874,6 +903,8 @@ fun MilestonesScreen(
                                         ResetMilestoneMilestone(
                                             openDialogResetMilestone = openDialogReset,
                                             tittle = R.string.are_you_sure_reset_milestone,
+                                            milestoneViewModel = milestoneViewModel,
+                                            homeActivity = homeActivity
                                         )
                                     }
                                 }
@@ -892,8 +923,7 @@ fun MilestonesScreen(
 fun getMilestones(
     milestoneViewModel: BottomMilestoneViewModel,
     context: Context,
-    homeActivity: HomeActivity,
-    navHostController: NavHostController
+    homeActivity: HomeActivity
 ) {
     val userId = PreferenceProvider(context).getIntValue("user_id", 0)
     val type = PreferenceProvider(context).getValue("type", "")
@@ -907,7 +937,6 @@ fun getMilestones(
     milestoneViewModel.getMilestoneResponse.observe(homeActivity) {
         if (it != null) {
             handleGetMilestoneData(
-                navHostController = navHostController,
                 result = it,
                 context = context,
                 milestoneViewModel = milestoneViewModel
@@ -921,6 +950,8 @@ fun getMilestones(
 fun ResetMilestoneMilestone(
     tittle: Int,
     openDialogResetMilestone: MutableState<Boolean>,
+    milestoneViewModel: BottomMilestoneViewModel,
+    homeActivity: HomeActivity,
 ) {
     val context = LocalContext.current
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -992,13 +1023,15 @@ fun ResetMilestoneMilestone(
                     .padding(top = 13.dp, end = 10.dp)
                     .clickable(indication = null, interactionSource = MutableInteractionSource()) {
                         openDialogResetMilestone.value = false
-                        Toast
-                            .makeText(
-                                context,
-                                R.string.reset_milestone_success_message,
-                                Toast.LENGTH_SHORT
-                            )
-                            .show()
+                        val selectedMilestoneId = arrayListOf<Int>()
+                        milestoneViewModel.milestoneList.forEach {
+                            if (it.show)
+                                it.id?.let { it1 -> selectedMilestoneId.add(it1) }
+                        }
+                        resetMilestoneApiCall(
+                            selectedMilestoneId, context, milestoneViewModel,
+                            homeActivity
+                        )
                     },
                 text = stringResource(id = R.string.reset_milestone),
                 style = MaterialTheme.typography.body2.copy(
@@ -1012,8 +1045,67 @@ fun ResetMilestoneMilestone(
     }
 }
 
+fun resetMilestoneApiCall(
+    selectedMilestoneId: ArrayList<Int>,
+    context: Context,
+    milestoneViewModel: BottomMilestoneViewModel,
+    homeActivity: HomeActivity
+) {
+    milestoneViewModel.milestoneList.forEachIndexed { index, _ ->
+        milestoneViewModel.milestoneList[index].show = false
+    }
+    val milestoneListNew =
+        milestoneViewModel.milestoneList.toList()
+    milestoneViewModel.milestoneList.clear()
+    milestoneViewModel.milestoneList.addAll(milestoneListNew)
+    milestoneViewModel.isSelected = false
+    val userId = PreferenceProvider(context).getIntValue("user_id", 0)
+    val type = PreferenceProvider(context).getValue("type", "")
+
+    milestoneViewModel.resetMilestone(
+        ResetMilestoneRequest(
+            selectedMilestoneId,
+            type.toString(),
+            userId
+        )
+    )
+    milestoneViewModel.resetMilestoneResponse.observe(homeActivity) {
+        if (it != null) {
+            handleResetMilestoneData(
+                result = it,
+                context = context,
+                milestoneViewModel = milestoneViewModel,
+                homeActivity
+            )
+        }
+    }
+}
+
+private fun handleResetMilestoneData(
+    result: NetworkResult<SendOtpResponse>,
+    context: Context,
+    milestoneViewModel: BottomMilestoneViewModel,
+    homeActivity: HomeActivity
+) {
+    when (result) {
+        is NetworkResult.Loading -> {
+            // show a progress bar
+            Log.e("TAG", "handleUserData() --> Loading  $result")
+            milestoneViewModel.isAllMilestoneLoaded = true
+        }
+        is NetworkResult.Success -> {
+            // bind data to the view
+            milestoneViewModel.isAllMilestoneLoaded = true
+            getMilestones(milestoneViewModel, context, homeActivity)
+        }
+        is NetworkResult.Error -> {
+            // show error message
+            milestoneViewModel.isAllMilestoneLoaded = true
+        }
+    }
+}
+
 private fun handleGetMilestoneData(
-    navHostController: NavHostController,
     result: NetworkResult<GetMilestoneResponse>,
     context: Context,
     milestoneViewModel: BottomMilestoneViewModel
@@ -1032,7 +1124,8 @@ private fun handleGetMilestoneData(
             if (result.data?.milestone?.isEmpty()!!) {
                 milestoneViewModel.isAnyErrorOccurred = true
             }
-            milestoneViewModel.milestoneList = result.data.milestone
+            milestoneViewModel.milestoneList.clear()
+            milestoneViewModel.milestoneList.addAll(result.data.milestone)
         }
         is NetworkResult.Error -> {
             // show error message
@@ -1067,12 +1160,12 @@ private fun handleCreatedMilestoneData(
             }
             milestoneViewModel.isNewMilestoneAdded.value = false
             Toast.makeText(context, result.data?.message, Toast.LENGTH_SHORT).show()
-            milestoneViewModel.milestoneList = milestoneViewModel.emptyList
+            milestoneViewModel.milestoneList.clear()
+            milestoneViewModel.milestoneList.addAll(milestoneViewModel.emptyList)
             getMilestones(
                 milestoneViewModel = milestoneViewModel,
                 context = context,
-                homeActivity = homeActivity,
-                navHostController = navHostController
+                homeActivity = homeActivity
             )
         }
         is NetworkResult.Error -> {

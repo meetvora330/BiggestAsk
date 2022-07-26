@@ -1,15 +1,14 @@
 package com.biggestAsk.ui.main.viewmodel
 
 import android.app.Application
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.biggestAsk.data.model.request.CreateMilestoneRequest
 import com.biggestAsk.data.model.request.GetPregnancyMilestoneRequest
+import com.biggestAsk.data.model.request.ResetMilestoneRequest
+import com.biggestAsk.data.model.response.BaseScreenQuestionResponse
 import com.biggestAsk.data.model.response.GetMilestoneResponse
 import com.biggestAsk.data.model.response.Milestone
 import com.biggestAsk.data.model.response.SendOtpResponse
@@ -27,7 +26,9 @@ class BottomMilestoneViewModel @Inject constructor(
 ) : AndroidViewModel(application) {
     var getMilestoneResponse: MutableLiveData<NetworkResult<GetMilestoneResponse>> =
         MutableLiveData()
-    var milestoneList by mutableStateOf(listOf<Milestone>())
+    var resetMilestoneResponse: MutableLiveData<NetworkResult<SendOtpResponse>> =
+        MutableLiveData()
+    val milestoneList = mutableStateListOf<Milestone>()
     var emptyList by mutableStateOf(listOf<Milestone>())
     var isAllMilestoneLoaded: Boolean by mutableStateOf(false)
     var isAnyErrorOccurred: Boolean by mutableStateOf(false)
@@ -41,6 +42,7 @@ class BottomMilestoneViewModel @Inject constructor(
     var addNewMilestoneLocationBEmpty: MutableState<Boolean> = mutableStateOf(false)
     var isNewMilestoneAdded: MutableState<Boolean> = mutableStateOf(false)
     var createMilestoneResponse: MutableLiveData<NetworkResult<SendOtpResponse>> = MutableLiveData()
+    var isSelected: Boolean by mutableStateOf(false)
 
     fun getMilestones(getPregnancyMilestoneRequest: GetPregnancyMilestoneRequest) {
         getMilestoneResponse.value = NetworkResult.Loading()
@@ -60,5 +62,13 @@ class BottomMilestoneViewModel @Inject constructor(
         }
     }
 
+    fun resetMilestone(resetMilestoneRequest: ResetMilestoneRequest){
+        resetMilestoneResponse.value = NetworkResult.Loading()
+        viewModelScope.launch {
+            homeRepository.resetMilestone(resetMilestoneRequest).collect{
+                resetMilestoneResponse.value = it
+            }
+        }
+    }
 
 }

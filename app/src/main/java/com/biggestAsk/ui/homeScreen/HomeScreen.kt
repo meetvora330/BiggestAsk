@@ -36,7 +36,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.biggestAsk.ui.HomeActivity
 import com.biggestAsk.ui.MainActivity
 import com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph.*
-import com.biggestAsk.ui.homeScreen.bottomNavScreen.ResetMilestoneMilestone
 import com.biggestAsk.ui.homeScreen.drawerScreens.community.AddCommunityDialog
 import com.biggestAsk.ui.homeScreen.drawerScreens.notification.NotificationDetailScreenRoute
 import com.biggestAsk.ui.homeScreen.drawerScreens.settingScreens.SettingSubScreen
@@ -420,7 +419,7 @@ fun currentRoute(
 //            viewModel.listData.forEachIndexed { index, _ ->
 //                viewModel.listData[index].show = false
 //            }
-            viewModel.isSelected = false
+           // viewModel.isSelected = false
             viewModel.toolbarTittle = "Milestones"
             viewModel.isCommunityScreen.value = false
             viewModel.isContactProvidersScreen.value = false
