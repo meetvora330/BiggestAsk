@@ -31,17 +31,22 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.compose.rememberNavController
+import com.biggestAsk.data.model.LoginStatus
 import com.biggestAsk.data.model.response.IntroInfoResponse
 import com.biggestAsk.data.source.network.NetworkResult
+import com.biggestAsk.navigation.Screen
 import com.biggestAsk.navigation.SetUpNavGraph
 import com.biggestAsk.ui.base.BaseActivity
 import com.biggestAsk.ui.introScreen.LockScreenOrientation
+import com.biggestAsk.ui.introScreen.findActivity
 import com.biggestAsk.ui.main.viewmodel.*
 import com.biggestAsk.ui.ui.theme.BasicStructureTheme
+import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import java.util.*
 
 
 @Suppress("OPT_IN_IS_NOT_ENABLED")
@@ -78,13 +83,7 @@ class MainActivity : BaseActivity() {
             ) {
                 val provider = PreferenceProvider(this)
                 val isIntroDone = provider.getBooleanValue("isIntroDone", false)
-                val isQuestionScreen =
-                    PreferenceProvider(this).getValue("isQuestionAnswered", false)
-                if (isQuestionScreen) {
-                    finish()
-                    val intent = Intent(this, HomeActivity::class.java)
-                    startActivity(intent)
-                } else if (!isIntroDone) {
+                if (!isIntroDone) {
                     LaunchedEffect(Unit) {
                         introViewModel.getIntroInfo()
                         introViewModel.getIntroInfoResponse.observe(this@MainActivity) {
@@ -136,21 +135,33 @@ class MainActivity : BaseActivity() {
                         }
                     }
                 }
-                BasicStructureTheme {
-                    LockScreenOrientation(orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
-                    focusManager.clearFocus()
-                    SetUpNavGraph(
-                        navHostController = navController,
-                        viewModel = viewModel,
-                        homeViewModel = homeViewModel,
-                        this,
-                        introViewModel = introViewModel,
-                        loginViewModel = loginViewModel,
-                        registerViewModel = registerViewModel,
-                        emailVerificationViewModel = emailVerificationViewModel,
-                        verifyOtpViewModel = verifyOtpViewModel
-                    )
+
+                when (provider.getValue(Constants.LOGIN_STATUS, "")) {
+                    LoginStatus.PARTNER_NOT_ASSIGN.name.lowercase(Locale.getDefault()) -> {
+                        finish()
+                        val intent = Intent(this, HomeActivity::class.java)
+                        startActivity(intent)
+                    }
+                    else -> {
+                        BasicStructureTheme {
+                            LockScreenOrientation(orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+                            focusManager.clearFocus()
+                            SetUpNavGraph(
+                                navHostController = navController,
+                                viewModel = viewModel,
+                                homeViewModel = homeViewModel,
+                                this,
+                                introViewModel = introViewModel,
+                                loginViewModel = loginViewModel,
+                                registerViewModel = registerViewModel,
+                                emailVerificationViewModel = emailVerificationViewModel,
+                                verifyOtpViewModel = verifyOtpViewModel
+                            )
+                        }
+                    }
                 }
+
+
             }
         }
     }

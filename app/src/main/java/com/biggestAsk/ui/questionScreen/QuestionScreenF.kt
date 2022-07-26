@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.biggestAsk.data.model.LoginStatus
 import com.biggestAsk.data.model.request.ScreenQuestionStatusRequest
 import com.biggestAsk.data.model.response.SendOtpResponse
 import com.biggestAsk.data.source.network.NetworkResult
@@ -30,11 +31,13 @@ import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
 import com.biggestAsk.ui.introScreen.findActivity
 import com.biggestAsk.ui.main.viewmodel.HomeViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
+import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.util.*
 
 
 @Composable
@@ -53,7 +56,7 @@ fun QuestionScreenF(
 //                Log.i("TAG", "QuestionScreen: $it")
 //            }
 //    }
-    PreferenceProvider(context).setValue("question_screen",true)
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -173,29 +176,7 @@ fun QuestionScreenF(
                 backgroundColor = Custom_Blue,
             ),
             onClick = {
-                val provider = PreferenceProvider(context)
-                val type = provider.getValue("type", "")
-                val userId = provider.getIntValue("user_id", 0)
-                val frequency =
-                    if (homeViewModel.selectedValueEveryDayRb.value) "everyday" else if (homeViewModel.selectedValueEvery3DaysRb.value) "every_3_day" else "every_week"
-                Log.d("TAG", "QuestionScreenF: $frequency")
-                homeViewModel.screenQuestionStatus(
-                    ScreenQuestionStatusRequest(
-                        type = type!!,
-                        user_id = userId,
-                        question_type = frequency
-                    )
-                )
-                homeViewModel.screenQuestionStatus.observe(mainActivity) {
-                    if (it != null) {
-                        handleUserData(
-                            result = it,
-                            homeViewModel = homeViewModel,
-                            context = context
-                        )
-                    }
-                }
-
+                frequencySubmitApiCall(context, homeViewModel, mainActivity)
             }) {
             Text(
                 text = stringResource(id = R.string.question_btn_text_submit_frequency),
@@ -209,6 +190,35 @@ fun QuestionScreenF(
     }
     if (homeViewModel.isLoading) {
         ProgressBarTransparentBackground("Please wait....")
+    }
+}
+
+private fun frequencySubmitApiCall(
+    context: Context,
+    homeViewModel: HomeViewModel,
+    mainActivity: MainActivity
+) {
+    val provider = PreferenceProvider(context)
+    val type = provider.getValue("type", "")
+    val userId = provider.getIntValue("user_id", 0)
+    val frequency =
+        if (homeViewModel.selectedValueEveryDayRb.value) "everyday" else if (homeViewModel.selectedValueEvery3DaysRb.value) "every_3_day" else "every_week"
+    Log.d("TAG", "QuestionScreenF: $frequency")
+    homeViewModel.screenQuestionStatus(
+        ScreenQuestionStatusRequest(
+            type = type!!,
+            user_id = userId,
+            question_type = frequency
+        )
+    )
+    homeViewModel.screenQuestionStatus.observe(mainActivity) {
+        if (it != null) {
+            handleUserData(
+                result = it,
+                homeViewModel = homeViewModel,
+                context = context
+            )
+        }
     }
 }
 
@@ -229,7 +239,6 @@ private fun handleUserData(
             Log.e("TAG", "handleUserData() --> Success  $result")
             Log.i("TAG", result.message.toString())
             homeViewModel.isLoading = false
-            PreferenceProvider(context).setValue("isQuestionAnswered",true)
             GlobalScope.launch {
                 result.data?.let {
                     context.findActivity()?.finish()
@@ -241,6 +250,11 @@ private fun handleUserData(
                     )
                 }
             }
+            val provider = PreferenceProvider(context)
+            provider.setValue(
+                Constants.LOGIN_STATUS,
+                LoginStatus.PARTNER_NOT_ASSIGN.name.lowercase(Locale.getDefault())
+            )
         }
         is NetworkResult.Error -> {
             // show error message

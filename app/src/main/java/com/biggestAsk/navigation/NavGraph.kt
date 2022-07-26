@@ -2,6 +2,7 @@
 
 package com.biggestAsk.navigation
 
+import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,11 +14,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.biggestAsk.data.model.LoginStatus
+import com.biggestAsk.ui.HomeActivity
 import com.biggestAsk.ui.MainActivity
 import com.biggestAsk.ui.emailVerification.EmailVerification
 import com.biggestAsk.ui.introScreen.IntroScreen
@@ -28,9 +32,11 @@ import com.biggestAsk.ui.paymentScreen.PaymentScreen
 import com.biggestAsk.ui.questionScreen.QuestionScreenF
 import com.biggestAsk.ui.registerScreen.RegisterScreen
 import com.biggestAsk.ui.verifyOtpScreen.VerifyOtpScreen
+import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
+import java.util.*
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
@@ -48,21 +54,26 @@ fun SetUpNavGraph(
     var startDestination = Screen.Intro.route
     val provider = PreferenceProvider(mainActivity.applicationContext)
     val isIntroDone = provider.getBooleanValue("isIntroDone", false)
-    val paymentDone = provider.getValue("is_payment_screen", false)
-    val questionDone = provider.getValue("question_screen", false)
     val isUserLogout = provider.getBooleanValue("user_logout", false)
-    if (isUserLogout) {
-        startDestination = Screen.Login.route
-    }
     if (isIntroDone) {
-        startDestination = Screen.VerifyEmail.route
+        startDestination = if (isUserLogout) {
+            Screen.Login.route
+        } else {
+            when (provider.getValue(Constants.LOGIN_STATUS, "")) {
+                LoginStatus.PAYMENT_NOT_DONE.name.lowercase(Locale.getDefault()) -> {
+                    Screen.PaymentScreen.route
+                }
+                LoginStatus.FREQUENCY_NOT_ADDED.name.lowercase(Locale.getDefault()) -> {
+                    Screen.QuestionScreen.route
+                }
+                else -> {
+                    Screen.VerifyEmail.route
+                }
+            }
+        }
     }
-    if (paymentDone) {
-        startDestination = Screen.PaymentScreen.route
-    }
-    if (questionDone) {
-        startDestination = Screen.QuestionScreen.route
-    }
+
+
     val pagerState = rememberPagerState()
 
     NavHost(

@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.biggestAsk.data.model.LoginStatus
 import com.biggestAsk.data.model.request.LoginBodyRequest
 import com.biggestAsk.data.model.response.LoginBodyResponse
 import com.biggestAsk.data.source.network.NetworkResult
@@ -50,11 +51,13 @@ import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
 import com.biggestAsk.ui.introScreen.findActivity
 import com.biggestAsk.ui.main.viewmodel.LoginViewModel
 import com.biggestAsk.ui.ui.theme.*
+import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.util.*
 
 @Composable
 fun LoginScreen(
@@ -371,40 +374,27 @@ private fun handleUserData(
         }
         is NetworkResult.Success -> {
             // bind data to the view
-
-            Log.e("TAG", "handleUserData() --> Success  $result")
-            Log.i("TAG", result.message.toString())
             loginViewModel.isLoading = false
-            Log.d("TAG", "handleUserData: ${result.data?.type}")
             GlobalScope.launch {
                 result.data?.let {
                     val provider = PreferenceProvider(context)
                     provider.setValue("user_id", result.data.user_id)
                     provider.setValue("type", result.data.type)
                     provider.setValue("partner_id", result.data.partner_id)
-                    Log.d("TAG", "handleUserData: ${result.data}")
+                    provider.setValue(Constants.LOGIN_STATUS, result.data.status)
                 }
             }
-            if (result.data?.type == "parent") {
-                if (result.data.is_payment_done) {
-                    if (result.data.is_question_answered) {
-                        context.findActivity()?.finish()
-                        context.startActivity(
-                            Intent(
-                                context,
-                                HomeActivity::class.java
-                            )
-                        )
-                    } else {
-                        navHostController.popBackStack()
-                        navHostController.navigate(Screen.QuestionScreen.route)
-                    }
-                } else {
+
+            when (result.data?.status) {
+                LoginStatus.PAYMENT_NOT_DONE.name.lowercase(Locale.getDefault()) -> {
                     navHostController.popBackStack()
                     navHostController.navigate(Screen.PaymentScreen.route)
                 }
-            } else {
-                if (result.data!!.is_question_answered) {
+                LoginStatus.FREQUENCY_NOT_ADDED.name.lowercase(Locale.getDefault()) -> {
+                    navHostController.popBackStack()
+                    navHostController.navigate(Screen.QuestionScreen.route)
+                }
+                LoginStatus.PAYMENT_NOT_DONE.name.lowercase(Locale.getDefault()) -> {
                     context.findActivity()?.finish()
                     context.startActivity(
                         Intent(
@@ -412,9 +402,6 @@ private fun handleUserData(
                             HomeActivity::class.java
                         )
                     )
-                } else {
-                    navHostController.popBackStack()
-                    navHostController.navigate(Screen.QuestionScreen.route)
                 }
             }
 

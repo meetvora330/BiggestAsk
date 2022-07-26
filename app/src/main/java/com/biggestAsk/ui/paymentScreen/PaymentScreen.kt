@@ -20,11 +20,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.biggestAsk.data.model.LoginStatus
 import com.biggestAsk.navigation.Screen
 import com.biggestAsk.ui.main.viewmodel.HomeViewModel
 import com.biggestAsk.ui.main.viewmodel.MainViewModel
@@ -32,10 +34,12 @@ import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.Login_Sub_Tittle
 import com.biggestAsk.ui.ui.theme.Payment_Description
 import com.biggestAsk.ui.ui.theme.Text_Accept_Terms
+import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.util.*
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -45,7 +49,6 @@ fun PaymentScreen(
     homeViewModel: HomeViewModel,
     context: Context
 ) {
-    PreferenceProvider(context).setValue("is_payment_screen", true)
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
     )
@@ -109,6 +112,10 @@ fun PaymentScreen(
                             interactionSource = remember { MutableInteractionSource() }) {
                             navHostController.navigate(
                                 Screen.QuestionScreen.route
+                            )
+                            val provider = PreferenceProvider(context)
+                            provider.setValue(Constants.LOGIN_STATUS,
+                                LoginStatus.FREQUENCY_NOT_ADDED.name.lowercase(Locale.getDefault())
                             )
                         },
                         shape = RoundedCornerShape(15.dp),

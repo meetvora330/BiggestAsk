@@ -12,6 +12,8 @@ object Constants {
         "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@\$!%*#?&])[A-Za-z\\d@\$!%*#?&]{8,}\$"
 
     const val BASE_URL_BIGGEST_ASK = "https://biggestaskbackend.justcodenow.com/api/"
+
+    //API END POINTS
     const val INTRO_SCREEN = "get_intro_info"
     const val SEND_OTP = "sendotp"
     const val CHECK_OTP = "checkotp"
@@ -38,6 +40,11 @@ object Constants {
     const val UPDATE_MILESTONE_IMAGE = "update_milestone_image"
     const val DELETE_MILESTONE_IMAGE = "delete_milestone_image"
 
+    //prefrence data
+    const val LOGIN_STATUS = "login_status"
+
+    //login user type
+    const val PARENT = "parent"
 
     // error body
     const val ERROR_BODY_MESSAGE = "message"
