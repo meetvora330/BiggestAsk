@@ -48,12 +48,14 @@ import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
+import com.biggestAsk.data.model.request.DeleteMilestoneImageRequest
 import com.biggestAsk.data.model.request.EditMilestoneRequest
 import com.biggestAsk.data.model.request.SaveNoteRequest
 import com.biggestAsk.data.model.request.UpdateMilestoneAnsInfoRequest
 import com.biggestAsk.data.model.response.EditMilestoneImageResponse
 import com.biggestAsk.data.model.response.EditMilestoneResponse
 import com.biggestAsk.data.model.response.SendOtpResponse
+import com.biggestAsk.data.model.response.UpdateUserProfileResponse
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.ui.HomeActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
@@ -70,6 +72,10 @@ import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
 import java.util.*
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -98,13 +104,14 @@ fun EditMilestoneScreen(
     val editMilestoneBottomSheetState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
     )
-
+    var uriPath: String? = null
+    var latestUpdatedUriPath: String? = null
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
     ) { uri: Uri? ->
         if (uri != null) {
-            Log.i("TAG", uri.toString())
-            val uriPath = uri.let { it1 -> PathUtil.getPath(context, it1) }
+            Log.i("TAG", "The URI is $uri")
+            uriPath = uri.let { it1 -> PathUtil.getPath(context, it1) }
             if (editMilestoneViewModel.imageListIndex.value != -1) {
                 editMilestoneViewModel.imageList[editMilestoneViewModel.imageListIndex.value].uriPath =
                     uriPath
@@ -118,7 +125,9 @@ fun EditMilestoneScreen(
                 )
             }
             editMilestoneViewModel.imageListIndex.value = -1
+            latestUpdatedUriPath = uriPath
             Log.i("TAG", editMilestoneViewModel.imageList.size.toString())
+            Log.i("TAG", "The URI Path is ${uriPath.toString()}")
         }
     }
     val isPicAvailable = remember {
@@ -129,25 +138,13 @@ fun EditMilestoneScreen(
     LaunchedEffect(Unit) {
         editMilestoneViewModel.editMilestoneLocationB.value = ""
         Log.d("TAG", "EditMilestoneScreen: $milestoneId")
-
-        val userId = PreferenceProvider(context).getIntValue("user_id", 0)
-        editMilestoneViewModel.getMilestoneDetails(
-            EditMilestoneRequest(
-                type = type!!,
-                user_id = userId,
-                milestone_id = milestoneId
-            )
+        getUpdatedMilestone(
+            homeActivity = homeActivity,
+            editMilestoneViewModel = editMilestoneViewModel,
+            context = context, type = type,
+            milestoneId = milestoneId,
+            navHostController = navHostController
         )
-        editMilestoneViewModel.editMilestoneResponse.observe(homeActivity) {
-            if (it != null) {
-                handleEditMilestoneData(
-                    navHostController = navHostController,
-                    result = it,
-                    context = context,
-                    editMilestoneViewModel = editMilestoneViewModel
-                )
-            }
-        }
     }
     if (!editMilestoneViewModel.isEditMilestoneDataLoaded.value) {
         BottomSheetScaffold(
@@ -660,6 +657,7 @@ fun EditMilestoneScreen(
                             "TAG",
                             "List Size From Inner ${editMilestoneViewModel.imageList.size}"
                         )
+
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -679,7 +677,24 @@ fun EditMilestoneScreen(
                                         .height(25.dp)
                                         .background(Color(0xFFF34646), RoundedCornerShape(12.dp))
                                         .clickable {
-                                            editMilestoneViewModel.imageList.removeAt(index)
+                                            editMilestoneViewModel.deleteMileStoneImage(
+                                                DeleteMilestoneImageRequest(editMilestoneViewModel.imageList[index].id)
+                                            )
+                                            editMilestoneViewModel.deleteMilestoneImageResponse.observe(
+                                                homeActivity
+                                            ) {
+                                                if (it != null) {
+                                                    handleDeleteImageData(
+                                                        result = it,
+                                                        editMilestoneViewModel = editMilestoneViewModel,
+                                                        homeActivity = homeActivity,
+                                                        context = context,
+                                                        type = type,
+                                                        milestoneId = milestoneId,
+                                                        navHostController = navHostController
+                                                    )
+                                                }
+                                            }
                                         },
                                     imageVector = Icons.Default.Close,
                                     tint = Color.White,
@@ -740,8 +755,6 @@ fun EditMilestoneScreen(
                                         )
                                     }
                                 }
-
-
                             }
                             Row(
                                 modifier = Modifier
@@ -750,6 +763,7 @@ fun EditMilestoneScreen(
                                 horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.Bottom
                             ) {
+
                                 Button(
                                     modifier = Modifier
                                         .width(210.dp)
@@ -768,8 +782,36 @@ fun EditMilestoneScreen(
                                     enabled = true,
                                     onClick = {
                                         editMilestoneViewModel.imageListIndex.value = index
-                                        Log.i("TAG", index.toString())
+                                        Log.i("TAG", "Index is $index")
+                                        Log.i(
+                                            "TAG",
+                                            "Image Id is ${editMilestoneViewModel.imageList[index].id}"
+                                        )
                                         launcher.launch("image/*")
+                                        if (latestUpdatedUriPath != null) {
+                                            editMilestoneViewModel.updateMilestoneImage(
+                                                MultipartBody.Part.createFormData(
+                                                    "image_id",
+                                                    editMilestoneViewModel.imageList[index].id.toString()
+                                                ),
+                                                MultipartBody.Part.createFormData(
+                                                    "image",
+                                                    editMilestoneViewModel.imageList[index].uriPath.toString()
+                                                )
+                                            )
+                                            editMilestoneViewModel.updateMilestoneImage.observe(
+                                                homeActivity
+                                            ) {
+                                                if (it != null) {
+                                                    handleUpdateImageData(
+                                                        result = it,
+                                                        editMilestoneViewModel = editMilestoneViewModel,
+                                                        context = context
+                                                    )
+                                                }
+                                            }
+                                        }
+
                                     }) {
                                     Text(
                                         modifier = Modifier.wrapContentWidth(),
@@ -1067,15 +1109,53 @@ fun EditMilestoneScreen(
                             Button(
                                 modifier = Modifier.width(218.dp),
                                 onClick = {
-                                    navHostController.popBackStack(
-                                        BottomNavScreen.AddNewMileStones.route,
-                                        true
+                                    val userId =
+                                        PreferenceProvider(context).getIntValue("user_id", 0)
+                                    val imageList = ArrayList<MultipartBody.Part?>()
+                                    editMilestoneViewModel.imageList.forEach {
+                                        if (it.is_need_to_upload) {
+                                            imageList.add(it.uriPath?.let { uriPath ->
+                                                convertImageMultiPart(
+                                                    uriPath
+                                                )
+                                            })
+                                        }
+                                    }
+                                    editMilestoneViewModel.storeMilestoneAns(
+                                        note = MultipartBody.Part.createFormData(
+                                            "note",
+                                            editMilestoneViewModel.addNewMilestoneNotes.value
+                                        ),
+                                        images = imageList,
+                                        user_id = MultipartBody.Part.createFormData(
+                                            "user_id",
+                                            userId.toString()
+                                        ),
+                                        type = MultipartBody.Part.createFormData("type", type!!),
+                                        milestone_id = MultipartBody.Part.createFormData(
+                                            "milestone_id",
+                                            milestoneId.toString()
+                                        ),
+                                        note_status = MultipartBody.Part.createFormData(
+                                            "share_note_with_partner",
+                                            true.toString()
+                                        ),
+                                        note_biggest = MultipartBody.Part.createFormData(
+                                            "share_note_with_biggestask",
+                                            true.toString()
+                                        )
                                     )
-                                    navHostController.navigate(BottomNavItems.Milestones.navRoute)
-                                    navHostController.popBackStack(
-                                        BottomNavScreen.MileStones.route,
-                                        true
-                                    )
+                                    editMilestoneViewModel.updateMilestoneResponse.observe(
+                                        homeActivity
+                                    ) {
+                                        if (it != null) {
+                                            handleStoreMilestoneData(
+                                                result = it,
+                                                editMilestoneViewModel = editMilestoneViewModel,
+                                                navHostController = navHostController
+                                            )
+                                        }
+                                    }
                                 },
                                 colors = ButtonDefaults.buttonColors(
                                     backgroundColor = Custom_Blue
@@ -1115,6 +1195,137 @@ fun EditMilestoneScreen(
     }
     if (editMilestoneViewModel.isMilestoneDataUpdated.value || editMilestoneViewModel.isNoteSaved.value) {
         ProgressBarTransparentBackground(loadingText = if (editMilestoneViewModel.isMilestoneDataUpdated.value) "Updating..." else "Saving")
+    }
+    if (editMilestoneViewModel.isMilestoneAnsUpdated.value) {
+        ProgressBarTransparentBackground(loadingText = "Updating...")
+    }
+    if (editMilestoneViewModel.isImageDeleted.value){
+        ProgressBarTransparentBackground(loadingText = "Removing...")
+    }
+}
+
+private fun getUpdatedMilestone(
+    homeActivity: HomeActivity,
+    editMilestoneViewModel: EditMilestoneViewModel,
+    context: Context,
+    type: String?,
+    milestoneId: Int,
+    navHostController: NavHostController
+) {
+    val userId = PreferenceProvider(context).getIntValue("user_id", 0)
+    editMilestoneViewModel.getMilestoneDetails(
+        EditMilestoneRequest(
+            type = type!!,
+            user_id = userId,
+            milestone_id = milestoneId
+        )
+    )
+    editMilestoneViewModel.editMilestoneResponse.observe(homeActivity) {
+        if (it != null) {
+            handleEditMilestoneData(
+                navHostController = navHostController,
+                result = it,
+                context = context,
+                editMilestoneViewModel = editMilestoneViewModel
+            )
+        }
+    }
+}
+
+private fun handleDeleteImageData(
+    result: NetworkResult<SendOtpResponse>,
+    editMilestoneViewModel: EditMilestoneViewModel,
+    homeActivity: HomeActivity,
+    context: Context,
+    type: String?,
+    milestoneId: Int,
+    navHostController: NavHostController
+) {
+    when (result) {
+        is NetworkResult.Loading -> {
+            // show a progress bar
+            Log.e("TAG", "handleUserData() --> Loading  $result")
+            editMilestoneViewModel.isImageDeleted.value = true
+        }
+        is NetworkResult.Success -> {
+            // bind data to the view
+            Log.e("TAG", "handleUserData() --> Success  $result")
+            Log.i("TAG", result.message.toString())
+            editMilestoneViewModel.isImageDeleted.value = false
+            getUpdatedMilestone(
+                homeActivity = homeActivity,
+                editMilestoneViewModel = editMilestoneViewModel,
+                context = context,
+                type = type,
+                milestoneId = milestoneId,
+                navHostController = navHostController
+            )
+        }
+        is NetworkResult.Error -> {
+            // show error message
+            editMilestoneViewModel.isImageDeleted.value = false
+            Log.e("TAG", "handleUserData() --> Error ${result.message}")
+        }
+    }
+}
+
+private fun handleUpdateImageData(
+    result: NetworkResult<SendOtpResponse>,
+    editMilestoneViewModel: EditMilestoneViewModel,
+    context: Context
+) {
+    when (result) {
+        is NetworkResult.Loading -> {
+            // show a progress bar
+            Log.e("TAG", "handleUserData() --> Loading  $result")
+            editMilestoneViewModel.isMilestoneImageUpdated.value = true
+        }
+        is NetworkResult.Success -> {
+            // bind data to the view
+            Log.e("TAG", "handleUserData() --> Success  $result")
+            editMilestoneViewModel.isMilestoneImageUpdated.value = false
+        }
+        is NetworkResult.Error -> {
+            // show error message
+            Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
+            Log.e("TAG", "handleUserData() --> Error ${result.message}")
+            editMilestoneViewModel.isMilestoneImageUpdated.value = false
+        }
+    }
+}
+
+
+private fun handleStoreMilestoneData(
+    result: NetworkResult<UpdateUserProfileResponse>,
+    editMilestoneViewModel: EditMilestoneViewModel,
+    navHostController: NavHostController
+) {
+    when (result) {
+        is NetworkResult.Loading -> {
+            // show a progress bar
+            Log.e("TAG", "handleUserData() --> Loading  $result")
+            editMilestoneViewModel.isMilestoneAnsUpdated.value = true
+        }
+        is NetworkResult.Success -> {
+            // bind data to the view
+            Log.e("TAG", "handleUserData() --> Success  $result")
+            Log.i("TAG", result.message.toString())
+            editMilestoneViewModel.isMilestoneAnsUpdated.value = false
+            navHostController.popBackStack(
+                BottomNavScreen.AddNewMileStones.route,
+                true
+            )
+            navHostController.navigate(BottomNavItems.Milestones.navRoute)
+            navHostController.popBackStack(
+                BottomNavScreen.MileStones.route,
+                true
+            )
+        }
+        is NetworkResult.Error -> {
+            // show error message
+            Log.e("TAG", "handleUserData() --> Error ${result.message}")
+            editMilestoneViewModel.isMilestoneAnsUpdated.value = false
+        }
     }
 }
 
@@ -1213,6 +1424,15 @@ private fun handleUpdateMilestoneData(
             Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
         }
     }
+}
+
+fun convertImageMultiPart(imagePath: String): MultipartBody.Part? {
+    val file = File(imagePath)
+    return MultipartBody.Part.createFormData(
+        "image[]",
+        file.name,
+        file.asRequestBody("image/*".toMediaTypeOrNull())
+    )
 }
 
 private fun handleSaveNoteData(

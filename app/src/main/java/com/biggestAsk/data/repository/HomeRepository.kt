@@ -164,7 +164,7 @@ class HomeRepository @Inject constructor(
 
     suspend fun storeMilestoneAns(
         note: MultipartBody.Part?,
-        images: List<MultipartBody.Part?>,
+        images: ArrayList<MultipartBody.Part?>,
         user_id: MultipartBody.Part?,
         type: MultipartBody.Part?,
         milestone_id: MultipartBody.Part?,
@@ -184,5 +184,22 @@ class HomeRepository @Inject constructor(
                 )
             })
         }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun updateMilestoneImage(
+        image_id:MultipartBody.Part?,
+        image:MultipartBody.Part?
+    ):Flow<NetworkResult<SendOtpResponse>>{
+        return flow {
+            emit(safeApiCall { apiService.updateMilestoneImage(image_id,image) })
+        }
+    }
+
+    suspend fun deleteMilestoneImage(
+        image_id: DeleteMilestoneImageRequest
+    ):Flow<NetworkResult<SendOtpResponse>>{
+        return flow {
+            emit(safeApiCall { apiService.deleteMilestoneImage(image_id = image_id) })
+        }
     }
 }

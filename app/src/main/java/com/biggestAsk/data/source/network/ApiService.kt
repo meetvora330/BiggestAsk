@@ -81,7 +81,7 @@ interface ApiService {
     suspend fun inviteSurrogate(
         @Path("id") user_id: Int,
         @Body inviteSurrogateRequest: InviteSurrogateRequest
-    ):Response<InviteSurrogateResponse>
+    ): Response<InviteSurrogateResponse>
 
 
     @POST(Constants.GET_USER_DETAIL)
@@ -114,4 +114,14 @@ interface ApiService {
         @Part note_status: MultipartBody.Part?,
         @Part note_biggest: MultipartBody.Part?
     ): Response<UpdateUserProfileResponse>
+
+    @Multipart
+    @POST(Constants.UPDATE_MILESTONE_IMAGE)
+    suspend fun updateMilestoneImage(
+        @Part image_id: MultipartBody.Part?,
+        @Part image: MultipartBody.Part?
+    ): Response<SendOtpResponse>
+
+    @POST(Constants.DELETE_MILESTONE_IMAGE)
+    suspend fun deleteMilestoneImage(@Body image_id: DeleteMilestoneImageRequest): Response<SendOtpResponse>
 }

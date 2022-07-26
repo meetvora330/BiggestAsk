@@ -651,7 +651,7 @@ fun YourAccountScreen(
                                     yourAccountViewModel.isEditable.value = false
                                 }
                             }
-                            val image = uriPath?.let { convertImageMultiPart(it) }
+                            val image = uriPath?.let { convertImageMultiPart(it,"image1") }
 
                             yourAccountViewModel.updateUserProfile(
                                 1,
@@ -759,10 +759,10 @@ fun YourAccountScreen(
     }
 }
 
-private fun convertImageMultiPart(imagePath: String): MultipartBody.Part? {
+ fun convertImageMultiPart(imagePath: String,name:String): MultipartBody.Part? {
     val file = File(imagePath)
     return MultipartBody.Part.createFormData(
-        "image1",
+        name,
         file.name,
         file.asRequestBody("image/*".toMediaTypeOrNull())
     )

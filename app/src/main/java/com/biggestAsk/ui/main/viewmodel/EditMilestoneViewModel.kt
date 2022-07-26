@@ -2,11 +2,13 @@ package com.biggestAsk.ui.main.viewmodel
 
 import android.app.Application
 import android.graphics.Bitmap
+import android.net.Uri
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.biggestAsk.data.model.request.DeleteMilestoneImageRequest
 import com.biggestAsk.data.model.request.EditMilestoneRequest
 import com.biggestAsk.data.model.request.SaveNoteRequest
 import com.biggestAsk.data.model.request.UpdateMilestoneAnsInfoRequest
@@ -17,6 +19,7 @@ import com.biggestAsk.data.model.response.UpdateUserProfileResponse
 import com.biggestAsk.data.repository.HomeRepository
 import com.biggestAsk.data.source.network.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 import javax.inject.Inject
@@ -40,7 +43,11 @@ class EditMilestoneViewModel @Inject constructor(
     var milestoneId: MutableState<Int> = mutableStateOf(0)
     var isMilestoneDataUpdated: MutableState<Boolean> = mutableStateOf(false)
     var isNoteSaved: MutableState<Boolean> = mutableStateOf(false)
+    var isMilestoneAnsUpdated: MutableState<Boolean> = mutableStateOf(false)
+    var isImageDeleted: MutableState<Boolean> = mutableStateOf(false)
+    var isMilestoneImageUpdated: MutableState<Boolean> = mutableStateOf(false)
     var imageList = mutableListOf<EditMilestoneImageResponse>()
+    var uriList = mutableListOf<Uri>()
     var tempImageList = mutableListOf<Bitmap>()
     var imageListIndex = mutableStateOf<Int>(-1)
     var editMilestoneResponse: MutableLiveData<NetworkResult<EditMilestoneResponse>> =
@@ -49,6 +56,10 @@ class EditMilestoneViewModel @Inject constructor(
         MutableLiveData()
     var saveNoteResponse: MutableLiveData<NetworkResult<SendOtpResponse>> = MutableLiveData()
     var updateMilestoneResponse: MutableLiveData<NetworkResult<UpdateUserProfileResponse>> =
+        MutableLiveData()
+    var updateMilestoneImage: MutableLiveData<NetworkResult<SendOtpResponse>> =
+        MutableLiveData()
+    var deleteMilestoneImageResponse: MutableLiveData<NetworkResult<SendOtpResponse>> =
         MutableLiveData()
 
     fun getMilestoneDetails(editMilestoneRequest: EditMilestoneRequest) {
@@ -80,7 +91,7 @@ class EditMilestoneViewModel @Inject constructor(
 
     fun storeMilestoneAns(
         note: MultipartBody.Part?,
-        images: List<MultipartBody.Part?>,
+        images: ArrayList<MultipartBody.Part?>,
         user_id: MultipartBody.Part?,
         type: MultipartBody.Part?,
         milestone_id: MultipartBody.Part?,
@@ -99,6 +110,26 @@ class EditMilestoneViewModel @Inject constructor(
                 note_biggest
             ).collect {
                 updateMilestoneResponse.value = it
+            }
+        }
+    }
+
+    fun updateMilestoneImage(image_id: MultipartBody.Part?, image: MultipartBody.Part?) {
+        updateMilestoneImage.value = NetworkResult.Loading()
+        viewModelScope.launch {
+            homeRepository.updateMilestoneImage(
+                image_id, image
+            ).collect {
+                updateMilestoneImage.value = it
+            }
+        }
+    }
+
+    fun deleteMileStoneImage(image_id: DeleteMilestoneImageRequest) {
+        deleteMilestoneImageResponse.value = NetworkResult.Loading()
+        viewModelScope.launch {
+            homeRepository.deleteMilestoneImage(image_id).collect{
+                deleteMilestoneImageResponse.value = it
             }
         }
     }
