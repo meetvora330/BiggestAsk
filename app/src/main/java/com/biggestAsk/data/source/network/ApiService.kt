@@ -12,17 +12,23 @@ interface ApiService {
     @GET(Constants.INTRO_SCREEN)
     suspend fun getIntroInfo(): Response<IntroInfoResponse>
 
+    @GET(Constants.GET_UPDATED_STATUS)
+    suspend fun getUpdatedStatus(
+        @Query("user_id") user_id: Int,
+        @Query("type") type: String
+    ): Response<UpdatedStatusResponse>
+
     @POST(Constants.SEND_OTP)
-    suspend fun sendOtp(@Body email: SendOtpRequest): Response<SendOtpResponse>
+    suspend fun sendOtp(@Body email: SendOtpRequest): Response<CommonResponse>
 
     @POST(Constants.CHECK_OTP)
-    suspend fun checkOtp(@Body checkOtpRequest: CheckOtpRequest): Response<SendOtpResponse>
+    suspend fun checkOtp(@Body checkOtpRequest: CheckOtpRequest): Response<CommonResponse>
 
     @POST(Constants.RESEND_OTP)
-    suspend fun resendOtp(@Body email: SendOtpRequest): Response<SendOtpResponse>
+    suspend fun resendOtp(@Body email: SendOtpRequest): Response<CommonResponse>
 
     @POST(Constants.REGISTRATION)
-    suspend fun registration(@Body registrationBodyRequest: RegistrationBodyRequest): Response<SendOtpResponse>
+    suspend fun registration(@Body registrationBodyRequest: RegistrationBodyRequest): Response<CommonResponse>
 
     @POST(Constants.LOGIN)
     suspend fun login(@Body loginBodyRequest: LoginBodyRequest): Response<LoginBodyResponse>
@@ -31,7 +37,7 @@ interface ApiService {
     suspend fun getBaseScreenQuestion(): Response<List<BaseScreenQuestionResponse>>
 
     @POST(Constants.SCREEN_QUESTION_STATUS)
-    suspend fun screenQuestionStatus(@Body screenQuestionStatusRequest: ScreenQuestionStatusRequest): Response<SendOtpResponse>
+    suspend fun screenQuestionStatus(@Body screenQuestionStatusRequest: ScreenQuestionStatusRequest): Response<CommonResponse>
 
     @POST(Constants.GET_PREGNANCY_MILESTONE)
     suspend fun getPregnancyMilestone(@Body getPregnancyMilestoneRequest: GetPregnancyMilestoneRequest): Response<GetPregnancyMilestoneResponse>
@@ -62,10 +68,10 @@ interface ApiService {
     ): Response<GetMilestoneResponse>
 
     @POST(Constants.CREATE_MILESTONE)
-    suspend fun createMilestone(@Body createMilestoneRequest: CreateMilestoneRequest): Response<SendOtpResponse>
+    suspend fun createMilestone(@Body createMilestoneRequest: CreateMilestoneRequest): Response<CommonResponse>
 
     @POST(Constants.RESET_MILESTONE)
-    suspend fun resetMilestone(@Body resetMilestoneRequest: ResetMilestoneRequest): Response<SendOtpResponse>
+    suspend fun resetMilestone(@Body resetMilestoneRequest: ResetMilestoneRequest): Response<CommonResponse>
 
     @GET(Constants.EDIT_MILESTONE)
     suspend fun editMilestone(
@@ -75,10 +81,10 @@ interface ApiService {
     ): Response<EditMilestoneResponse>
 
     @POST(Constants.UPDATE_MILESTONE_ANS_INFO)
-    suspend fun updateMilestoneAnsInfo(@Body updateMilestoneAnsInfoRequest: UpdateMilestoneAnsInfoRequest): Response<SendOtpResponse>
+    suspend fun updateMilestoneAnsInfo(@Body updateMilestoneAnsInfoRequest: UpdateMilestoneAnsInfoRequest): Response<CommonResponse>
 
     @POST(Constants.SAVE_NOTE)
-    suspend fun saveNote(@Body saveNoteRequest: SaveNoteRequest): Response<SendOtpResponse>
+    suspend fun saveNote(@Body saveNoteRequest: SaveNoteRequest): Response<CommonResponse>
 
     @POST(Constants.INVITE_SURROGATE + "{id}")
     suspend fun inviteSurrogate(
@@ -123,8 +129,11 @@ interface ApiService {
     suspend fun updateMilestoneImage(
         @Part image_id: MultipartBody.Part?,
         @Part image: MultipartBody.Part?
-    ): Response<SendOtpResponse>
+    ): Response<CommonResponse>
 
     @POST(Constants.DELETE_MILESTONE_IMAGE)
-    suspend fun deleteMilestoneImage(@Body image_id: DeleteMilestoneImageRequest): Response<SendOtpResponse>
+    suspend fun deleteMilestoneImage(@Body image_id: DeleteMilestoneImageRequest): Response<CommonResponse>
+
+    @POST(Constants.UPDATE_PAYMENT_STATUS)
+    suspend fun updatePaymentStatus(@Body updatePaymentStatusRequest: UpdatePaymentStatusRequest): Response<CommonResponse>
 }

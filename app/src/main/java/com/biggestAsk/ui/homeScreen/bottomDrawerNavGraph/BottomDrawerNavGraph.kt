@@ -1,13 +1,19 @@
 package com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph
 
 import android.content.Context
+import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.biggestAsk.data.model.LoginStatus
+import com.biggestAsk.navigation.SetUpNavGraph
 import com.biggestAsk.ui.HomeActivity
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.BottomHomeScreen
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.BottomQuestionScreen
@@ -20,9 +26,15 @@ import com.biggestAsk.ui.homeScreen.drawerScreens.notification.*
 import com.biggestAsk.ui.homeScreen.drawerScreens.settingScreens.*
 import com.biggestAsk.ui.homeScreen.drawerScreens.yourAccount.YourAccountScreen
 import com.biggestAsk.ui.homeScreen.drawerScreens.yourSurrogateMother.SurrogateMotherPresent
+import com.biggestAsk.ui.homeScreen.drawerScreens.yourSurrogateMother.SurrogateParentNotAssignScreen
 import com.biggestAsk.ui.homeScreen.drawerScreens.yourSurrogateMother.YourSurrogateMother
+import com.biggestAsk.ui.introScreen.LockScreenOrientation
 import com.biggestAsk.ui.main.viewmodel.*
+import com.biggestAsk.ui.ui.theme.BasicStructureTheme
+import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
+import com.example.biggestAsk.R
+import java.util.*
 
 @Composable
 fun BottomNavigationDrawerGraph(
@@ -53,16 +65,23 @@ fun BottomNavigationDrawerGraph(
         ) {
             val provider = PreferenceProvider(context)
             val type = provider.getValue("type", "")
-            val partnerId = provider.getIntValue("partner_id", 0)
-            if (type == "parent") {
-                Log.d("TAG", "BottomNavigationDrawerGraph: $partnerId")
-                if (partnerId == 0) {
-                    YourSurrogateMother(
-                        surrogateViewModel = surrogateViewModel,
-                        context = context,
-                        homeActivity = homeActivity
-                    )
-                } else {
+            when (provider.getValue(Constants.LOGIN_STATUS, "")) {
+                LoginStatus.PARTNER_NOT_ASSIGN.name.lowercase(Locale.getDefault()) -> {
+                    if (type == Constants.PARENT) {
+                        YourSurrogateMother(
+                            surrogateViewModel = surrogateViewModel,
+                            context = context,
+                            homeActivity = homeActivity,
+                            navHostController
+                        )
+                    } else {
+                        SurrogateParentNotAssignScreen(stringResource(id = R.string.label_surrogate_parent_not_available))
+                    }
+                }
+                LoginStatus.MILESTONE_DATE_NOT_ADDED.name.lowercase(Locale.getDefault()) -> {
+                    SurrogateParentNotAssignScreen(stringResource(id = R.string.label_add_milestone_date))
+                }
+                LoginStatus.ON_BOARDING.name.lowercase(Locale.getDefault()) -> {
                     BottomHomeScreen(
                         navHostController = navHostController,
                         context = context,
@@ -70,16 +89,8 @@ fun BottomNavigationDrawerGraph(
                         bottomHomeViewModel = bottomHomeViewModel
                     )
                 }
-            } else {
-                if (partnerId == 0) {
-                    SurrogateMotherPresent()
-                } else {
-                    BottomHomeScreen(
-                        navHostController = navHostController,
-                        context = context,
-                        homeActivity = homeActivity,
-                        bottomHomeViewModel = bottomHomeViewModel
-                    )
+                else -> {
+
                 }
             }
         }
@@ -87,6 +98,11 @@ fun BottomNavigationDrawerGraph(
             route = BottomNavScreen.Question.route
         ) {
             BottomQuestionScreen(navHostController = navHostController)
+        }
+        composable(
+            route = BottomNavScreen.SurrogateParentNotAssignScreen.route
+        ) {
+            SurrogateParentNotAssignScreen(stringResource(id = R.string.label_add_milestone_date))
         }
         composable(
             route = BottomNavScreen.AddNewMileStones.route,
@@ -111,7 +127,7 @@ fun BottomNavigationDrawerGraph(
             IntendParentsScreen(viewModel = mainViewModel)
         }
         composable(route = NavDrawerItem.YourSurrogateMother.route) {
-            YourSurrogateMother(surrogateViewModel, context, homeActivity = homeActivity)
+            YourSurrogateMother(surrogateViewModel, context, homeActivity = homeActivity, navHostController = navHostController)
         }
         composable(route = NavDrawerItem.Community.route) {
             Community()

@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.biggestAsk.data.model.LoginStatus
 import com.biggestAsk.data.model.request.ScreenQuestionStatusRequest
-import com.biggestAsk.data.model.response.SendOtpResponse
+import com.biggestAsk.data.model.response.CommonResponse
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.ui.HomeActivity
 import com.biggestAsk.ui.MainActivity
@@ -224,7 +224,7 @@ private fun frequencySubmitApiCall(
 
 @OptIn(DelicateCoroutinesApi::class)
 private fun handleUserData(
-    result: NetworkResult<SendOtpResponse>,
+    result: NetworkResult<CommonResponse>,
     homeViewModel: HomeViewModel,
     context: Context,
 ) {

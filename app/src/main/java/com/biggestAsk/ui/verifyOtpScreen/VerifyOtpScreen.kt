@@ -41,13 +41,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.biggestAsk.data.model.request.CheckOtpRequest
 import com.biggestAsk.data.model.request.SendOtpRequest
-import com.biggestAsk.data.model.response.SendOtpResponse
+import com.biggestAsk.data.model.response.CommonResponse
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.navigation.Screen
 import com.biggestAsk.ui.MainActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
 import com.biggestAsk.ui.main.viewmodel.HomeViewModel
-import com.biggestAsk.ui.main.viewmodel.MainViewModel
 import com.biggestAsk.ui.main.viewmodel.VerifyOtpViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.example.biggestAsk.R
@@ -270,7 +269,7 @@ fun VerifyOtpScreen(
 }
 
 private fun handleUserResendOtp(
-    result: NetworkResult<SendOtpResponse>,
+    result: NetworkResult<CommonResponse>,
     verifyOtpViewModel: VerifyOtpViewModel,
     context: Context,
     coroutineScope: CoroutineScope
@@ -309,7 +308,7 @@ private fun handleUserResendOtp(
 
 private fun handleUserData(
     navHostController: NavHostController,
-    result: NetworkResult<SendOtpResponse>,
+    result: NetworkResult<CommonResponse>,
     email: String,
     verifyOtpViewModel: VerifyOtpViewModel,
     context: Context

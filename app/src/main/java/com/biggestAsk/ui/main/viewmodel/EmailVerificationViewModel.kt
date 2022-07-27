@@ -8,7 +8,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.biggestAsk.data.model.request.SendOtpRequest
-import com.biggestAsk.data.model.response.SendOtpResponse
+import com.biggestAsk.data.model.response.CommonResponse
 import com.biggestAsk.data.repository.EmailVerificationRepository
 import com.biggestAsk.data.source.network.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +22,7 @@ class EmailVerificationViewModel @Inject constructor(
 ) : AndroidViewModel(application) {
     var isLoading: Boolean by mutableStateOf(false)
     var textEmailVerify: String by mutableStateOf("")
-    var sendOtpResponse: MutableLiveData<NetworkResult<SendOtpResponse>> = MutableLiveData()
+    var sendOtpResponse: MutableLiveData<NetworkResult<CommonResponse>> = MutableLiveData()
 
     fun sendOtp(sendOtpRequest: SendOtpRequest) {
         sendOtpResponse.value = NetworkResult.Loading()

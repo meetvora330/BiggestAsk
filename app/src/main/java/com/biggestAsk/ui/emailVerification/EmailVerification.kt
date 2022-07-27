@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.biggestAsk.data.model.request.SendOtpRequest
-import com.biggestAsk.data.model.response.SendOtpResponse
+import com.biggestAsk.data.model.response.CommonResponse
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.navigation.Screen
 import com.biggestAsk.ui.MainActivity
@@ -309,7 +309,7 @@ fun ProgressBarTransparentBackground(loadingText: String, id: Int = R.color.cust
 
 private fun handleUserData(
     navHostController: NavHostController,
-    result: NetworkResult<SendOtpResponse>,
+    result: NetworkResult<CommonResponse>,
     emailVerificationViewModel: EmailVerificationViewModel,
     context: Context
 ) {

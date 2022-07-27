@@ -9,7 +9,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.biggestAsk.data.model.request.CheckOtpRequest
 import com.biggestAsk.data.model.request.SendOtpRequest
-import com.biggestAsk.data.model.response.SendOtpResponse
+import com.biggestAsk.data.model.response.CommonResponse
 import com.biggestAsk.data.repository.VerifyOtpRepository
 import com.biggestAsk.data.source.network.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,8 +25,8 @@ class VerifyOtpViewModel @Inject constructor(
     var isOtpValueVerified: Boolean by mutableStateOf(false)
     var ticks: Int by mutableStateOf(60)
     var isLoading: Boolean by mutableStateOf(false)
-    var checkOtpResponse: MutableLiveData<NetworkResult<SendOtpResponse>> = MutableLiveData()
-    var reSendOtpResponse: MutableLiveData<NetworkResult<SendOtpResponse>> = MutableLiveData()
+    var checkOtpResponse: MutableLiveData<NetworkResult<CommonResponse>> = MutableLiveData()
+    var reSendOtpResponse: MutableLiveData<NetworkResult<CommonResponse>> = MutableLiveData()
     fun resendOtp(sendOtpRequest: SendOtpRequest) {
         reSendOtpResponse.value = NetworkResult.Loading()
         viewModelScope.launch {

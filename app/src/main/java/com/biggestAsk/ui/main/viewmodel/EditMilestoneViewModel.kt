@@ -14,12 +14,11 @@ import com.biggestAsk.data.model.request.SaveNoteRequest
 import com.biggestAsk.data.model.request.UpdateMilestoneAnsInfoRequest
 import com.biggestAsk.data.model.response.EditMilestoneImageResponse
 import com.biggestAsk.data.model.response.EditMilestoneResponse
-import com.biggestAsk.data.model.response.SendOtpResponse
+import com.biggestAsk.data.model.response.CommonResponse
 import com.biggestAsk.data.model.response.UpdateUserProfileResponse
 import com.biggestAsk.data.repository.HomeRepository
 import com.biggestAsk.data.source.network.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 import javax.inject.Inject
@@ -52,14 +51,14 @@ class EditMilestoneViewModel @Inject constructor(
     var imageListIndex = mutableStateOf<Int>(-1)
     var editMilestoneResponse: MutableLiveData<NetworkResult<EditMilestoneResponse>> =
         MutableLiveData()
-    var updateMilestoneAnsInfoResponse: MutableLiveData<NetworkResult<SendOtpResponse>> =
+    var updateMilestoneAnsInfoResponse: MutableLiveData<NetworkResult<CommonResponse>> =
         MutableLiveData()
-    var saveNoteResponse: MutableLiveData<NetworkResult<SendOtpResponse>> = MutableLiveData()
+    var saveNoteResponse: MutableLiveData<NetworkResult<CommonResponse>> = MutableLiveData()
     var updateMilestoneResponse: MutableLiveData<NetworkResult<UpdateUserProfileResponse>> =
         MutableLiveData()
-    var updateMilestoneImage: MutableLiveData<NetworkResult<SendOtpResponse>> =
+    var updateMilestoneImage: MutableLiveData<NetworkResult<CommonResponse>> =
         MutableLiveData()
-    var deleteMilestoneImageResponse: MutableLiveData<NetworkResult<SendOtpResponse>> =
+    var deleteMilestoneImageResponse: MutableLiveData<NetworkResult<CommonResponse>> =
         MutableLiveData()
 
     fun getMilestoneDetails(editMilestoneRequest: EditMilestoneRequest) {

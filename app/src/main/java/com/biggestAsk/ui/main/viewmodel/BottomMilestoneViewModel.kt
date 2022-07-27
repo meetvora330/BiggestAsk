@@ -8,14 +8,12 @@ import androidx.lifecycle.viewModelScope
 import com.biggestAsk.data.model.request.CreateMilestoneRequest
 import com.biggestAsk.data.model.request.GetPregnancyMilestoneRequest
 import com.biggestAsk.data.model.request.ResetMilestoneRequest
-import com.biggestAsk.data.model.response.BaseScreenQuestionResponse
 import com.biggestAsk.data.model.response.GetMilestoneResponse
 import com.biggestAsk.data.model.response.Milestone
-import com.biggestAsk.data.model.response.SendOtpResponse
+import com.biggestAsk.data.model.response.CommonResponse
 import com.biggestAsk.data.repository.HomeRepository
 import com.biggestAsk.data.source.network.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,7 +24,7 @@ class BottomMilestoneViewModel @Inject constructor(
 ) : AndroidViewModel(application) {
     var getMilestoneResponse: MutableLiveData<NetworkResult<GetMilestoneResponse>> =
         MutableLiveData()
-    var resetMilestoneResponse: MutableLiveData<NetworkResult<SendOtpResponse>> =
+    var resetMilestoneResponse: MutableLiveData<NetworkResult<CommonResponse>> =
         MutableLiveData()
     val milestoneList = mutableStateListOf<Milestone>()
     var emptyList by mutableStateOf(listOf<Milestone>())
@@ -41,7 +39,7 @@ class BottomMilestoneViewModel @Inject constructor(
     var addNewMilestoneLocationB: MutableState<String> = mutableStateOf("")
     var addNewMilestoneLocationBEmpty: MutableState<Boolean> = mutableStateOf(false)
     var isNewMilestoneAdded: MutableState<Boolean> = mutableStateOf(false)
-    var createMilestoneResponse: MutableLiveData<NetworkResult<SendOtpResponse>> = MutableLiveData()
+    var createMilestoneResponse: MutableLiveData<NetworkResult<CommonResponse>> = MutableLiveData()
     var isSelected: Boolean by mutableStateOf(false)
 
     fun getMilestones(getPregnancyMilestoneRequest: GetPregnancyMilestoneRequest) {

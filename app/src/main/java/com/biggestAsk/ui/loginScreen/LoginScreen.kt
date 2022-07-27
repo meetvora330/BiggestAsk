@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -320,6 +321,7 @@ fun LoginScreen(
                                             result = it,
                                             loginViewModel = loginViewModel,
                                             context = context,
+                                            mainActivity
                                         )
                                     }
                                 }
@@ -365,6 +367,7 @@ private fun handleUserData(
     result: NetworkResult<LoginBodyResponse>,
     loginViewModel: LoginViewModel,
     context: Context,
+    mainActivity: MainActivity
 ) {
     when (result) {
         is NetworkResult.Loading -> {
@@ -394,16 +397,19 @@ private fun handleUserData(
                     navHostController.popBackStack()
                     navHostController.navigate(Screen.QuestionScreen.route)
                 }
-                LoginStatus.PAYMENT_NOT_DONE.name.lowercase(Locale.getDefault()) -> {
-                    context.findActivity()?.finish()
-                    context.startActivity(
+                LoginStatus.PARTNER_NOT_ASSIGN.name.lowercase(Locale.getDefault()),
+                LoginStatus.MILESTONE_DATE_NOT_ADDED.name.lowercase(Locale.getDefault()),
+                LoginStatus.ON_BOARDING.name.lowercase(Locale.getDefault()) -> {
+                    mainActivity.startActivity(
                         Intent(
-                            context,
+                            mainActivity,
                             HomeActivity::class.java
                         )
                     )
+                    mainActivity.finish()
                 }
             }
+
 
         }
         is NetworkResult.Error -> {

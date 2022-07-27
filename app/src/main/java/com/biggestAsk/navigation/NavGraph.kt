@@ -176,7 +176,7 @@ fun SetUpNavGraph(
         ) {
             PaymentScreen(
                 navHostController = navHostController,
-                mainViewModel = viewModel,
+                mainActivity = mainActivity,
                 homeViewModel = homeViewModel,
                 context = mainActivity.applicationContext
             )

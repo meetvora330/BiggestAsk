@@ -54,7 +54,7 @@ import com.biggestAsk.data.model.request.SaveNoteRequest
 import com.biggestAsk.data.model.request.UpdateMilestoneAnsInfoRequest
 import com.biggestAsk.data.model.response.EditMilestoneImageResponse
 import com.biggestAsk.data.model.response.EditMilestoneResponse
-import com.biggestAsk.data.model.response.SendOtpResponse
+import com.biggestAsk.data.model.response.CommonResponse
 import com.biggestAsk.data.model.response.UpdateUserProfileResponse
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.ui.HomeActivity
@@ -1230,7 +1230,7 @@ private fun getUpdatedMilestone(
 }
 
 private fun handleDeleteImageData(
-    result: NetworkResult<SendOtpResponse>,
+    result: NetworkResult<CommonResponse>,
     editMilestoneViewModel: EditMilestoneViewModel,
     homeActivity: HomeActivity,
     context: Context,
@@ -1266,7 +1266,7 @@ private fun handleDeleteImageData(
 }
 
 private fun handleUpdateImageData(
-    result: NetworkResult<SendOtpResponse>,
+    result: NetworkResult<CommonResponse>,
     editMilestoneViewModel: EditMilestoneViewModel,
     context: Context
 ) {
@@ -1393,7 +1393,7 @@ private fun handleEditMilestoneData(
 private fun handleUpdateMilestoneData(
     coroutineScope: CoroutineScope,
     editMilestoneBottomSheetScaffoldState: BottomSheetScaffoldState,
-    result: NetworkResult<SendOtpResponse>,
+    result: NetworkResult<CommonResponse>,
     editMilestoneViewModel: EditMilestoneViewModel,
     context: Context
 ) {
@@ -1431,7 +1431,7 @@ fun convertImageMultiPart(imagePath: String): MultipartBody.Part {
 }
 
 private fun handleSaveNoteData(
-    result: NetworkResult<SendOtpResponse>,
+    result: NetworkResult<CommonResponse>,
     editMilestoneViewModel: EditMilestoneViewModel,
     context: Context
 ) {

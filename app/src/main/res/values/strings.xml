@@ -186,5 +186,7 @@
     <string name="invite_surrogate_email_hint">Email</string>
     <string name="invite_surrogate_dialog_btn_text">Send invitation</string>
     <string name="title_activity_splash">SplashActivity</string>
+    <string name="label_surrogate_parent_not_available">Expect your parent\n to invite you</string>
+    <string name="label_add_milestone_date">Please add milestone date\n in 2nd milestone \nin milestone listing screen</string>
 
 </resources>

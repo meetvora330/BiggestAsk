@@ -33,21 +33,18 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ChainStyle
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavHostController
 import com.biggestAsk.data.model.request.RegistrationBodyRequest
-import com.biggestAsk.data.model.response.SendOtpResponse
+import com.biggestAsk.data.model.response.CommonResponse
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.navigation.Screen
 import com.biggestAsk.ui.MainActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
 import com.biggestAsk.ui.main.viewmodel.EmailVerificationViewModel
-import com.biggestAsk.ui.main.viewmodel.MainViewModel
 import com.biggestAsk.ui.main.viewmodel.RegisterViewModel
 import com.biggestAsk.ui.ui.theme.*
 import com.example.biggestAsk.R
@@ -517,7 +514,7 @@ fun RegisterScreen(
 
 private fun handleUserData(
     navHostController: NavHostController,
-    result: NetworkResult<SendOtpResponse>,
+    result: NetworkResult<CommonResponse>,
     registerViewModel: RegisterViewModel,
     emailVerificationViewModel: EmailVerificationViewModel,
     context: Context

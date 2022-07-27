@@ -11,6 +11,7 @@ sealed class BottomNavScreen(
     object MileStones : BottomNavScreen("milestones")
     object Home : BottomNavScreen("home")
     object Question : BottomNavScreen("question")
+    object SurrogateParentNotAssignScreen : BottomNavScreen("surrogate_parent_not_assign")
     object AddNewMileStones :
         BottomNavScreen("edit_milestone/{$ADD_NEW_MILESTONE_ARGS_ID}"){
             fun editMilestone(

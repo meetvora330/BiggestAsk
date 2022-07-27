@@ -15,6 +15,7 @@ object Constants {
 
     //API END POINTS
     const val INTRO_SCREEN = "get_intro_info"
+    const val GET_UPDATED_STATUS = "get_updated_status"
     const val SEND_OTP = "sendotp"
     const val CHECK_OTP = "checkotp"
     const val RESEND_OTP = "resend_otp"
@@ -39,6 +40,7 @@ object Constants {
     const val STORE_MILESTONE_ANS = "store_milestone_ans"
     const val UPDATE_MILESTONE_IMAGE = "update_milestone_image"
     const val DELETE_MILESTONE_IMAGE = "delete_milestone_image"
+    const val UPDATE_PAYMENT_STATUS = "update_payment_status"
 
     //prefrence data
     const val LOGIN_STATUS = "login_status"

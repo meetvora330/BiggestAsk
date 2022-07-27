@@ -8,7 +8,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.biggestAsk.data.model.request.RegistrationBodyRequest
-import com.biggestAsk.data.model.response.SendOtpResponse
+import com.biggestAsk.data.model.response.CommonResponse
 import com.biggestAsk.data.repository.RegisterRepository
 import com.biggestAsk.data.source.network.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,7 +31,7 @@ class RegisterViewModel @Inject constructor(
     val selectedValueIntendParentRb = mutableStateOf(true)
     val selectedValueSurrogateMotherRb = mutableStateOf(false)
     var isLoading: Boolean by mutableStateOf(false)
-    var registerScreen: MutableLiveData<NetworkResult<SendOtpResponse>> = MutableLiveData()
+    var registerScreen: MutableLiveData<NetworkResult<CommonResponse>> = MutableLiveData()
     fun registration(registrationBodyRequest: RegistrationBodyRequest) {
         viewModelScope.launch {
             registerScreen.value = NetworkResult.Loading()

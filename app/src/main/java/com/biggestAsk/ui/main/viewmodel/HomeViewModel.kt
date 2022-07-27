@@ -7,15 +7,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.biggestAsk.data.model.request.*
 import com.biggestAsk.data.model.response.BaseScreenQuestionResponse
-import com.biggestAsk.data.model.response.GetPregnancyMilestoneResponse
 import com.biggestAsk.data.model.response.LoginBodyResponse
-import com.biggestAsk.data.model.response.SendOtpResponse
+import com.biggestAsk.data.model.response.CommonResponse
 import com.biggestAsk.data.repository.HomeRepository
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,14 +28,14 @@ class HomeViewModel @Inject constructor(
 
     //Email Verification Screen
     var textEmailVerify: String by mutableStateOf("")
-    var sendOtpResponse: MutableLiveData<NetworkResult<SendOtpResponse>> = MutableLiveData()
+    var sendOtpResponse: MutableLiveData<NetworkResult<CommonResponse>> = MutableLiveData()
 
     //Verify Email Check Otp Screen
 
     //Re-send Otp
 
     //Register Screen
-    var registerScreen: MutableLiveData<NetworkResult<SendOtpResponse>> = MutableLiveData()
+    var registerScreen: MutableLiveData<NetworkResult<CommonResponse>> = MutableLiveData()
 
     //Login Screen
     var loginScreen: MutableLiveData<NetworkResult<LoginBodyResponse>> = MutableLiveData()
@@ -46,12 +44,13 @@ class HomeViewModel @Inject constructor(
     val selectedValueEveryDayRb = mutableStateOf(true)
     val selectedValueEvery3DaysRb = mutableStateOf(false)
     val selectedValueEveryWeekRb = mutableStateOf(false)
-    var screenQuestionStatus: MutableLiveData<NetworkResult<SendOtpResponse>> = MutableLiveData()
+    var screenQuestionStatus: MutableLiveData<NetworkResult<CommonResponse>> = MutableLiveData()
 
     //Base Question Screen
     var baseScreenQuestion: MutableLiveData<NetworkResult<List<BaseScreenQuestionResponse>>> =
         MutableLiveData()
     val valueStateList = mutableStateListOf<BaseScreenQuestionResponse>()
+    var updatePaymentStatusResponse: MutableLiveData<NetworkResult<CommonResponse>> = MutableLiveData()
 
     var storeQuestionAns: MutableLiveData<NetworkResult<StoreQuestionAnsRequest>> =
         MutableLiveData()
@@ -62,6 +61,14 @@ class HomeViewModel @Inject constructor(
     val isLoadingIntro: State<Boolean> = _isLoading
 
 
+    fun updatePaymentStatus(updatePaymentStatusRequest: UpdatePaymentStatusRequest) {
+        updatePaymentStatusResponse.value = NetworkResult.Loading()
+        viewModelScope.launch {
+            homeRepository.updatePaymentStatus(updatePaymentStatusRequest).collect {
+                updatePaymentStatusResponse.value = it
+            }
+        }
+    }
 
     fun getBaseScreenQuestion() {
         viewModelScope.launch {

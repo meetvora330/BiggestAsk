@@ -3,6 +3,7 @@
 package com.biggestAsk.ui.paymentScreen
 
 import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -20,16 +21,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.biggestAsk.data.model.LoginStatus
+import com.biggestAsk.data.model.request.UpdatePaymentStatusRequest
+import com.biggestAsk.data.model.response.CommonResponse
+import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.navigation.Screen
+import com.biggestAsk.ui.MainActivity
+import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
 import com.biggestAsk.ui.main.viewmodel.HomeViewModel
-import com.biggestAsk.ui.main.viewmodel.MainViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.Login_Sub_Tittle
 import com.biggestAsk.ui.ui.theme.Payment_Description
@@ -38,6 +42,7 @@ import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -45,7 +50,7 @@ import java.util.*
 @Composable
 fun PaymentScreen(
     navHostController: NavHostController,
-    mainViewModel: MainViewModel,
+    mainActivity: MainActivity,
     homeViewModel: HomeViewModel,
     context: Context
 ) {
@@ -110,12 +115,11 @@ fun PaymentScreen(
                         .padding(start = 25.dp, end = 24.dp, top = 32.dp)
                         .clickable(indication = null,
                             interactionSource = remember { MutableInteractionSource() }) {
-                            navHostController.navigate(
-                                Screen.QuestionScreen.route
-                            )
-                            val provider = PreferenceProvider(context)
-                            provider.setValue(Constants.LOGIN_STATUS,
-                                LoginStatus.FREQUENCY_NOT_ADDED.name.lowercase(Locale.getDefault())
+                            changePaymentStatusApi(
+                                context,
+                                homeViewModel,
+                                mainActivity,
+                                navHostController
                             )
                         },
                         shape = RoundedCornerShape(15.dp),
@@ -225,6 +229,9 @@ fun PaymentScreen(
                 }
             }
         }
+    }
+    if (homeViewModel.isLoading){
+        ProgressBarTransparentBackground(loadingText = "Loading")
     }
 }
 
@@ -415,6 +422,63 @@ fun PaymentScreenBottomSheet(
                 color = Color.White,
                 lineHeight = 22.sp
             )
+        }
+    }
+}
+
+private fun changePaymentStatusApi(
+    context: Context,
+    homeViewModel: HomeViewModel,
+    mainActivity: MainActivity,
+    navHostController: NavHostController
+) {
+    val provider = PreferenceProvider(context)
+    val userId = provider.getIntValue("user_id", 0)
+    homeViewModel.updatePaymentStatus(
+        UpdatePaymentStatusRequest(
+            user_id = userId,
+        )
+    )
+    homeViewModel.updatePaymentStatusResponse.observe(mainActivity) {
+        if (it != null) {
+            handlePaymentStatusData(
+                result = it,
+                homeViewModel = homeViewModel,
+                context = context,
+                navHostController
+            )
+        }
+    }
+}
+
+@OptIn(DelicateCoroutinesApi::class)
+private fun handlePaymentStatusData(
+    result: NetworkResult<CommonResponse>,
+    homeViewModel: HomeViewModel,
+    context: Context,
+    navHostController: NavHostController,
+) {
+    when (result) {
+        is NetworkResult.Loading -> {
+            // show a progress bar
+            homeViewModel.isLoading = true
+        }
+        is NetworkResult.Success -> {
+            // bind data to the view
+            homeViewModel.isLoading = false
+            val provider = PreferenceProvider(context)
+            provider.setValue(
+                Constants.LOGIN_STATUS,
+                LoginStatus.FREQUENCY_NOT_ADDED.name.lowercase(Locale.getDefault())
+            )
+            navHostController.navigate(
+                Screen.QuestionScreen.route
+            )
+        }
+        is NetworkResult.Error -> {
+            // show error message
+            homeViewModel.isLoading = false
+            Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
         }
     }
 }

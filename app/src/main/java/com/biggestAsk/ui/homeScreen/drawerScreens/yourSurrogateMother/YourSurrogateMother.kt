@@ -36,23 +36,29 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.navigation.NavHostController
+import com.biggestAsk.data.model.LoginStatus
 import com.biggestAsk.data.model.request.InviteSurrogateRequest
 import com.biggestAsk.data.model.response.InviteSurrogateResponse
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.ui.HomeActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
+import com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph.BottomNavScreen
 import com.biggestAsk.ui.main.viewmodel.YourSurrogateViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.ET_Bg
+import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
+import java.util.*
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun YourSurrogateMother(
     surrogateViewModel: YourSurrogateViewModel,
     context: Context,
-    homeActivity: HomeActivity
+    homeActivity: HomeActivity,
+    navHostController: NavHostController
 ) {
     val openDialogSurrogateMother = remember { mutableStateOf(false) }
     val isSurrogateConnected =
@@ -180,7 +186,8 @@ fun YourSurrogateMother(
                             surrogateViewModel = surrogateViewModel,
                             openDialogCustom = openDialogSurrogateMother,
                             context = context,
-                            homeActivity = homeActivity
+                            homeActivity = homeActivity,
+                            navHostController = navHostController
                         )
                     }
                 }
@@ -199,7 +206,8 @@ fun YourSurrogateDialog(
     surrogateViewModel: YourSurrogateViewModel,
     openDialogCustom: MutableState<Boolean>,
     context: Context,
-    homeActivity: HomeActivity
+    homeActivity: HomeActivity,
+    navHostController: NavHostController
 ) {
     val isPhoneEmpty = remember {
         mutableStateOf(false)
@@ -335,7 +343,8 @@ fun YourSurrogateDialog(
                                 result = it,
                                 surrogateViewModel = surrogateViewModel,
                                 context = context,
-                                openDialogCustom = openDialogCustom
+                                openDialogCustom = openDialogCustom,
+                                navHostController = navHostController
                             )
                         }
                     }
@@ -368,7 +377,8 @@ private fun handleUserData(
     result: NetworkResult<InviteSurrogateResponse>,
     surrogateViewModel: YourSurrogateViewModel,
     context: Context,
-    openDialogCustom: MutableState<Boolean>
+    openDialogCustom: MutableState<Boolean>,
+    navHostController: NavHostController
 ) {
     when (result) {
         is NetworkResult.Loading -> {
@@ -384,6 +394,12 @@ private fun handleUserData(
             PreferenceProvider(context).setValue("is_surrogate_connected", true)
             surrogateViewModel.invitationSend.value = true
             surrogateViewModel.isSurrogateInvited.value = false
+            val provider = PreferenceProvider(context)
+            provider.setValue(
+                Constants.LOGIN_STATUS,
+                LoginStatus.MILESTONE_DATE_NOT_ADDED.name.lowercase(Locale.getDefault())
+            )
+            navHostController.navigate(BottomNavScreen.SurrogateParentNotAssignScreen.route)
         }
 
         is NetworkResult.Error -> {

@@ -60,14 +60,26 @@ class HomeRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
+    suspend fun getUpdatedStatus(
+        userId: Int,
+        type: String
+    ): Flow<NetworkResult<UpdatedStatusResponse>> {
+        return flow {
+            emit(safeApiCall { apiService.getUpdatedStatus(userId, type) })
+        }.flowOn(Dispatchers.IO)
+    }
 
-    suspend fun sendOtp(sendOtpRequest: SendOtpRequest): Flow<NetworkResult<SendOtpResponse>> {
+    suspend fun sendOtp(sendOtpRequest: SendOtpRequest): Flow<NetworkResult<CommonResponse>> {
         return flow {
             emit(safeApiCall { apiService.sendOtp(sendOtpRequest) })
         }.flowOn(Dispatchers.IO)
     }
 
-
+    suspend fun updatePaymentStatus(updatePaymentStatusRequest: UpdatePaymentStatusRequest): Flow<NetworkResult<CommonResponse>> {
+        return flow {
+            emit(safeApiCall { apiService.updatePaymentStatus(updatePaymentStatusRequest) })
+        }.flowOn(Dispatchers.IO)
+    }
 
     suspend fun getBaseScreenQuestion(): Flow<NetworkResult<List<BaseScreenQuestionResponse>>> {
         return flow {
@@ -75,7 +87,7 @@ class HomeRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    suspend fun screenQuestionStatus(screenQuestionStatusRequest: ScreenQuestionStatusRequest): Flow<NetworkResult<SendOtpResponse>> {
+    suspend fun screenQuestionStatus(screenQuestionStatusRequest: ScreenQuestionStatusRequest): Flow<NetworkResult<CommonResponse>> {
         return flow {
             emit(safeApiCall { apiService.screenQuestionStatus(screenQuestionStatusRequest) })
         }.flowOn(Dispatchers.IO)
@@ -132,13 +144,13 @@ class HomeRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    suspend fun createMilestone(createMilestoneRequest: CreateMilestoneRequest): Flow<NetworkResult<SendOtpResponse>> {
+    suspend fun createMilestone(createMilestoneRequest: CreateMilestoneRequest): Flow<NetworkResult<CommonResponse>> {
         return flow {
             emit(safeApiCall { apiService.createMilestone(createMilestoneRequest) })
         }.flowOn(Dispatchers.IO)
     }
 
-    suspend fun resetMilestone(resetMilestoneRequest: ResetMilestoneRequest): Flow<NetworkResult<SendOtpResponse>> {
+    suspend fun resetMilestone(resetMilestoneRequest: ResetMilestoneRequest): Flow<NetworkResult<CommonResponse>> {
         return flow {
             emit(safeApiCall { apiService.resetMilestone(resetMilestoneRequest) })
         }.flowOn(Dispatchers.IO)
@@ -156,13 +168,13 @@ class HomeRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    suspend fun updateMilestoneAnsInfo(updateMilestoneAnsInfoRequest: UpdateMilestoneAnsInfoRequest): Flow<NetworkResult<SendOtpResponse>> {
+    suspend fun updateMilestoneAnsInfo(updateMilestoneAnsInfoRequest: UpdateMilestoneAnsInfoRequest): Flow<NetworkResult<CommonResponse>> {
         return flow {
             emit(safeApiCall { apiService.updateMilestoneAnsInfo(updateMilestoneAnsInfoRequest) })
         }.flowOn(Dispatchers.IO)
     }
 
-    suspend fun saveNote(saveNoteRequest: SaveNoteRequest): Flow<NetworkResult<SendOtpResponse>> {
+    suspend fun saveNote(saveNoteRequest: SaveNoteRequest): Flow<NetworkResult<CommonResponse>> {
         return flow {
             emit(safeApiCall { apiService.saveNote(saveNoteRequest) })
         }.flowOn(Dispatchers.IO)
@@ -193,17 +205,17 @@ class HomeRepository @Inject constructor(
     }
 
     suspend fun updateMilestoneImage(
-        image_id:MultipartBody.Part?,
-        image:MultipartBody.Part?
-    ):Flow<NetworkResult<SendOtpResponse>>{
+        image_id: MultipartBody.Part?,
+        image: MultipartBody.Part?
+    ): Flow<NetworkResult<CommonResponse>> {
         return flow {
-            emit(safeApiCall { apiService.updateMilestoneImage(image_id,image) })
+            emit(safeApiCall { apiService.updateMilestoneImage(image_id, image) })
         }
     }
 
     suspend fun deleteMilestoneImage(
         image_id: DeleteMilestoneImageRequest
-    ):Flow<NetworkResult<SendOtpResponse>>{
+    ): Flow<NetworkResult<CommonResponse>> {
         return flow {
             emit(safeApiCall { apiService.deleteMilestoneImage(image_id = image_id) })
         }
