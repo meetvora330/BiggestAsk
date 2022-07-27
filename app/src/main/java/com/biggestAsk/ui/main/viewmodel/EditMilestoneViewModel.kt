@@ -3,8 +3,7 @@ package com.biggestAsk.ui.main.viewmodel
 import android.app.Application
 import android.graphics.Bitmap
 import android.net.Uri
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -42,9 +41,11 @@ class EditMilestoneViewModel @Inject constructor(
     var isMilestoneAnsUpdated: MutableState<Boolean> = mutableStateOf(false)
     var isImageDeleted: MutableState<Boolean> = mutableStateOf(false)
     var isMilestoneImageUpdated: MutableState<Boolean> = mutableStateOf(false)
-    var imageList = mutableListOf<EditMilestoneImageResponse>()
-    var uriList = mutableListOf<Uri>()
-    var tempImageList = mutableListOf<Bitmap>()
+    var checkBoxShareWithParents: Boolean by mutableStateOf(true)
+    var checkBoxShareWithBiggestAsk: Boolean by mutableStateOf(false)
+    var isPermissionAllowed: Boolean by mutableStateOf(false)
+    var cancelDialog: Boolean by mutableStateOf(true)
+    var imageList = mutableStateListOf<EditMilestoneImageResponse>()
     var imageListIndex = mutableStateOf<Int>(-1)
     var editMilestoneResponse: MutableLiveData<NetworkResult<EditMilestoneResponse>> =
         MutableLiveData()
@@ -53,7 +54,7 @@ class EditMilestoneViewModel @Inject constructor(
     var saveNoteResponse: MutableLiveData<NetworkResult<CommonResponse>> = MutableLiveData()
     var updateMilestoneResponse: MutableLiveData<NetworkResult<UpdateUserProfileResponse>> =
         MutableLiveData()
-    var updateMilestoneImage: MutableLiveData<NetworkResult<CommonResponse>> =
+    var updateMilestoneImage: MutableLiveData<NetworkResult<UpdateImageResponse>> =
         MutableLiveData()
     var deleteMilestoneImageResponse: MutableLiveData<NetworkResult<CommonResponse>> =
         MutableLiveData()
@@ -87,7 +88,6 @@ class EditMilestoneViewModel @Inject constructor(
     }
 
     fun storeMilestoneAns(
-        note: MultipartBody.Part?,
         images: ArrayList<MultipartBody.Part?>,
         user_id: MultipartBody.Part?,
         type: MultipartBody.Part?,
@@ -98,7 +98,6 @@ class EditMilestoneViewModel @Inject constructor(
         updateMilestoneResponse.value = NetworkResult.Loading()
         viewModelScope.launch {
             homeRepository.storeMilestoneAns(
-                note,
                 images,
                 user_id,
                 type,

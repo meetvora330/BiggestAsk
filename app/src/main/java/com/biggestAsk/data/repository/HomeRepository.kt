@@ -181,7 +181,6 @@ class HomeRepository @Inject constructor(
     }
 
     suspend fun storeMilestoneAns(
-        note: MultipartBody.Part?,
         images: ArrayList<MultipartBody.Part?>,
         user_id: MultipartBody.Part?,
         type: MultipartBody.Part?,
@@ -192,7 +191,6 @@ class HomeRepository @Inject constructor(
         return flow {
             emit(safeApiCall {
                 apiService.storeMilestoneAns(
-                    note,
                     images,
                     user_id,
                     type,
@@ -205,9 +203,9 @@ class HomeRepository @Inject constructor(
     }
 
     suspend fun updateMilestoneImage(
-        image_id: MultipartBody.Part?,
-        image: MultipartBody.Part?
-    ): Flow<NetworkResult<CommonResponse>> {
+        image_id:MultipartBody.Part?,
+        image:MultipartBody.Part?
+    ):Flow<NetworkResult<UpdateImageResponse>>{
         return flow {
             emit(safeApiCall { apiService.updateMilestoneImage(image_id, image) })
         }

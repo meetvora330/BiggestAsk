@@ -117,7 +117,6 @@ fun BottomNavigationDrawerGraph(
             )
             EditMilestoneScreen(
                 navHostController,
-                mainViewModel,
                 it.arguments?.getInt(ADD_NEW_MILESTONE_ARGS_ID)!!,
                 editMilestoneViewModel,
                 homeActivity = homeActivity

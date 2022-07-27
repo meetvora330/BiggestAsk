@@ -115,7 +115,6 @@ interface ApiService {
     @Multipart
     @POST(Constants.STORE_MILESTONE_ANS)
     suspend fun storeMilestoneAns(
-        @Part note: MultipartBody.Part?,
         @Part images: List<MultipartBody.Part?>,
         @Part user_id: MultipartBody.Part?,
         @Part type: MultipartBody.Part?,
@@ -129,7 +128,7 @@ interface ApiService {
     suspend fun updateMilestoneImage(
         @Part image_id: MultipartBody.Part?,
         @Part image: MultipartBody.Part?
-    ): Response<CommonResponse>
+    ): Response<UpdateImageResponse>
 
     @POST(Constants.DELETE_MILESTONE_IMAGE)
     suspend fun deleteMilestoneImage(@Body image_id: DeleteMilestoneImageRequest): Response<CommonResponse>

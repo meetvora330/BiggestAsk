@@ -53,7 +53,6 @@ import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
 import com.biggestAsk.ui.homeScreen.ClearRippleTheme
 import com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph.BottomNavScreen
 import com.biggestAsk.ui.main.viewmodel.BottomMilestoneViewModel
-import com.biggestAsk.ui.main.viewmodel.MainViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
@@ -88,6 +87,7 @@ fun MilestonesScreen(
     val focusManager = LocalFocusManager.current
 //    viewModel.list = viewModel.listData
     LaunchedEffect(Unit) {
+        milestoneViewModel.isSelected = false
         getMilestones(
             milestoneViewModel = milestoneViewModel,
             context = context,
@@ -95,11 +95,7 @@ fun MilestonesScreen(
         )
     }
     BackHandler(back.value) {
-        if (addNewMilestoneBottomSheetState.bottomSheetState.isExpanded) {
-            coroutineScope.launch {
-                addNewMilestoneBottomSheetState.bottomSheetState.collapse()
-            }
-        } else {
+        if (milestoneViewModel.isSelected) {
             milestoneViewModel.milestoneList.forEachIndexed { index, _ ->
                 milestoneViewModel.milestoneList[index].show = false
             }
@@ -108,9 +104,25 @@ fun MilestonesScreen(
             milestoneViewModel.milestoneList.clear()
             milestoneViewModel.milestoneList.addAll(milestoneListNew)
             milestoneViewModel.isSelected = false
+        } else {
+            navHostController.popBackStack(BottomNavScreen.MileStones.route, true)
         }
         back.value = false
     }
+//        when{
+//            addNewMilestoneBottomSheetState.bottomSheetState.isExpanded->{
+//                coroutineScope.launch {
+//                    addNewMilestoneBottomSheetState.bottomSheetState.collapse()
+//                }
+//                back.value = false
+//                Log.d("TAG", "MilestonesScreen: From Back Handler bottom sheet collapsed")
+
+//            milestoneViewModel.isSelected->{
+
+//            }
+//        }
+
+
     if (milestoneViewModel.isAnyErrorOccurred) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -579,7 +591,6 @@ fun MilestonesScreen(
                             )
                             Button(
                                 onClick = {
-
                                     coroutineScope.launch {
                                         milestoneViewModel.addNewMilestoneTittleEmpty.value = false
                                         milestoneViewModel.addNewMilestoneDateEmpty.value = false
@@ -592,12 +603,8 @@ fun MilestonesScreen(
                                         milestoneViewModel.addNewMilestoneLocationB.value = ""
                                         if (addNewMilestoneBottomSheetState.bottomSheetState.isExpanded) {
                                             addNewMilestoneBottomSheetState.bottomSheetState.collapse()
-                                            Log.d("TAG", "MilestonesScreen: Open")
-                                            back.value = false
                                         } else {
                                             addNewMilestoneBottomSheetState.bottomSheetState.expand()
-                                            Log.d("TAG", "MilestonesScreen: Close")
-                                            back.value = true
                                         }
                                     }
                                 },
@@ -763,6 +770,7 @@ fun MilestonesScreen(
                                                                 true
                                                             milestoneViewModel.isSelected = true
                                                         }
+                                                        back.value = true
                                                         //  viewModel.list = viewModel.listMilestoneDetails
                                                     }
                                                 }
