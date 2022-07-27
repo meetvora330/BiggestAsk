@@ -512,6 +512,7 @@ fun MilestonesScreen(
                                             if (it != null) {
                                                 handleCreatedMilestoneData(
                                                     homeActivity = homeActivity,
+                                                    navHostController,
                                                     result = it,
                                                     context = context,
                                                     milestoneViewModel = milestoneViewModel,
