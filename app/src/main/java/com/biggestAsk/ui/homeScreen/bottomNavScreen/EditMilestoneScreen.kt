@@ -104,7 +104,7 @@ fun EditMilestoneScreen(
     val editMilestoneBottomSheetState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
     )
-    var uriPath: String? = null
+    var uriPath: String?
     var latestUpdatedUriPath: String? = null
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
@@ -143,7 +143,6 @@ fun EditMilestoneScreen(
             editMilestoneViewModel = editMilestoneViewModel,
             context = context, type = type,
             milestoneId = milestoneId,
-            navHostController = navHostController
         )
     }
     if (!editMilestoneViewModel.isEditMilestoneDataLoaded.value) {
@@ -1199,7 +1198,7 @@ fun EditMilestoneScreen(
     if (editMilestoneViewModel.isMilestoneAnsUpdated.value) {
         ProgressBarTransparentBackground(loadingText = "Updating...")
     }
-    if (editMilestoneViewModel.isImageDeleted.value){
+    if (editMilestoneViewModel.isImageDeleted.value) {
         ProgressBarTransparentBackground(loadingText = "Removing...")
     }
 }
@@ -1210,7 +1209,6 @@ private fun getUpdatedMilestone(
     context: Context,
     type: String?,
     milestoneId: Int,
-    navHostController: NavHostController
 ) {
     val userId = PreferenceProvider(context).getIntValue("user_id", 0)
     editMilestoneViewModel.getMilestoneDetails(
@@ -1223,7 +1221,6 @@ private fun getUpdatedMilestone(
     editMilestoneViewModel.editMilestoneResponse.observe(homeActivity) {
         if (it != null) {
             handleEditMilestoneData(
-                navHostController = navHostController,
                 result = it,
                 context = context,
                 editMilestoneViewModel = editMilestoneViewModel
@@ -1258,7 +1255,6 @@ private fun handleDeleteImageData(
                 context = context,
                 type = type,
                 milestoneId = milestoneId,
-                navHostController = navHostController
             )
         }
         is NetworkResult.Error -> {
@@ -1330,7 +1326,6 @@ private fun handleStoreMilestoneData(
 }
 
 private fun handleEditMilestoneData(
-    navHostController: NavHostController,
     result: NetworkResult<EditMilestoneResponse>,
     context: Context,
     editMilestoneViewModel: EditMilestoneViewModel
@@ -1426,7 +1421,7 @@ private fun handleUpdateMilestoneData(
     }
 }
 
-fun convertImageMultiPart(imagePath: String): MultipartBody.Part? {
+fun convertImageMultiPart(imagePath: String): MultipartBody.Part {
     val file = File(imagePath)
     return MultipartBody.Part.createFormData(
         "image[]",

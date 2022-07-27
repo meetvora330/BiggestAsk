@@ -58,8 +58,12 @@ fun BottomNavigationDrawerGraph(
             if (type == "parent") {
                 Log.d("TAG", "BottomNavigationDrawerGraph: $partnerId")
                 if (partnerId == 0) {
-                    YourSurrogateMother(surrogateViewModel = surrogateViewModel, context = context, homeActivity = homeActivity)
-                }else{
+                    YourSurrogateMother(
+                        surrogateViewModel = surrogateViewModel,
+                        context = context,
+                        homeActivity = homeActivity
+                    )
+                } else {
                     BottomHomeScreen(
                         navHostController = navHostController,
                         context = context,
@@ -70,7 +74,7 @@ fun BottomNavigationDrawerGraph(
             } else {
                 if (partnerId == 0) {
                     SurrogateMotherPresent()
-                }else{
+                } else {
                     BottomHomeScreen(
                         navHostController = navHostController,
                         context = context,

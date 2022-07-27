@@ -85,6 +85,7 @@ fun MilestonesScreen(
     val focusManager = LocalFocusManager.current
 //    viewModel.list = viewModel.listData
     LaunchedEffect(Unit) {
+        milestoneViewModel.isSelected = false
         getMilestones(
             milestoneViewModel = milestoneViewModel,
             context = context,
@@ -667,7 +668,7 @@ fun MilestonesScreen(
                                     modifier = Modifier
                                         .zIndex(1f)
                                         .padding(top = 10.dp, bottom = 10.dp)
-                                        .alpha(/*if (viewModel.list[index].show) 1f else*/ 0f)
+                                        .alpha(if (milestoneViewModel.milestoneList[index].show) 1f else 0f)
                                         .constrainAs(img_select) {
                                             top.linkTo(parent.top)
                                             end.linkTo(card_main.end, margin = 24.dp)

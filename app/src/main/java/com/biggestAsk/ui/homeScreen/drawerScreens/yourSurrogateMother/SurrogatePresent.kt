@@ -30,9 +30,7 @@ fun SurrogateMotherPresent() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(
-                bottom = 60.dp
-            )
+            .padding(bottom = 60.dp)
             .verticalScroll(rememberScrollState())
     ) {
         ConstraintLayout(
@@ -87,9 +85,7 @@ fun SurrogateMotherPresent() {
                 )
             )
             Button(
-                onClick = {
-
-                },
+                onClick = {},
                 modifier = Modifier
                     .width(264.dp)
                     .height(56.dp)
