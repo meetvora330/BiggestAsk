@@ -44,7 +44,6 @@ fun BottomNavigationDrawerGraph(
         ) {
             MilestonesScreen(
                 navHostController = navHostController,
-                viewModel = mainViewModel,
                 milestoneViewModel = bottomMilestoneViewModel,
                 homeActivity = homeActivity
             )

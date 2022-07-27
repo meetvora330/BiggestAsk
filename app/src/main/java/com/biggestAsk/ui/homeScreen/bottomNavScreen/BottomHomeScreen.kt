@@ -3,6 +3,8 @@ package com.biggestAsk.ui.homeScreen.bottomNavScreen
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.OnBackPressedDispatcher
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -13,6 +15,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +41,7 @@ import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.ui.HomeActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
 import com.biggestAsk.ui.main.viewmodel.BottomHomeViewModel
+import com.biggestAsk.ui.main.viewmodel.EditMilestoneViewModel
 import com.biggestAsk.ui.main.viewmodel.MainViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.ET_Bg
@@ -65,7 +69,6 @@ fun BottomHomeScreen(
     LaunchedEffect(Unit) {
         val provider = PreferenceProvider(context)
         val userId = provider.getIntValue("user_id", 0)
-//        val userId =0
         val type = provider.getValue("type", "")
         val partnerId = provider.getIntValue("partner_id", 0)
         Log.d("TAG", "BottomHomeScreen: User Id $userId")
@@ -270,7 +273,7 @@ fun BottomHomeScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 24.dp, end = 24.dp, top = 10.dp),
-                    text = stringResource(id = R.string.no_data_found),
+                    text = if (bottomHomeViewModel.isHomeScreenQuestionDataLoaded && bottomHomeViewModel.isPregnancyDataLoaded && bottomHomeViewModel.isNearestMilestoneDataLoaded && bottomHomeViewModel.isIntendedParentQuestionDataLoaded) stringResource(id = R.string.no_data_found) else "",
                     style = MaterialTheme.typography.body2,
                     textAlign = TextAlign.Center,
                     fontSize = 24.sp,

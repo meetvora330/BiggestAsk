@@ -419,7 +419,7 @@ fun currentRoute(
 //            viewModel.listData.forEachIndexed { index, _ ->
 //                viewModel.listData[index].show = false
 //            }
-           // viewModel.isSelected = false
+            // viewModel.isSelected = false
             viewModel.toolbarTittle = "Milestones"
             viewModel.isCommunityScreen.value = false
             viewModel.isContactProvidersScreen.value = false

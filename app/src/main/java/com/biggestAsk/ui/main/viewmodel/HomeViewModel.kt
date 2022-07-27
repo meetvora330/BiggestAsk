@@ -61,37 +61,6 @@ class HomeViewModel @Inject constructor(
     private val _isLoading: MutableState<Boolean> = mutableStateOf(true)
     val isLoadingIntro: State<Boolean> = _isLoading
 
-    private val _startDestination: MutableState<String> = mutableStateOf(Screen.Intro.route)
-    val startDestination: State<String> = _startDestination
-
-    init {
-        viewModelScope.launch {
-            homeRepository.readOnBoardingState().collect { completed ->
-                if (completed) {
-                    _startDestination.value = Screen.VerifyEmail.route
-                } else {
-                    _startDestination.value = Screen.Intro.route
-                }
-            }
-            _isLoading.value = false
-        }
-    }
-
-    fun saveOnBoardingState(completed: Boolean) {
-        viewModelScope.launch(Dispatchers.IO) {
-            homeRepository.saveOnBoardingState(completed = completed)
-        }
-    }
-
-    fun sendOtp(sendOtpRequest: SendOtpRequest) {
-        sendOtpResponse.value = NetworkResult.Loading()
-        viewModelScope.launch {
-            homeRepository.sendOtp(sendOtpRequest).collect {
-                sendOtpResponse.value = it
-            }
-        }
-    }
-
 
 
     fun getBaseScreenQuestion() {

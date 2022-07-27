@@ -7,6 +7,8 @@ import android.text.TextUtils
 import android.util.Log
 import android.widget.DatePicker
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -25,6 +27,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -65,7 +68,6 @@ import java.util.*
 @Composable
 fun MilestonesScreen(
     navHostController: NavHostController,
-    viewModel: MainViewModel,
     milestoneViewModel: BottomMilestoneViewModel,
     homeActivity: HomeActivity
 ) {
@@ -81,16 +83,33 @@ fun MilestonesScreen(
     val mHour = c[Calendar.HOUR_OF_DAY]
     val mMinute = c[Calendar.MINUTE]
     val openDialogReset = remember { mutableStateOf(false) }
+    val back = remember { mutableStateOf(true) }
 
     val focusManager = LocalFocusManager.current
 //    viewModel.list = viewModel.listData
     LaunchedEffect(Unit) {
-        milestoneViewModel.isSelected = false
         getMilestones(
             milestoneViewModel = milestoneViewModel,
             context = context,
             homeActivity = homeActivity
         )
+    }
+    BackHandler(back.value) {
+        if (addNewMilestoneBottomSheetState.bottomSheetState.isExpanded) {
+            coroutineScope.launch {
+                addNewMilestoneBottomSheetState.bottomSheetState.collapse()
+            }
+        } else {
+            milestoneViewModel.milestoneList.forEachIndexed { index, _ ->
+                milestoneViewModel.milestoneList[index].show = false
+            }
+            val milestoneListNew =
+                milestoneViewModel.milestoneList.toList()
+            milestoneViewModel.milestoneList.clear()
+            milestoneViewModel.milestoneList.addAll(milestoneListNew)
+            milestoneViewModel.isSelected = false
+        }
+        back.value = false
     }
     if (milestoneViewModel.isAnyErrorOccurred) {
         Column(
@@ -493,7 +512,6 @@ fun MilestonesScreen(
                                             if (it != null) {
                                                 handleCreatedMilestoneData(
                                                     homeActivity = homeActivity,
-                                                    navHostController = navHostController,
                                                     result = it,
                                                     context = context,
                                                     milestoneViewModel = milestoneViewModel,
@@ -560,6 +578,7 @@ fun MilestonesScreen(
                             )
                             Button(
                                 onClick = {
+
                                     coroutineScope.launch {
                                         milestoneViewModel.addNewMilestoneTittleEmpty.value = false
                                         milestoneViewModel.addNewMilestoneDateEmpty.value = false
@@ -572,8 +591,12 @@ fun MilestonesScreen(
                                         milestoneViewModel.addNewMilestoneLocationB.value = ""
                                         if (addNewMilestoneBottomSheetState.bottomSheetState.isExpanded) {
                                             addNewMilestoneBottomSheetState.bottomSheetState.collapse()
+                                            Log.d("TAG", "MilestonesScreen: Open")
+                                            back.value = false
                                         } else {
                                             addNewMilestoneBottomSheetState.bottomSheetState.expand()
+                                            Log.d("TAG", "MilestonesScreen: Close")
+                                            back.value = true
                                         }
                                     }
                                 },
@@ -707,7 +730,8 @@ fun MilestonesScreen(
                                                                 )
                                                             milestoneViewModel.milestoneList.forEach {
                                                                 if (it.show) {
-                                                                    milestoneViewModel.isSelected = true
+                                                                    milestoneViewModel.isSelected =
+                                                                        true
                                                                     return@launch
                                                                 }
                                                             }
@@ -939,7 +963,6 @@ fun getMilestones(
         if (it != null) {
             handleGetMilestoneData(
                 result = it,
-                context = context,
                 milestoneViewModel = milestoneViewModel
             )
         }
@@ -1108,7 +1131,6 @@ private fun handleResetMilestoneData(
 
 private fun handleGetMilestoneData(
     result: NetworkResult<GetMilestoneResponse>,
-    context: Context,
     milestoneViewModel: BottomMilestoneViewModel
 ) {
     when (result) {
@@ -1140,7 +1162,6 @@ private fun handleGetMilestoneData(
 @OptIn(ExperimentalMaterialApi::class)
 private fun handleCreatedMilestoneData(
     homeActivity: HomeActivity,
-    navHostController: NavHostController,
     result: NetworkResult<SendOtpResponse>,
     context: Context,
     milestoneViewModel: BottomMilestoneViewModel,
@@ -1174,7 +1195,36 @@ private fun handleCreatedMilestoneData(
             Log.e("TAG", "handleUserData() --> Error ${result.message}")
             milestoneViewModel.isNewMilestoneAdded.value = false
             Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
+        }
+    }
+}
 
+@Composable
+fun BackHandler(enabled: Boolean = true, onBack: () -> Unit) {
+    // Safely update the current `onBack` lambda when a new one is provided
+    val currentOnBack by rememberUpdatedState(onBack)
+    // Remember in Composition a back callback that calls the `onBack` lambda
+    val backCallback = remember {
+        object : OnBackPressedCallback(enabled) {
+            override fun handleOnBackPressed() {
+                currentOnBack()
+            }
+        }
+    }
+    // On every successful composition, update the callback with the `enabled` value
+    SideEffect {
+        backCallback.isEnabled = enabled
+    }
+    val backDispatcher = checkNotNull(LocalOnBackPressedDispatcherOwner.current) {
+        "No OnBackPressedDispatcherOwner was provided via LocalOnBackPressedDispatcherOwner"
+    }.onBackPressedDispatcher
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner, backDispatcher) {
+        // Add callback to the backDispatcher
+        backDispatcher.addCallback(lifecycleOwner, backCallback)
+        // When the effect leaves the Composition, remove the callback
+        onDispose {
+            backCallback.remove()
         }
     }
 }
