@@ -52,21 +52,20 @@ import com.biggestAsk.data.model.request.DeleteMilestoneImageRequest
 import com.biggestAsk.data.model.request.EditMilestoneRequest
 import com.biggestAsk.data.model.request.SaveNoteRequest
 import com.biggestAsk.data.model.request.UpdateMilestoneAnsInfoRequest
-import com.biggestAsk.data.model.response.EditMilestoneImageResponse
-import com.biggestAsk.data.model.response.EditMilestoneResponse
-import com.biggestAsk.data.model.response.CommonResponse
-import com.biggestAsk.data.model.response.UpdateUserProfileResponse
+import com.biggestAsk.data.model.response.*
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.ui.HomeActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
 import com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph.BottomNavItems
 import com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph.BottomNavScreen
 import com.biggestAsk.ui.main.viewmodel.EditMilestoneViewModel
+import com.biggestAsk.ui.main.viewmodel.IntroViewModel
 import com.biggestAsk.ui.main.viewmodel.MainViewModel
 import com.biggestAsk.ui.ui.theme.CheckBox_Check
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.ET_Bg
 import com.biggestAsk.ui.ui.theme.Text_Color
+import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PathUtil
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
@@ -532,7 +531,8 @@ fun EditMilestoneScreen(
                                                     editMilestoneBottomSheetScaffoldState = editMilestoneBottomSheetState,
                                                     result = it,
                                                     editMilestoneViewModel = editMilestoneViewModel,
-                                                    context = context
+                                                    context = context,
+                                                    homeActivity
                                                 )
                                             }
                                         }
@@ -1395,7 +1395,8 @@ private fun handleUpdateMilestoneData(
     editMilestoneBottomSheetScaffoldState: BottomSheetScaffoldState,
     result: NetworkResult<CommonResponse>,
     editMilestoneViewModel: EditMilestoneViewModel,
-    context: Context
+    context: Context,
+    homeActivity: HomeActivity
 ) {
     when (result) {
         is NetworkResult.Loading -> {
@@ -1410,6 +1411,17 @@ private fun handleUpdateMilestoneData(
             Toast.makeText(context, result.data?.message, Toast.LENGTH_SHORT).show()
             coroutineScope.launch {
                 editMilestoneBottomSheetScaffoldState.bottomSheetState.collapse()
+            }
+            val provider = PreferenceProvider(context)
+            val type = provider.getValue("type", "")
+            val userId = provider.getIntValue("user_id", 0)
+            if (userId != 0 && !type.isNullOrEmpty()) {
+                editMilestoneViewModel.getUpdatedStatus(userId, type)
+                editMilestoneViewModel.getUpdatedStatusResponse.observe(homeActivity) {
+                    if (it != null) {
+                        handleUpdatedStatusData(it, context)
+                    }
+                }
             }
         }
         is NetworkResult.Error -> {
@@ -1452,6 +1464,30 @@ private fun handleSaveNoteData(
             // show error message
             Log.e("TAG", "handleUserData() --> Error ${result.message}")
             editMilestoneViewModel.isNoteSaved.value = false
+        }
+    }
+}
+
+private fun handleUpdatedStatusData(
+    result: NetworkResult<UpdatedStatusResponse>,
+    context: Context
+) {
+    when (result) {
+        is NetworkResult.Loading -> {
+
+        }
+        is NetworkResult.Success -> {
+            // bind data to the view
+            val provider = PreferenceProvider(context)
+            result.data?.let {
+                provider.setValue(
+                    Constants.LOGIN_STATUS,
+                    it.status
+                )
+            }
+        }
+        is NetworkResult.Error -> {
+
         }
     }
 }

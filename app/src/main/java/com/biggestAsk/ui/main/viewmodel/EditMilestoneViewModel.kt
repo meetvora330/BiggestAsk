@@ -12,10 +12,7 @@ import com.biggestAsk.data.model.request.DeleteMilestoneImageRequest
 import com.biggestAsk.data.model.request.EditMilestoneRequest
 import com.biggestAsk.data.model.request.SaveNoteRequest
 import com.biggestAsk.data.model.request.UpdateMilestoneAnsInfoRequest
-import com.biggestAsk.data.model.response.EditMilestoneImageResponse
-import com.biggestAsk.data.model.response.EditMilestoneResponse
-import com.biggestAsk.data.model.response.CommonResponse
-import com.biggestAsk.data.model.response.UpdateUserProfileResponse
+import com.biggestAsk.data.model.response.*
 import com.biggestAsk.data.repository.HomeRepository
 import com.biggestAsk.data.source.network.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -60,6 +57,7 @@ class EditMilestoneViewModel @Inject constructor(
         MutableLiveData()
     var deleteMilestoneImageResponse: MutableLiveData<NetworkResult<CommonResponse>> =
         MutableLiveData()
+    var getUpdatedStatusResponse :MutableLiveData<NetworkResult<UpdatedStatusResponse>> = MutableLiveData()
 
     fun getMilestoneDetails(editMilestoneRequest: EditMilestoneRequest) {
         editMilestoneResponse.value = NetworkResult.Loading()
@@ -129,6 +127,15 @@ class EditMilestoneViewModel @Inject constructor(
         viewModelScope.launch {
             homeRepository.deleteMilestoneImage(image_id).collect{
                 deleteMilestoneImageResponse.value = it
+            }
+        }
+    }
+
+    fun getUpdatedStatus(userId:Int, type: String){
+        getUpdatedStatusResponse.value = NetworkResult.Loading()
+        viewModelScope.launch {
+            homeRepository.getUpdatedStatus(userId,type).collect{
+                getUpdatedStatusResponse.value = it
             }
         }
     }

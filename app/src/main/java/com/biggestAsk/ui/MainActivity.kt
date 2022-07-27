@@ -36,11 +36,9 @@ import com.biggestAsk.data.model.LoginStatus
 import com.biggestAsk.data.model.response.IntroInfoResponse
 import com.biggestAsk.data.model.response.UpdatedStatusResponse
 import com.biggestAsk.data.source.network.NetworkResult
-import com.biggestAsk.navigation.Screen
 import com.biggestAsk.navigation.SetUpNavGraph
 import com.biggestAsk.ui.base.BaseActivity
 import com.biggestAsk.ui.introScreen.LockScreenOrientation
-import com.biggestAsk.ui.introScreen.findActivity
 import com.biggestAsk.ui.main.viewmodel.*
 import com.biggestAsk.ui.ui.theme.BasicStructureTheme
 import com.biggestAsk.util.Constants
@@ -99,46 +97,22 @@ class MainActivity : BaseActivity() {
                         }
                     }
                     if (!introViewModel.isIntroDataLoaded) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(Color.White),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Image(
-                                modifier = Modifier
-                                    .width(80.dp)
-                                    .height(80.dp),
-                                painter = painterResource(id = R.drawable.ic_img_question_card_logo),
-                                contentDescription = ""
-                            )
-                            Text(
-                                text = "The Biggest Ask",
-                                modifier = Modifier.fillMaxWidth(),
-                                style = MaterialTheme.typography.body2.copy(
-                                    color = Color.Black,
-                                    textAlign = TextAlign.Center,
-                                    fontSize = 20.sp
-                                )
-                            )
-                            if (!introViewModel.isAPILoadingFailed) {
-                                CircularProgressIndicator(
-                                    // below line is use to add padding
-                                    // to our progress bar.
-                                    modifier = Modifier.padding(top = 15.dp),
-                                    // below line is use to add color
-                                    // to our progress bar.
-                                    color = colorResource(id = R.color.custom_blue),
-
-                                    // below line is use to add stroke
-                                    // width to our progress bar.
-                                    strokeWidth = Dp(value = 3F)
-                                )
+                        introLoader()
+                    }
+                } else {
+                    when (provider.getValue(Constants.LOGIN_STATUS, "")) {
+                        LoginStatus.PARTNER_NOT_ASSIGN.name.lowercase(Locale.getDefault()),
+                        LoginStatus.MILESTONE_DATE_NOT_ADDED.name.lowercase(Locale.getDefault()),
+                        LoginStatus.ON_BOARDING.name.lowercase(Locale.getDefault()) -> {
+                            introLoader()
+                        }
+                        else -> {
+                            if (!introViewModel.isUserStatusDataLoaded) {
+                                introLoader()
                             }
                         }
                     }
-                } else {
+
                     val userId = provider.getIntValue("user_id", 0)
                     val type = provider.getValue("type", "")
                     if (userId != 0 && !type.isNullOrEmpty()) {
@@ -154,47 +128,11 @@ class MainActivity : BaseActivity() {
                                 }
                             }
                         }
-                    }else{
+                    } else {
                         introViewModel.isIntroDataLoaded = true
+                        introViewModel.isUserStatusDataLoaded = true
                     }
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.White),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Image(
-                            modifier = Modifier
-                                .width(80.dp)
-                                .height(80.dp),
-                            painter = painterResource(id = R.drawable.ic_img_question_card_logo),
-                            contentDescription = ""
-                        )
-                        Text(
-                            text = "The Biggest Ask",
-                            modifier = Modifier.fillMaxWidth(),
-                            style = MaterialTheme.typography.body2.copy(
-                                color = Color.Black,
-                                textAlign = TextAlign.Center,
-                                fontSize = 20.sp
-                            )
-                        )
-                        if (!introViewModel.isAPILoadingFailed) {
-                            CircularProgressIndicator(
-                                // below line is use to add padding
-                                // to our progress bar.
-                                modifier = Modifier.padding(top = 15.dp),
-                                // below line is use to add color
-                                // to our progress bar.
-                                color = colorResource(id = R.color.custom_blue),
 
-                                // below line is use to add stroke
-                                // width to our progress bar.
-                                strokeWidth = Dp(value = 3F)
-                            )
-                        }
-                    }
                 }
                 if (introViewModel.isIntroDataLoaded || introViewModel.isUserStatusDataLoaded) {
                     when (provider.getValue(Constants.LOGIN_STATUS, "")) {
@@ -224,6 +162,48 @@ class MainActivity : BaseActivity() {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    @Composable
+    private fun introLoader() {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                modifier = Modifier
+                    .width(80.dp)
+                    .height(80.dp),
+                painter = painterResource(id = R.drawable.ic_img_question_card_logo),
+                contentDescription = ""
+            )
+            Text(
+                text = "The Biggest Ask",
+                modifier = Modifier.fillMaxWidth(),
+                style = MaterialTheme.typography.body2.copy(
+                    color = Color.Black,
+                    textAlign = TextAlign.Center,
+                    fontSize = 20.sp
+                )
+            )
+            if (!introViewModel.isAPILoadingFailed) {
+                CircularProgressIndicator(
+                    // below line is use to add padding
+                    // to our progress bar.
+                    modifier = Modifier.padding(top = 15.dp),
+                    // below line is use to add color
+                    // to our progress bar.
+                    color = colorResource(id = R.color.custom_blue),
+
+                    // below line is use to add stroke
+                    // width to our progress bar.
+                    strokeWidth = Dp(value = 3F)
+                )
             }
         }
     }
@@ -301,7 +281,8 @@ private fun handleUpdatedStatusData(
             // bind data to the view
             val provider = PreferenceProvider(context)
             result.data?.let {
-                provider.setValue(Constants.LOGIN_STATUS,
+                provider.setValue(
+                    Constants.LOGIN_STATUS,
                     it.status
                 )
             }
