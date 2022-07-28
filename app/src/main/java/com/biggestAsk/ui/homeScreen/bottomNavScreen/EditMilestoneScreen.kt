@@ -62,8 +62,6 @@ import com.biggestAsk.ui.HomeActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
 import com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph.BottomNavScreen
 import com.biggestAsk.ui.main.viewmodel.EditMilestoneViewModel
-import com.biggestAsk.ui.main.viewmodel.IntroViewModel
-import com.biggestAsk.ui.main.viewmodel.MainViewModel
 import com.biggestAsk.ui.ui.theme.CheckBox_Check
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.ET_Bg
@@ -101,7 +99,8 @@ fun EditMilestoneScreen(
     val day = c.get(Calendar.DAY_OF_MONTH)
     val mHour = c[Calendar.HOUR_OF_DAY]
     val mMinute = c[Calendar.MINUTE]
-    val permissionState = rememberPermissionState(permission = Manifest.permission.READ_EXTERNAL_STORAGE)
+    val permissionState =
+        rememberPermissionState(permission = Manifest.permission.READ_EXTERNAL_STORAGE)
     val stroke = Stroke(
         width = 5f,
         pathEffect = PathEffect.dashPathEffect(floatArrayOf(8f, 8f), 0f),
@@ -623,6 +622,10 @@ fun EditMilestoneScreen(
                                             indication = null,
                                             interactionSource = MutableInteractionSource()
                                         ) {
+                                            Log.d(
+                                                "TAG",
+                                                "EditMilestoneScreen: whole column was clicked"
+                                            )
                                             coroutineScope.launch {
                                                 if (editMilestoneBottomSheetState.bottomSheetState.isExpanded) {
                                                     editMilestoneBottomSheetState.bottomSheetState.collapse()
@@ -640,6 +643,10 @@ fun EditMilestoneScreen(
                                                 indication = null,
                                                 interactionSource = MutableInteractionSource()
                                             ) {
+                                                Log.d(
+                                                    "TAG",
+                                                    "EditMilestoneScreen: whole tittle was clicked"
+                                                )
                                                 coroutineScope.launch {
                                                     if (editMilestoneBottomSheetState.bottomSheetState.isExpanded) {
                                                         editMilestoneBottomSheetState.bottomSheetState.collapse()
@@ -951,37 +958,52 @@ fun EditMilestoneScreen(
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     } else {
-                                        when{
-                                            permissionState.status.isGranted->{
+                                        when {
+                                            permissionState.status.isGranted -> {
                                                 launcher.launch("image/*")
                                                 editMilestoneViewModel.imageListIndex.value = -1
                                                 editMilestoneViewModel.isPermissionAllowed = false
                                             }
-                                            permissionState.status.shouldShowRationale->{
+                                            permissionState.status.shouldShowRationale -> {
                                                 permissionState.launchPermissionRequest()
-                                                Log.d("TAG", "EditMilestoneScreen: single show rationale")
+                                                Log.d(
+                                                    "TAG",
+                                                    "EditMilestoneScreen: single show rationale"
+                                                )
                                             }
-                                            !permissionState.status.isGranted->{
+                                            !permissionState.status.isGranted -> {
                                                 Log.d("TAG", "EditMilestoneScreen: Not Granted")
 //                                                if (isShown.value){
 //                                                    editMilestoneViewModel.isPermissionAllowed = true
 //                                                }
                                                 permissionState.launchPermissionRequest()
                                             }
-                                            !permissionState.status.shouldShowRationale->{
-                                                Log.d("TAG", "EditMilestoneScreen: Show Dialog show rationale")
+                                            !permissionState.status.shouldShowRationale -> {
+                                                Log.d(
+                                                    "TAG",
+                                                    "EditMilestoneScreen: Show Dialog show rationale"
+                                                )
                                                 editMilestoneViewModel.isPermissionAllowed = true
                                             }
-                                            permissionState.status.isGranted || !permissionState.status.shouldShowRationale->{
-                                                Log.d("TAG", "EditMilestoneScreen: Show Dialog shouldShowRationale ")
+                                            permissionState.status.isGranted || !permissionState.status.shouldShowRationale -> {
+                                                Log.d(
+                                                    "TAG",
+                                                    "EditMilestoneScreen: Show Dialog shouldShowRationale "
+                                                )
                                                 editMilestoneViewModel.isPermissionAllowed = false
                                             }
-                                            !permissionState.status.isGranted || permissionState.status.shouldShowRationale->{
-                                                Log.d("TAG", "EditMilestoneScreen: Show Dialog isGranted ")
+                                            !permissionState.status.isGranted || permissionState.status.shouldShowRationale -> {
+                                                Log.d(
+                                                    "TAG",
+                                                    "EditMilestoneScreen: Show Dialog isGranted "
+                                                )
                                                 editMilestoneViewModel.isPermissionAllowed = false
                                             }
-                                            permissionState.status.isGranted || permissionState.status.shouldShowRationale->{
-                                                Log.d("TAG", "EditMilestoneScreen: Show Dialog both ")
+                                            permissionState.status.isGranted || permissionState.status.shouldShowRationale -> {
+                                                Log.d(
+                                                    "TAG",
+                                                    "EditMilestoneScreen: Show Dialog both "
+                                                )
                                                 editMilestoneViewModel.isPermissionAllowed = false
                                             }
                                         }
@@ -1006,16 +1028,18 @@ fun EditMilestoneScreen(
                                 )
                             }
                         }
-                        if (editMilestoneViewModel.isPermissionAllowed){
+                        if (editMilestoneViewModel.isPermissionAllowed) {
                             AlertDialog(
                                 onDismissRequest = {
-                                    editMilestoneViewModel.isPermissionAllowed= false
+                                    editMilestoneViewModel.isPermissionAllowed = false
                                 },
                                 confirmButton = {
                                     TextButton(onClick = {
-                                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                                        val intent =
+                                            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                        val uri = Uri.fromParts("package", context.packageName, null)
+                                        val uri =
+                                            Uri.fromParts("package", context.packageName, null)
                                         intent.data = uri
                                         context.startActivity(intent)
                                     })
@@ -1023,7 +1047,7 @@ fun EditMilestoneScreen(
                                 },
                                 dismissButton = {
                                     TextButton(onClick = {
-                                        editMilestoneViewModel.isPermissionAllowed= false
+                                        editMilestoneViewModel.isPermissionAllowed = false
                                     })
                                     { Text(text = "CANCEL", color = Color.Red) }
                                 },
@@ -1432,14 +1456,18 @@ private fun handleEditMilestoneData(
             if (result.data.milestone[0].date == null) {
                 editMilestoneViewModel.editMilestoneDate.value = ""
             } else {
-                editMilestoneViewModel.editMilestoneDate.value = result.data.milestone[0].date!!
+                editMilestoneViewModel.editMilestoneDate.value = result.data.milestone[0].date
             }
             if (result.data.milestone[0].time == null) {
                 editMilestoneViewModel.editMilestoneTime.value = ""
             } else {
-                editMilestoneViewModel.editMilestoneTime.value = result.data.milestone[0].time!!
+                editMilestoneViewModel.editMilestoneTime.value = result.data.milestone[0].time
             }
             if (type == Constants.PARENT) {
+                editMilestoneViewModel.checkBoxShareWithParents =
+                    result.data.milestone[0].parent_share_note_with_partner_status != 0
+                editMilestoneViewModel.checkBoxShareWithBiggestAsk =
+                    result.data.milestone[0].parent_share_note_with_biggestask_status != 0
                 if (result.data.milestone[0].parent_note == null) {
                     editMilestoneViewModel.addNewMilestoneNotes.value = ""
                 } else {
@@ -1447,6 +1475,10 @@ private fun handleEditMilestoneData(
                         result.data.milestone[0].parent_note.toString()
                 }
             } else if (type == Constants.SURROGATE) {
+                editMilestoneViewModel.checkBoxShareWithParents =
+                    result.data.milestone[0].surrogate_share_note_with_partner_status != 0
+                editMilestoneViewModel.checkBoxShareWithBiggestAsk =
+                    result.data.milestone[0].surrogate_share_note_with_biggestask_status != 0
                 if (result.data.milestone[0].surrogate_note == null) {
                     editMilestoneViewModel.addNewMilestoneNotes.value = ""
                 } else {
@@ -1458,11 +1490,11 @@ private fun handleEditMilestoneData(
                 editMilestoneViewModel.editMilestoneLocationB.value = ""
             } else {
                 editMilestoneViewModel.editMilestoneLocationB.value =
-                    result.data.milestone[0].location!!
+                    result.data.milestone[0].location.toString()
             }
             editMilestoneViewModel.isMilestoneTittleEditable.value =
                 result.data.milestone[0].type == "common"
-            editMilestoneViewModel.milestoneId.value = result.data.milestone[0].milestone_id!!
+            editMilestoneViewModel.milestoneId.value = result.data.milestone[0].milestone_id
             editMilestoneViewModel.imageList.clear()
             editMilestoneViewModel.imageList.addAll(result.data.milestone_image)
             editMilestoneViewModel.isEditMilestoneDataLoaded.value = false
