@@ -1089,7 +1089,7 @@ fun EditMilestoneScreen(
                                 )
                             }
                         }
-                        if (editMilestoneViewModel.isPermissionAllowed.value) {
+                        if (editMilestoneViewModel.isPermissionAllowed) {
                             AlertDialog(
                                 properties = DialogProperties(
                                     dismissOnBackPress = true,
@@ -1097,7 +1097,7 @@ fun EditMilestoneScreen(
                                     usePlatformDefaultWidth = true,
                                 ),
                                 onDismissRequest = {
-                                    editMilestoneViewModel.isPermissionAllowed.value = false
+                                    editMilestoneViewModel.isPermissionAllowed = false
                                 },
                                 confirmButton = {
                                     TextButton(onClick = {
@@ -1113,7 +1113,7 @@ fun EditMilestoneScreen(
                                 },
                                 dismissButton = {
                                     TextButton(onClick = {
-                                        editMilestoneViewModel.isPermissionAllowed.value = false
+                                        editMilestoneViewModel.isPermissionAllowed = false
                                     })
                                     { Text(text = "CANCEL", color = Color.Red) }
                                 },
