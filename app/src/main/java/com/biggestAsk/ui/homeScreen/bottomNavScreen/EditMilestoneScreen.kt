@@ -653,10 +653,6 @@ fun EditMilestoneScreen(
                                             indication = null,
                                             interactionSource = MutableInteractionSource()
                                         ) {
-                                            Log.d(
-                                                "TAG",
-                                                "EditMilestoneScreen: whole column was clicked"
-                                            )
                                             editMilestoneViewModel.editMilestoneTimeEmpty.value =
                                                 false
                                             editMilestoneViewModel.editMilestoneDateEmpty.value =
@@ -680,10 +676,6 @@ fun EditMilestoneScreen(
                                                 indication = null,
                                                 interactionSource = MutableInteractionSource()
                                             ) {
-                                                Log.d(
-                                                    "TAG",
-                                                    "EditMilestoneScreen: whole tittle was clicked"
-                                                )
                                                 editMilestoneViewModel.editMilestoneTimeEmpty.value =
                                                     false
                                                 editMilestoneViewModel.editMilestoneDateEmpty.value =
@@ -838,13 +830,6 @@ fun EditMilestoneScreen(
                                     } else {
                                         latestImageUrl.value =
                                             editMilestoneViewModel.imageList[index].image
-//                                        com.skydoves.landscapist.glide.GlideImage(
-//                                            modifier = Modifier
-//                                                .fillMaxWidth(),
-//                                            contentDescription = "",
-//                                            imageModel = latestImageUrl.value,
-//                                            contentScale = ContentScale.Crop
-//                                        )
                                         Image(
                                             modifier = Modifier
                                                 .fillMaxWidth(),
