@@ -8,8 +8,12 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.biggestAsk.data.model.request.*
 import com.biggestAsk.data.model.request.Answer
+import com.biggestAsk.data.model.request.GetPregnancyMilestoneRequest
+import com.biggestAsk.data.model.request.IntendedParentQuestionAnsRequest
+import com.biggestAsk.data.model.request.StoreBaseScreenQuestionAnsRequest
+import com.biggestAsk.data.model.response.*
+import com.biggestAsk.data.model.request.*
 import com.biggestAsk.data.model.response.*
 import com.biggestAsk.data.repository.HomeRepository
 import com.biggestAsk.data.source.network.NetworkResult
@@ -47,11 +51,9 @@ class BottomHomeViewModel @Inject constructor(
     var isIntendedParentQuestionDataLoaded: Boolean by mutableStateOf(false)
     var upperQuestion: Boolean by mutableStateOf(false)
     var isNearestMilestoneDataLoaded: Boolean by mutableStateOf(false)
+    var getPregnancyMilestoneResponse: MutableLiveData<NetworkResult<GetImportantQuestionResponse>> = MutableLiveData()
     var isHomeScreenQuestionAnsEmpty: Boolean by mutableStateOf(false)
-    var isHomeScreenQuestionAnswered: Boolean by mutableStateOf(false)
-    var getPregnancyMilestoneResponse: MutableLiveData<NetworkResult<GetImportantQuestionResponse>> =
-        MutableLiveData()
-    var getHomeScreenQuestionResponse: MutableLiveData<NetworkResult<GetHomeScreenQuestionResponse>> =
+      var getHomeScreenQuestionResponse: MutableLiveData<NetworkResult<GetHomeScreenQuestionResponse>> =
         MutableLiveData()
     var intendedPartnerQuestionAnsResponse: MutableLiveData<NetworkResult<IntendedParentQuestionResponse>> =
         MutableLiveData()
@@ -100,10 +102,10 @@ class BottomHomeViewModel @Inject constructor(
         }
     }
 
-    fun storeBaseScreenQuestionAns(storeBaseScreenQuestionAnsRequest: StoreBaseScreenQuestionAnsRequest) {
+    fun storeBaseScreenQuestionAns(storeBaseScreenQuestionAnsRequest: StoreBaseScreenQuestionAnsRequest){
         storeBaseScreenQuestionAnsResponse.value = NetworkResult.Loading()
         viewModelScope.launch {
-            homeRepository.storeBaseScreenQuestionAns(storeBaseScreenQuestionAnsRequest).collect {
+            homeRepository.storeBaseScreenQuestionAns(storeBaseScreenQuestionAnsRequest).collect{
                 storeBaseScreenQuestionAnsResponse.value = it
             }
         }

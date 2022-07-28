@@ -224,7 +224,7 @@ fun BottomQuestionScreen() {
                 color = Color.Black,
                 fontWeight = FontWeight.W800
             )
-            simpleDropDown(
+            val selectedText = simpleDropDown(
                 suggestions = suggestions,
                 hint = stringResource(id = R.string.bottom_ques_drop_down_hint_day),
                 modifier = Modifier.padding(top = 12.dp, start = 24.dp, end = 24.dp),

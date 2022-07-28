@@ -126,14 +126,13 @@ fun EditMilestoneScreen(
             placeholder(R.drawable.ic_baseline_place_holder_image_24)
         })
     val lifecycleOwner = LocalLifecycleOwner.current
-    val provider = PreferenceProvider(context)
     DisposableEffect(
         key1 = lifecycleOwner,
         effect = {
             val observer = LifecycleEventObserver { _, event ->
                 if (event == Lifecycle.Event.ON_RESUME) {
                     if (permissionState.status.isGranted) {
-                        editMilestoneViewModel.isPermissionAllowed.value = false
+                        editMilestoneViewModel.isPermissionAllowed = false
                     }
                 }
             }
@@ -864,56 +863,14 @@ fun EditMilestoneScreen(
                                     shape = RoundedCornerShape(13.dp),
                                     enabled = true,
                                     onClick = {
-//                                                editMilestoneViewModel.isPermissionAllowed.value =
-//                                                    false
-                                        if (!provider.getBooleanValue(
-                                                "is_permission_allowed",
-                                                false
-                                            )
-                                        ) {
-                                            if (permissionState.status.isGranted) {
-                                                launcher.launch("image/*")
-                                                editMilestoneViewModel.imageListIndex.value =
-                                                    index
-                                                latestIndex.value = index
-                                                provider.setValue(
-                                                    "is_permission_allowed",
-                                                    true
-                                                )
-                                            } else {
-                                                when {
-                                                    permissionState.status.isGranted -> {
-                                                        launcher.launch("image/*")
-                                                        editMilestoneViewModel.imageListIndex.value =
-                                                            -1
-                                                        editMilestoneViewModel.isPermissionAllowed.value =
-                                                            false
-                                                    }
-                                                    permissionState.status.shouldShowRationale -> {
-                                                        permissionState.launchPermissionRequest()
-                                                        isRationale.value = true
-                                                        Log.d(
-                                                            "TAG",
-                                                            "EditMilestoneScreen: single show rationale"
-                                                        )
-                                                    }
-                                                    !permissionState.status.isGranted -> {
-                                                        permissionState.launchPermissionRequest()
-                                                        Log.d(
-                                                            "TAG",
-                                                            "EditMilestoneScreen: Not Granted"
-                                                        )
-                                                        editMilestoneViewModel.isPermissionAllowed.value =
-                                                            isRationale.value
-                                                    }
-                                                }
-                                            }
-                                        } else {
-                                            launcher.launch("image/*")
-                                            editMilestoneViewModel.imageListIndex.value =
-                                                index
-                                            latestIndex.value = index
-                                        }
+                                        editMilestoneViewModel.imageListIndex.value = index
+                                        Log.i("TAG", "Index is $index")
+                                        Log.i(
+                                            "TAG",
+                                            "Image Id is ${editMilestoneViewModel.imageList[index].id}"
+                                        )
+                                        launcher.launch("image/*")
+                                        latestIndex.value = index
                                     }) {
                                     Text(
                                         modifier = Modifier.wrapContentWidth(),
@@ -1027,46 +984,26 @@ fun EditMilestoneScreen(
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     } else {
-                                        if (!provider.getBooleanValue(
-                                                "is_permission_allowed",
-                                                false
-                                            )
-                                        ) {
-                                            if (permissionState.status.isGranted) {
+                                        when{
+                                            permissionState.status.isGranted->{
                                                 launcher.launch("image/*")
                                                 editMilestoneViewModel.imageListIndex.value = -1
-                                                provider.setValue("is_permission_allowed", true)
-                                            } else {
-                                                when {
-                                                    permissionState.status.isGranted -> {
-                                                        launcher.launch("image/*")
-                                                        editMilestoneViewModel.imageListIndex.value =
-                                                            -1
-                                                        editMilestoneViewModel.isPermissionAllowed.value =
-                                                            false
-                                                    }
-                                                    permissionState.status.shouldShowRationale -> {
-                                                        permissionState.launchPermissionRequest()
-                                                        isRationale.value = true
-                                                        Log.d(
-                                                            "TAG",
-                                                            "EditMilestoneScreen: single show rationale"
-                                                        )
-                                                    }
-                                                    !permissionState.status.isGranted -> {
-                                                        permissionState.launchPermissionRequest()
-                                                        Log.d(
-                                                            "TAG",
-                                                            "EditMilestoneScreen: Not Granted"
-                                                        )
-                                                        editMilestoneViewModel.isPermissionAllowed.value =
-                                                            isRationale.value
-                                                    }
-                                                }
+                                                editMilestoneViewModel.isPermissionAllowed = false
                                             }
-                                        } else {
-                                            launcher.launch("image/*")
-                                            editMilestoneViewModel.imageListIndex.value = -1
+                                            permissionState.status.shouldShowRationale -> {
+                                                permissionState.launchPermissionRequest()
+                                                isRationale.value = true
+                                                Log.d(
+                                                    "TAG",
+                                                    "EditMilestoneScreen: single show rationale"
+                                                )
+                                            }
+                                            !permissionState.status.isGranted -> {
+                                                permissionState.launchPermissionRequest()
+                                                Log.d("TAG", "EditMilestoneScreen: Not Granted")
+                                                editMilestoneViewModel.isPermissionAllowed =
+                                                    isRationale.value
+                                            }
                                         }
                                     }
                                 }) {
@@ -1542,10 +1479,6 @@ private fun handleEditMilestoneData(
                 editMilestoneViewModel.editMilestoneTime.value = result.data.milestone[0].time
             }
             if (type == Constants.PARENT) {
-                editMilestoneViewModel.checkBoxShareWithParents =
-                    result.data.milestone[0].parent_share_note_with_partner_status != 0
-                editMilestoneViewModel.checkBoxShareWithBiggestAsk =
-                    result.data.milestone[0].parent_share_note_with_biggestask_status != 0
                 if (result.data.milestone[0].parent_note == null) {
                     editMilestoneViewModel.addNewMilestoneNotes.value = ""
                 } else {
@@ -1553,11 +1486,7 @@ private fun handleEditMilestoneData(
                         result.data.milestone[0].parent_note.toString()
                 }
             } else if (type == Constants.SURROGATE) {
-                editMilestoneViewModel.checkBoxShareWithParents =
-                    result.data.milestone[0].surrogate_share_note_with_partner_status != 0
-                editMilestoneViewModel.checkBoxShareWithBiggestAsk =
-                    result.data.milestone[0].surrogate_share_note_with_biggestask_status != 0
-                if (result.data.milestone[0].surrogate_note == null) {
+                 if (result.data.milestone[0].surrogate_note == null) {
                     editMilestoneViewModel.addNewMilestoneNotes.value = ""
                 } else {
                     editMilestoneViewModel.addNewMilestoneNotes.value =
