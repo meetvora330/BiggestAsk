@@ -1439,19 +1439,19 @@ private fun handleEditMilestoneData(
             } else {
                 editMilestoneViewModel.editMilestoneTime.value = result.data.milestone[0].time!!
             }
-            if (type == "parent") {
+            if (type == Constants.PARENT) {
                 if (result.data.milestone[0].parent_note == null) {
                     editMilestoneViewModel.addNewMilestoneNotes.value = ""
                 } else {
                     editMilestoneViewModel.addNewMilestoneNotes.value =
-                        result.data.milestone[0].surrogate_note.toString()
+                        result.data.milestone[0].parent_note.toString()
                 }
-            } else if (type == "surrogate") {
+            } else if (type == Constants.SURROGATE) {
                 if (result.data.milestone[0].surrogate_note == null) {
                     editMilestoneViewModel.addNewMilestoneNotes.value = ""
                 } else {
                     editMilestoneViewModel.addNewMilestoneNotes.value =
-                        result.data.milestone[0].parent_note.toString()
+                        result.data.milestone[0].surrogate_note.toString()
                 }
             }
             if (result.data.milestone[0].location == null) {

@@ -47,6 +47,7 @@ object Constants {
 
     //login user type
     const val PARENT = "parent"
+    const val SURROGATE = "surrogate"
 
     // error body
     const val ERROR_BODY_MESSAGE = "message"
