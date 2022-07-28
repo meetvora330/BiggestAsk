@@ -1,11 +1,14 @@
 package com.biggestAsk.ui.homeScreen.drawerScreens.yourAccount
 
+import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.provider.Settings
 import android.text.TextUtils
 import android.util.Log
 import android.util.Patterns
@@ -30,6 +33,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -44,6 +48,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.biggestAsk.data.model.request.GetUserDetailsRequest
@@ -59,12 +65,17 @@ import com.biggestAsk.ui.ui.theme.Text_Accept_Terms
 import com.biggestAsk.util.PathUtil
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.shouldShowRationale
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun YourAccountScreen(
     navHostController: NavHostController,
@@ -72,6 +83,27 @@ fun YourAccountScreen(
     homeActivity: HomeActivity,
 ) {
     val focusManager = LocalFocusManager.current
+    val permissionState =
+        rememberPermissionState(permission = Manifest.permission.READ_EXTERNAL_STORAGE)
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(
+        key1 = lifecycleOwner,
+        effect = {
+            val observer = LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_RESUME) {
+                    if (permissionState.status.isGranted) {
+                        yourAccountViewModel.isPermissionAllowed = false
+                    }
+                }
+            }
+            lifecycleOwner.lifecycle.addObserver(observer)
+            onDispose {
+                lifecycleOwner.lifecycle.removeObserver(observer)
+            }
+        }
+    )
+
     var imageData by remember {
         mutableStateOf<Uri?>(null)
     }
@@ -116,7 +148,7 @@ fun YourAccountScreen(
         }
     }
     if (yourAccountViewModel.isLoading) {
-        ProgressBarTransparentBackground("loading...")
+        ProgressBarTransparentBackground("Loading...")
     } else {
         Column(
             modifier = Modifier
@@ -131,8 +163,13 @@ fun YourAccountScreen(
             ) {
                 val (img_camera, img_user) = createRefs()
                 if (bitmap.value == null) {
+                    val painter = rememberImagePainter(
+                        yourAccountViewModel.profileImg,
+                        builder = {
+                            placeholder(R.drawable.ic_placeholder_your_account)
+                        })
                     Image(
-                        painter = rememberImagePainter(yourAccountViewModel.profileImg),
+                        painter = painter,
                         contentDescription = null,
                         modifier = Modifier
                             .width(88.dp)
@@ -190,12 +227,52 @@ fun YourAccountScreen(
                             interactionSource = MutableInteractionSource()
                         ) {
                             if (yourAccountViewModel.isEditable.value) {
-                                launcher.launch("image/*")
+                                when {
+                                    permissionState.status.isGranted -> {
+                                        launcher.launch("image/*")
+                                        yourAccountViewModel.isPermissionAllowed = false
+                                    }
+                                    permissionState.status.shouldShowRationale -> {
+                                        permissionState.launchPermissionRequest()
+                                        yourAccountViewModel.isPermissionAllowed = false
+                                        yourAccountViewModel.isRational = true
+                                    }
+                                    !permissionState.status.isGranted -> {
+                                        permissionState.launchPermissionRequest()
+                                        yourAccountViewModel.isPermissionAllowed =
+                                            yourAccountViewModel.isRational
+                                    }
+                                }
                             }
                         },
                     painter = painterResource(id = R.drawable.ic_icon_camera_edit_img_your_account),
                     contentDescription = ""
                 )
+                if (yourAccountViewModel.isPermissionAllowed) {
+                    AlertDialog(
+                        onDismissRequest = {
+                            yourAccountViewModel.isPermissionAllowed = false
+                        },
+                        confirmButton = {
+                            TextButton(onClick = {
+                                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                val uri = Uri.fromParts("package", context.packageName, null)
+                                intent.data = uri
+                                context.startActivity(intent)
+                            })
+                            { Text(text = "APP SETTINGS", color = Color.Red) }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = {
+                                yourAccountViewModel.isPermissionAllowed = false
+                            })
+                            { Text(text = "CANCEL", color = Color.Red) }
+                        },
+                        title = { Text(text = "Permission Denied") },
+                        text = { Text(text = "Permission is denied, Please allow permission from App Settings") }
+                    )
+                }
             }
             Column(
                 modifier = Modifier
@@ -759,16 +836,6 @@ fun YourAccountScreen(
     }
 }
 
- fun convertImageMultiPart(imagePath: String,name:String): MultipartBody.Part? {
-    val file = File(imagePath)
-    return MultipartBody.Part.createFormData(
-        name,
-        file.name,
-        file.asRequestBody("image/*".toMediaTypeOrNull())
-    )
-}
-
-
 private fun handleUserData(
     result: NetworkResult<GetUserDetailsResponse>,
     yourAccountViewModel: YourAccountViewModel,
@@ -807,22 +874,27 @@ private fun handleUserUpdateData(
         is NetworkResult.Loading -> {
             // show a progress bar
             yourAccountViewModel.isLoading = true
-            Log.e("TAG", "handleUserUpdateData() --> Loading  $result")
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.e("Success->", "handleUserUpdateData() --> Success  $result")
             yourAccountViewModel.isLoading = false
-            Log.d("TAG", "handleUserUpdateData: ${result.data?.message}")
 
         }
         is NetworkResult.Error -> {
             // show error message
             yourAccountViewModel.isLoading = false
-            Log.e("TAG", "handleUserUpdateData() --> Error ${result.message}")
             Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
         }
     }
+}
+
+private fun convertImageMultiPart(imagePath: String): MultipartBody.Part? {
+    val file = File(imagePath)
+    return MultipartBody.Part.createFormData(
+        "image1",
+        file.name,
+        file.asRequestBody("image/*".toMediaTypeOrNull())
+    )
 }
 
 @Preview(showSystemUi = true, showBackground = true)

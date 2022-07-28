@@ -147,4 +147,6 @@ dependencies {
     //Permission
     implementation "com.google.accompanist:accompanist-permissions:0.24.9-beta"
 
+    implementation "com.google.accompanist:accompanist-permissions:0.24.9-beta"
+
 }
