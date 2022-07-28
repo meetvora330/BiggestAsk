@@ -728,7 +728,7 @@ fun YourAccountScreen(
                                     yourAccountViewModel.isEditable.value = false
                                 }
                             }
-                            val image = uriPath?.let { convertImageMultiPart(it,"image1") }
+                            val image = uriPath?.let { convertImageMultiPart(it) }
 
                             yourAccountViewModel.updateUserProfile(
                                 1,
