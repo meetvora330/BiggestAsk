@@ -25,12 +25,12 @@ import com.biggestAsk.ui.ui.theme.ET_Bg
 import com.example.biggestAsk.R
 
 @Composable
-fun SimpleDropDown(
+fun simpleDropDown(
     suggestions: List<String>,
     hint: String,
     modifier: Modifier,
-    style: TextStyle
-) {
+    style: TextStyle,
+): String {
     var expanded by remember { mutableStateOf(false) }
     var selectedText by remember { mutableStateOf("") }
 
@@ -95,4 +95,5 @@ fun SimpleDropDown(
             }
         }
     }
+    return selectedText
 }

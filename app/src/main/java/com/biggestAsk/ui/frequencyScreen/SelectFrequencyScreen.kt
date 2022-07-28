@@ -1,4 +1,4 @@
-package com.biggestAsk.ui.questionScreen
+package com.biggestAsk.ui.frequencyScreen
 
 import android.content.Context
 import android.content.Intent
@@ -8,8 +8,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,7 +21,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.biggestAsk.data.model.LoginStatus
@@ -28,8 +30,9 @@ import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.ui.HomeActivity
 import com.biggestAsk.ui.MainActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
+import com.biggestAsk.ui.homeScreen.bottomNavScreen.simpleDropDown
 import com.biggestAsk.ui.introScreen.findActivity
-import com.biggestAsk.ui.main.viewmodel.HomeViewModel
+import com.biggestAsk.ui.main.viewmodel.FrequencyViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
@@ -41,22 +44,14 @@ import java.util.*
 
 
 @Composable
-fun QuestionScreenF(
-    homeViewModel: HomeViewModel,
+fun SelectFrequencyScreen(
+    frequencyViewModel: FrequencyViewModel,
     mainActivity: MainActivity,
 ) {
     val context = LocalContext.current
-//    LaunchedEffect(Unit) {
-//        dataStoreManager
-//            .getLoginDetails()
-//            .catch { e ->
-//                e.printStackTrace()
-//            }
-//            .collect {
-//                Log.i("TAG", "QuestionScreen: $it")
-//            }
-//    }
-
+    val suggestions =
+        listOf("Every day", "Every 3 days", "Every week")
+    var selectedText by remember{ mutableStateOf("")}
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -77,82 +72,42 @@ fun QuestionScreenF(
                         contentDescription = "",
                         contentScale = ContentScale.FillHeight
                     )
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(
-                                top = 40.dp,
-                                start = 68.dp,
-                                end = 68.dp
-                            ),
-                        text = stringResource(id = R.string.question_tv_tittle_text),
-                        style = MaterialTheme.typography.body2,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.W600,
-                        lineHeight = 24.sp,
-                        textAlign = TextAlign.Center
-                    )
                 }
                 item {
                     Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 20.dp),
+                            .fillMaxWidth(),
                     ) {
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            RadioButton(
-                                modifier = Modifier,
-                                selected = homeViewModel.selectedValueEveryDayRb.value,
-                                onClick = {
-                                    homeViewModel.selectedValueEveryDayRb.value = true
-                                    homeViewModel.selectedValueEvery3DaysRb.value = false
-                                    homeViewModel.selectedValueEveryWeekRb.value = false
-                                },
-                                colors = RadioButtonDefaults.colors(
-                                    selectedColor = Custom_Blue
-                                )
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 24.dp, end = 24.dp, top = 20.dp),
+                            text = stringResource(id = R.string.bottom_ques_screen_desc),
+                            style = MaterialTheme.typography.body2,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 16.sp,
+                            lineHeight = 27.sp
+                        )
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 24.dp, end = 24.dp, top = 24.dp),
+                            text = stringResource(id = R.string.bottom_ques_freq_ques_pro),
+                            style = MaterialTheme.typography.body2,
+                            fontWeight = FontWeight.W900,
+                            fontSize = 22.sp,
+                            color = Color.Black
+                        )
+                        selectedText = simpleDropDown(
+                            suggestions = suggestions,
+                            hint = stringResource(id = R.string.frequency_drop_down_hint_day),
+                            modifier = Modifier.padding(top = 17.dp, start = 24.dp, end = 24.dp),
+                            style = MaterialTheme.typography.body2.copy(
+                                fontWeight = FontWeight.W600,
+                                fontSize = 16.sp,
+                                color = Color.Black
                             )
-                            Text(
-                                modifier = Modifier.padding(top = 15.dp),
-                                text = stringResource(id = R.string.question_rb_everyday)
-                            )
-                        }
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            RadioButton(
-                                modifier = Modifier,
-                                selected = homeViewModel.selectedValueEvery3DaysRb.value,
-                                onClick = {
-                                    homeViewModel.selectedValueEvery3DaysRb.value = true
-                                    homeViewModel.selectedValueEveryDayRb.value = false
-                                    homeViewModel.selectedValueEveryWeekRb.value = false
-                                },
-                                colors = RadioButtonDefaults.colors(
-                                    selectedColor = Custom_Blue
-                                )
-                            )
-                            Text(
-                                modifier = Modifier.padding(top = 15.dp),
-                                text = stringResource(id = R.string.question_rb_3_days)
-                            )
-                        }
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            RadioButton(
-                                modifier = Modifier,
-                                selected = homeViewModel.selectedValueEveryWeekRb.value,
-                                onClick = {
-                                    homeViewModel.selectedValueEveryWeekRb.value = true
-                                    homeViewModel.selectedValueEvery3DaysRb.value = false
-                                    homeViewModel.selectedValueEveryDayRb.value = false
-                                },
-                                colors = RadioButtonDefaults.colors(
-                                    selectedColor = Custom_Blue
-                                )
-                            )
-                            Text(
-                                modifier = Modifier.padding(top = 15.dp),
-                                text = stringResource(id = R.string.question_rb_week)
-                            )
-                        }
+                        )
                     }
                 }
             }
@@ -176,7 +131,7 @@ fun QuestionScreenF(
                 backgroundColor = Custom_Blue,
             ),
             onClick = {
-                frequencySubmitApiCall(context, homeViewModel, mainActivity)
+                frequencySubmitApiCall(context, frequencyViewModel, mainActivity, selectedText = selectedText)
             }) {
             Text(
                 text = stringResource(id = R.string.question_btn_text_submit_frequency),
@@ -188,34 +143,35 @@ fun QuestionScreenF(
             )
         }
     }
-    if (homeViewModel.isLoading) {
+    if (frequencyViewModel.isLoading) {
         ProgressBarTransparentBackground("Please wait....")
     }
 }
 
 private fun frequencySubmitApiCall(
     context: Context,
-    homeViewModel: HomeViewModel,
-    mainActivity: MainActivity
+    frequencyViewModel: FrequencyViewModel,
+    mainActivity: MainActivity,
+    selectedText:String
 ) {
     val provider = PreferenceProvider(context)
     val type = provider.getValue("type", "")
     val userId = provider.getIntValue("user_id", 0)
     val frequency =
-        if (homeViewModel.selectedValueEveryDayRb.value) "everyday" else if (homeViewModel.selectedValueEvery3DaysRb.value) "every_3_day" else "every_week"
+        if (frequencyViewModel.selectedValueEveryDayRb.value) "everyday" else if (frequencyViewModel.selectedValueEvery3DaysRb.value) "every_3_day" else "every_week"
     Log.d("TAG", "QuestionScreenF: $frequency")
-    homeViewModel.screenQuestionStatus(
+    frequencyViewModel.screenQuestionStatus(
         ScreenQuestionStatusRequest(
             type = type!!,
             user_id = userId,
-            question_type = frequency
+            question_type = selectedText
         )
     )
-    homeViewModel.screenQuestionStatus.observe(mainActivity) {
+    frequencyViewModel.screenQuestionStatus.observe(mainActivity) {
         if (it != null) {
             handleUserData(
                 result = it,
-                homeViewModel = homeViewModel,
+                frequencyViewModel = frequencyViewModel,
                 context = context
             )
         }
@@ -225,20 +181,20 @@ private fun frequencySubmitApiCall(
 @OptIn(DelicateCoroutinesApi::class)
 private fun handleUserData(
     result: NetworkResult<CommonResponse>,
-    homeViewModel: HomeViewModel,
+    frequencyViewModel: FrequencyViewModel,
     context: Context,
 ) {
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
-            homeViewModel.isLoading = true
+            frequencyViewModel.isLoading = true
             Log.e("TAG", "handleUserData() --> Loading  $result")
         }
         is NetworkResult.Success -> {
             // bind data to the view
             Log.e("TAG", "handleUserData() --> Success  $result")
             Log.i("TAG", result.message.toString())
-            homeViewModel.isLoading = false
+            frequencyViewModel.isLoading = false
             GlobalScope.launch {
                 result.data?.let {
                     context.findActivity()?.finish()
@@ -258,7 +214,7 @@ private fun handleUserData(
         }
         is NetworkResult.Error -> {
             // show error message
-            homeViewModel.isLoading = false
+            frequencyViewModel.isLoading = false
             Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
             Log.e("TAG", "handleUserData() --> Error ${result.message}")
         }

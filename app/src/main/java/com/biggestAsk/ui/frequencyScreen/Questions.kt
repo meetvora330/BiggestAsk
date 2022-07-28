@@ -1,4 +1,4 @@
-package com.biggestAsk.ui.questionScreen
+package com.biggestAsk.ui.frequencyScreen
 
 data class Questions(
     val questions: String,

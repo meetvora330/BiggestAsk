@@ -135,4 +135,7 @@ interface ApiService {
 
     @POST(Constants.UPDATE_PAYMENT_STATUS)
     suspend fun updatePaymentStatus(@Body updatePaymentStatusRequest: UpdatePaymentStatusRequest): Response<CommonResponse>
+
+    @POST(Constants.STORE_BASE_SCREEN_QUESTION_ANS)
+    suspend fun storeBaseScreenQuestionAns(@Body storeBaseScreenQuestionAnsRequest: StoreBaseScreenQuestionAnsRequest):Response<CommonResponse>
 }

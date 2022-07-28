@@ -218,4 +218,12 @@ class HomeRepository @Inject constructor(
             emit(safeApiCall { apiService.deleteMilestoneImage(image_id = image_id) })
         }
     }
+
+    suspend fun storeBaseScreenQuestionAns(
+        storeBaseScreenQuestionAnsRequest: StoreBaseScreenQuestionAnsRequest
+    ):Flow<NetworkResult<CommonResponse>>{
+        return flow {
+            emit(safeApiCall { apiService.storeBaseScreenQuestionAns(storeBaseScreenQuestionAnsRequest) })
+        }
+    }
 }

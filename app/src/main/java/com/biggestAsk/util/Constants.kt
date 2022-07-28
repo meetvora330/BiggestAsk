@@ -41,6 +41,7 @@ object Constants {
     const val UPDATE_MILESTONE_IMAGE = "update_milestone_image"
     const val DELETE_MILESTONE_IMAGE = "delete_milestone_image"
     const val UPDATE_PAYMENT_STATUS = "update_payment_status"
+    const val STORE_BASE_SCREEN_QUESTION_ANS = "store_question_ans"
 
     //prefrence data
     const val LOGIN_STATUS = "login_status"

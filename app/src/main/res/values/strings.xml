@@ -118,6 +118,7 @@
     <string name="register_error_text_valid_email">Please enter valid email</string>
     <string name="register_error_text_pass">Please enter password</string>
     <string name="register_error_text_re_enter_pass">Please Re-enter-password</string>
+    <string name="bottom_home_screen_question_ans_empty_text">Please enter answer</string>
     <string name="register_error_text_cb_terms_policy">You Have To Accept Terms And Policy</string>
     <string name="register_btn_signup_text">Sign up</string>
 
@@ -150,6 +151,7 @@
     <string name="bottom_ques_freq_ques_pro">Frequency of the questions:</string>
     <string name="bottom_ques_exist_ques">Existing questions in the profile</string>
     <string name="bottom_ques_drop_down_hint_day">Days</string>
+    <string name="frequency_drop_down_hint_day">Select frequency</string>
 
     <!--  Question Screen   -->
     <string name="question_tv_tittle_text">Please select the frequency of question</string>

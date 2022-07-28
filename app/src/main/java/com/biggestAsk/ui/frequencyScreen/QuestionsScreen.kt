@@ -1,4 +1,4 @@
-package com.biggestAsk.ui.questionScreen
+package com.biggestAsk.ui.frequencyScreen
 
 import android.content.Intent
 import android.util.Log

@@ -38,7 +38,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun BottomQuestionScreen(navHostController: NavHostController) {
+fun BottomQuestionScreen() {
     val suggestions =
         listOf("Once every 1 days", "Once every 2 days", "Once every 3 days", "Once every 4 days")
     val context = LocalContext.current
@@ -46,7 +46,6 @@ fun BottomQuestionScreen(navHostController: NavHostController) {
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
     )
     val coroutineScope = rememberCoroutineScope()
-
     val viewModel = MainViewModel()
     val focusManager = LocalFocusManager.current
     BottomSheetScaffold(scaffoldState = questionBottomSheetScaffoldState, sheetContent = {
@@ -114,7 +113,7 @@ fun BottomQuestionScreen(navHostController: NavHostController) {
                 textStyle = MaterialTheme.typography.body2,
                 placeholder = {
                     Text(
-                        text = stringResource(id = R.string.register_et_hint_full_name),
+                        text = stringResource(id = R.string.add_answer),
                         style = MaterialTheme.typography.body1.copy(
                             color = Text_Color,
                             fontSize = 16.sp,
@@ -227,7 +226,7 @@ fun BottomQuestionScreen(navHostController: NavHostController) {
                 color = Color.Black,
                 fontWeight = FontWeight.W800
             )
-            SimpleDropDown(
+            val selectedText = simpleDropDown(
                 suggestions = suggestions,
                 hint = stringResource(id = R.string.bottom_ques_drop_down_hint_day),
                 modifier = Modifier.padding(top = 12.dp, start = 24.dp, end = 24.dp),
@@ -429,5 +428,5 @@ fun BottomQuestionScreen(navHostController: NavHostController) {
 )
 @Composable
 fun BottomQuestionScreenPreview() {
-    BottomQuestionScreen(navHostController = rememberNavController())
+    BottomQuestionScreen()
 }

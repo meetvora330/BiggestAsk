@@ -2,7 +2,6 @@
 
 package com.biggestAsk.navigation
 
-import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,14 +13,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.biggestAsk.data.model.LoginStatus
-import com.biggestAsk.ui.HomeActivity
 import com.biggestAsk.ui.MainActivity
 import com.biggestAsk.ui.emailVerification.EmailVerification
 import com.biggestAsk.ui.introScreen.IntroScreen
@@ -29,7 +26,7 @@ import com.biggestAsk.ui.introScreen.onBoardItem
 import com.biggestAsk.ui.loginScreen.LoginScreen
 import com.biggestAsk.ui.main.viewmodel.*
 import com.biggestAsk.ui.paymentScreen.PaymentScreen
-import com.biggestAsk.ui.questionScreen.QuestionScreenF
+import com.biggestAsk.ui.frequencyScreen.SelectFrequencyScreen
 import com.biggestAsk.ui.registerScreen.RegisterScreen
 import com.biggestAsk.ui.verifyOtpScreen.VerifyOtpScreen
 import com.biggestAsk.util.Constants
@@ -49,7 +46,8 @@ fun SetUpNavGraph(
     loginViewModel: LoginViewModel,
     registerViewModel: RegisterViewModel,
     emailVerificationViewModel: EmailVerificationViewModel,
-    verifyOtpViewModel: VerifyOtpViewModel
+    verifyOtpViewModel: VerifyOtpViewModel,
+    frequencyViewModel: FrequencyViewModel
 ) {
     var startDestination = Screen.Intro.route
     val provider = PreferenceProvider(mainActivity.applicationContext)
@@ -184,8 +182,8 @@ fun SetUpNavGraph(
         composable(
             Screen.QuestionScreen.route
         ) {
-            QuestionScreenF(
-                homeViewModel = homeViewModel,
+            SelectFrequencyScreen(
+                frequencyViewModel = frequencyViewModel,
                 mainActivity = mainActivity,
             )
         }

@@ -58,6 +58,7 @@ class MainActivity : BaseActivity() {
     private val registerViewModel: RegisterViewModel by viewModels()
     private val emailVerificationViewModel: EmailVerificationViewModel by viewModels()
     private val verifyOtpViewModel: VerifyOtpViewModel by viewModels()
+    private val frequencyViewModel: FrequencyViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -156,7 +157,8 @@ class MainActivity : BaseActivity() {
                                     loginViewModel = loginViewModel,
                                     registerViewModel = registerViewModel,
                                     emailVerificationViewModel = emailVerificationViewModel,
-                                    verifyOtpViewModel = verifyOtpViewModel
+                                    verifyOtpViewModel = verifyOtpViewModel,
+                                    frequencyViewModel = frequencyViewModel
                                 )
                             }
                         }

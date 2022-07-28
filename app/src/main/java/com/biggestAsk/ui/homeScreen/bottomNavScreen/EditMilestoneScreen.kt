@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -50,6 +51,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.biggestAsk.data.model.request.DeleteMilestoneImageRequest
@@ -109,14 +112,31 @@ fun EditMilestoneScreen(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
     )
     val latestIndex = remember { mutableStateOf(0) }
-    var uriPath: String? = ""
+    var uriPath: String?
     val latestImageUrl = remember { mutableStateOf("") }
-    val isShown = remember { mutableStateOf(false) }
+    val isRationale = remember { mutableStateOf(false) }
     val painter = rememberImagePainter(
         latestImageUrl.value,
         builder = {
             placeholder(R.drawable.ic_baseline_place_holder_image_24)
         })
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(
+        key1 = lifecycleOwner,
+        effect = {
+            val observer = LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_RESUME) {
+                    if (permissionState.status.isGranted) {
+                        editMilestoneViewModel.isPermissionAllowed = false
+                    }
+                }
+            }
+            lifecycleOwner.lifecycle.addObserver(observer)
+            onDispose {
+                lifecycleOwner.lifecycle.removeObserver(observer)
+            }
+        }
+    )
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
     ) { uri: Uri? ->
@@ -738,7 +758,6 @@ fun EditMilestoneScreen(
                                                             context = context,
                                                             type = type,
                                                             milestoneId = milestoneId,
-                                                            navHostController = navHostController
                                                         )
                                                     }
                                                 }
@@ -1341,7 +1360,6 @@ private fun handleDeleteImageData(
     context: Context,
     type: String?,
     milestoneId: Int,
-    navHostController: NavHostController
 ) {
     when (result) {
         is NetworkResult.Loading -> {

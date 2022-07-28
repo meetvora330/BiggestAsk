@@ -83,7 +83,6 @@ fun BottomNavigationDrawerGraph(
                 }
                 LoginStatus.ON_BOARDING.name.lowercase(Locale.getDefault()) -> {
                     BottomHomeScreen(
-                        navHostController = navHostController,
                         context = context,
                         homeActivity = homeActivity,
                         bottomHomeViewModel = bottomHomeViewModel
@@ -97,7 +96,7 @@ fun BottomNavigationDrawerGraph(
         composable(
             route = BottomNavScreen.Question.route
         ) {
-            BottomQuestionScreen(navHostController = navHostController)
+            BottomQuestionScreen()
         }
         composable(
             route = BottomNavScreen.SurrogateParentNotAssignScreen.route

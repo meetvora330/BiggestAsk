@@ -2,17 +2,17 @@ package com.biggestAsk.ui.main.viewmodel
 
 import android.app.Application
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.biggestAsk.data.model.request.Answer
 import com.biggestAsk.data.model.request.GetPregnancyMilestoneRequest
 import com.biggestAsk.data.model.request.IntendedParentQuestionAnsRequest
-import com.biggestAsk.data.model.response.GetHomeScreenQuestionResponse
-import com.biggestAsk.data.model.response.GetNearestMilestoneResponse
-import com.biggestAsk.data.model.response.GetPregnancyMilestoneResponse
-import com.biggestAsk.data.model.response.IntendedParentQuestionResponse
+import com.biggestAsk.data.model.request.StoreBaseScreenQuestionAnsRequest
+import com.biggestAsk.data.model.response.*
 import com.biggestAsk.data.repository.HomeRepository
 import com.biggestAsk.data.source.network.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -36,12 +36,17 @@ class BottomHomeViewModel @Inject constructor(
     var nearestMilestoneTittle: String by mutableStateOf("")
     var nearestMilestoneDate: String by mutableStateOf("")
     var nearestMilestoneTime: String by mutableStateOf("")
+    var homeScreenQuestionAns: String by mutableStateOf("")
+    var homeScreenQuestionCategeryId: Int by mutableStateOf(0)
+    var homeScreenQuestionId: Int by mutableStateOf(0)
     var isAllDataLoaded: Boolean by mutableStateOf(true)
     var isErrorOccurred: Boolean by mutableStateOf(false)
     var isPregnancyDataLoaded: Boolean by mutableStateOf(false)
     var isHomeScreenQuestionDataLoaded: Boolean by mutableStateOf(false)
     var isIntendedParentQuestionDataLoaded: Boolean by mutableStateOf(false)
     var isNearestMilestoneDataLoaded: Boolean by mutableStateOf(false)
+    var isHomeScreenQuestionAnsEmpty: Boolean by mutableStateOf(false)
+    var isHomeScreenQuestionAnswered: Boolean by mutableStateOf(false)
     var getPregnancyMilestoneResponse: MutableLiveData<NetworkResult<GetPregnancyMilestoneResponse>> =
         MutableLiveData()
     var getHomeScreenQuestionResponse: MutableLiveData<NetworkResult<GetHomeScreenQuestionResponse>> =
@@ -50,6 +55,9 @@ class BottomHomeViewModel @Inject constructor(
         MutableLiveData()
     var getNearestMilestoneResponse: MutableLiveData<NetworkResult<GetNearestMilestoneResponse>> =
         MutableLiveData()
+    var storeBaseScreenQuestionAnsResponse: MutableLiveData<NetworkResult<CommonResponse>> =
+        MutableLiveData()
+    var answerList = mutableStateListOf<Answer>()
 
     fun getPregnancyMilestone(getPregnancyMilestoneRequest: GetPregnancyMilestoneRequest) {
         getPregnancyMilestoneResponse.value = NetworkResult.Loading()
@@ -83,6 +91,15 @@ class BottomHomeViewModel @Inject constructor(
         viewModelScope.launch {
             homeRepository.getNearestMilestone(getPregnancyMilestoneRequest).collect {
                 getNearestMilestoneResponse.value = it
+            }
+        }
+    }
+
+    fun storeBaseScreenQuestionAns(storeBaseScreenQuestionAnsRequest: StoreBaseScreenQuestionAnsRequest){
+        storeBaseScreenQuestionAnsResponse.value = NetworkResult.Loading()
+        viewModelScope.launch {
+            homeRepository.storeBaseScreenQuestionAns(storeBaseScreenQuestionAnsRequest).collect{
+                storeBaseScreenQuestionAnsResponse.value = it
             }
         }
     }
