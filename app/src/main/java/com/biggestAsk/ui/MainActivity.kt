@@ -63,7 +63,6 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
-        homeViewModel.isLoadingIntro
         setContent {
             val focusManager = LocalFocusManager.current
             val systemUiController = rememberSystemUiController()
@@ -287,6 +286,9 @@ private fun handleUpdatedStatusData(
                     Constants.LOGIN_STATUS,
                     it.status
                 )
+            }
+            result.data?.partner_id?.let {
+                provider.setValue("partner_id", it)
             }
             introViewModel.isUserStatusDataLoaded = true
             introViewModel.isIntroDataLoaded = true

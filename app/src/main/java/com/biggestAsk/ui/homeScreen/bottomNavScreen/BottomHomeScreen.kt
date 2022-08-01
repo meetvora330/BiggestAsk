@@ -12,9 +12,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,10 +26,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.biggestAsk.data.model.request.*
 import com.biggestAsk.data.model.request.Answer
-import com.biggestAsk.data.model.request.GetPregnancyMilestoneRequest
-import com.biggestAsk.data.model.request.IntendedParentQuestionAnsRequest
-import com.biggestAsk.data.model.request.StoreBaseScreenQuestionAnsRequest
 import com.biggestAsk.data.model.response.*
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.ui.HomeActivity
@@ -63,6 +59,7 @@ fun BottomHomeScreen(
     val userId = provider.getIntValue("user_id", 0)
     val type = provider.getValue("type", "")
     val partnerId = provider.getIntValue("partner_id", 0)
+    val selectedText = remember { mutableStateOf("") }
     LaunchedEffect(Unit) {
         Log.d("TAG", "BottomHomeScreen: User Id $userId")
         Log.d("TAG", "BottomHomeScreen: Type $type")
@@ -94,7 +91,7 @@ fun BottomHomeScreen(
         )
         bottomHomeViewModel.getPregnancyMilestoneResponse.observe(homeActivity) {
             if (it != null) {
-                handlePregnancyMilestoneData(
+                handleGetImportantQuestionData(
                     result = it,
                     bottomHomeViewModel = bottomHomeViewModel,
                 )
@@ -146,7 +143,7 @@ fun BottomHomeScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 24.dp, end = 24.dp, top = 8.dp),
-                text = bottomHomeViewModel.homeScreenLatestQuestion,
+                text = if (bottomHomeViewModel.upperQuestion) bottomHomeViewModel.homeScreenImportantQuestion else bottomHomeViewModel.homeScreenLatestQuestion,
                 style = MaterialTheme.typography.body2,
                 color = Color(0xFF7F7D7C),
                 fontSize = 14.sp,
@@ -220,7 +217,18 @@ fun BottomHomeScreen(
                 color = Color.Black,
                 fontWeight = FontWeight.W800
             )
-            DropDownMenu()
+            if (bottomHomeViewModel.parentList.isNotEmpty()) selectedText.value = simpleDropDown(
+                suggestions = bottomHomeViewModel.parentList,
+                hint = "Select user name",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 12.dp, end = 12.dp, top = 12.dp),
+                style = MaterialTheme.typography.body2.copy(
+                    fontWeight = FontWeight.W600,
+                    fontSize = 16.sp,
+                    color = Color.Black
+                )
+            )
             Row(
                 modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom
             ) {
@@ -229,36 +237,62 @@ fun BottomHomeScreen(
                         if (TextUtils.isEmpty(bottomHomeViewModel.homeScreenQuestionAns)) {
                             bottomHomeViewModel.isHomeScreenQuestionAnsEmpty = true
                         } else {
-                            bottomHomeViewModel.answerList.add(
-                                Answer(
-                                    answer = bottomHomeViewModel.homeScreenQuestionAns,
-                                    question_id = bottomHomeViewModel.homeScreenQuestionId
-                                )
-                            )
-                            bottomHomeViewModel.storeBaseScreenQuestionAns(
-                                StoreBaseScreenQuestionAnsRequest(
-                                    answer = bottomHomeViewModel.answerList,
-                                    category_id = bottomHomeViewModel.homeScreenQuestionCategeryId,
-                                    partner_id = partnerId.toString(),
-                                    type = type!!,
-                                    user_id = userId
-                                )
-                            )
-                            bottomHomeViewModel.storeBaseScreenQuestionAnsResponse.observe(
-                                homeActivity
-                            ) {
-                                if (it != null) {
-                                    handleStoreQuestionAnsData(
-                                        result = it,
-                                        bottomHomeViewModel = bottomHomeViewModel,
-                                        coroutineScope = coroutineScope,
-                                        bottomSheetScaffoldState = homeBottomSheetScaffoldState,
-                                        user_id = userId,
-                                        type = type,
-                                        homeActivity = homeActivity
+                            if (bottomHomeViewModel.upperQuestion) {
+                                bottomHomeViewModel.storeAnsImportantQuestion(
+                                    StoreAnsImportantQuestionRequest(
+                                        question_id = bottomHomeViewModel.homeScreenImportantQuestionId,
+                                        answer = bottomHomeViewModel.homeScreenQuestionAns,
+                                        user_name = selectedText.value
                                     )
+                                )
+                                bottomHomeViewModel.storeAnsImportantQuestionResponse.observe(
+                                    homeActivity
+                                ) {
+                                    if (it != null) {
+                                        handleStoreAnsImportantQuestion(
+                                            result = it,
+                                            bottomHomeViewModel = bottomHomeViewModel,
+                                            coroutineScope = coroutineScope,
+                                            bottomSheetScaffoldState = homeBottomSheetScaffoldState,
+                                            userId = userId,
+                                            type = type!!,
+                                            homeActivity = homeActivity
+                                        )
+                                    }
+                                }
+                            } else {
+                                bottomHomeViewModel.answerList.add(
+                                    Answer(
+                                        answer = bottomHomeViewModel.homeScreenQuestionAns,
+                                        question_id = bottomHomeViewModel.homeScreenQuestionId
+                                    )
+                                )
+                                bottomHomeViewModel.storeBaseScreenQuestionAns(
+                                    StoreBaseScreenQuestionAnsRequest(
+                                        answer = bottomHomeViewModel.answerList,
+                                        category_id = bottomHomeViewModel.homeScreenQuestionCategeryId,
+                                        partner_id = partnerId.toString(),
+                                        type = type!!,
+                                        user_id = userId
+                                    )
+                                )
+                                bottomHomeViewModel.storeBaseScreenQuestionAnsResponse.observe(
+                                    homeActivity
+                                ) {
+                                    if (it != null) {
+                                        handleStoreQuestionAnsData(
+                                            result = it,
+                                            bottomHomeViewModel = bottomHomeViewModel,
+                                            coroutineScope = coroutineScope,
+                                            bottomSheetScaffoldState = homeBottomSheetScaffoldState,
+                                            user_id = userId,
+                                            type = type,
+                                            homeActivity = homeActivity
+                                        )
+                                    }
                                 }
                             }
+
                         }
 
                     }, modifier = Modifier
@@ -314,55 +348,118 @@ fun BottomHomeScreen(
                     .verticalScroll(rememberScrollState())
             ) {
                 if (!bottomHomeViewModel.isPregnancyDataLoaded) {
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 24.dp, top = 40.dp),
-                        text = stringResource(id = R.string.bottom_home_screen_pregnancy_milestone),
-                        style = MaterialTheme.typography.body2,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.W900,
-                        lineHeight = 24.sp
-                    )
-                    Surface(
-                        shape = RoundedCornerShape(14.dp),
-                        color = Color.White,
-                        elevation = 4.dp,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 24.dp, end = 24.dp, top = 16.dp)
-                    ) {
-                        Column {
-                            Text(
-                                modifier = Modifier.padding(start = 24.dp, top = 19.dp),
-                                text = bottomHomeViewModel.pregnancyTittle,
-                                color = Color.Black,
-                                style = MaterialTheme.typography.body2,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.W800,
-                                lineHeight = 24.sp
-                            )
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 24.dp, top = 6.dp),
-                                text = bottomHomeViewModel.pregnancyDescription,
-                                style = MaterialTheme.typography.body2,
-                                color = Color.Black,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.W600,
-                                lineHeight = 22.sp
-                            )
-                            GlideImage(
-                                modifier = Modifier
-                                    .width(50.dp)
-                                    .height(50.dp)
-                                    .padding(top = 3.dp, start = 24.dp, bottom = 11.dp),
-                                imageModel = bottomHomeViewModel.pregnancyImageUrl,
-                                contentScale = ContentScale.Crop
-                            )
+                    if (bottomHomeViewModel.isQuestionDataEmpty) {
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 24.dp, top = 40.dp),
+                            text = stringResource(id = R.string.bottom_home_screen_pregnancy_milestone),
+                            style = MaterialTheme.typography.body2,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.W900,
+                            lineHeight = 24.sp
+                        )
+                        Surface(
+                            shape = RoundedCornerShape(14.dp),
+                            color = Color.White,
+                            elevation = 4.dp,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 24.dp, end = 24.dp, top = 16.dp)
+                        ) {
+                            Column {
+                                Text(
+                                    modifier = Modifier.padding(start = 24.dp, top = 19.dp),
+                                    text = bottomHomeViewModel.pregnancyTittle,
+                                    color = Color.Black,
+                                    style = MaterialTheme.typography.body2,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.W800,
+                                    lineHeight = 24.sp
+                                )
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 24.dp, top = 6.dp),
+                                    text = bottomHomeViewModel.pregnancyDescription,
+                                    style = MaterialTheme.typography.body2,
+                                    color = Color.Black,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.W600,
+                                    lineHeight = 22.sp
+                                )
+                                GlideImage(
+                                    modifier = Modifier
+                                        .width(50.dp)
+                                        .height(50.dp)
+                                        .padding(top = 3.dp, start = 24.dp, bottom = 11.dp),
+                                    imageModel = bottomHomeViewModel.pregnancyImageUrl,
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
                         }
+                    } else if (!bottomHomeViewModel.isQuestionDataEmpty) {
+                        Surface(
+                            shape = RoundedCornerShape(14.dp),
+                            color = Color.White,
+                            elevation = 4.dp,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 24.dp, end = 24.dp, top = 30.dp)
+                        ) {
+                            Column {
+                                Text(
+                                    modifier = Modifier.padding(start = 24.dp, top = 19.dp),
+                                    text = bottomHomeViewModel.homeScreenImportantQuestion,
+                                    color = Color.Black,
+                                    style = MaterialTheme.typography.body2,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.W800,
+                                    lineHeight = 24.sp
+                                )
+                                Button(
+                                    onClick = {
+                                        bottomHomeViewModel.homeScreenQuestionAns = ""
+                                        bottomHomeViewModel.upperQuestion = true
+                                        coroutineScope.launch {
+                                            if (homeBottomSheetScaffoldState.bottomSheetState.isExpanded) {
+                                                homeBottomSheetScaffoldState.bottomSheetState.collapse()
+                                            } else {
+                                                homeBottomSheetScaffoldState.bottomSheetState.expand()
+                                            }
+                                        }
 
+                                    },
+                                    modifier = Modifier
+                                        .padding(
+                                            start = 24.dp, end = 24.dp, top = 16.dp, bottom = 24.dp
+                                        )
+                                        .fillMaxWidth()
+                                        .height(48.dp),
+                                    elevation = ButtonDefaults.elevation(
+                                        defaultElevation = 0.dp,
+                                        pressedElevation = 0.dp,
+                                        disabledElevation = 0.dp,
+                                        hoveredElevation = 0.dp,
+                                        focusedElevation = 0.dp
+                                    ),
+                                    shape = RoundedCornerShape(30),
+                                    colors = ButtonDefaults.buttonColors(
+                                        backgroundColor = Custom_Blue,
+                                    )
+                                ) {
+                                    Text(
+                                        text = stringResource(id = R.string.answer_the_question),
+                                        color = Color.White,
+                                        style = MaterialTheme.typography.body2,
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.W600,
+                                        lineHeight = 22.sp
+                                    )
+                                }
+                            }
+
+                        }
                     }
                 }
                 if (!bottomHomeViewModel.isNearestMilestoneDataLoaded) {
@@ -382,7 +479,11 @@ fun BottomHomeScreen(
                         elevation = 4.dp,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 24.dp, end = 24.dp, top = 16.dp)
+                            .padding(
+                                start = 24.dp,
+                                end = 24.dp,
+                                top = 16.dp,
+                            )
                     ) {
                         Column {
                             Row(
@@ -483,6 +584,8 @@ fun BottomHomeScreen(
                             )
                             Button(
                                 onClick = {
+                                    bottomHomeViewModel.homeScreenQuestionAns = ""
+                                    bottomHomeViewModel.upperQuestion = false
                                     coroutineScope.launch {
                                         if (homeBottomSheetScaffoldState.bottomSheetState.isExpanded) {
                                             homeBottomSheetScaffoldState.bottomSheetState.collapse()
@@ -594,7 +697,10 @@ fun BottomHomeScreen(
 
     }, sheetShape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp))
     if (bottomHomeViewModel.isAllDataLoaded || bottomHomeViewModel.isHomeScreenQuestionAnswered) {
-        ProgressBarTransparentBackground(if (bottomHomeViewModel.isAllDataLoaded) "Loading...." else "Adding...", id = R.color.white)
+        ProgressBarTransparentBackground(
+            if (bottomHomeViewModel.isAllDataLoaded) "Loading...." else "Adding...",
+            id = R.color.white
+        )
     }
 }
 
@@ -661,8 +767,52 @@ private fun handleStoreQuestionAnsData(
     }
 }
 
-private fun handlePregnancyMilestoneData(
-    result: NetworkResult<GetPregnancyMilestoneResponse>,
+@OptIn(ExperimentalMaterialApi::class)
+private fun handleStoreAnsImportantQuestion(
+    result: NetworkResult<CommonResponse>,
+    bottomHomeViewModel: BottomHomeViewModel,
+    coroutineScope: CoroutineScope,
+    bottomSheetScaffoldState: BottomSheetScaffoldState,
+    userId: Int,
+    type: String,
+    homeActivity: HomeActivity
+) {
+    when (result) {
+        is NetworkResult.Loading -> {
+            // show a progress bar
+            Log.e("TAG", "handleUserData() --> Loading  $result")
+            bottomHomeViewModel.isHomeScreenQuestionAnswered = true
+        }
+        is NetworkResult.Success -> {
+            // bind data to the view
+            Log.e("TAG", "handleUserData() --> Success  $result")
+            Log.i("TAG", result.message.toString())
+            bottomHomeViewModel.getPregnancyMilestone(
+                GetPregnancyMilestoneRequest(
+                    user_id = userId,
+                    type = type
+                )
+            )
+            coroutineScope.launch {
+                if (bottomSheetScaffoldState.bottomSheetState.isExpanded) {
+                    bottomSheetScaffoldState.bottomSheetState.collapse()
+                } else {
+                    bottomSheetScaffoldState.bottomSheetState.expand()
+                }
+            }
+            bottomHomeViewModel.homeScreenQuestionAns = ""
+            bottomHomeViewModel.isHomeScreenQuestionAnswered = false
+        }
+        is NetworkResult.Error -> {
+            // show error message
+            bottomHomeViewModel.isHomeScreenQuestionAnswered = false
+            Log.e("TAG", "handleUserData() --> Error ${result.message}")
+        }
+    }
+}
+
+private fun handleGetImportantQuestionData(
+    result: NetworkResult<GetImportantQuestionResponse>,
     bottomHomeViewModel: BottomHomeViewModel,
 ) {
     when (result) {
@@ -677,9 +827,24 @@ private fun handlePregnancyMilestoneData(
             // bind data to the view
             Log.e("TAG", "handleUserData() --> Success  $result")
             Log.i("TAG", result.message.toString())
-            bottomHomeViewModel.pregnancyTittle = result.data!!.title
-            bottomHomeViewModel.pregnancyDescription = result.data.description
-            bottomHomeViewModel.pregnancyImageUrl = result.data.image
+            if (result.data?.question == null) {
+                bottomHomeViewModel.isQuestionDataEmpty = true
+                bottomHomeViewModel.pregnancyTittle =
+                    result.data?.pregnancy_milestone?.title.toString()
+                bottomHomeViewModel.pregnancyDescription =
+                    result.data?.pregnancy_milestone?.description.toString()
+                bottomHomeViewModel.pregnancyImageUrl =
+                    result.data?.pregnancy_milestone?.image.toString()
+            } else {
+                bottomHomeViewModel.homeScreenImportantQuestionId = result.data.question.question_id
+                bottomHomeViewModel.homeScreenImportantQuestion = result.data.question.question
+                bottomHomeViewModel.isQuestionDataEmpty = false
+                bottomHomeViewModel.parentList.clear()
+                result.data.user_name.forEach {
+                    if (it != null)
+                        bottomHomeViewModel.parentList.add(it)
+                }
+            }
             bottomHomeViewModel.isAllDataLoaded = false
             bottomHomeViewModel.isPregnancyDataLoaded = false
             bottomHomeViewModel.isErrorOccurred = false
@@ -711,18 +876,27 @@ private fun handleHomeQuestionData(
             // bind data to the view
             Log.e("TAG", "handleUserData() --> Success  $result")
             Log.i("TAG", result.message.toString())
-            bottomHomeViewModel.homeScreenLatestQuestion = result.data?.data?.question.toString()
             Log.d("TAG", "handleHomeQuestionData: ${result.data?.data?.question}")
             bottomHomeViewModel.isAllDataLoaded = false
             bottomHomeViewModel.isErrorOccurred = false
-            bottomHomeViewModel.isHomeScreenQuestionDataLoaded = result.data?.data?.question == null
-            if (result.data?.data?.category_id == null || result.data.data.id == null) {
+
+//            result.data?.data?.name?.size
+            if (result.data?.data?.category_id == null || result.data.data.id == null || result.data.data.question == "") {
                 bottomHomeViewModel.homeScreenQuestionCategeryId = 0
                 bottomHomeViewModel.homeScreenQuestionId = 0
+                bottomHomeViewModel.isHomeScreenQuestionDataLoaded = true
             } else {
+                bottomHomeViewModel.isHomeScreenQuestionDataLoaded = false
                 bottomHomeViewModel.homeScreenQuestionCategeryId = result.data.data.category_id
                 bottomHomeViewModel.homeScreenQuestionId = result.data.data.id
+                bottomHomeViewModel.homeScreenLatestQuestion = result.data.data.question.toString()
                 bottomHomeViewModel.homeScreenQuestionAns = ""
+                bottomHomeViewModel.parentList.clear()
+                result.data.user_name.forEach {
+                    if (it != null)
+                        bottomHomeViewModel.parentList.add(it)
+                }
+//                bottomHomeViewModel.parentList.addAll(result.data.user_name)
             }
         }
         is NetworkResult.Error -> {

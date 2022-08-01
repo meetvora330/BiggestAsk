@@ -40,6 +40,7 @@ class MainViewModel : ViewModel() {
 
     //Add Milestone Screen
     var isAddMilestoneScreen: MutableState<Boolean> = mutableStateOf(false)
+    var isPermissionAllowed: MutableState<Boolean> = mutableStateOf(false)
     var milestoneName: MutableState<String> = mutableStateOf("")
 
 

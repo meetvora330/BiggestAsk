@@ -1,5 +1,6 @@
 package com.biggestAsk.ui.homeScreen.bottomNavScreen
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -26,7 +27,7 @@ import com.biggestAsk.ui.ui.theme.ET_Bg
 import com.example.biggestAsk.R
 
 @Composable
-fun DropDownMenu() {
+fun DropDownMenu(suggestion:List<String>) {
 
     // Declaring a boolean value to store
     // the expanded state of the Text Field
@@ -36,7 +37,7 @@ fun DropDownMenu() {
     val mCities = listOf("Mark Baggins", "Samantha Baggins", "Marina Kotenko")
 
     // Create a string value to store the selected city
-    var mSelectedText by remember { mutableStateOf("Mark Baggins") }
+    var mSelectedText by remember { mutableStateOf(suggestion.get(0)) }
 
     var mTextFieldSize by remember { mutableStateOf(Size.Zero) }
 
@@ -96,7 +97,7 @@ fun DropDownMenu() {
             modifier = Modifier
                 .width(with(LocalDensity.current) { mTextFieldSize.width.toDp() })
         ) {
-            mCities.forEach { label ->
+            suggestion.forEach { label ->
                 DropdownMenuItem(onClick = {
                     mSelectedText = label
                     mExpanded = false
@@ -111,5 +112,5 @@ fun DropDownMenu() {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun DropDownMenuPreview() {
-    DropDownMenu()
+    DropDownMenu(mutableListOf())
 }

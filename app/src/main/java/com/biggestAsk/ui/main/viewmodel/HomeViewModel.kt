@@ -51,9 +51,7 @@ class HomeViewModel @Inject constructor(
         MutableLiveData()
 
 
-    //Intro Screen
-    private val _isLoading: MutableState<Boolean> = mutableStateOf(true)
-    val isLoadingIntro: State<Boolean> = _isLoading
+
 
 
     fun updatePaymentStatus(updatePaymentStatusRequest: UpdatePaymentStatusRequest) {

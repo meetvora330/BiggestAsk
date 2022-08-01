@@ -25,6 +25,7 @@ object Constants {
     const val STORE_QUESTION_ANS = "store_question_ans"
     const val SCREEN_QUESTION_STATUS = "screen_question_status"
     const val GET_PREGNANCY_MILESTONE = "get_pregnancy_milestone"
+    const val GET_IMPORTANT_QUESTION = "get_important_question"
     const val GET_HOME_SCREEN_QUESTION = "get_home_screen_question"
     const val INTENDED_PARTNER_QUESTION_ANS = "intended_partner_que_ans"
     const val GET_NEAREST_MILESTONE = "get_nearest_milestone"
@@ -42,6 +43,7 @@ object Constants {
     const val DELETE_MILESTONE_IMAGE = "delete_milestone_image"
     const val UPDATE_PAYMENT_STATUS = "update_payment_status"
     const val STORE_BASE_SCREEN_QUESTION_ANS = "store_question_ans"
+    const val STORE_ANS_IMPORTANT_QUESTION = "store_ans_important_question"
 
     //prefrence data
     const val LOGIN_STATUS = "login_status"

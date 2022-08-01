@@ -18,9 +18,6 @@ import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 import javax.inject.Inject
 
-/**
- * Created by Abhin.
- */
 @HiltViewModel
 class YourAccountViewModel @Inject constructor(
     private val yourAccountRepository: YourAccountRepository,
@@ -50,6 +47,7 @@ class YourAccountViewModel @Inject constructor(
     var yourAccountPasswordEmpty: Boolean by mutableStateOf(false)
     var isEditable: MutableState<Boolean> = mutableStateOf(false)
     val isYourAccountScreen: MutableLiveData<Boolean> = MutableLiveData(false)
+    var isPermissionAllowed: MutableState<Boolean> = mutableStateOf(false)
     var getUserDetailResponse: MutableLiveData<NetworkResult<GetUserDetailsResponse>> =
         MutableLiveData()
     var updateUserProfileResponse: MutableLiveData<NetworkResult<UpdateUserProfileResponse>> =

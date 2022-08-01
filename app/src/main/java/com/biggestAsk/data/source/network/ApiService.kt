@@ -39,8 +39,11 @@ interface ApiService {
     @POST(Constants.SCREEN_QUESTION_STATUS)
     suspend fun screenQuestionStatus(@Body screenQuestionStatusRequest: ScreenQuestionStatusRequest): Response<CommonResponse>
 
-    @POST(Constants.GET_PREGNANCY_MILESTONE)
-    suspend fun getPregnancyMilestone(@Body getPregnancyMilestoneRequest: GetPregnancyMilestoneRequest): Response<GetPregnancyMilestoneResponse>
+    @GET(Constants.GET_IMPORTANT_QUESTION)
+    suspend fun getPregnancyMilestone(
+        @Query("type") type: String,
+        @Query("user_id") user_id: Int
+    ): Response<GetImportantQuestionResponse>
 
     @GET(Constants.GET_HOME_SCREEN_QUESTION)
     suspend fun getHomeScreenQuestion(
@@ -137,5 +140,8 @@ interface ApiService {
     suspend fun updatePaymentStatus(@Body updatePaymentStatusRequest: UpdatePaymentStatusRequest): Response<CommonResponse>
 
     @POST(Constants.STORE_BASE_SCREEN_QUESTION_ANS)
-    suspend fun storeBaseScreenQuestionAns(@Body storeBaseScreenQuestionAnsRequest: StoreBaseScreenQuestionAnsRequest):Response<CommonResponse>
+    suspend fun storeBaseScreenQuestionAns(@Body storeBaseScreenQuestionAnsRequest: StoreBaseScreenQuestionAnsRequest): Response<CommonResponse>
+
+    @POST(Constants.STORE_ANS_IMPORTANT_QUESTION)
+    suspend fun storeAnsImportantQuestion(@Body storeBaseScreenQuestionAnsRequest: StoreAnsImportantQuestionRequest): Response<CommonResponse>
 }

@@ -1,8 +1,6 @@
 package com.biggestAsk.ui.main.viewmodel
 
 import android.app.Application
-import android.graphics.Bitmap
-import android.net.Uri
 import androidx.compose.runtime.*
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -43,7 +41,7 @@ class EditMilestoneViewModel @Inject constructor(
     var isMilestoneImageUpdated: MutableState<Boolean> = mutableStateOf(false)
     var checkBoxShareWithParents: Boolean by mutableStateOf(true)
     var checkBoxShareWithBiggestAsk: Boolean by mutableStateOf(false)
-    var isPermissionAllowed: Boolean by mutableStateOf(false)
+    var isPermissionAllowed: MutableState<Boolean> = mutableStateOf(false)
     var cancelDialog: Boolean by mutableStateOf(true)
     var imageList = mutableStateListOf<EditMilestoneImageResponse>()
     var imageListIndex = mutableStateOf<Int>(-1)
@@ -58,7 +56,8 @@ class EditMilestoneViewModel @Inject constructor(
         MutableLiveData()
     var deleteMilestoneImageResponse: MutableLiveData<NetworkResult<CommonResponse>> =
         MutableLiveData()
-    var getUpdatedStatusResponse :MutableLiveData<NetworkResult<UpdatedStatusResponse>> = MutableLiveData()
+    var getUpdatedStatusResponse: MutableLiveData<NetworkResult<UpdatedStatusResponse>> =
+        MutableLiveData()
 
     fun getMilestoneDetails(editMilestoneRequest: EditMilestoneRequest) {
         editMilestoneResponse.value = NetworkResult.Loading()
@@ -124,16 +123,16 @@ class EditMilestoneViewModel @Inject constructor(
     fun deleteMileStoneImage(image_id: DeleteMilestoneImageRequest) {
         deleteMilestoneImageResponse.value = NetworkResult.Loading()
         viewModelScope.launch {
-            homeRepository.deleteMilestoneImage(image_id).collect{
+            homeRepository.deleteMilestoneImage(image_id).collect {
                 deleteMilestoneImageResponse.value = it
             }
         }
     }
 
-    fun getUpdatedStatus(userId:Int, type: String){
+    fun getUpdatedStatus(userId: Int, type: String) {
         getUpdatedStatusResponse.value = NetworkResult.Loading()
         viewModelScope.launch {
-            homeRepository.getUpdatedStatus(userId,type).collect{
+            homeRepository.getUpdatedStatus(userId, type).collect {
                 getUpdatedStatusResponse.value = it
             }
         }

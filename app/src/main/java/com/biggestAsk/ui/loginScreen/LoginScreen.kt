@@ -89,6 +89,8 @@ fun LoginScreen(
                             interactionSource = remember { MutableInteractionSource() }) {
                             navHostController.popBackStack()
                             navHostController.navigate(Screen.VerifyEmail.route)
+                            loginViewModel.loginTextEmail = ""
+                            loginViewModel.loginTextPass = ""
                         },
                     text = stringResource(id = R.string.login_screen_text_signup),
                     style = MaterialTheme.typography.body2,

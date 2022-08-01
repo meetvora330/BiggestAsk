@@ -8,10 +8,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.biggestAsk.data.model.request.*
 import com.biggestAsk.data.model.request.Answer
-import com.biggestAsk.data.model.request.GetPregnancyMilestoneRequest
-import com.biggestAsk.data.model.request.IntendedParentQuestionAnsRequest
-import com.biggestAsk.data.model.request.StoreBaseScreenQuestionAnsRequest
 import com.biggestAsk.data.model.response.*
 import com.biggestAsk.data.repository.HomeRepository
 import com.biggestAsk.data.source.network.NetworkResult
@@ -28,6 +26,7 @@ class BottomHomeViewModel @Inject constructor(
     var pregnancyTittle: String by mutableStateOf("")
     var pregnancyDescription: String by mutableStateOf("")
     var pregnancyImageUrl: String by mutableStateOf("")
+    var homeScreenImportantQuestion: String by mutableStateOf("")
     var homeScreenLatestQuestion: String by mutableStateOf("")
     var intendedParentQuestion: String by mutableStateOf("")
     var intendedParentAnswer: String by mutableStateOf("")
@@ -39,15 +38,18 @@ class BottomHomeViewModel @Inject constructor(
     var homeScreenQuestionAns: String by mutableStateOf("")
     var homeScreenQuestionCategeryId: Int by mutableStateOf(0)
     var homeScreenQuestionId: Int by mutableStateOf(0)
+    var homeScreenImportantQuestionId: Int by mutableStateOf(0)
     var isAllDataLoaded: Boolean by mutableStateOf(true)
     var isErrorOccurred: Boolean by mutableStateOf(false)
-    var isPregnancyDataLoaded: Boolean by mutableStateOf(false)
+    var isPregnancyDataLoaded: Boolean by mutableStateOf(true)
+    var isQuestionDataEmpty: Boolean by mutableStateOf(false)
     var isHomeScreenQuestionDataLoaded: Boolean by mutableStateOf(false)
     var isIntendedParentQuestionDataLoaded: Boolean by mutableStateOf(false)
+    var upperQuestion: Boolean by mutableStateOf(false)
     var isNearestMilestoneDataLoaded: Boolean by mutableStateOf(false)
     var isHomeScreenQuestionAnsEmpty: Boolean by mutableStateOf(false)
     var isHomeScreenQuestionAnswered: Boolean by mutableStateOf(false)
-    var getPregnancyMilestoneResponse: MutableLiveData<NetworkResult<GetPregnancyMilestoneResponse>> =
+    var getPregnancyMilestoneResponse: MutableLiveData<NetworkResult<GetImportantQuestionResponse>> =
         MutableLiveData()
     var getHomeScreenQuestionResponse: MutableLiveData<NetworkResult<GetHomeScreenQuestionResponse>> =
         MutableLiveData()
@@ -57,7 +59,10 @@ class BottomHomeViewModel @Inject constructor(
         MutableLiveData()
     var storeBaseScreenQuestionAnsResponse: MutableLiveData<NetworkResult<CommonResponse>> =
         MutableLiveData()
+    var storeAnsImportantQuestionResponse: MutableLiveData<NetworkResult<CommonResponse>> =
+        MutableLiveData()
     var answerList = mutableStateListOf<Answer>()
+    var parentList = mutableStateListOf<String>()
 
     fun getPregnancyMilestone(getPregnancyMilestoneRequest: GetPregnancyMilestoneRequest) {
         getPregnancyMilestoneResponse.value = NetworkResult.Loading()
@@ -95,11 +100,20 @@ class BottomHomeViewModel @Inject constructor(
         }
     }
 
-    fun storeBaseScreenQuestionAns(storeBaseScreenQuestionAnsRequest: StoreBaseScreenQuestionAnsRequest){
+    fun storeBaseScreenQuestionAns(storeBaseScreenQuestionAnsRequest: StoreBaseScreenQuestionAnsRequest) {
         storeBaseScreenQuestionAnsResponse.value = NetworkResult.Loading()
         viewModelScope.launch {
-            homeRepository.storeBaseScreenQuestionAns(storeBaseScreenQuestionAnsRequest).collect{
+            homeRepository.storeBaseScreenQuestionAns(storeBaseScreenQuestionAnsRequest).collect {
                 storeBaseScreenQuestionAnsResponse.value = it
+            }
+        }
+    }
+
+    fun storeAnsImportantQuestion(storeAnsImportantQuestionRequest: StoreAnsImportantQuestionRequest) {
+        storeAnsImportantQuestionResponse.value = NetworkResult.Loading()
+        viewModelScope.launch {
+            homeRepository.storeAnsImportantQuestion(storeAnsImportantQuestionRequest).collect {
+                storeAnsImportantQuestionResponse.value = it
             }
         }
     }

@@ -27,8 +27,6 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.biggestAsk.ui.main.viewmodel.MainViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.ET_Bg
@@ -141,7 +139,7 @@ fun BottomQuestionScreen() {
                 color = Color.Black,
                 fontWeight = FontWeight.W800
             )
-            DropDownMenu()
+            DropDownMenu(mutableListOf())
             Row(
                 modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom
             ) {
@@ -226,7 +224,7 @@ fun BottomQuestionScreen() {
                 color = Color.Black,
                 fontWeight = FontWeight.W800
             )
-            val selectedText = simpleDropDown(
+            simpleDropDown(
                 suggestions = suggestions,
                 hint = stringResource(id = R.string.bottom_ques_drop_down_hint_day),
                 modifier = Modifier.padding(top = 12.dp, start = 24.dp, end = 24.dp),

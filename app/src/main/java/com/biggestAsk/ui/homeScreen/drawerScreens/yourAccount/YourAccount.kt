@@ -2,8 +2,8 @@ package com.biggestAsk.ui.homeScreen.drawerScreens.yourAccount
 
 import android.Manifest
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
@@ -67,6 +67,9 @@ import com.biggestAsk.ui.ui.theme.Text_Accept_Terms
 import com.biggestAsk.util.PathUtil
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -79,11 +82,13 @@ fun YourAccountScreen(
     homeActivity: HomeActivity,
 ) {
     val focusManager = LocalFocusManager.current
+    val isRationale = remember { mutableStateOf(false) }
 
     var imageData by remember {
         mutableStateOf<Uri?>(null)
     }
     var uriPath: String? = null
+
     val context = LocalContext.current
     val bitmap = remember {
         mutableStateOf<Bitmap?>(null)
@@ -94,6 +99,55 @@ fun YourAccountScreen(
     ) { uri: Uri? ->
         imageData = uri
     }
+
+//    val permissionReqLauncher =
+//        homeActivity.registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+//            when {
+//                it -> {
+//                    yourAccountViewModel.isPermissionAllowed.value = false
+//                    launcher.launch("image/*")
+//                    Log.d(
+//                        "TAG",
+//                        "Permission Granted"
+//                    )
+//                }
+//                ActivityCompat.shouldShowRequestPermissionRationale(
+//                    homeActivity,
+//                    Manifest.permission.READ_EXTERNAL_STORAGE
+//                ) -> {
+//                    isRationale.value = true
+//                    Log.d(
+//                        "TAG",
+//                        "Permission Not Granted"
+//                    )
+//                }
+//                else -> {
+//                    Log.d(
+//                        "TAG",
+//                        "Permission Permanently Denied"
+//                    )
+//                    yourAccountViewModel.isPermissionAllowed.value = true
+//                }
+//            }
+//        }
+//    val lifecycleOwner = LocalLifecycleOwner.current
+//    DisposableEffect(
+//        key1 = lifecycleOwner,
+//        effect = {
+//            val observer = LifecycleEventObserver { _, event ->
+//                if (event == Lifecycle.Event.ON_RESUME) {
+//                    if (permissionState.status.isGranted) {
+//                        yourAccountViewModel.isPermissionAllowed.value = false
+//                    }
+//                }
+//            }
+//            lifecycleOwner.lifecycle.addObserver(observer)
+//            onDispose {
+//                lifecycleOwner.lifecycle.removeObserver(observer)
+//            }
+//        }
+//    )
+
     imageData.let {
         val uri = it
         uriPath = uri?.let { it1 -> PathUtil.getPath(context, it1) }
@@ -132,9 +186,8 @@ fun YourAccountScreen(
     LaunchedEffect(Unit) {
         val provider = PreferenceProvider(context)
         val userId = provider.getIntValue("user_id", 0)
-//        val userId =0
         val type = provider.getValue("type", "")
-        yourAccountViewModel.getUserDetails(GetUserDetailsRequest(1, "surrogate"))
+        yourAccountViewModel.getUserDetails(GetUserDetailsRequest(userId, type.toString()))
         yourAccountViewModel.getUserDetailResponse.observe(homeActivity) {
             if (it != null) {
                 handleUserData(
@@ -858,13 +911,13 @@ private fun handleUserData(
         is NetworkResult.Success -> {
             // bind data to the view
             yourAccountViewModel.isLoading = false
-            yourAccountViewModel.yourAccountFullName = result.data!!.name
-            yourAccountViewModel.yourAccountPhoneNumber = result.data.number
-            yourAccountViewModel.yourAccountEmail = result.data.email
-            yourAccountViewModel.yourAccountHomeAddress = result.data.address
-            yourAccountViewModel.yourAccountDateOfBirth = result.data.date_of_birth
-            yourAccountViewModel.yourAccountPartnerName = result.data.partner_name
-            yourAccountViewModel.profileImg = result.data.image1
+            yourAccountViewModel.yourAccountFullName = result.data?.name.toString()
+            yourAccountViewModel.yourAccountPhoneNumber = result.data?.number.toString()
+            yourAccountViewModel.yourAccountEmail = result.data?.email.toString()
+            yourAccountViewModel.yourAccountHomeAddress = result.data?.address.toString()
+            yourAccountViewModel.yourAccountDateOfBirth = result.data?.date_of_birth.toString()
+            yourAccountViewModel.yourAccountPartnerName = result.data?.partner_name.toString()
+            yourAccountViewModel.profileImg = result.data?.image1.toString()
         }
         is NetworkResult.Error -> {
             // show error message

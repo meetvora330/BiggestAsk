@@ -309,7 +309,7 @@ fun YourSurrogateDialog(
         )
         if (isPhoneEmpty.value) {
             Text(
-                text = stringResource(id = R.string.enter_phone_number),
+                text = stringResource(id = R.string.enter_email),
                 modifier = Modifier.padding(start = 12.dp, top = 1.dp),
                 style = MaterialTheme.typography.caption,
                 color = MaterialTheme.colors.error,

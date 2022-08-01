@@ -93,9 +93,14 @@ class HomeRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    suspend fun getPregnancyMilestone(getPregnancyMilestoneRequest: GetPregnancyMilestoneRequest): Flow<NetworkResult<GetPregnancyMilestoneResponse>> {
+    suspend fun getPregnancyMilestone(getPregnancyMilestoneRequest: GetPregnancyMilestoneRequest): Flow<NetworkResult<GetImportantQuestionResponse>> {
         return flow {
-            emit(safeApiCall { apiService.getPregnancyMilestone(getPregnancyMilestoneRequest) })
+            emit(safeApiCall {
+                apiService.getPregnancyMilestone(
+                    user_id = getPregnancyMilestoneRequest.user_id,
+                    type = getPregnancyMilestoneRequest.type
+                )
+            })
         }.flowOn(Dispatchers.IO)
     }
 
@@ -203,12 +208,12 @@ class HomeRepository @Inject constructor(
     }
 
     suspend fun updateMilestoneImage(
-        image_id:MultipartBody.Part?,
-        image:MultipartBody.Part?
-    ):Flow<NetworkResult<UpdateImageResponse>>{
+        image_id: MultipartBody.Part?,
+        image: MultipartBody.Part?
+    ): Flow<NetworkResult<UpdateImageResponse>> {
         return flow {
             emit(safeApiCall { apiService.updateMilestoneImage(image_id, image) })
-        }
+        }.flowOn(Dispatchers.IO)
     }
 
     suspend fun deleteMilestoneImage(
@@ -216,14 +221,26 @@ class HomeRepository @Inject constructor(
     ): Flow<NetworkResult<CommonResponse>> {
         return flow {
             emit(safeApiCall { apiService.deleteMilestoneImage(image_id = image_id) })
-        }
+        }.flowOn(Dispatchers.IO)
     }
 
     suspend fun storeBaseScreenQuestionAns(
         storeBaseScreenQuestionAnsRequest: StoreBaseScreenQuestionAnsRequest
+    ): Flow<NetworkResult<CommonResponse>> {
+        return flow {
+            emit(safeApiCall {
+                apiService.storeBaseScreenQuestionAns(
+                    storeBaseScreenQuestionAnsRequest
+                )
+            })
+        }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun storeAnsImportantQuestion(
+        storeAnsImportantQuestionRequest: StoreAnsImportantQuestionRequest
     ):Flow<NetworkResult<CommonResponse>>{
         return flow {
-            emit(safeApiCall { apiService.storeBaseScreenQuestionAns(storeBaseScreenQuestionAnsRequest) })
-        }
+            emit(safeApiCall { apiService.storeAnsImportantQuestion(storeAnsImportantQuestionRequest) })
+        }.flowOn(Dispatchers.IO)
     }
 }

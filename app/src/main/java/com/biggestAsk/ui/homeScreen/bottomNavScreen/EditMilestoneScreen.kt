@@ -30,6 +30,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.CornerRadius
@@ -48,8 +49,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -85,7 +88,10 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.util.*
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalPermissionsApi::class)
+@OptIn(
+    ExperimentalMaterialApi::class, ExperimentalPermissionsApi::class,
+    ExperimentalComposeUiApi::class
+)
 @Composable
 fun EditMilestoneScreen(
     navHostController: NavHostController,
@@ -121,13 +127,14 @@ fun EditMilestoneScreen(
             placeholder(R.drawable.ic_baseline_place_holder_image_24)
         })
     val lifecycleOwner = LocalLifecycleOwner.current
+    val provider = PreferenceProvider(context)
     DisposableEffect(
         key1 = lifecycleOwner,
         effect = {
             val observer = LifecycleEventObserver { _, event ->
                 if (event == Lifecycle.Event.ON_RESUME) {
                     if (permissionState.status.isGranted) {
-                        editMilestoneViewModel.isPermissionAllowed = false
+                        editMilestoneViewModel.isPermissionAllowed.value = false
                     }
                 }
             }
@@ -181,9 +188,12 @@ fun EditMilestoneScreen(
         mutableStateOf(true)
     }
     val coroutineScope = rememberCoroutineScope()
-    val type = PreferenceProvider(context).getValue("type", "")
+    val type = provider.getValue("type", "")
     LaunchedEffect(Unit) {
         editMilestoneViewModel.editMilestoneLocationB.value = ""
+        editMilestoneViewModel.editMilestoneTimeEmpty.value = false
+        editMilestoneViewModel.editMilestoneDateEmpty.value = false
+        editMilestoneViewModel.editMilestoneLocationBEmpty.value = false
         Log.d("TAG", "EditMilestoneScreen: $milestoneId")
         getUpdatedMilestone(
             homeActivity = homeActivity,
@@ -290,15 +300,17 @@ fun EditMilestoneScreen(
                             )
                         )
                         if (editMilestoneViewModel.editMilestoneTittleEmpty.value) {
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 24.dp),
-                                text = "Enter tittle",
-                                style = MaterialTheme.typography.caption,
-                                color = MaterialTheme.colors.error,
-                                fontSize = 12.sp
-                            )
+                            if (!editMilestoneViewModel.isMilestoneTittleEditable.value) {
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 24.dp),
+                                    text = "Enter tittle",
+                                    style = MaterialTheme.typography.caption,
+                                    color = MaterialTheme.colors.error,
+                                    fontSize = 12.sp
+                                )
+                            }
                         }
                         Text(
                             modifier = Modifier
@@ -646,6 +658,12 @@ fun EditMilestoneScreen(
                                                 "TAG",
                                                 "EditMilestoneScreen: whole column was clicked"
                                             )
+                                            editMilestoneViewModel.editMilestoneTimeEmpty.value =
+                                                false
+                                            editMilestoneViewModel.editMilestoneDateEmpty.value =
+                                                false
+                                            editMilestoneViewModel.editMilestoneLocationBEmpty.value =
+                                                false
                                             coroutineScope.launch {
                                                 if (editMilestoneBottomSheetState.bottomSheetState.isExpanded) {
                                                     editMilestoneBottomSheetState.bottomSheetState.collapse()
@@ -667,6 +685,12 @@ fun EditMilestoneScreen(
                                                     "TAG",
                                                     "EditMilestoneScreen: whole tittle was clicked"
                                                 )
+                                                editMilestoneViewModel.editMilestoneTimeEmpty.value =
+                                                    false
+                                                editMilestoneViewModel.editMilestoneDateEmpty.value =
+                                                    false
+                                                editMilestoneViewModel.editMilestoneLocationBEmpty.value =
+                                                    false
                                                 coroutineScope.launch {
                                                     if (editMilestoneBottomSheetState.bottomSheetState.isExpanded) {
                                                         editMilestoneBottomSheetState.bottomSheetState.collapse()
@@ -856,14 +880,51 @@ fun EditMilestoneScreen(
                                     shape = RoundedCornerShape(13.dp),
                                     enabled = true,
                                     onClick = {
-                                        editMilestoneViewModel.imageListIndex.value = index
-                                        Log.i("TAG", "Index is $index")
-                                        Log.i(
-                                            "TAG",
-                                            "Image Id is ${editMilestoneViewModel.imageList[index].id}"
-                                        )
-                                        launcher.launch("image/*")
-                                        latestIndex.value = index
+//                                                editMilestoneViewModel.isPermissionAllowed.value =
+//                                                    false
+                                        val permissionReqLauncher =
+                                            homeActivity.registerForActivityResult(
+                                                ActivityResultContracts.RequestPermission()
+                                            ) {
+                                                when {
+                                                    it -> {
+                                                        editMilestoneViewModel.imageListIndex.value =
+                                                            index
+                                                        Log.i("TAG", "Index is $index")
+                                                        Log.i(
+                                                            "TAG",
+                                                            "Image Id is ${editMilestoneViewModel.imageList[index].id}"
+                                                        )
+                                                        provider.setValue(
+                                                            "is_permission_allowed",
+                                                            true
+                                                        )
+                                                        launcher.launch("image/*")
+                                                        latestIndex.value = index
+                                                        Log.d(
+                                                            "TAG",
+                                                            "Permission Granted"
+                                                        )
+                                                    }
+                                                    ActivityCompat.shouldShowRequestPermissionRationale(
+                                                        homeActivity,
+                                                        Manifest.permission.READ_EXTERNAL_STORAGE
+                                                    ) -> {
+                                                        Log.d(
+                                                            "TAG",
+                                                            "Permission Not Granted"
+                                                        )
+                                                    }
+                                                    else -> {
+                                                        Log.d(
+                                                            "TAG",
+                                                            "Permission Permanently Denied"
+                                                        )
+                                                        editMilestoneViewModel.isPermissionAllowed.value =
+                                                            true
+                                                    }
+                                                }
+                                            }
                                     }) {
                                     Text(
                                         modifier = Modifier.wrapContentWidth(),
@@ -1026,6 +1087,7 @@ fun EditMilestoneScreen(
                                                 editMilestoneViewModel.isPermissionAllowed = false
                                             }
                                         }
+
                                     }
                                 }) {
                                 Text(
@@ -1047,10 +1109,15 @@ fun EditMilestoneScreen(
                                 )
                             }
                         }
-                        if (editMilestoneViewModel.isPermissionAllowed) {
+                        if (editMilestoneViewModel.isPermissionAllowed.value) {
                             AlertDialog(
+                                properties = DialogProperties(
+                                    dismissOnBackPress = true,
+                                    dismissOnClickOutside = false,
+                                    usePlatformDefaultWidth = true,
+                                ),
                                 onDismissRequest = {
-                                    editMilestoneViewModel.isPermissionAllowed = false
+                                    editMilestoneViewModel.isPermissionAllowed.value = false
                                 },
                                 confirmButton = {
                                     TextButton(onClick = {
@@ -1066,7 +1133,7 @@ fun EditMilestoneScreen(
                                 },
                                 dismissButton = {
                                     TextButton(onClick = {
-                                        editMilestoneViewModel.isPermissionAllowed = false
+                                        editMilestoneViewModel.isPermissionAllowed.value = false
                                     })
                                     { Text(text = "CANCEL", color = Color.Red) }
                                 },
