@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.android.billingclient.api.*
 import com.biggestAsk.data.model.LoginStatus
 import com.biggestAsk.data.model.request.UpdatePaymentStatusRequest
 import com.biggestAsk.data.model.response.CommonResponse
@@ -45,6 +46,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.launch
 import java.util.*
+import kotlin.collections.ArrayList
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -64,7 +66,8 @@ fun PaymentScreen(
             PaymentScreenBottomSheet(
                 bottomSheetScaffoldState = bottomSheetScaffoldState,
                 coroutineScope = coroutineScope,
-                navHostController = navHostController
+                navHostController = navHostController,
+                context
             )
         }, sheetPeekHeight = 0.dp, sheetShape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp)
     ) {
@@ -167,12 +170,45 @@ fun PaymentScreen(
                             .padding(start = 25.dp, end = 24.dp, top = 32.dp)
                             .clickable {
                                 coroutineScope.launch {
-                                    if (bottomSheetScaffoldState.bottomSheetState.isCollapsed) {
-                                        bottomSheetScaffoldState.bottomSheetState.expand()
-                                    } else {
-                                        bottomSheetScaffoldState.bottomSheetState.collapse()
-                                    }
+                                    val purchasesUpdatedListener =
+                                        PurchasesUpdatedListener { billingResult, purchases ->
+                                            // To be implemented in a later section.
+                                        }
 
+                                    var billingClient = BillingClient.newBuilder(context)
+                                        .setListener(purchasesUpdatedListener)
+                                        .enablePendingPurchases()
+                                        .build()
+
+                                    billingClient.startConnection(object : BillingClientStateListener {
+                                        override fun onBillingSetupFinished(billingResult: BillingResult) {
+                                            if (billingResult.responseCode ==  BillingClient.BillingResponseCode.OK) {
+                                                // The BillingClient is ready. You can query purchases here.
+                                            }
+                                        }
+                                        override fun onBillingServiceDisconnected() {
+                                            // Try to restart the connection on the next request to
+                                            // Google Play by calling the startConnection() method.
+                                        }
+                                    })
+
+                                    val queryProductDetailsParams =
+                                        QueryProductDetailsParams.newBuilder()
+                                            .setProductList(
+                                                arrayListOf(
+                                                    QueryProductDetailsParams.Product.newBuilder()
+                                                        .setProductId("product_id_example")
+                                                        .setProductType(BillingClient.ProductType.SUBS)
+                                                        .build())
+                                            )
+                                            .build()
+
+                                    billingClient.queryProductDetailsAsync(queryProductDetailsParams) {
+                                            billingResult,
+                                            productDetailsList ->
+                                        // check billingResult
+                                        // process returned productDetailsList
+                                    }
                                 }
                             },
                         shape = RoundedCornerShape(15.dp),
@@ -246,7 +282,8 @@ fun PaymentPreview() {
 fun PaymentScreenBottomSheet(
     bottomSheetScaffoldState: BottomSheetScaffoldState,
     coroutineScope: CoroutineScope,
-    navHostController: NavHostController
+    navHostController: NavHostController,
+    context: Context
 ) {
     Column(
         modifier = Modifier
@@ -481,15 +518,4 @@ private fun handlePaymentStatusData(
             Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
         }
     }
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun PaymentScreenBottomSheetPreview() {
-    PaymentScreenBottomSheet(
-        bottomSheetScaffoldState = rememberBottomSheetScaffoldState(),
-        coroutineScope = rememberCoroutineScope(),
-        navHostController = rememberNavController()
-    )
 }

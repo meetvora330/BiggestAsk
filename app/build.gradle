@@ -149,4 +149,6 @@ dependencies {
 
     implementation "com.google.accompanist:accompanist-permissions:0.24.9-beta"
 
+
+    implementation "com.android.billingclient:billing:$billing_version"
 }

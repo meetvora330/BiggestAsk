@@ -1,13 +1,16 @@
 package com.biggestAsk.ui
 
+import android.Manifest
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
+import androidx.core.app.ActivityCompat
 import androidx.navigation.compose.rememberNavController
 import com.biggestAsk.ui.base.BaseActivity
 import com.biggestAsk.ui.homeScreen.HomeScreen
@@ -23,6 +26,29 @@ class HomeActivity : BaseActivity() {
     private val editMilestoneViewModel: EditMilestoneViewModel by viewModels()
     val yourAccountViewModel: YourAccountViewModel by viewModels()
     val surrogateViewModel: YourSurrogateViewModel by viewModels()
+    val permissionReqLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+            when {
+                it -> {
+                   // launcher.launch("image/*")
+                    yourAccountViewModel.isPermissionAllowed = false
+                }
+                ActivityCompat.shouldShowRequestPermissionRationale(
+                    this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                ) -> {
+                  //  permissionState.launchPermissionRequest()
+                    yourAccountViewModel.isPermissionAllowed = false
+                    yourAccountViewModel.isRational = true
+                }
+                else -> {
+                    yourAccountViewModel.isPermissionAllowed = true
+                    //permissionState.launchPermissionRequest()
+//                    yourAccountViewModel.isPermissionAllowed =
+//                        yourAccountViewModel.isRational
+                }
+            }
+        }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)

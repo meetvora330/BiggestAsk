@@ -3,6 +3,7 @@ package com.biggestAsk.ui.homeScreen.drawerScreens.yourAccount
 import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
@@ -48,6 +49,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
@@ -65,17 +67,11 @@ import com.biggestAsk.ui.ui.theme.Text_Accept_Terms
 import com.biggestAsk.util.PathUtil
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberPermissionState
-import com.google.accompanist.permissions.shouldShowRationale
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 
-
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun YourAccountScreen(
     navHostController: NavHostController,
@@ -83,37 +79,16 @@ fun YourAccountScreen(
     homeActivity: HomeActivity,
 ) {
     val focusManager = LocalFocusManager.current
-    val permissionState =
-        rememberPermissionState(permission = Manifest.permission.READ_EXTERNAL_STORAGE)
-
-    val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(
-        key1 = lifecycleOwner,
-        effect = {
-            val observer = LifecycleEventObserver { _, event ->
-                if (event == Lifecycle.Event.ON_RESUME) {
-                    if (permissionState.status.isGranted) {
-                        yourAccountViewModel.isPermissionAllowed = false
-                    }
-                }
-            }
-            lifecycleOwner.lifecycle.addObserver(observer)
-            onDispose {
-                lifecycleOwner.lifecycle.removeObserver(observer)
-            }
-        }
-    )
 
     var imageData by remember {
         mutableStateOf<Uri?>(null)
     }
     var uriPath: String? = null
-
-
     val context = LocalContext.current
     val bitmap = remember {
         mutableStateOf<Bitmap?>(null)
     }
+
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
     ) { uri: Uri? ->
@@ -131,6 +106,29 @@ fun YourAccountScreen(
             }
         }
     }
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(
+        key1 = lifecycleOwner,
+        effect = {
+            val observer = LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_RESUME) {
+                    if (ActivityCompat.checkSelfPermission(
+                            homeActivity,
+                            Manifest.permission.READ_EXTERNAL_STORAGE
+                        ) == PackageManager.PERMISSION_GRANTED
+                    ) {
+                        yourAccountViewModel.isPermissionAllowed = false
+                    }
+                }
+            }
+            lifecycleOwner.lifecycle.addObserver(observer)
+            onDispose {
+                lifecycleOwner.lifecycle.removeObserver(observer)
+            }
+        }
+    )
+
+
     LaunchedEffect(Unit) {
         val provider = PreferenceProvider(context)
         val userId = provider.getIntValue("user_id", 0)
@@ -178,7 +176,8 @@ fun YourAccountScreen(
                                 start.linkTo(parent.start)
                                 end.linkTo(parent.end)
                                 top.linkTo(parent.top)
-                            }
+                            },
+                        contentScale = ContentScale.Crop
                     )
                 } else {
                     bitmap.value?.let {
@@ -227,22 +226,32 @@ fun YourAccountScreen(
                             interactionSource = MutableInteractionSource()
                         ) {
                             if (yourAccountViewModel.isEditable.value) {
-                                when {
-                                    permissionState.status.isGranted -> {
-                                        launcher.launch("image/*")
-                                        yourAccountViewModel.isPermissionAllowed = false
-                                    }
-                                    permissionState.status.shouldShowRationale -> {
-                                        permissionState.launchPermissionRequest()
-                                        yourAccountViewModel.isPermissionAllowed = false
-                                        yourAccountViewModel.isRational = true
-                                    }
-                                    !permissionState.status.isGranted -> {
-                                        permissionState.launchPermissionRequest()
-                                        yourAccountViewModel.isPermissionAllowed =
-                                            yourAccountViewModel.isRational
-                                    }
+                                if (ActivityCompat.checkSelfPermission(
+                                        homeActivity,
+                                        Manifest.permission.READ_EXTERNAL_STORAGE
+                                    ) != PackageManager.PERMISSION_GRANTED
+                                ) {
+                                    homeActivity.permissionReqLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                                } else {
+                                    launcher.launch("image/*")
+                                    yourAccountViewModel.isPermissionAllowed = false
                                 }
+//                                when {
+//                                    permissionState.status.isGranted -> {
+//                                        launcher.launch("image/*")
+//                                        yourAccountViewModel.isPermissionAllowed = false
+//                                    }
+//                                    permissionState.status.shouldShowRationale -> {
+//                                        permissionState.launchPermissionRequest()
+//                                        yourAccountViewModel.isPermissionAllowed = false
+//                                        yourAccountViewModel.isRational = true
+//                                    }
+//                                    !permissionState.status.isGranted -> {
+//                                        permissionState.launchPermissionRequest()
+//                                        yourAccountViewModel.isPermissionAllowed =
+//                                            yourAccountViewModel.isRational
+//                                    }
+//                                }
                             }
                         },
                     painter = painterResource(id = R.drawable.ic_icon_camera_edit_img_your_account),
