@@ -185,6 +185,7 @@ fun YourAccountScreen(
     LaunchedEffect(Unit) {
         val userId = provider.getIntValue("user_id", 0)
         val type = provider.getValue("type", "")
+        yourAccountViewModel.getUserDetails(GetUserDetailsRequest(userId, type.toString()))
         Log.d("TAG", "YourAccountScreen: User Id Is $userId")
         Log.d("TAG", "YourAccountScreen: Type is $type")
         yourAccountViewModel.getUserDetails(GetUserDetailsRequest(userId, type!!))

@@ -237,34 +237,59 @@ fun BottomHomeScreen(
                         if (TextUtils.isEmpty(bottomHomeViewModel.homeScreenQuestionAns)) {
                             bottomHomeViewModel.isHomeScreenQuestionAnsEmpty = true
                         } else {
-                            bottomHomeViewModel.answerList.add(
-                                Answer(
-                                    answer = bottomHomeViewModel.homeScreenQuestionAns,
-                                    question_id = bottomHomeViewModel.homeScreenQuestionId
-                                )
-                            )
-                            bottomHomeViewModel.storeBaseScreenQuestionAns(
-                                StoreBaseScreenQuestionAnsRequest(
-                                    answer = bottomHomeViewModel.answerList,
-                                    category_id = bottomHomeViewModel.homeScreenQuestionCategeryId,
-                                    partner_id = partnerId.toString(),
-                                    type = type!!,
-                                    user_id = userId
-                                )
-                            )
-                            bottomHomeViewModel.storeBaseScreenQuestionAnsResponse.observe(
-                                homeActivity
-                            ) {
-                                if (it != null) {
-                                    handleStoreQuestionAnsData(
-                                        result = it,
-                                        bottomHomeViewModel = bottomHomeViewModel,
-                                        coroutineScope = coroutineScope,
-                                        bottomSheetScaffoldState = homeBottomSheetScaffoldState,
-                                        user_id = userId,
-                                        type = type,
-                                        homeActivity = homeActivity
+                            if (bottomHomeViewModel.upperQuestion) {
+                                bottomHomeViewModel.storeAnsImportantQuestion(
+                                    StoreAnsImportantQuestionRequest(
+                                        question_id = bottomHomeViewModel.homeScreenImportantQuestionId,
+                                        answer = bottomHomeViewModel.homeScreenQuestionAns,
+                                        user_name = selectedText.value
                                     )
+                                )
+                                bottomHomeViewModel.storeAnsImportantQuestionResponse.observe(
+                                    homeActivity
+                                ) {
+                                    if (it != null) {
+                                        handleStoreAnsImportantQuestion(
+                                            result = it,
+                                            bottomHomeViewModel = bottomHomeViewModel,
+                                            coroutineScope = coroutineScope,
+                                            bottomSheetScaffoldState = homeBottomSheetScaffoldState,
+                                            userId = userId,
+                                            type = type!!,
+                                            homeActivity = homeActivity
+                                        )
+                                    }
+                                }
+                            } else {
+                                bottomHomeViewModel.answerList.add(
+                                    Answer(
+                                        answer = bottomHomeViewModel.homeScreenQuestionAns,
+                                        question_id = bottomHomeViewModel.homeScreenQuestionId
+                                    )
+                                )
+                                bottomHomeViewModel.storeBaseScreenQuestionAns(
+                                    StoreBaseScreenQuestionAnsRequest(
+                                        answer = bottomHomeViewModel.answerList,
+                                        category_id = bottomHomeViewModel.homeScreenQuestionCategeryId,
+                                        partner_id = partnerId.toString(),
+                                        type = type!!,
+                                        user_id = userId
+                                    )
+                                )
+                                bottomHomeViewModel.storeBaseScreenQuestionAnsResponse.observe(
+                                    homeActivity
+                                ) {
+                                    if (it != null) {
+                                        handleStoreQuestionAnsData(
+                                            result = it,
+                                            bottomHomeViewModel = bottomHomeViewModel,
+                                            coroutineScope = coroutineScope,
+                                            bottomSheetScaffoldState = homeBottomSheetScaffoldState,
+                                            user_id = userId,
+                                            type = type,
+                                            homeActivity = homeActivity
+                                        )
+                                    }
                                 }
                             }
 
@@ -672,70 +697,10 @@ fun BottomHomeScreen(
 
     }, sheetShape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp))
     if (bottomHomeViewModel.isAllDataLoaded || bottomHomeViewModel.isHomeScreenQuestionAnswered) {
-        ProgressBarTransparentBackground(if (bottomHomeViewModel.isAllDataLoaded) "Loading...." else "Adding...", id = R.color.white)
-    }
-}
-
-fun getHomeScreenQuestion(
-    user_id: Int,
-    type: String,
-    bottomHomeViewModel: BottomHomeViewModel,
-    homeActivity: HomeActivity
-) {
-    bottomHomeViewModel.getHomeScreenQuestion(
-        GetPregnancyMilestoneRequest(
-            user_id = user_id,
-            type = type
+        ProgressBarTransparentBackground(
+            if (bottomHomeViewModel.isAllDataLoaded) "Loading...." else "Adding...",
+            id = R.color.white
         )
-    )
-    bottomHomeViewModel.getHomeScreenQuestionResponse.observe(homeActivity) {
-        if (it != null) {
-            handleHomeQuestionData(
-                result = it,
-                bottomHomeViewModel = bottomHomeViewModel,
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-private fun handleStoreQuestionAnsData(
-    result: NetworkResult<CommonResponse>,
-    bottomHomeViewModel: BottomHomeViewModel,
-    coroutineScope: CoroutineScope,
-    bottomSheetScaffoldState: BottomSheetScaffoldState,
-    user_id: Int,
-    type: String,
-    homeActivity: HomeActivity
-) {
-    when (result) {
-        is NetworkResult.Loading -> {
-            // show a progress bar
-            Log.e("TAG", "handleUserData() --> Loading  $result")
-            bottomHomeViewModel.isHomeScreenQuestionAnswered = true
-        }
-        is NetworkResult.Success -> {
-            // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
-            Log.i("TAG", result.message.toString())
-            getHomeScreenQuestion(user_id, type, bottomHomeViewModel, homeActivity)
-            coroutineScope.launch {
-                if (bottomSheetScaffoldState.bottomSheetState.isExpanded) {
-                    bottomSheetScaffoldState.bottomSheetState.collapse()
-                } else {
-                    bottomSheetScaffoldState.bottomSheetState.expand()
-                }
-            }
-            bottomHomeViewModel.isHomeScreenQuestionAnswered = false
-            bottomHomeViewModel.answerList.clear()
-//            bottomHomeViewModel.homeScreenQuestionCategeryId = 0
-//            bottomHomeViewModel.homeScreenQuestionId = 0
-        }
-        is NetworkResult.Error -> {
-            // show error message
-            bottomHomeViewModel.isHomeScreenQuestionAnswered = false
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
-        }
     }
 }
 

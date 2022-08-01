@@ -243,12 +243,4 @@ class HomeRepository @Inject constructor(
             emit(safeApiCall { apiService.storeAnsImportantQuestion(storeAnsImportantQuestionRequest) })
         }.flowOn(Dispatchers.IO)
     }
-
-    suspend fun storeBaseScreenQuestionAns(
-        storeBaseScreenQuestionAnsRequest: StoreBaseScreenQuestionAnsRequest
-    ):Flow<NetworkResult<CommonResponse>>{
-        return flow {
-            emit(safeApiCall { apiService.storeBaseScreenQuestionAns(storeBaseScreenQuestionAnsRequest) })
-        }
-    }
 }
