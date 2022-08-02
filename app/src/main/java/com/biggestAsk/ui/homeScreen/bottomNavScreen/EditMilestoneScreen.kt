@@ -52,7 +52,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -882,49 +881,54 @@ fun EditMilestoneScreen(
                                     onClick = {
 //                                                editMilestoneViewModel.isPermissionAllowed.value =
 //                                                    false
-                                        val permissionReqLauncher =
-                                            homeActivity.registerForActivityResult(
-                                                ActivityResultContracts.RequestPermission()
-                                            ) {
+                                        if (!provider.getBooleanValue(
+                                                "is_permission_allowed",
+                                                false
+                                            )
+                                        ) {
+                                            if (permissionState.status.isGranted) {
+                                                launcher.launch("image/*")
+                                                editMilestoneViewModel.imageListIndex.value =
+                                                    index
+                                                latestIndex.value = index
+                                                provider.setValue(
+                                                    "is_permission_allowed",
+                                                    true
+                                                )
+                                            } else {
                                                 when {
-                                                    it -> {
-                                                        editMilestoneViewModel.imageListIndex.value =
-                                                            index
-                                                        Log.i("TAG", "Index is $index")
-                                                        Log.i(
-                                                            "TAG",
-                                                            "Image Id is ${editMilestoneViewModel.imageList[index].id}"
-                                                        )
-                                                        provider.setValue(
-                                                            "is_permission_allowed",
-                                                            true
-                                                        )
+                                                    permissionState.status.isGranted -> {
                                                         launcher.launch("image/*")
-                                                        latestIndex.value = index
+                                                        editMilestoneViewModel.imageListIndex.value =
+                                                            -1
+                                                        editMilestoneViewModel.isPermissionAllowed.value =
+                                                            false
+                                                    }
+                                                    permissionState.status.shouldShowRationale -> {
+                                                        permissionState.launchPermissionRequest()
+                                                        isRationale.value = true
                                                         Log.d(
                                                             "TAG",
-                                                            "Permission Granted"
+                                                            "EditMilestoneScreen: single show rationale"
                                                         )
                                                     }
-                                                    ActivityCompat.shouldShowRequestPermissionRationale(
-                                                        homeActivity,
-                                                        Manifest.permission.READ_EXTERNAL_STORAGE
-                                                    ) -> {
+                                                    !permissionState.status.isGranted -> {
+                                                        permissionState.launchPermissionRequest()
                                                         Log.d(
                                                             "TAG",
-                                                            "Permission Not Granted"
-                                                        )
-                                                    }
-                                                    else -> {
-                                                        Log.d(
-                                                            "TAG",
-                                                            "Permission Permanently Denied"
+                                                            "EditMilestoneScreen: Not Granted"
                                                         )
                                                         editMilestoneViewModel.isPermissionAllowed.value =
-                                                            true
+                                                            isRationale.value
                                                     }
                                                 }
                                             }
+                                        } else {
+                                            launcher.launch("image/*")
+                                            editMilestoneViewModel.imageListIndex.value =
+                                                index
+                                            latestIndex.value = index
+                                        }
                                     }) {
                                     Text(
                                         modifier = Modifier.wrapContentWidth(),
@@ -1038,56 +1042,47 @@ fun EditMilestoneScreen(
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     } else {
-                                        when {
-                                            permissionState.status.isGranted -> {
+                                        if (!provider.getBooleanValue(
+                                                "is_permission_allowed",
+                                                false
+                                            )
+                                        ) {
+                                            if (permissionState.status.isGranted) {
                                                 launcher.launch("image/*")
                                                 editMilestoneViewModel.imageListIndex.value = -1
-                                                editMilestoneViewModel.isPermissionAllowed = false
+                                                provider.setValue("is_permission_allowed", true)
+                                            } else {
+                                                when {
+                                                    permissionState.status.isGranted -> {
+                                                        launcher.launch("image/*")
+                                                        editMilestoneViewModel.imageListIndex.value =
+                                                            -1
+                                                        editMilestoneViewModel.isPermissionAllowed.value =
+                                                            false
+                                                    }
+                                                    permissionState.status.shouldShowRationale -> {
+                                                        permissionState.launchPermissionRequest()
+                                                        isRationale.value = true
+                                                        Log.d(
+                                                            "TAG",
+                                                            "EditMilestoneScreen: single show rationale"
+                                                        )
+                                                    }
+                                                    !permissionState.status.isGranted -> {
+                                                        permissionState.launchPermissionRequest()
+                                                        Log.d(
+                                                            "TAG",
+                                                            "EditMilestoneScreen: Not Granted"
+                                                        )
+                                                        editMilestoneViewModel.isPermissionAllowed.value =
+                                                            isRationale.value
+                                                    }
+                                                }
                                             }
-                                            permissionState.status.shouldShowRationale -> {
-                                                permissionState.launchPermissionRequest()
-                                                Log.d(
-                                                    "TAG",
-                                                    "EditMilestoneScreen: single show rationale"
-                                                )
-                                            }
-                                            !permissionState.status.isGranted -> {
-                                                Log.d("TAG", "EditMilestoneScreen: Not Granted")
-//                                                if (isShown.value){
-//                                                    editMilestoneViewModel.isPermissionAllowed = true
-//                                                }
-                                                permissionState.launchPermissionRequest()
-                                            }
-                                            !permissionState.status.shouldShowRationale -> {
-                                                Log.d(
-                                                    "TAG",
-                                                    "EditMilestoneScreen: Show Dialog show rationale"
-                                                )
-                                                editMilestoneViewModel.isPermissionAllowed = true
-                                            }
-                                            permissionState.status.isGranted || !permissionState.status.shouldShowRationale -> {
-                                                Log.d(
-                                                    "TAG",
-                                                    "EditMilestoneScreen: Show Dialog shouldShowRationale "
-                                                )
-                                                editMilestoneViewModel.isPermissionAllowed = false
-                                            }
-                                            !permissionState.status.isGranted || permissionState.status.shouldShowRationale -> {
-                                                Log.d(
-                                                    "TAG",
-                                                    "EditMilestoneScreen: Show Dialog isGranted "
-                                                )
-                                                editMilestoneViewModel.isPermissionAllowed = false
-                                            }
-                                            permissionState.status.isGranted || permissionState.status.shouldShowRationale -> {
-                                                Log.d(
-                                                    "TAG",
-                                                    "EditMilestoneScreen: Show Dialog both "
-                                                )
-                                                editMilestoneViewModel.isPermissionAllowed = false
-                                            }
+                                        } else {
+                                            launcher.launch("image/*")
+                                            editMilestoneViewModel.imageListIndex.value = -1
                                         }
-
                                     }
                                 }) {
                                 Text(
@@ -1204,7 +1199,9 @@ fun EditMilestoneScreen(
                                                 type = type!!
                                             )
                                         )
-                                        editMilestoneViewModel.saveNoteResponse.observe(homeActivity) {
+                                        editMilestoneViewModel.saveNoteResponse.observe(
+                                            homeActivity
+                                        ) {
                                             if (it != null) {
                                                 handleSaveNoteData(
                                                     result = it,
@@ -1214,7 +1211,11 @@ fun EditMilestoneScreen(
                                             }
                                         }
                                     } else {
-                                        Toast.makeText(context, "Enter note", Toast.LENGTH_SHORT)
+                                        Toast.makeText(
+                                            context,
+                                            "Enter note",
+                                            Toast.LENGTH_SHORT
+                                        )
                                             .show()
                                     }
                                 },
@@ -1320,7 +1321,10 @@ fun EditMilestoneScreen(
                                             "user_id",
                                             userId.toString()
                                         ),
-                                        type = MultipartBody.Part.createFormData("type", type!!),
+                                        type = MultipartBody.Part.createFormData(
+                                            "type",
+                                            type!!
+                                        ),
                                         milestone_id = MultipartBody.Part.createFormData(
                                             "milestone_id",
                                             milestoneId.toString()
@@ -1511,7 +1515,11 @@ private fun handleStoreMilestoneData(
                 BottomNavScreen.AddNewMileStones.route,
                 true
             )
-            navHostController.navigate(BottomNavScreen.AddNewMileStones.editMilestone(milestoneId))
+            navHostController.navigate(
+                BottomNavScreen.AddNewMileStones.editMilestone(
+                    milestoneId
+                )
+            )
         }
         is NetworkResult.Error -> {
             // show error message

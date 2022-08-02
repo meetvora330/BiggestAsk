@@ -34,7 +34,6 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -49,9 +48,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.core.app.ActivityCompat
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.biggestAsk.data.model.request.GetUserDetailsRequest
@@ -68,7 +64,6 @@ import com.biggestAsk.util.PathUtil
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -80,6 +75,7 @@ fun YourAccountScreen(
     navHostController: NavHostController,
     yourAccountViewModel: YourAccountViewModel,
     homeActivity: HomeActivity,
+    context:Context
 ) {
     val focusManager = LocalFocusManager.current
     val isRationale = remember { mutableStateOf(false) }
@@ -87,6 +83,7 @@ fun YourAccountScreen(
     var imageData by remember {
         mutableStateOf<Uri?>(null)
     }
+    val provider = PreferenceProvider(context)
     var uriPath: String? = null
 
     val context = LocalContext.current
@@ -184,10 +181,11 @@ fun YourAccountScreen(
 
 
     LaunchedEffect(Unit) {
-        val provider = PreferenceProvider(context)
         val userId = provider.getIntValue("user_id", 0)
         val type = provider.getValue("type", "")
-        yourAccountViewModel.getUserDetails(GetUserDetailsRequest(userId, type.toString()))
+        Log.d("TAG", "YourAccountScreen: User Id Is $userId")
+        Log.d("TAG", "YourAccountScreen: Type is $type")
+        yourAccountViewModel.getUserDetails(GetUserDetailsRequest(userId, type!!))
         yourAccountViewModel.getUserDetailResponse.observe(homeActivity) {
             if (it != null) {
                 handleUserData(
