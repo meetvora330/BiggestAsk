@@ -47,7 +47,6 @@ class YourAccountViewModel @Inject constructor(
     var yourAccountPasswordEmpty: Boolean by mutableStateOf(false)
     var isEditable: MutableState<Boolean> = mutableStateOf(false)
     val isYourAccountScreen: MutableLiveData<Boolean> = MutableLiveData(false)
-    var isPermissionAllowed: MutableState<Boolean> = mutableStateOf(false)
     var getUserDetailResponse: MutableLiveData<NetworkResult<GetUserDetailsResponse>> =
         MutableLiveData()
     var updateUserProfileResponse: MutableLiveData<NetworkResult<UpdateUserProfileResponse>> =
