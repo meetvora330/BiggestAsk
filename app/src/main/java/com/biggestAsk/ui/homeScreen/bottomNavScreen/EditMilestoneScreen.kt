@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -42,7 +43,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -57,6 +60,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
+import coil.compose.ImagePainter.State.Empty.painter
 import coil.compose.rememberImagePainter
 import com.biggestAsk.data.model.request.DeleteMilestoneImageRequest
 import com.biggestAsk.data.model.request.EditMilestoneRequest
@@ -76,11 +80,13 @@ import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PathUtil
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
+import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import retrofit2.Response.error
 import java.io.File
 import java.util.*
 
@@ -112,12 +118,6 @@ fun EditMilestoneScreen(
     )
     val latestIndex = remember { mutableStateOf(0) }
     var uriPath: String?
-    val latestImageUrl = remember { mutableStateOf("") }
-    val painter = rememberImagePainter(
-        latestImageUrl.value,
-        builder = {
-            placeholder(R.drawable.ic_baseline_place_holder_image_24)
-        })
     val lifecycleOwner = LocalLifecycleOwner.current
     val provider = PreferenceProvider(context)
     DisposableEffect(
@@ -724,10 +724,6 @@ fun EditMilestoneScreen(
                         }
                     }
                     items(editMilestoneViewModel.imageList.size) { index ->
-                        Log.i(
-                            "TAG",
-                            "List Size From Inner ${editMilestoneViewModel.imageList.size}"
-                        )
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -753,10 +749,6 @@ fun EditMilestoneScreen(
                                                 )
                                                 .clickable {
                                                     if (editMilestoneViewModel.imageList[index].is_need_to_upload) {
-                                                        Log.d(
-                                                            "TAG",
-                                                            "EditMilestoneScreen: New Image Remove"
-                                                        )
                                                         editMilestoneViewModel.imageList.removeAt(
                                                             index
                                                         )
@@ -894,8 +886,15 @@ fun EditMilestoneScreen(
                                             }
                                         }
                                     } else {
-                                        latestImageUrl.value =
-                                            editMilestoneViewModel.imageList[index].image
+//                                        Image(
+//                                            painter = rememberImagePainter(editMilestoneViewModel.imageList[index].image),
+//                                            contentDescription = "",
+//                                        )
+                                        val painter = rememberImagePainter(
+                                            editMilestoneViewModel.imageList[index].image,
+                                            builder = {
+                                                placeholder(R.drawable.ic_baseline_place_holder_image_24)
+                                            })
                                         Image(
                                             modifier = Modifier
                                                 .fillMaxWidth(),
@@ -1791,13 +1790,10 @@ private fun handleUpdateImageData(
 ) {
     when (result) {
         is NetworkResult.Loading -> {
-            // show a progress bar
-            Log.e("TAG", "handleUserData() --> Loading  $result")
             editMilestoneViewModel.isMilestoneImageUpdated.value = true
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
             editMilestoneViewModel.isMilestoneImageUpdated.value = false
             if (!result.data?.image_url.isNullOrEmpty()) {
                 editMilestoneViewModel.imageList[selectedImageIndex].image =
@@ -1811,7 +1807,6 @@ private fun handleUpdateImageData(
         is NetworkResult.Error -> {
             // show error message
             Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
             editMilestoneViewModel.isMilestoneImageUpdated.value = false
         }
     }
@@ -1826,13 +1821,9 @@ private fun handleStoreMilestoneData(
 ) {
     when (result) {
         is NetworkResult.Loading -> {
-            // show a progress bar
-            Log.e("TAG", "handleUserData() --> Loading  $result")
             editMilestoneViewModel.isMilestoneAnsUpdated.value = true
         }
         is NetworkResult.Success -> {
-            // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
             Log.i("TAG", result.message.toString())
             editMilestoneViewModel.isMilestoneAnsUpdated.value = false
             navHostController.popBackStack(
@@ -1847,7 +1838,6 @@ private fun handleStoreMilestoneData(
         }
         is NetworkResult.Error -> {
             // show error message
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
             editMilestoneViewModel.isMilestoneAnsUpdated.value = false
         }
     }
@@ -1861,13 +1851,10 @@ private fun handleEditMilestoneData(
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
-            Log.e("TAG", "handleUserData() --> Loading  $result")
             editMilestoneViewModel.isEditMilestoneDataLoaded.value = true
         }
         is NetworkResult.Success -> {
             val type = PreferenceProvider(context).getValue("type", "")
-            // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
             editMilestoneViewModel.editMilestoneTittle.value =
                 result.data?.milestone?.get(0)?.title!!
             if (result.data.milestone[0].date == null) {
@@ -1912,12 +1899,9 @@ private fun handleEditMilestoneData(
             editMilestoneViewModel.imageList.clear()
             editMilestoneViewModel.imageList.addAll(result.data.milestone_image)
             editMilestoneViewModel.isEditMilestoneDataLoaded.value = false
-            Log.d("TAG", "handleEditMilestoneData: ${editMilestoneViewModel.milestoneType.value}")
-            Log.d("TAG", "handleEditMilestoneData: ${result.data.milestone_image.size}")
         }
         is NetworkResult.Error -> {
             // show error message
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
             editMilestoneViewModel.isEditMilestoneDataLoaded.value = false
             Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
         }
