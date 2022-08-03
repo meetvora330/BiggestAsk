@@ -53,7 +53,7 @@ class BottomHomeViewModel @Inject constructor(
     var isHomeScreenQuestionAnsEmpty: Boolean by mutableStateOf(false)
     var isHomeScreenQuestionAnswered: Boolean by mutableStateOf(false)
 
-    var getHomeScreenQuestionResponse: MutableLiveData<NetworkResult<GetHomeScreenQuestionResponse>> =
+    var getHomeScreenQuestionResponse: MutableLiveData<NetworkResult<GetHomeScreenQuestionResponse>> =MutableLiveData()
     var intendedPartnerQuestionAnsResponse: MutableLiveData<NetworkResult<IntendedParentQuestionResponse>> =
         MutableLiveData()
     var getNearestMilestoneResponse: MutableLiveData<NetworkResult<GetNearestMilestoneResponse>> =

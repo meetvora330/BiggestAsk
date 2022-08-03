@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -48,6 +49,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.core.app.ActivityCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.biggestAsk.data.model.request.GetUserDetailsRequest
@@ -83,7 +87,6 @@ fun YourAccountScreen(
     var imageData by remember {
         mutableStateOf<Uri?>(null)
     }
-    val provider = PreferenceProvider(context)
     var uriPath: String? = null
 
     val bitmap = remember {
@@ -95,54 +98,6 @@ fun YourAccountScreen(
     ) { uri: Uri? ->
         imageData = uri
     }
-
-//    val permissionReqLauncher =
-//        homeActivity.registerForActivityResult(ActivityResultContracts.RequestPermission()) {
-//            when {
-//                it -> {
-//                    yourAccountViewModel.isPermissionAllowed.value = false
-//                    launcher.launch("image/*")
-//                    Log.d(
-//                        "TAG",
-//                        "Permission Granted"
-//                    )
-//                }
-//                ActivityCompat.shouldShowRequestPermissionRationale(
-//                    homeActivity,
-//                    Manifest.permission.READ_EXTERNAL_STORAGE
-//                ) -> {
-//                    isRationale.value = true
-//                    Log.d(
-//                        "TAG",
-//                        "Permission Not Granted"
-//                    )
-//                }
-//                else -> {
-//                    Log.d(
-//                        "TAG",
-//                        "Permission Permanently Denied"
-//                    )
-//                    yourAccountViewModel.isPermissionAllowed.value = true
-//                }
-//            }
-//        }
-//    val lifecycleOwner = LocalLifecycleOwner.current
-//    DisposableEffect(
-//        key1 = lifecycleOwner,
-//        effect = {
-//            val observer = LifecycleEventObserver { _, event ->
-//                if (event == Lifecycle.Event.ON_RESUME) {
-//                    if (permissionState.status.isGranted) {
-//                        yourAccountViewModel.isPermissionAllowed.value = false
-//                    }
-//                }
-//            }
-//            lifecycleOwner.lifecycle.addObserver(observer)
-//            onDispose {
-//                lifecycleOwner.lifecycle.removeObserver(observer)
-//            }
-//        }
-//    )
 
     imageData.let {
         val uri = it
