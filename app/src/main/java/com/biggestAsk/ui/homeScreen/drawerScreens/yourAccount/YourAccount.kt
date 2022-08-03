@@ -2,8 +2,8 @@ package com.biggestAsk.ui.homeScreen.drawerScreens.yourAccount
 
 import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
@@ -32,7 +32,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
@@ -67,8 +66,6 @@ import com.biggestAsk.ui.ui.theme.Text_Accept_Terms
 import com.biggestAsk.util.PathUtil
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberPermissionState
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -79,7 +76,7 @@ fun YourAccountScreen(
     navHostController: NavHostController,
     yourAccountViewModel: YourAccountViewModel,
     homeActivity: HomeActivity,
-    context:Context
+    context: Context
 ) {
     val focusManager = LocalFocusManager.current
     val isRationale = remember { mutableStateOf(false) }
@@ -143,7 +140,7 @@ fun YourAccountScreen(
         yourAccountViewModel.getUserDetails(GetUserDetailsRequest(userId, type.toString()))
         Log.d("TAG", "YourAccountScreen: User Id Is $userId")
         Log.d("TAG", "YourAccountScreen: Type is $type")
-        yourAccountViewModel.getUserDetails(GetUserDetailsRequest(userId, type!!))
+        yourAccountViewModel.getUserDetails(GetUserDetailsRequest(userId, type))
         yourAccountViewModel.getUserDetailResponse.observe(homeActivity) {
             if (it != null) {
                 handleUserData(

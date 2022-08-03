@@ -376,7 +376,9 @@ fun BottomHomeScreen(
                                     .fillMaxWidth()
                                     .padding(start = 24.dp, end = 24.dp, top = 16.dp)
                             ) {
-                                Row(modifier = Modifier.fillMaxWidth().padding( end = 10.dp)) {
+                                Row(modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(end = 10.dp)) {
                                     Column(modifier = Modifier.padding(start = 18.dp)) {
                                         Text(
                                             modifier = Modifier.padding(top = 25.dp),

@@ -14,6 +14,7 @@ import com.biggestAsk.data.source.network.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
 @HiltViewModel
 class FrequencyViewModel @Inject constructor(
     private val homeRepository: HomeRepository,

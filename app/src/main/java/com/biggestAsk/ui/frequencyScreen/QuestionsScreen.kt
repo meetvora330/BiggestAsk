@@ -220,7 +220,7 @@ fun QuestionList(
 ) {
     val focusManager = LocalFocusManager.current
     var answer by remember { mutableStateOf(homeViewModel.valueStateList[index].answer) }
-    var ans by remember{ mutableStateOf("")}
+    var ans by remember { mutableStateOf("") }
     Column(
         modifier = Modifier.padding(bottom = 20.dp),
         verticalArrangement = Arrangement.Center,

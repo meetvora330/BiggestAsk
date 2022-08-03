@@ -20,7 +20,7 @@ class YourSurrogateViewModel @Inject constructor(
     application: Application
 ) : AndroidViewModel(application) {
     //Your Surrogate Mother
-    var isSurrogateInvited:MutableState<Boolean> = mutableStateOf(false)
+    var isSurrogateInvited: MutableState<Boolean> = mutableStateOf(false)
     var textSurrogateDialogEmail: MutableState<String> = mutableStateOf("")
     val invitationSend: MutableState<Boolean> = mutableStateOf(false)
     var inviteSurrogateResponse: MutableLiveData<NetworkResult<InviteSurrogateResponse>> =

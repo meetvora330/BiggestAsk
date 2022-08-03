@@ -45,8 +45,8 @@ import androidx.navigation.NavHostController
 import com.biggestAsk.data.model.request.CreateMilestoneRequest
 import com.biggestAsk.data.model.request.GetPregnancyMilestoneRequest
 import com.biggestAsk.data.model.request.ResetMilestoneRequest
-import com.biggestAsk.data.model.response.GetMilestoneResponse
 import com.biggestAsk.data.model.response.CommonResponse
+import com.biggestAsk.data.model.response.GetMilestoneResponse
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.ui.HomeActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground

@@ -1,14 +1,10 @@
 package com.biggestAsk.ui.homeScreen.bottomNavScreen
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,7 +23,7 @@ import com.biggestAsk.ui.ui.theme.ET_Bg
 import com.example.biggestAsk.R
 
 @Composable
-fun DropDownMenu(suggestion:List<String>) {
+fun DropDownMenu(suggestion: List<String>) {
 
     // Declaring a boolean value to store
     // the expanded state of the Text Field

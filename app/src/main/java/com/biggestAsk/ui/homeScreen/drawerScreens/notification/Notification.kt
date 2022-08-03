@@ -55,7 +55,7 @@ fun Notification(navHostController: NavHostController) {
                             navHostController.navigate(
                                 NotificationDetailScreenRoute.NotificationDetails.notificationDetails(
                                     item.nIcon,
-                                    item.nTittle.replace(".",""),
+                                    item.nTittle.replace(".", ""),
                                     item.nDescription,
                                     item.nDays
                                 )

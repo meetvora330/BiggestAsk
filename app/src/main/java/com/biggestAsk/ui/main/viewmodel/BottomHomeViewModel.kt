@@ -11,8 +11,6 @@ import androidx.lifecycle.viewModelScope
 import com.biggestAsk.data.model.request.*
 import com.biggestAsk.data.model.request.Answer
 import com.biggestAsk.data.model.response.*
-import com.biggestAsk.data.model.request.*
-import com.biggestAsk.data.model.response.*
 import com.biggestAsk.data.repository.HomeRepository
 import com.biggestAsk.data.source.network.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -49,11 +47,13 @@ class BottomHomeViewModel @Inject constructor(
     var isIntendedParentQuestionDataLoaded: Boolean by mutableStateOf(false)
     var upperQuestion: Boolean by mutableStateOf(false)
     var isNearestMilestoneDataLoaded: Boolean by mutableStateOf(false)
-    var getPregnancyMilestoneResponse: MutableLiveData<NetworkResult<GetImportantQuestionResponse>> = MutableLiveData()
+    var getPregnancyMilestoneResponse: MutableLiveData<NetworkResult<GetImportantQuestionResponse>> =
+        MutableLiveData()
     var isHomeScreenQuestionAnsEmpty: Boolean by mutableStateOf(false)
     var isHomeScreenQuestionAnswered: Boolean by mutableStateOf(false)
 
-    var getHomeScreenQuestionResponse: MutableLiveData<NetworkResult<GetHomeScreenQuestionResponse>> =MutableLiveData()
+    var getHomeScreenQuestionResponse: MutableLiveData<NetworkResult<GetHomeScreenQuestionResponse>> =
+        MutableLiveData()
     var intendedPartnerQuestionAnsResponse: MutableLiveData<NetworkResult<IntendedParentQuestionResponse>> =
         MutableLiveData()
     var getNearestMilestoneResponse: MutableLiveData<NetworkResult<GetNearestMilestoneResponse>> =

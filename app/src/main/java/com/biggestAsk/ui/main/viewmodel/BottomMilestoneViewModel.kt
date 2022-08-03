@@ -8,9 +8,9 @@ import androidx.lifecycle.viewModelScope
 import com.biggestAsk.data.model.request.CreateMilestoneRequest
 import com.biggestAsk.data.model.request.GetPregnancyMilestoneRequest
 import com.biggestAsk.data.model.request.ResetMilestoneRequest
+import com.biggestAsk.data.model.response.CommonResponse
 import com.biggestAsk.data.model.response.GetMilestoneResponse
 import com.biggestAsk.data.model.response.Milestone
-import com.biggestAsk.data.model.response.CommonResponse
 import com.biggestAsk.data.repository.HomeRepository
 import com.biggestAsk.data.source.network.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -51,19 +51,19 @@ class BottomMilestoneViewModel @Inject constructor(
         }
     }
 
-    fun createMilestone(createMilestoneRequest: CreateMilestoneRequest){
+    fun createMilestone(createMilestoneRequest: CreateMilestoneRequest) {
         createMilestoneResponse.value = NetworkResult.Loading()
         viewModelScope.launch {
-            homeRepository.createMilestone( createMilestoneRequest).collect{
+            homeRepository.createMilestone(createMilestoneRequest).collect {
                 createMilestoneResponse.value = it
             }
         }
     }
 
-    fun resetMilestone(resetMilestoneRequest: ResetMilestoneRequest){
+    fun resetMilestone(resetMilestoneRequest: ResetMilestoneRequest) {
         resetMilestoneResponse.value = NetworkResult.Loading()
         viewModelScope.launch {
-            homeRepository.resetMilestone(resetMilestoneRequest).collect{
+            homeRepository.resetMilestone(resetMilestoneRequest).collect {
                 resetMilestoneResponse.value = it
             }
         }

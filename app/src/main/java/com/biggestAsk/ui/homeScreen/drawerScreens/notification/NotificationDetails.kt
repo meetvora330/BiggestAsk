@@ -53,7 +53,8 @@ fun NotificationDetails(
             color = Color(0xFF8995A3)
         )
         Text(
-            modifier = Modifier.wrapContentWidth()
+            modifier = Modifier
+                .wrapContentWidth()
                 .padding(top = 20.dp),
             text = notificationDetailsDays!!,
             style = MaterialTheme.typography.body1,

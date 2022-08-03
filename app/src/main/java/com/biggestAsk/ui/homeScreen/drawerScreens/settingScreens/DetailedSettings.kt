@@ -77,7 +77,7 @@ fun DetailedSettings() {
                 thickness = 1.dp
             )
         }
-        Column() {
+        Column {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -125,7 +125,7 @@ fun DetailedSettings() {
                 thickness = 1.dp
             )
         }
-        Column() {
+        Column {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -218,7 +218,7 @@ fun DetailedSettings() {
                 .fillMaxWidth()
                 .padding(top = 37.dp, bottom = 20.dp),
             text = buildAnnotatedString {
-                val logout =context.resources.getString(R.string.logout)
+                val logout = context.resources.getString(R.string.logout)
                 withStyle(
                     style = SpanStyle(
                         fontWeight = FontWeight.W600,

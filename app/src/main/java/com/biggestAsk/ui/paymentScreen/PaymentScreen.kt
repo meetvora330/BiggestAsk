@@ -197,9 +197,11 @@ fun PaymentScreen(
                                                         )
                                                         .build()
 
-                                                billingClient.queryProductDetailsAsync(queryProductDetailsParams) { billingResult,
-                                                                                                                    productDetailsList ->
-                                                    Log.e("aa","queryProductDetailsAsync")
+                                                billingClient.queryProductDetailsAsync(
+                                                    queryProductDetailsParams
+                                                ) { billingResult,
+                                                    productDetailsList ->
+                                                    Log.e("aa", "queryProductDetailsAsync")
                                                     // check billingResult
                                                     // process returned productDetailsList
                                                     val productDetailsParamsList = listOf(
@@ -212,23 +214,29 @@ fun PaymentScreen(
 
                                                     val billingFlowParams = BillingFlowParams
                                                         .newBuilder()
-                                                        .setProductDetailsParamsList(productDetailsParamsList)
+                                                        .setProductDetailsParamsList(
+                                                            productDetailsParamsList
+                                                        )
                                                         .build()
 
 // Launch the billing flow
-                                                    val billingResult = billingClient.launchBillingFlow(
-                                                        mainActivity,
-                                                        billingFlowParams
-                                                    )
+                                                    val billingResult =
+                                                        billingClient.launchBillingFlow(
+                                                            mainActivity,
+                                                            billingFlowParams
+                                                        )
                                                 }
                                             }
-                                            Log.e("aa","onBillingSetupFinished "+billingResult.responseCode)
+                                            Log.e(
+                                                "aa",
+                                                "onBillingSetupFinished " + billingResult.responseCode
+                                            )
                                         }
 
                                         override fun onBillingServiceDisconnected() {
                                             // Try to restart the connection on the next request to
                                             // Google Play by calling the startConnection() method.
-                                            Log.e("aa","onBillingServiceDisconnected")
+                                            Log.e("aa", "onBillingServiceDisconnected")
                                         }
                                     })
 

@@ -70,8 +70,8 @@ class YourAccountViewModel @Inject constructor(
         address: MultipartBody.Part,
         dateOfBirth: MultipartBody.Part,
         partnerName: MultipartBody.Part,
-        imgFileName1: MultipartBody.Part?=null,
-        imgFileName2: MultipartBody.Part?=null,
+        imgFileName1: MultipartBody.Part? = null,
+        imgFileName2: MultipartBody.Part? = null,
         type: MultipartBody.Part,
     ) {
         updateUserProfileResponse.value = NetworkResult.Loading()
@@ -87,7 +87,8 @@ class YourAccountViewModel @Inject constructor(
                 partnerName,
                 imgFileName1,
                 imgFileName2,
-                type).collect {
+                type
+            ).collect {
                 updateUserProfileResponse.value = it
             }
         }

@@ -1,11 +1,11 @@
 package com.biggestAsk.ui.main.viewmodel
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.biggestAsk.data.model.response.GetMilestoneResponse
-import com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph.MilestoneDetails
-import com.example.biggestAsk.R
 
 class MainViewModel : ViewModel() {
     //Register Screen
@@ -14,9 +14,7 @@ class MainViewModel : ViewModel() {
     //Otp Verification
 
 
-
     var isNameEmpty: Boolean by mutableStateOf(false)
-
 
 
     var toolbarTittle: String by mutableStateOf("Home")
@@ -69,7 +67,6 @@ class MainViewModel : ViewModel() {
     val isSettingSubDetailedSettingScreen: MutableState<Boolean> = mutableStateOf(false)
     val isSettingSubTermsOfServiceScreen: MutableState<Boolean> = mutableStateOf(false)
     val isSettingSubPrivacyPolicyScreen: MutableState<Boolean> = mutableStateOf(false)
-
 
 
 }

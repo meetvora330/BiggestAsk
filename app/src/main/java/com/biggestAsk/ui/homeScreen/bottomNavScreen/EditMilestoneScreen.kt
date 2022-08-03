@@ -742,7 +742,7 @@ fun EditMilestoneScreen(
                                 verticalAlignment = Alignment.Top
                             ) {
                                 if (type == "parent") {
-                                    if (editMilestoneViewModel.milestoneType.value == "parent"){
+                                    if (editMilestoneViewModel.milestoneType.value == "parent") {
                                         Icon(
                                             modifier = Modifier
                                                 .width(25.dp)
@@ -795,6 +795,58 @@ fun EditMilestoneScreen(
                                             contentDescription = ""
                                         )
                                     }
+                                } else {
+                                    Icon(
+                                        modifier = Modifier
+                                            .width(25.dp)
+                                            .height(25.dp)
+                                            .background(
+                                                Color(0xFFF34646),
+                                                RoundedCornerShape(12.dp)
+                                            )
+                                            .clickable {
+                                                if (editMilestoneViewModel.imageList[index].is_need_to_upload) {
+                                                    Log.d(
+                                                        "TAG",
+                                                        "EditMilestoneScreen: New Image Remove"
+                                                    )
+                                                    editMilestoneViewModel.imageList.removeAt(
+                                                        index
+                                                    )
+                                                    val tempData =
+                                                        editMilestoneViewModel.imageList.toList()
+                                                    editMilestoneViewModel.imageList.clear()
+                                                    editMilestoneViewModel.imageList.addAll(
+                                                        tempData
+                                                    )
+                                                } else {
+                                                    editMilestoneViewModel.deleteMileStoneImage(
+                                                        DeleteMilestoneImageRequest(
+                                                            editMilestoneViewModel.imageList[index].id
+                                                        )
+                                                    )
+                                                    editMilestoneViewModel.deleteMilestoneImageResponse.observe(
+                                                        homeActivity
+                                                    ) {
+                                                        if (it != null) {
+                                                            handleDeleteImageData(
+                                                                result = it,
+                                                                editMilestoneViewModel = editMilestoneViewModel,
+                                                                homeActivity = homeActivity,
+                                                                context = context,
+                                                                type = type,
+                                                                milestoneId = milestoneId,
+                                                                partner_id = partnerId,
+                                                                milestone_type = milestoneType.value
+                                                            )
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                        imageVector = Icons.Default.Close,
+                                        tint = Color.White,
+                                        contentDescription = ""
+                                    )
                                 }
                             }
                             Canvas(
@@ -855,7 +907,7 @@ fun EditMilestoneScreen(
                                 }
                             }
                             if (type == "parent") {
-                                if (editMilestoneViewModel.milestoneType.value == "parent"){
+                                if (editMilestoneViewModel.milestoneType.value == "parent") {
                                     Row(
                                         modifier = Modifier
                                             .fillMaxWidth()
@@ -885,7 +937,9 @@ fun EditMilestoneScreen(
                                                         Manifest.permission.READ_EXTERNAL_STORAGE
                                                     ) != PackageManager.PERMISSION_GRANTED
                                                 ) {
-                                                    homeActivity.permissionReqLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                                                    homeActivity.permissionReqLauncher.launch(
+                                                        Manifest.permission.READ_EXTERNAL_STORAGE
+                                                    )
                                                 } else {
                                                     launcher.launch("image/*")
                                                     editMilestoneViewModel.isPermissionAllowed.value =
@@ -915,12 +969,73 @@ fun EditMilestoneScreen(
                                         }
                                     }
                                 }
+                            } else {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(175.dp),
+                                    horizontalArrangement = Arrangement.Center,
+                                    verticalAlignment = Alignment.Bottom
+                                ) {
+                                    Button(
+                                        modifier = Modifier
+                                            .width(210.dp)
+                                            .alpha(if (isPicAvailable.value) 1f else 0f),
+                                        colors = ButtonDefaults.buttonColors(
+                                            backgroundColor = Custom_Blue
+                                        ),
+                                        elevation = ButtonDefaults.elevation(
+                                            defaultElevation = 0.dp,
+                                            pressedElevation = 0.dp,
+                                            disabledElevation = 0.dp,
+                                            hoveredElevation = 0.dp,
+                                            focusedElevation = 0.dp
+                                        ),
+                                        shape = RoundedCornerShape(13.dp),
+                                        enabled = true,
+                                        onClick = {
+                                            if (ActivityCompat.checkSelfPermission(
+                                                    homeActivity,
+                                                    Manifest.permission.READ_EXTERNAL_STORAGE
+                                                ) != PackageManager.PERMISSION_GRANTED
+                                            ) {
+                                                homeActivity.permissionReqLauncher.launch(
+                                                    Manifest.permission.READ_EXTERNAL_STORAGE
+                                                )
+                                            } else {
+                                                launcher.launch("image/*")
+                                                editMilestoneViewModel.isPermissionAllowed.value =
+                                                    false
+                                                editMilestoneViewModel.imageListIndex.value =
+                                                    index
+                                                latestIndex.value = index
+                                            }
+                                        }) {
+                                        Text(
+                                            modifier = Modifier.wrapContentWidth(),
+                                            text = "Change photo",
+                                            style = MaterialTheme.typography.h1.copy(
+                                                fontWeight = FontWeight.W900,
+                                                color = Color.White,
+                                                fontSize = 16.sp,
+                                                lineHeight = 24.sp,
+                                                textAlign = TextAlign.Center
+                                            )
+                                        )
+                                        Icon(
+                                            modifier = Modifier.padding(start = 13.dp),
+                                            painter = painterResource(id = R.drawable.ic_icon_btn_upload_picture),
+                                            contentDescription = "",
+                                            tint = Color.White
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
                     item {
                         if (type == "parent") {
-                            if (editMilestoneViewModel.milestoneType.value=="parent"){
+                            if (editMilestoneViewModel.milestoneType.value == "parent") {
                                 ConstraintLayout(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -1016,10 +1131,13 @@ fun EditMilestoneScreen(
                                                         Manifest.permission.READ_EXTERNAL_STORAGE
                                                     ) != PackageManager.PERMISSION_GRANTED
                                                 ) {
-                                                    homeActivity.permissionReqLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                                                    homeActivity.permissionReqLauncher.launch(
+                                                        Manifest.permission.READ_EXTERNAL_STORAGE
+                                                    )
                                                 } else {
                                                     launcher.launch("image/*")
-                                                    editMilestoneViewModel.isPermissionAllowed.value = false
+                                                    editMilestoneViewModel.isPermissionAllowed.value =
+                                                        false
                                                     editMilestoneViewModel.imageListIndex.value =
                                                         -1
                                                 }
@@ -1144,7 +1262,8 @@ fun EditMilestoneScreen(
                                                 homeActivity.permissionReqLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
                                             } else {
                                                 launcher.launch("image/*")
-                                                editMilestoneViewModel.isPermissionAllowed.value = false
+                                                editMilestoneViewModel.isPermissionAllowed.value =
+                                                    false
                                                 editMilestoneViewModel.imageListIndex.value =
                                                     -1
                                             }
@@ -1202,55 +1321,85 @@ fun EditMilestoneScreen(
                                 text = { Text(text = "Permission is denied, Please allow permission from App Settings") }
                             )
                         }
-                        if (type == "parent") Row(modifier = Modifier.padding(top = 10.dp)) {
-                            CompositionLocalProvider(LocalMinimumTouchTargetEnforcement provides false) {
-                                Checkbox(modifier = Modifier.padding(
-                                    top = 18.dp, bottom = 10.dp, end = 5.dp
-                                ),
-                                    checked = editMilestoneViewModel.checkBoxShareWithBiggestAsk,
-                                    colors = CheckboxDefaults.colors(
-                                        checkedColor = CheckBox_Check,
-                                        uncheckedColor = Color.DarkGray
+                        if (type == "parent") {
+                            Row(modifier = Modifier.padding(top = 10.dp)) {
+                                CompositionLocalProvider(LocalMinimumTouchTargetEnforcement provides false) {
+                                    Checkbox(modifier = Modifier.padding(
+                                        top = 18.dp, bottom = 10.dp, end = 5.dp
                                     ),
-                                    onCheckedChange = {
-                                        editMilestoneViewModel.checkBoxShareWithBiggestAsk = it
-                                    })
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(top = 20.dp, start = 10.dp),
-                                    text = "Share with the biggest ask",
-                                    style = MaterialTheme.typography.body2.copy(
-                                        color = Color.Black,
-                                        fontWeight = FontWeight.W600,
-                                        fontSize = 16.sp
+                                        checked = editMilestoneViewModel.checkBoxShareWithBiggestAsk,
+                                        colors = CheckboxDefaults.colors(
+                                            checkedColor = CheckBox_Check,
+                                            uncheckedColor = Color.DarkGray
+                                        ),
+                                        onCheckedChange = {
+                                            editMilestoneViewModel.checkBoxShareWithBiggestAsk = it
+                                        })
+                                    Text(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(top = 20.dp, start = 10.dp),
+                                        text = "Share with the biggest ask",
+                                        style = MaterialTheme.typography.body2.copy(
+                                            color = Color.Black,
+                                            fontWeight = FontWeight.W600,
+                                            fontSize = 16.sp
+                                        )
                                     )
-                                )
+                                }
                             }
-                        } else Row(modifier = Modifier.padding(top = 10.dp)) {
-                            CompositionLocalProvider(LocalMinimumTouchTargetEnforcement provides false) {
-                                Checkbox(modifier = Modifier.padding(
-                                    top = 18.dp, bottom = 10.dp, end = 5.dp
-                                ),
-                                    checked = editMilestoneViewModel.checkBoxShareWithParents,
-                                    colors = CheckboxDefaults.colors(
-                                        checkedColor = CheckBox_Check,
-                                        uncheckedColor = Color.DarkGray
+                        } else {
+                            Row(modifier = Modifier.padding(top = 10.dp)) {
+                                CompositionLocalProvider(LocalMinimumTouchTargetEnforcement provides false) {
+                                    Checkbox(modifier = Modifier.padding(
+                                        top = 18.dp, bottom = 10.dp, end = 5.dp
                                     ),
-                                    onCheckedChange = {
-                                        editMilestoneViewModel.checkBoxShareWithParents = it
-                                    })
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(top = 20.dp, start = 10.dp),
-                                    text = "Share with Intended parents",
-                                    style = MaterialTheme.typography.body2.copy(
-                                        color = Color.Black,
-                                        fontWeight = FontWeight.W600,
-                                        fontSize = 16.sp
+                                        checked = editMilestoneViewModel.checkBoxShareWithParents,
+                                        colors = CheckboxDefaults.colors(
+                                            checkedColor = CheckBox_Check,
+                                            uncheckedColor = Color.DarkGray
+                                        ),
+                                        onCheckedChange = {
+                                            editMilestoneViewModel.checkBoxShareWithParents = it
+                                        })
+                                    Text(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(top = 20.dp, start = 10.dp),
+                                        text = "Share with Intended parents",
+                                        style = MaterialTheme.typography.body2.copy(
+                                            color = Color.Black,
+                                            fontWeight = FontWeight.W600,
+                                            fontSize = 16.sp
+                                        )
                                     )
-                                )
+                                }
+                            }
+                            Row(modifier = Modifier) {
+                                CompositionLocalProvider(LocalMinimumTouchTargetEnforcement provides false) {
+                                    Checkbox(modifier = Modifier.padding(
+                                        top = 18.dp, bottom = 10.dp, end = 5.dp
+                                    ),
+                                        checked = editMilestoneViewModel.checkBoxShareWithBiggestAsk,
+                                        colors = CheckboxDefaults.colors(
+                                            checkedColor = CheckBox_Check,
+                                            uncheckedColor = Color.DarkGray
+                                        ),
+                                        onCheckedChange = {
+                                            editMilestoneViewModel.checkBoxShareWithBiggestAsk = it
+                                        })
+                                    Text(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(top = 20.dp, start = 10.dp),
+                                        text = "Share with the biggest ask",
+                                        style = MaterialTheme.typography.body2.copy(
+                                            color = Color.Black,
+                                            fontWeight = FontWeight.W600,
+                                            fontSize = 16.sp
+                                        )
+                                    )
+                                }
                             }
                         }
                         Text(
@@ -1306,7 +1455,10 @@ fun EditMilestoneScreen(
                         ) {
                             Button(
                                 modifier = Modifier
-                                    .padding(top = 30.dp),
+                                    .padding(
+                                        top = 30.dp,
+                                        bottom = if (type == "parent" && editMilestoneViewModel.milestoneType.value == "parent") 0.dp else 20.dp
+                                    ),
                                 onClick = {
                                     if (!TextUtils.isEmpty(editMilestoneViewModel.addNewMilestoneNotes.value)) {
                                         editMilestoneViewModel.saveNote(
@@ -1360,95 +1512,191 @@ fun EditMilestoneScreen(
                                 )
                             }
                         }
-
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 32.dp, bottom = 30.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Button(
-                                modifier = Modifier.width(218.dp),
-                                onClick = {
-                                    val userId =
-                                        PreferenceProvider(context).getIntValue("user_id", 0)
-                                    val imageList = ArrayList<MultipartBody.Part?>()
-                                    editMilestoneViewModel.imageList.forEach {
-                                        if (it.is_need_to_upload) {
-                                            imageList.add(it.uriPath?.let { uriPath ->
-                                                convertImageMultiPart(
-                                                    uriPath
+                        if (type == "parent") {
+                            if (editMilestoneViewModel.milestoneType.value == "parent") {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 32.dp, bottom = 30.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    Button(
+                                        modifier = Modifier.width(218.dp),
+                                        onClick = {
+                                            val userId =
+                                                PreferenceProvider(context).getIntValue(
+                                                    "user_id",
+                                                    0
                                                 )
-                                            })
-                                        }
-                                    }
-                                    if (imageList.isEmpty()) {
-                                        val toast =
-                                            Toast.makeText(
-                                                context,
-                                                "Select image first",
-                                                Toast.LENGTH_LONG
-                                            )
-                                        toast.setGravity(Gravity.CENTER, 0, 0)
-                                        toast.show()
-                                    } else {
-                                        editMilestoneViewModel.storeMilestoneAns(
-                                            images = imageList,
-                                            user_id = MultipartBody.Part.createFormData(
-                                                "user_id",
-                                                userId.toString()
-                                            ),
-                                            type = MultipartBody.Part.createFormData(
-                                                "type",
-                                                type!!
-                                            ),
-                                            milestone_id = MultipartBody.Part.createFormData(
-                                                "milestone_id",
-                                                milestoneId.toString()
+                                            val imageList = ArrayList<MultipartBody.Part?>()
+                                            editMilestoneViewModel.imageList.forEach {
+                                                if (it.is_need_to_upload) {
+                                                    imageList.add(it.uriPath?.let { uriPath ->
+                                                        convertImageMultiPart(
+                                                            uriPath
+                                                        )
+                                                    })
+                                                }
+                                            }
+                                            if (imageList.isEmpty()) {
+                                                val toast =
+                                                    Toast.makeText(
+                                                        context,
+                                                        "Select image first",
+                                                        Toast.LENGTH_LONG
+                                                    )
+                                                toast.setGravity(Gravity.CENTER, 0, 0)
+                                                toast.show()
+                                            } else {
+                                                editMilestoneViewModel.storeMilestoneAns(
+                                                    images = imageList,
+                                                    user_id = MultipartBody.Part.createFormData(
+                                                        "user_id",
+                                                        userId.toString()
+                                                    ),
+                                                    type = MultipartBody.Part.createFormData(
+                                                        "type",
+                                                        type!!
+                                                    ),
+                                                    milestone_id = MultipartBody.Part.createFormData(
+                                                        "milestone_id",
+                                                        milestoneId.toString()
+                                                    )
+                                                )
+                                                editMilestoneViewModel.updateMilestoneResponse.observe(
+                                                    homeActivity
+                                                ) {
+                                                    if (it != null) {
+                                                        handleStoreMilestoneData(
+                                                            result = it,
+                                                            editMilestoneViewModel = editMilestoneViewModel,
+                                                            navHostController = navHostController,
+                                                            milestoneId
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        colors = ButtonDefaults.buttonColors(
+                                            backgroundColor = Custom_Blue
+                                        ), shape = RoundedCornerShape(12.dp),
+                                        elevation = ButtonDefaults.elevation(
+                                            defaultElevation = 0.dp,
+                                            pressedElevation = 0.dp,
+                                            disabledElevation = 0.dp,
+                                            hoveredElevation = 0.dp,
+                                            focusedElevation = 0.dp
+                                        )
+                                    ) {
+                                        Text(
+                                            text = "Update milestone",
+                                            style = MaterialTheme.typography.body2.copy(
+                                                color = Color.White,
+                                                fontWeight = FontWeight.W900,
+                                                fontSize = 16.sp
                                             )
                                         )
-                                        editMilestoneViewModel.updateMilestoneResponse.observe(
-                                            homeActivity
-                                        ) {
-                                            if (it != null) {
-                                                handleStoreMilestoneData(
-                                                    result = it,
-                                                    editMilestoneViewModel = editMilestoneViewModel,
-                                                    navHostController = navHostController,
-                                                    milestoneId
-                                                )
+                                        Icon(
+                                            modifier = Modifier.padding(start = 8.dp),
+                                            painter = painterResource(id = R.drawable.ic_img_btn_add_milestone),
+                                            contentDescription = "",
+                                            tint = Color.White
+                                        )
+                                    }
+                                }
+                            }
+                        } else {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 32.dp, bottom = 30.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Button(
+                                    modifier = Modifier.width(218.dp),
+                                    onClick = {
+                                        val userId =
+                                            PreferenceProvider(context).getIntValue("user_id", 0)
+                                        val imageList = ArrayList<MultipartBody.Part?>()
+                                        editMilestoneViewModel.imageList.forEach {
+                                            if (it.is_need_to_upload) {
+                                                imageList.add(it.uriPath?.let { uriPath ->
+                                                    convertImageMultiPart(
+                                                        uriPath
+                                                    )
+                                                })
                                             }
                                         }
-                                    }
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                    backgroundColor = Custom_Blue
-                                ), shape = RoundedCornerShape(12.dp),
-                                elevation = ButtonDefaults.elevation(
-                                    defaultElevation = 0.dp,
-                                    pressedElevation = 0.dp,
-                                    disabledElevation = 0.dp,
-                                    hoveredElevation = 0.dp,
-                                    focusedElevation = 0.dp
-                                )
-                            ) {
-                                Text(
-                                    text = "Update milestone",
-                                    style = MaterialTheme.typography.body2.copy(
-                                        color = Color.White,
-                                        fontWeight = FontWeight.W900,
-                                        fontSize = 16.sp
+                                        if (imageList.isEmpty()) {
+                                            val toast =
+                                                Toast.makeText(
+                                                    context,
+                                                    "Select image first",
+                                                    Toast.LENGTH_LONG
+                                                )
+                                            toast.setGravity(Gravity.CENTER, 0, 0)
+                                            toast.show()
+                                        } else {
+                                            editMilestoneViewModel.storeMilestoneAns(
+                                                images = imageList,
+                                                user_id = MultipartBody.Part.createFormData(
+                                                    "user_id",
+                                                    userId.toString()
+                                                ),
+                                                type = MultipartBody.Part.createFormData(
+                                                    "type",
+                                                    type!!
+                                                ),
+                                                milestone_id = MultipartBody.Part.createFormData(
+                                                    "milestone_id",
+                                                    milestoneId.toString()
+                                                )
+                                            )
+                                            editMilestoneViewModel.updateMilestoneResponse.observe(
+                                                homeActivity
+                                            ) {
+                                                if (it != null) {
+                                                    handleStoreMilestoneData(
+                                                        result = it,
+                                                        editMilestoneViewModel = editMilestoneViewModel,
+                                                        navHostController = navHostController,
+                                                        milestoneId
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        backgroundColor = Custom_Blue
+                                    ), shape = RoundedCornerShape(12.dp),
+                                    elevation = ButtonDefaults.elevation(
+                                        defaultElevation = 0.dp,
+                                        pressedElevation = 0.dp,
+                                        disabledElevation = 0.dp,
+                                        hoveredElevation = 0.dp,
+                                        focusedElevation = 0.dp
                                     )
-                                )
-                                Icon(
-                                    modifier = Modifier.padding(start = 8.dp),
-                                    painter = painterResource(id = R.drawable.ic_img_btn_add_milestone),
-                                    contentDescription = "",
-                                    tint = Color.White
-                                )
+                                ) {
+                                    Text(
+                                        text = "Update milestone",
+                                        style = MaterialTheme.typography.body2.copy(
+                                            color = Color.White,
+                                            fontWeight = FontWeight.W900,
+                                            fontSize = 16.sp
+                                        )
+                                    )
+                                    Icon(
+                                        modifier = Modifier.padding(start = 8.dp),
+                                        painter = painterResource(id = R.drawable.ic_img_btn_add_milestone),
+                                        contentDescription = "",
+                                        tint = Color.White
+                                    )
+                                }
                             }
                         }
+
                     }
                 }
             },

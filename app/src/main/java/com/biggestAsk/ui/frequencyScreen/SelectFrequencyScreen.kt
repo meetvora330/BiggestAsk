@@ -51,7 +51,7 @@ fun SelectFrequencyScreen(
     val context = LocalContext.current
     val suggestions =
         listOf("Every day", "Every 3 days", "Every week")
-    var selectedText by remember{ mutableStateOf("")}
+    var selectedText by remember { mutableStateOf("") }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -131,7 +131,12 @@ fun SelectFrequencyScreen(
                 backgroundColor = Custom_Blue,
             ),
             onClick = {
-                frequencySubmitApiCall(context, frequencyViewModel, mainActivity, selectedText = selectedText)
+                frequencySubmitApiCall(
+                    context,
+                    frequencyViewModel,
+                    mainActivity,
+                    selectedText = selectedText
+                )
             }) {
             Text(
                 text = stringResource(id = R.string.question_btn_text_submit_frequency),
@@ -152,7 +157,7 @@ private fun frequencySubmitApiCall(
     context: Context,
     frequencyViewModel: FrequencyViewModel,
     mainActivity: MainActivity,
-    selectedText:String
+    selectedText: String
 ) {
     val provider = PreferenceProvider(context)
     val type = provider.getValue("type", "")
