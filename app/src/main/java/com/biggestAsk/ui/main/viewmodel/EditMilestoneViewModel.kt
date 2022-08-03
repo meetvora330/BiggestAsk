@@ -31,6 +31,7 @@ class EditMilestoneViewModel @Inject constructor(
     var editMilestoneLocationB: MutableState<String> = mutableStateOf("")
     var editMilestoneLocationBEmpty: MutableState<Boolean> = mutableStateOf(false)
     var addNewMilestoneNotes: MutableState<String> = mutableStateOf("")
+    var surrogateNote: MutableState<String> = mutableStateOf("")
     var milestoneType: MutableState<String> = mutableStateOf("")
     var isEditMilestoneDataLoaded: MutableState<Boolean> = mutableStateOf(false)
     var isMilestoneTittleEditable: MutableState<Boolean> = mutableStateOf(false)

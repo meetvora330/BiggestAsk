@@ -376,12 +376,15 @@ fun BottomHomeScreen(
                                     .fillMaxWidth()
                                     .padding(start = 24.dp, end = 24.dp, top = 16.dp)
                             ) {
-                                Row(modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(end = 10.dp)) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(end = 10.dp)
+                                ) {
                                     Column(modifier = Modifier.padding(start = 18.dp)) {
                                         Text(
-                                            modifier = Modifier.padding(top = 25.dp),
+                                            modifier = Modifier
+                                                .padding(top = 25.dp),
                                             text = bottomHomeViewModel.pregnancyTittle,
                                             color = Color.Black,
                                             style = MaterialTheme.typography.body2,
@@ -391,7 +394,8 @@ fun BottomHomeScreen(
                                         )
                                         Text(
                                             modifier = Modifier
-                                                .padding(top = 10.dp),
+                                                .width(220.dp)
+                                                .padding(top = 10.dp, bottom = 10.dp),
                                             text = bottomHomeViewModel.pregnancyDescription,
                                             style = MaterialTheme.typography.body2,
                                             color = Color.Black,
@@ -708,11 +712,11 @@ fun BottomHomeScreen(
                     }
                 }
             }
-
         },
         sheetShape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp)
     )
     if (bottomHomeViewModel.isAllDataLoaded || bottomHomeViewModel.isHomeScreenQuestionAnswered) {
+//        ShimmerAnimation()
         ProgressBarTransparentBackground(
             if (bottomHomeViewModel.isAllDataLoaded) "Loading...." else "Adding...",
             id = R.color.white

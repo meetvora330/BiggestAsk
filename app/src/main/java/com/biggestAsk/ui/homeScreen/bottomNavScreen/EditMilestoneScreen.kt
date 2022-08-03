@@ -1326,6 +1326,49 @@ fun EditMilestoneScreen(
                                 text = { Text(text = "Permission is denied, Please allow permission from App Settings") }
                             )
                         }
+                        if (type=="parent" && editMilestoneViewModel.surrogateNote.value != null) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 10.dp)
+                            ) {
+                                Text(
+                                    text = "Surrogate note:",
+                                    style = MaterialTheme.typography.body2.copy(
+                                        color = Color.Black,
+                                        fontWeight = FontWeight.W600,
+                                        fontSize = 16.sp
+                                    )
+                                )
+                                TextField(
+                                    value = editMilestoneViewModel.surrogateNote.value,
+                                    onValueChange = {
+                                        editMilestoneViewModel.surrogateNote.value = it
+                                    },
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Text, imeAction = ImeAction.Done
+                                    ),
+                                    keyboardActions = KeyboardActions(onDone = {
+                                        focusManager.clearFocus()
+                                    }),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(142.dp)
+                                        .padding(top = 12.dp),
+                                    textStyle = MaterialTheme.typography.body2,
+                                    placeholder = {
+                                    },
+                                    shape = RoundedCornerShape(8.dp),
+                                    colors = TextFieldDefaults.textFieldColors(
+                                        backgroundColor = ET_Bg,
+                                        cursorColor = Custom_Blue,
+                                        focusedIndicatorColor = Color.Transparent,
+                                        disabledIndicatorColor = Color.Transparent,
+                                        unfocusedIndicatorColor = Color.Transparent,
+                                    ), readOnly = true
+                                )
+                            }
+                        }
                         if (type == "parent") {
                             Row(modifier = Modifier.padding(top = 10.dp)) {
                                 CompositionLocalProvider(LocalMinimumTouchTargetEnforcement provides false) {
@@ -1562,7 +1605,7 @@ fun EditMilestoneScreen(
                                                     ),
                                                     type = MultipartBody.Part.createFormData(
                                                         "type",
-                                                        type!!
+                                                        type
                                                     ),
                                                     milestone_id = MultipartBody.Part.createFormData(
                                                         "milestone_id",
@@ -1874,13 +1917,17 @@ private fun handleEditMilestoneData(
                 editMilestoneViewModel.editMilestoneTime.value = result.data.milestone[0].time
             }
             if (type == Constants.PARENT) {
+                if (result.data.milestone[0].share_note_with_partner_status != 0) {
+                    editMilestoneViewModel.surrogateNote.value =
+                        result.data.milestone[0].surrogate_note
+                }
                 editMilestoneViewModel.checkBoxShareWithBiggestAsk =
                     result.data.milestone[0].share_note_with_biggestask_status != 0
                 if (result.data.milestone[0].parent_note == null) {
                     editMilestoneViewModel.addNewMilestoneNotes.value = ""
                 } else {
                     editMilestoneViewModel.addNewMilestoneNotes.value =
-                        result.data.milestone[0].parent_note.toString()
+                        result.data.milestone[0].parent_note
                 }
             } else if (type == Constants.SURROGATE) {
                 editMilestoneViewModel.checkBoxShareWithParents =
@@ -1889,7 +1936,7 @@ private fun handleEditMilestoneData(
                     editMilestoneViewModel.addNewMilestoneNotes.value = ""
                 } else {
                     editMilestoneViewModel.addNewMilestoneNotes.value =
-                        result.data.milestone[0].surrogate_note.toString()
+                        result.data.milestone[0].surrogate_note
                 }
             }
             if (result.data.milestone[0].location == null) {

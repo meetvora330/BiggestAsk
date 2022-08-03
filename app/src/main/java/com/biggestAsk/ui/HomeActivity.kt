@@ -27,8 +27,8 @@ class HomeActivity : BaseActivity() {
     private val bottomHomeViewModel: BottomHomeViewModel by viewModels()
     private val bottomMilestoneViewModel: BottomMilestoneViewModel by viewModels()
     private val editMilestoneViewModel: EditMilestoneViewModel by viewModels()
-    val yourAccountViewModel: YourAccountViewModel by viewModels()
-    val surrogateViewModel: YourSurrogateViewModel by viewModels()
+    private val yourAccountViewModel: YourAccountViewModel by viewModels()
+    private val surrogateViewModel: YourSurrogateViewModel by viewModels()
     val permissionReqLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { it ->
             when {
