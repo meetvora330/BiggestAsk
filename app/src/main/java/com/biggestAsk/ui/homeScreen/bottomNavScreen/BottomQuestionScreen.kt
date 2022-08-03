@@ -139,7 +139,14 @@ fun BottomQuestionScreen() {
                 color = Color.Black,
                 fontWeight = FontWeight.W800
             )
-            DropDownMenu(mutableListOf())
+            simpleDropDown(
+                suggestions = suggestions,
+                hint = "Parents",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 12.dp, end = 13.dp, top = 10.dp),
+                style = MaterialTheme.typography.body2.copy()
+            )
             Row(
                 modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom
             ) {

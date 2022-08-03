@@ -30,25 +30,28 @@ class HomeActivity : BaseActivity() {
         registerForActivityResult(ActivityResultContracts.RequestPermission()) {
             when {
                 it -> {
-                   // launcher.launch("image/*")
+                    // launcher.launch("image/*")
                     yourAccountViewModel.isPermissionAllowed = false
+                    editMilestoneViewModel.isPermissionAllowed.value = false
                 }
                 ActivityCompat.shouldShowRequestPermissionRationale(
                     this,
                     Manifest.permission.READ_EXTERNAL_STORAGE
                 ) -> {
-                  //  permissionState.launchPermissionRequest()
+                    //  permissionState.launchPermissionRequest()
                     yourAccountViewModel.isPermissionAllowed = false
-                    yourAccountViewModel.isRational = true
+                    editMilestoneViewModel.isPermissionAllowed.value = false
                 }
                 else -> {
                     yourAccountViewModel.isPermissionAllowed = true
+                    editMilestoneViewModel.isPermissionAllowed.value = true
                     //permissionState.launchPermissionRequest()
 //                    yourAccountViewModel.isPermissionAllowed =
 //                        yourAccountViewModel.isRational
                 }
             }
         }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)

@@ -40,14 +40,12 @@ class YourAccountViewModel @Inject constructor(
     var yourAccountDateOfBirth: String by mutableStateOf("")
     var yourAccountDateOfBirthEmpty: Boolean by mutableStateOf(false)
     var isPermissionAllowed: Boolean by mutableStateOf(false)
-    var isRational: Boolean by mutableStateOf(false)
     var yourAccountPartnerName: String by mutableStateOf("")
     var yourAccountPartnerNameEmpty: Boolean by mutableStateOf(false)
     var yourAccountPassword: String by mutableStateOf("................")
     var yourAccountPasswordEmpty: Boolean by mutableStateOf(false)
     var isEditable: MutableState<Boolean> = mutableStateOf(false)
     val isYourAccountScreen: MutableLiveData<Boolean> = MutableLiveData(false)
-    var isPermissionAllowed: MutableState<Boolean> = mutableStateOf(false)
     var getUserDetailResponse: MutableLiveData<NetworkResult<GetUserDetailsResponse>> =
         MutableLiveData()
     var updateUserProfileResponse: MutableLiveData<NetworkResult<UpdateUserProfileResponse>> =

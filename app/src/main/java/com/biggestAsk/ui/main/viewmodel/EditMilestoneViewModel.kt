@@ -31,6 +31,7 @@ class EditMilestoneViewModel @Inject constructor(
     var editMilestoneLocationB: MutableState<String> = mutableStateOf("")
     var editMilestoneLocationBEmpty: MutableState<Boolean> = mutableStateOf(false)
     var addNewMilestoneNotes: MutableState<String> = mutableStateOf("")
+    var milestoneType: MutableState<String> = mutableStateOf("")
     var isEditMilestoneDataLoaded: MutableState<Boolean> = mutableStateOf(false)
     var isMilestoneTittleEditable: MutableState<Boolean> = mutableStateOf(false)
     var milestoneId: MutableState<Int> = mutableStateOf(0)
@@ -39,7 +40,7 @@ class EditMilestoneViewModel @Inject constructor(
     var isMilestoneAnsUpdated: MutableState<Boolean> = mutableStateOf(false)
     var isImageDeleted: MutableState<Boolean> = mutableStateOf(false)
     var isMilestoneImageUpdated: MutableState<Boolean> = mutableStateOf(false)
-    var checkBoxShareWithParents: Boolean by mutableStateOf(true)
+    var checkBoxShareWithParents: Boolean by mutableStateOf(false)
     var checkBoxShareWithBiggestAsk: Boolean by mutableStateOf(false)
     var isPermissionAllowed: MutableState<Boolean> = mutableStateOf(false)
     var cancelDialog: Boolean by mutableStateOf(true)
@@ -91,8 +92,6 @@ class EditMilestoneViewModel @Inject constructor(
         user_id: MultipartBody.Part?,
         type: MultipartBody.Part?,
         milestone_id: MultipartBody.Part?,
-        note_status: MultipartBody.Part?,
-        note_biggest: MultipartBody.Part?
     ) {
         updateMilestoneResponse.value = NetworkResult.Loading()
         viewModelScope.launch {
@@ -101,8 +100,6 @@ class EditMilestoneViewModel @Inject constructor(
                 user_id,
                 type,
                 milestone_id,
-                note_status,
-                note_biggest
             ).collect {
                 updateMilestoneResponse.value = it
             }

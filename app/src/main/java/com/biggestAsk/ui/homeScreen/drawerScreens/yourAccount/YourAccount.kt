@@ -79,14 +79,13 @@ fun YourAccountScreen(
 ) {
     val focusManager = LocalFocusManager.current
     val isRationale = remember { mutableStateOf(false) }
-
+    val provider = PreferenceProvider(context)
     var imageData by remember {
         mutableStateOf<Uri?>(null)
     }
     val provider = PreferenceProvider(context)
     var uriPath: String? = null
 
-    val context = LocalContext.current
     val bitmap = remember {
         mutableStateOf<Bitmap?>(null)
     }
@@ -158,6 +157,7 @@ fun YourAccountScreen(
         }
     }
     val lifecycleOwner = LocalLifecycleOwner.current
+
     DisposableEffect(
         key1 = lifecycleOwner,
         effect = {
@@ -178,7 +178,6 @@ fun YourAccountScreen(
             }
         }
     )
-
 
     LaunchedEffect(Unit) {
         val userId = provider.getIntValue("user_id", 0)
@@ -291,22 +290,6 @@ fun YourAccountScreen(
                                     launcher.launch("image/*")
                                     yourAccountViewModel.isPermissionAllowed = false
                                 }
-//                                when {
-//                                    permissionState.status.isGranted -> {
-//                                        launcher.launch("image/*")
-//                                        yourAccountViewModel.isPermissionAllowed = false
-//                                    }
-//                                    permissionState.status.shouldShowRationale -> {
-//                                        permissionState.launchPermissionRequest()
-//                                        yourAccountViewModel.isPermissionAllowed = false
-//                                        yourAccountViewModel.isRational = true
-//                                    }
-//                                    !permissionState.status.isGranted -> {
-//                                        permissionState.launchPermissionRequest()
-//                                        yourAccountViewModel.isPermissionAllowed =
-//                                            yourAccountViewModel.isRational
-//                                    }
-//                                }
                             }
                         },
                     painter = painterResource(id = R.drawable.ic_icon_camera_edit_img_your_account),

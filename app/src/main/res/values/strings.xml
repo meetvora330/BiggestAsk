@@ -138,6 +138,7 @@
     <string name="bottom_home_screen_latest_question_tittle">Your latest questions</string>
     <string name="bottom_home_screen_latest_question_sub_tittle">Do you like sports? \nIf so, who is your favorite sports team?</string>
     <string name="bottom_home_screen_your_surrogate_mother">Your Surrogate Mother:</string>
+    <string name="bottom_home_screen_your_intended_parents">Your Intended Parents:</string>
     <string name="text_home_bottom_nav_milestone">Milestones</string>
     <string name="text_home_bottom_nav_home">Home</string>
     <string name="text_home_bottom_nav_question">Questions</string>

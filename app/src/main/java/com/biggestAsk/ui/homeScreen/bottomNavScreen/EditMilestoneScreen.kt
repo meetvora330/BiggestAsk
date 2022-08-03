@@ -1,5 +1,3 @@
-@file:Suppress("NAME_SHADOWING", "DEPRECATION")
-
 package com.biggestAsk.ui.homeScreen.bottomNavScreen
 
 import android.Manifest
@@ -7,6 +5,7 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
@@ -14,6 +13,7 @@ import android.provider.MediaStore
 import android.provider.Settings
 import android.text.TextUtils
 import android.util.Log
+import android.view.Gravity
 import android.widget.DatePicker
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -75,10 +76,6 @@ import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PathUtil
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberPermissionState
-import com.google.accompanist.permissions.shouldShowRationale
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -87,10 +84,8 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.util.*
 
-@OptIn(
-    ExperimentalMaterialApi::class, ExperimentalPermissionsApi::class,
-    ExperimentalComposeUiApi::class
-)
+
+@OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun EditMilestoneScreen(
     navHostController: NavHostController,
@@ -107,8 +102,7 @@ fun EditMilestoneScreen(
     val day = c.get(Calendar.DAY_OF_MONTH)
     val mHour = c[Calendar.HOUR_OF_DAY]
     val mMinute = c[Calendar.MINUTE]
-    val permissionState =
-        rememberPermissionState(permission = Manifest.permission.READ_EXTERNAL_STORAGE)
+
     val stroke = Stroke(
         width = 5f,
         pathEffect = PathEffect.dashPathEffect(floatArrayOf(8f, 8f), 0f),
@@ -119,7 +113,6 @@ fun EditMilestoneScreen(
     val latestIndex = remember { mutableStateOf(0) }
     var uriPath: String?
     val latestImageUrl = remember { mutableStateOf("") }
-    val isRationale = remember { mutableStateOf(false) }
     val painter = rememberImagePainter(
         latestImageUrl.value,
         builder = {
@@ -132,7 +125,11 @@ fun EditMilestoneScreen(
         effect = {
             val observer = LifecycleEventObserver { _, event ->
                 if (event == Lifecycle.Event.ON_RESUME) {
-                    if (permissionState.status.isGranted) {
+                    if (ActivityCompat.checkSelfPermission(
+                            homeActivity,
+                            Manifest.permission.READ_EXTERNAL_STORAGE
+                        ) == PackageManager.PERMISSION_GRANTED
+                    ) {
                         editMilestoneViewModel.isPermissionAllowed.value = false
                     }
                 }
@@ -188,17 +185,21 @@ fun EditMilestoneScreen(
     }
     val coroutineScope = rememberCoroutineScope()
     val type = provider.getValue("type", "")
+    val partnerId = provider.getIntValue("partner_id", 0)
+    val milestoneType = remember { mutableStateOf("") }
     LaunchedEffect(Unit) {
         editMilestoneViewModel.editMilestoneLocationB.value = ""
         editMilestoneViewModel.editMilestoneTimeEmpty.value = false
         editMilestoneViewModel.editMilestoneDateEmpty.value = false
         editMilestoneViewModel.editMilestoneLocationBEmpty.value = false
+        editMilestoneViewModel.milestoneType.value = ""
         Log.d("TAG", "EditMilestoneScreen: $milestoneId")
         getUpdatedMilestone(
             homeActivity = homeActivity,
             editMilestoneViewModel = editMilestoneViewModel,
             context = context, type = type,
             milestoneId = milestoneId,
+            partner_id = partnerId,
         )
     }
     if (!editMilestoneViewModel.isEditMilestoneDataLoaded.value) {
@@ -740,48 +741,61 @@ fun EditMilestoneScreen(
                                 horizontalArrangement = Arrangement.End,
                                 verticalAlignment = Alignment.Top
                             ) {
-                                Icon(
-                                    modifier = Modifier
-                                        .width(25.dp)
-                                        .height(25.dp)
-                                        .background(Color(0xFFF34646), RoundedCornerShape(12.dp))
-                                        .clickable {
-                                            if (editMilestoneViewModel.imageList[index].is_need_to_upload) {
-                                                Log.d(
-                                                    "TAG",
-                                                    "EditMilestoneScreen: New Image Remove"
+                                if (type == "parent") {
+                                    if (editMilestoneViewModel.milestoneType.value == "parent"){
+                                        Icon(
+                                            modifier = Modifier
+                                                .width(25.dp)
+                                                .height(25.dp)
+                                                .background(
+                                                    Color(0xFFF34646),
+                                                    RoundedCornerShape(12.dp)
                                                 )
-                                                editMilestoneViewModel.imageList.removeAt(index)
-                                                val tempData =
-                                                    editMilestoneViewModel.imageList.toList()
-                                                editMilestoneViewModel.imageList.clear()
-                                                editMilestoneViewModel.imageList.addAll(tempData)
-                                            } else {
-                                                editMilestoneViewModel.deleteMileStoneImage(
-                                                    DeleteMilestoneImageRequest(
-                                                        editMilestoneViewModel.imageList[index].id
-                                                    )
-                                                )
-                                                editMilestoneViewModel.deleteMilestoneImageResponse.observe(
-                                                    homeActivity
-                                                ) {
-                                                    if (it != null) {
-                                                        handleDeleteImageData(
-                                                            result = it,
-                                                            editMilestoneViewModel = editMilestoneViewModel,
-                                                            homeActivity = homeActivity,
-                                                            context = context,
-                                                            type = type,
-                                                            milestoneId = milestoneId,
+                                                .clickable {
+                                                    if (editMilestoneViewModel.imageList[index].is_need_to_upload) {
+                                                        Log.d(
+                                                            "TAG",
+                                                            "EditMilestoneScreen: New Image Remove"
                                                         )
+                                                        editMilestoneViewModel.imageList.removeAt(
+                                                            index
+                                                        )
+                                                        val tempData =
+                                                            editMilestoneViewModel.imageList.toList()
+                                                        editMilestoneViewModel.imageList.clear()
+                                                        editMilestoneViewModel.imageList.addAll(
+                                                            tempData
+                                                        )
+                                                    } else {
+                                                        editMilestoneViewModel.deleteMileStoneImage(
+                                                            DeleteMilestoneImageRequest(
+                                                                editMilestoneViewModel.imageList[index].id
+                                                            )
+                                                        )
+                                                        editMilestoneViewModel.deleteMilestoneImageResponse.observe(
+                                                            homeActivity
+                                                        ) {
+                                                            if (it != null) {
+                                                                handleDeleteImageData(
+                                                                    result = it,
+                                                                    editMilestoneViewModel = editMilestoneViewModel,
+                                                                    homeActivity = homeActivity,
+                                                                    context = context,
+                                                                    type = type,
+                                                                    milestoneId = milestoneId,
+                                                                    partner_id = partnerId,
+                                                                    milestone_type = milestoneType.value
+                                                                )
+                                                            }
+                                                        }
                                                     }
-                                                }
-                                            }
-                                        },
-                                    imageVector = Icons.Default.Close,
-                                    tint = Color.White,
-                                    contentDescription = ""
-                                )
+                                                },
+                                            imageVector = Icons.Default.Close,
+                                            tint = Color.White,
+                                            contentDescription = ""
+                                        )
+                                    }
+                                }
                             }
                             Canvas(
                                 modifier = Modifier
@@ -840,17 +854,268 @@ fun EditMilestoneScreen(
                                     }
                                 }
                             }
-                            Row(
+                            if (type == "parent") {
+                                if (editMilestoneViewModel.milestoneType.value == "parent"){
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(175.dp),
+                                        horizontalArrangement = Arrangement.Center,
+                                        verticalAlignment = Alignment.Bottom
+                                    ) {
+                                        Button(
+                                            modifier = Modifier
+                                                .width(210.dp)
+                                                .alpha(if (isPicAvailable.value) 1f else 0f),
+                                            colors = ButtonDefaults.buttonColors(
+                                                backgroundColor = Custom_Blue
+                                            ),
+                                            elevation = ButtonDefaults.elevation(
+                                                defaultElevation = 0.dp,
+                                                pressedElevation = 0.dp,
+                                                disabledElevation = 0.dp,
+                                                hoveredElevation = 0.dp,
+                                                focusedElevation = 0.dp
+                                            ),
+                                            shape = RoundedCornerShape(13.dp),
+                                            enabled = true,
+                                            onClick = {
+                                                if (ActivityCompat.checkSelfPermission(
+                                                        homeActivity,
+                                                        Manifest.permission.READ_EXTERNAL_STORAGE
+                                                    ) != PackageManager.PERMISSION_GRANTED
+                                                ) {
+                                                    homeActivity.permissionReqLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                                                } else {
+                                                    launcher.launch("image/*")
+                                                    editMilestoneViewModel.isPermissionAllowed.value =
+                                                        false
+                                                    editMilestoneViewModel.imageListIndex.value =
+                                                        index
+                                                    latestIndex.value = index
+                                                }
+                                            }) {
+                                            Text(
+                                                modifier = Modifier.wrapContentWidth(),
+                                                text = "Change photo",
+                                                style = MaterialTheme.typography.h1.copy(
+                                                    fontWeight = FontWeight.W900,
+                                                    color = Color.White,
+                                                    fontSize = 16.sp,
+                                                    lineHeight = 24.sp,
+                                                    textAlign = TextAlign.Center
+                                                )
+                                            )
+                                            Icon(
+                                                modifier = Modifier.padding(start = 13.dp),
+                                                painter = painterResource(id = R.drawable.ic_icon_btn_upload_picture),
+                                                contentDescription = "",
+                                                tint = Color.White
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    item {
+                        if (type == "parent") {
+                            if (editMilestoneViewModel.milestoneType.value=="parent"){
+                                ConstraintLayout(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 27.dp)
+                                ) {
+                                    val (border_image_bg, tv_no_img_tittle, tv_no_img_desc, btn_upload_pic) = createRefs()
+                                    Canvas(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(190.dp)
+                                            .constrainAs(border_image_bg) {
+                                                top.linkTo(parent.top)
+                                                start.linkTo(parent.start)
+                                                end.linkTo(parent.end)
+                                                bottom.linkTo(parent.bottom)
+                                            }
+                                    ) {
+                                        drawRoundRect(
+                                            color = Color(0xFFC6C4C2),
+                                            style = stroke,
+                                            cornerRadius = CornerRadius(18f, 18f)
+                                        )
+                                    }
+                                    Text(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(top = 20.dp)
+                                            .alpha(if (isPicAvailable.value) 1f else 0f)
+                                            .constrainAs(tv_no_img_tittle) {
+                                                start.linkTo(border_image_bg.start)
+                                                end.linkTo(border_image_bg.end)
+                                                top.linkTo(border_image_bg.top)
+                                            },
+                                        text = "No ultrasound image available",
+                                        style = MaterialTheme.typography.body2.copy(
+                                            color = Color(0xFF7F7D7C),
+                                            fontSize = 16.sp,
+                                            lineHeight = 24.sp
+                                        ),
+                                        textAlign = TextAlign.Center
+                                    )
+                                    Text(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(start = 22.dp, top = 8.dp, end = 22.dp)
+                                            .alpha(if (isPicAvailable.value) 1f else 0f)
+                                            .constrainAs(tv_no_img_desc) {
+                                                start.linkTo(border_image_bg.start)
+                                                end.linkTo(border_image_bg.end)
+                                                top.linkTo(tv_no_img_tittle.bottom)
+                                            },
+                                        text = "For confirmation, you must attach a picture of the ultrasound and leave a comment.",
+                                        style = MaterialTheme.typography.body2.copy(
+                                            color = Color(0xFFC6C4C2),
+                                            fontSize = 12.sp,
+                                            lineHeight = 24.sp
+                                        ),
+                                        textAlign = TextAlign.Center
+                                    )
+                                    Button(
+                                        modifier = Modifier
+                                            .width(210.dp)
+                                            .wrapContentHeight()
+                                            .padding(top = 30.dp)
+                                            .alpha(if (isPicAvailable.value) 1f else 0f)
+                                            .constrainAs(btn_upload_pic) {
+                                                start.linkTo(border_image_bg.start)
+                                                end.linkTo(border_image_bg.end)
+                                                top.linkTo(tv_no_img_desc.bottom)
+                                            },
+                                        colors = ButtonDefaults.buttonColors(
+                                            backgroundColor = Custom_Blue
+                                        ),
+                                        elevation = ButtonDefaults.elevation(
+                                            defaultElevation = 0.dp,
+                                            pressedElevation = 0.dp,
+                                            disabledElevation = 0.dp,
+                                            hoveredElevation = 0.dp,
+                                            focusedElevation = 0.dp
+                                        ),
+                                        shape = RoundedCornerShape(13.dp),
+                                        enabled = true,
+                                        onClick = {
+                                            if (editMilestoneViewModel.imageList.size > 4) {
+                                                Toast.makeText(
+                                                    context,
+                                                    "You can select maximum 5 images.",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            } else {
+                                                if (ActivityCompat.checkSelfPermission(
+                                                        homeActivity,
+                                                        Manifest.permission.READ_EXTERNAL_STORAGE
+                                                    ) != PackageManager.PERMISSION_GRANTED
+                                                ) {
+                                                    homeActivity.permissionReqLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                                                } else {
+                                                    launcher.launch("image/*")
+                                                    editMilestoneViewModel.isPermissionAllowed.value = false
+                                                    editMilestoneViewModel.imageListIndex.value =
+                                                        -1
+                                                }
+                                            }
+                                        }) {
+                                        Text(
+                                            modifier = Modifier.wrapContentWidth(),
+                                            text = "Upload picture",
+                                            style = MaterialTheme.typography.h1.copy(
+                                                fontWeight = FontWeight.W900,
+                                                color = Color.White,
+                                                fontSize = 16.sp,
+                                                lineHeight = 24.sp,
+                                                textAlign = TextAlign.Center
+                                            )
+                                        )
+                                        Icon(
+                                            modifier = Modifier.padding(start = 13.dp),
+                                            painter = painterResource(id = R.drawable.ic_icon_btn_upload_picture),
+                                            contentDescription = "",
+                                            tint = Color.White
+                                        )
+                                    }
+                                }
+                            }
+                        } else {
+                            ConstraintLayout(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(175.dp),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.Bottom
+                                    .padding(top = 27.dp)
                             ) {
+                                val (border_image_bg, tv_no_img_tittle, tv_no_img_desc, btn_upload_pic) = createRefs()
+                                Canvas(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(190.dp)
+                                        .constrainAs(border_image_bg) {
+                                            top.linkTo(parent.top)
+                                            start.linkTo(parent.start)
+                                            end.linkTo(parent.end)
+                                            bottom.linkTo(parent.bottom)
+                                        }
+                                ) {
+                                    drawRoundRect(
+                                        color = Color(0xFFC6C4C2),
+                                        style = stroke,
+                                        cornerRadius = CornerRadius(18f, 18f)
+                                    )
+                                }
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 20.dp)
+                                        .alpha(if (isPicAvailable.value) 1f else 0f)
+                                        .constrainAs(tv_no_img_tittle) {
+                                            start.linkTo(border_image_bg.start)
+                                            end.linkTo(border_image_bg.end)
+                                            top.linkTo(border_image_bg.top)
+                                        },
+                                    text = "No ultrasound image available",
+                                    style = MaterialTheme.typography.body2.copy(
+                                        color = Color(0xFF7F7D7C),
+                                        fontSize = 16.sp,
+                                        lineHeight = 24.sp
+                                    ),
+                                    textAlign = TextAlign.Center
+                                )
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 22.dp, top = 8.dp, end = 22.dp)
+                                        .alpha(if (isPicAvailable.value) 1f else 0f)
+                                        .constrainAs(tv_no_img_desc) {
+                                            start.linkTo(border_image_bg.start)
+                                            end.linkTo(border_image_bg.end)
+                                            top.linkTo(tv_no_img_tittle.bottom)
+                                        },
+                                    text = "For confirmation, you must attach a picture of the ultrasound and leave a comment.",
+                                    style = MaterialTheme.typography.body2.copy(
+                                        color = Color(0xFFC6C4C2),
+                                        fontSize = 12.sp,
+                                        lineHeight = 24.sp
+                                    ),
+                                    textAlign = TextAlign.Center
+                                )
                                 Button(
                                     modifier = Modifier
                                         .width(210.dp)
-                                        .alpha(if (isPicAvailable.value) 1f else 0f),
+                                        .wrapContentHeight()
+                                        .padding(top = 30.dp)
+                                        .alpha(if (isPicAvailable.value) 1f else 0f)
+                                        .constrainAs(btn_upload_pic) {
+                                            start.linkTo(border_image_bg.start)
+                                            end.linkTo(border_image_bg.end)
+                                            top.linkTo(tv_no_img_desc.bottom)
+                                        },
                                     colors = ButtonDefaults.buttonColors(
                                         backgroundColor = Custom_Blue
                                     ),
@@ -864,60 +1129,30 @@ fun EditMilestoneScreen(
                                     shape = RoundedCornerShape(13.dp),
                                     enabled = true,
                                     onClick = {
-//                                                editMilestoneViewModel.isPermissionAllowed.value =
-//                                                    false
-                                        if (!provider.getBooleanValue(
-                                                "is_permission_allowed",
-                                                false
-                                            )
-                                        ) {
-                                            if (permissionState.status.isGranted) {
-                                                launcher.launch("image/*")
-                                                editMilestoneViewModel.imageListIndex.value =
-                                                    index
-                                                latestIndex.value = index
-                                                provider.setValue(
-                                                    "is_permission_allowed",
-                                                    true
-                                                )
-                                            } else {
-                                                when {
-                                                    permissionState.status.isGranted -> {
-                                                        launcher.launch("image/*")
-                                                        editMilestoneViewModel.imageListIndex.value =
-                                                            -1
-                                                        editMilestoneViewModel.isPermissionAllowed.value =
-                                                            false
-                                                    }
-                                                    permissionState.status.shouldShowRationale -> {
-                                                        permissionState.launchPermissionRequest()
-                                                        isRationale.value = true
-                                                        Log.d(
-                                                            "TAG",
-                                                            "EditMilestoneScreen: single show rationale"
-                                                        )
-                                                    }
-                                                    !permissionState.status.isGranted -> {
-                                                        permissionState.launchPermissionRequest()
-                                                        Log.d(
-                                                            "TAG",
-                                                            "EditMilestoneScreen: Not Granted"
-                                                        )
-                                                        editMilestoneViewModel.isPermissionAllowed.value =
-                                                            isRationale.value
-                                                    }
-                                                }
-                                            }
+                                        if (editMilestoneViewModel.imageList.size > 4) {
+                                            Toast.makeText(
+                                                context,
+                                                "You can select maximum 5 images.",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
                                         } else {
-                                            launcher.launch("image/*")
-                                            editMilestoneViewModel.imageListIndex.value =
-                                                index
-                                            latestIndex.value = index
+                                            if (ActivityCompat.checkSelfPermission(
+                                                    homeActivity,
+                                                    Manifest.permission.READ_EXTERNAL_STORAGE
+                                                ) != PackageManager.PERMISSION_GRANTED
+                                            ) {
+                                                homeActivity.permissionReqLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                                            } else {
+                                                launcher.launch("image/*")
+                                                editMilestoneViewModel.isPermissionAllowed.value = false
+                                                editMilestoneViewModel.imageListIndex.value =
+                                                    -1
+                                            }
                                         }
                                     }) {
                                     Text(
                                         modifier = Modifier.wrapContentWidth(),
-                                        text = "Change photo",
+                                        text = "Upload picture",
                                         style = MaterialTheme.typography.h1.copy(
                                             fontWeight = FontWeight.W900,
                                             color = Color.White,
@@ -933,160 +1168,6 @@ fun EditMilestoneScreen(
                                         tint = Color.White
                                     )
                                 }
-                            }
-                        }
-                    }
-                    item {
-                        ConstraintLayout(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 27.dp)
-                        ) {
-                            val (border_image_bg, tv_no_img_tittle, tv_no_img_desc, btn_upload_pic) = createRefs()
-                            Canvas(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(190.dp)
-                                    .constrainAs(border_image_bg) {
-                                        top.linkTo(parent.top)
-                                        start.linkTo(parent.start)
-                                        end.linkTo(parent.end)
-                                        bottom.linkTo(parent.bottom)
-                                    }
-                            ) {
-                                drawRoundRect(
-                                    color = Color(0xFFC6C4C2),
-                                    style = stroke,
-                                    cornerRadius = CornerRadius(18f, 18f)
-                                )
-                            }
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 20.dp)
-                                    .alpha(if (isPicAvailable.value) 1f else 0f)
-                                    .constrainAs(tv_no_img_tittle) {
-                                        start.linkTo(border_image_bg.start)
-                                        end.linkTo(border_image_bg.end)
-                                        top.linkTo(border_image_bg.top)
-                                    },
-                                text = "No ultrasound image available",
-                                style = MaterialTheme.typography.body2.copy(
-                                    color = Color(0xFF7F7D7C),
-                                    fontSize = 16.sp,
-                                    lineHeight = 24.sp
-                                ),
-                                textAlign = TextAlign.Center
-                            )
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 22.dp, top = 8.dp, end = 22.dp)
-                                    .alpha(if (isPicAvailable.value) 1f else 0f)
-                                    .constrainAs(tv_no_img_desc) {
-                                        start.linkTo(border_image_bg.start)
-                                        end.linkTo(border_image_bg.end)
-                                        top.linkTo(tv_no_img_tittle.bottom)
-                                    },
-                                text = "For confirmation, you must attach a picture of the ultrasound and leave a comment.",
-                                style = MaterialTheme.typography.body2.copy(
-                                    color = Color(0xFFC6C4C2),
-                                    fontSize = 12.sp,
-                                    lineHeight = 24.sp
-                                ),
-                                textAlign = TextAlign.Center
-                            )
-                            Button(
-                                modifier = Modifier
-                                    .width(210.dp)
-                                    .wrapContentHeight()
-                                    .padding(top = 30.dp)
-                                    .alpha(if (isPicAvailable.value) 1f else 0f)
-                                    .constrainAs(btn_upload_pic) {
-                                        start.linkTo(border_image_bg.start)
-                                        end.linkTo(border_image_bg.end)
-                                        top.linkTo(tv_no_img_desc.bottom)
-                                    },
-                                colors = ButtonDefaults.buttonColors(
-                                    backgroundColor = Custom_Blue
-                                ),
-                                elevation = ButtonDefaults.elevation(
-                                    defaultElevation = 0.dp,
-                                    pressedElevation = 0.dp,
-                                    disabledElevation = 0.dp,
-                                    hoveredElevation = 0.dp,
-                                    focusedElevation = 0.dp
-                                ),
-                                shape = RoundedCornerShape(13.dp),
-                                enabled = true,
-                                onClick = {
-                                    if (editMilestoneViewModel.imageList.size > 4) {
-                                        Toast.makeText(
-                                            context,
-                                            "You can select maximum 5 images.",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    } else {
-                                        if (!provider.getBooleanValue(
-                                                "is_permission_allowed",
-                                                false
-                                            )
-                                        ) {
-                                            if (permissionState.status.isGranted) {
-                                                launcher.launch("image/*")
-                                                editMilestoneViewModel.imageListIndex.value = -1
-                                                provider.setValue("is_permission_allowed", true)
-                                            } else {
-                                                when {
-                                                    permissionState.status.isGranted -> {
-                                                        launcher.launch("image/*")
-                                                        editMilestoneViewModel.imageListIndex.value =
-                                                            -1
-                                                        editMilestoneViewModel.isPermissionAllowed.value =
-                                                            false
-                                                    }
-                                                    permissionState.status.shouldShowRationale -> {
-                                                        permissionState.launchPermissionRequest()
-                                                        isRationale.value = true
-                                                        Log.d(
-                                                            "TAG",
-                                                            "EditMilestoneScreen: single show rationale"
-                                                        )
-                                                    }
-                                                    !permissionState.status.isGranted -> {
-                                                        permissionState.launchPermissionRequest()
-                                                        Log.d(
-                                                            "TAG",
-                                                            "EditMilestoneScreen: Not Granted"
-                                                        )
-                                                        editMilestoneViewModel.isPermissionAllowed.value =
-                                                            isRationale.value
-                                                    }
-                                                }
-                                            }
-                                        } else {
-                                            launcher.launch("image/*")
-                                            editMilestoneViewModel.imageListIndex.value = -1
-                                        }
-                                    }
-                                }) {
-                                Text(
-                                    modifier = Modifier.wrapContentWidth(),
-                                    text = "Upload picture",
-                                    style = MaterialTheme.typography.h1.copy(
-                                        fontWeight = FontWeight.W900,
-                                        color = Color.White,
-                                        fontSize = 16.sp,
-                                        lineHeight = 24.sp,
-                                        textAlign = TextAlign.Center
-                                    )
-                                )
-                                Icon(
-                                    modifier = Modifier.padding(start = 13.dp),
-                                    painter = painterResource(id = R.drawable.ic_icon_btn_upload_picture),
-                                    contentDescription = "",
-                                    tint = Color.White
-                                )
                             }
                         }
                         if (editMilestoneViewModel.isPermissionAllowed.value) {
@@ -1121,10 +1202,61 @@ fun EditMilestoneScreen(
                                 text = { Text(text = "Permission is denied, Please allow permission from App Settings") }
                             )
                         }
+                        if (type == "parent") Row(modifier = Modifier.padding(top = 10.dp)) {
+                            CompositionLocalProvider(LocalMinimumTouchTargetEnforcement provides false) {
+                                Checkbox(modifier = Modifier.padding(
+                                    top = 18.dp, bottom = 10.dp, end = 5.dp
+                                ),
+                                    checked = editMilestoneViewModel.checkBoxShareWithBiggestAsk,
+                                    colors = CheckboxDefaults.colors(
+                                        checkedColor = CheckBox_Check,
+                                        uncheckedColor = Color.DarkGray
+                                    ),
+                                    onCheckedChange = {
+                                        editMilestoneViewModel.checkBoxShareWithBiggestAsk = it
+                                    })
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 20.dp, start = 10.dp),
+                                    text = "Share with the biggest ask",
+                                    style = MaterialTheme.typography.body2.copy(
+                                        color = Color.Black,
+                                        fontWeight = FontWeight.W600,
+                                        fontSize = 16.sp
+                                    )
+                                )
+                            }
+                        } else Row(modifier = Modifier.padding(top = 10.dp)) {
+                            CompositionLocalProvider(LocalMinimumTouchTargetEnforcement provides false) {
+                                Checkbox(modifier = Modifier.padding(
+                                    top = 18.dp, bottom = 10.dp, end = 5.dp
+                                ),
+                                    checked = editMilestoneViewModel.checkBoxShareWithParents,
+                                    colors = CheckboxDefaults.colors(
+                                        checkedColor = CheckBox_Check,
+                                        uncheckedColor = Color.DarkGray
+                                    ),
+                                    onCheckedChange = {
+                                        editMilestoneViewModel.checkBoxShareWithParents = it
+                                    })
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 20.dp, start = 10.dp),
+                                    text = "Share with Intended parents",
+                                    style = MaterialTheme.typography.body2.copy(
+                                        color = Color.Black,
+                                        fontWeight = FontWeight.W600,
+                                        fontSize = 16.sp
+                                    )
+                                )
+                            }
+                        }
                         Text(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(top = 26.dp),
+                                .padding(top = 6.dp),
                             text = "Notes", style = MaterialTheme.typography.body2.copy(
                                 color = Color.Black,
                                 fontWeight = FontWeight.W800,
@@ -1181,7 +1313,9 @@ fun EditMilestoneScreen(
                                             SaveNoteRequest(
                                                 milestone_id = milestoneId,
                                                 note = editMilestoneViewModel.addNewMilestoneNotes.value,
-                                                type = type!!
+                                                type = type!!,
+                                                share_note_with_partner = editMilestoneViewModel.checkBoxShareWithParents,
+                                                share_note_with_biggestask = editMilestoneViewModel.checkBoxShareWithBiggestAsk
                                             )
                                         )
                                         editMilestoneViewModel.saveNoteResponse.observe(
@@ -1226,58 +1360,7 @@ fun EditMilestoneScreen(
                                 )
                             }
                         }
-                        Row {
-                            CompositionLocalProvider(LocalMinimumTouchTargetEnforcement provides false) {
-                                Checkbox(modifier = Modifier.padding(
-                                    top = 18.dp, bottom = 10.dp, end = 5.dp
-                                ),
-                                    checked = editMilestoneViewModel.checkBoxShareWithParents,
-                                    colors = CheckboxDefaults.colors(
-                                        checkedColor = CheckBox_Check,
-                                        uncheckedColor = Color.DarkGray
-                                    ),
-                                    onCheckedChange = {
-                                        editMilestoneViewModel.checkBoxShareWithParents = it
-                                    })
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(top = 20.dp, start = 10.dp),
-                                    text = if (type == "parent") "Share with parents" else "Share with Surrogate Mother",
-                                    style = MaterialTheme.typography.body2.copy(
-                                        color = Color.Black,
-                                        fontWeight = FontWeight.W600,
-                                        fontSize = 16.sp
-                                    )
-                                )
-                            }
-                        }
-                        Row {
-                            CompositionLocalProvider(LocalMinimumTouchTargetEnforcement provides false) {
-                                Checkbox(modifier = Modifier.padding(
-                                    top = 18.dp, bottom = 10.dp, end = 5.dp
-                                ),
-                                    checked = editMilestoneViewModel.checkBoxShareWithBiggestAsk,
-                                    colors = CheckboxDefaults.colors(
-                                        checkedColor = CheckBox_Check,
-                                        uncheckedColor = Color.DarkGray
-                                    ),
-                                    onCheckedChange = {
-                                        editMilestoneViewModel.checkBoxShareWithBiggestAsk = it
-                                    })
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(top = 20.dp, start = 10.dp),
-                                    text = "Share with the biggest ask",
-                                    style = MaterialTheme.typography.body2.copy(
-                                        color = Color.Black,
-                                        fontWeight = FontWeight.W600,
-                                        fontSize = 16.sp
-                                    )
-                                )
-                            }
-                        }
+
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -1300,39 +1383,42 @@ fun EditMilestoneScreen(
                                             })
                                         }
                                     }
-                                    editMilestoneViewModel.storeMilestoneAns(
-                                        images = imageList,
-                                        user_id = MultipartBody.Part.createFormData(
-                                            "user_id",
-                                            userId.toString()
-                                        ),
-                                        type = MultipartBody.Part.createFormData(
-                                            "type",
-                                            type!!
-                                        ),
-                                        milestone_id = MultipartBody.Part.createFormData(
-                                            "milestone_id",
-                                            milestoneId.toString()
-                                        ),
-                                        note_status = MultipartBody.Part.createFormData(
-                                            "share_note_with_partner",
-                                            editMilestoneViewModel.checkBoxShareWithParents.toString()
-                                        ),
-                                        note_biggest = MultipartBody.Part.createFormData(
-                                            "share_note_with_biggestask",
-                                            editMilestoneViewModel.checkBoxShareWithBiggestAsk.toString()
-                                        )
-                                    )
-                                    editMilestoneViewModel.updateMilestoneResponse.observe(
-                                        homeActivity
-                                    ) {
-                                        if (it != null) {
-                                            handleStoreMilestoneData(
-                                                result = it,
-                                                editMilestoneViewModel = editMilestoneViewModel,
-                                                navHostController = navHostController,
-                                                milestoneId
+                                    if (imageList.isEmpty()) {
+                                        val toast =
+                                            Toast.makeText(
+                                                context,
+                                                "Select image first",
+                                                Toast.LENGTH_LONG
                                             )
+                                        toast.setGravity(Gravity.CENTER, 0, 0)
+                                        toast.show()
+                                    } else {
+                                        editMilestoneViewModel.storeMilestoneAns(
+                                            images = imageList,
+                                            user_id = MultipartBody.Part.createFormData(
+                                                "user_id",
+                                                userId.toString()
+                                            ),
+                                            type = MultipartBody.Part.createFormData(
+                                                "type",
+                                                type!!
+                                            ),
+                                            milestone_id = MultipartBody.Part.createFormData(
+                                                "milestone_id",
+                                                milestoneId.toString()
+                                            )
+                                        )
+                                        editMilestoneViewModel.updateMilestoneResponse.observe(
+                                            homeActivity
+                                        ) {
+                                            if (it != null) {
+                                                handleStoreMilestoneData(
+                                                    result = it,
+                                                    editMilestoneViewModel = editMilestoneViewModel,
+                                                    navHostController = navHostController,
+                                                    milestoneId
+                                                )
+                                            }
                                         }
                                     }
                                 },
@@ -1389,13 +1475,15 @@ private fun getUpdatedMilestone(
     context: Context,
     type: String?,
     milestoneId: Int,
+    partner_id: Int,
 ) {
     val userId = PreferenceProvider(context).getIntValue("user_id", 0)
     editMilestoneViewModel.getMilestoneDetails(
         EditMilestoneRequest(
             type = type!!,
             user_id = userId,
-            milestone_id = milestoneId
+            milestone_id = milestoneId,
+            partner_id = partner_id
         )
     )
     editMilestoneViewModel.editMilestoneResponse.observe(homeActivity) {
@@ -1416,6 +1504,8 @@ private fun handleDeleteImageData(
     context: Context,
     type: String?,
     milestoneId: Int,
+    partner_id: Int,
+    milestone_type: String
 ) {
     when (result) {
         is NetworkResult.Loading -> {
@@ -1434,6 +1524,7 @@ private fun handleDeleteImageData(
                 context = context,
                 type = type,
                 milestoneId = milestoneId,
+                partner_id = partner_id,
             )
         }
         is NetworkResult.Error -> {
@@ -1542,6 +1633,8 @@ private fun handleEditMilestoneData(
                 editMilestoneViewModel.editMilestoneTime.value = result.data.milestone[0].time
             }
             if (type == Constants.PARENT) {
+                editMilestoneViewModel.checkBoxShareWithBiggestAsk =
+                    result.data.milestone[0].share_note_with_biggestask_status != 0
                 if (result.data.milestone[0].parent_note == null) {
                     editMilestoneViewModel.addNewMilestoneNotes.value = ""
                 } else {
@@ -1549,7 +1642,9 @@ private fun handleEditMilestoneData(
                         result.data.milestone[0].parent_note.toString()
                 }
             } else if (type == Constants.SURROGATE) {
-                 if (result.data.milestone[0].surrogate_note == null) {
+                editMilestoneViewModel.checkBoxShareWithParents =
+                    result.data.milestone[0].share_note_with_partner_status != 0
+                if (result.data.milestone[0].surrogate_note == null) {
                     editMilestoneViewModel.addNewMilestoneNotes.value = ""
                 } else {
                     editMilestoneViewModel.addNewMilestoneNotes.value =
@@ -1560,14 +1655,16 @@ private fun handleEditMilestoneData(
                 editMilestoneViewModel.editMilestoneLocationB.value = ""
             } else {
                 editMilestoneViewModel.editMilestoneLocationB.value =
-                    result.data.milestone[0].location.toString()
+                    result.data.milestone[0].location
             }
             editMilestoneViewModel.isMilestoneTittleEditable.value =
                 result.data.milestone[0].type == "common"
+            editMilestoneViewModel.milestoneType.value = result.data.milestone[0].type
             editMilestoneViewModel.milestoneId.value = result.data.milestone[0].milestone_id
             editMilestoneViewModel.imageList.clear()
             editMilestoneViewModel.imageList.addAll(result.data.milestone_image)
             editMilestoneViewModel.isEditMilestoneDataLoaded.value = false
+            Log.d("TAG", "handleEditMilestoneData: ${editMilestoneViewModel.milestoneType.value}")
             Log.d("TAG", "handleEditMilestoneData: ${result.data.milestone_image.size}")
         }
         is NetworkResult.Error -> {

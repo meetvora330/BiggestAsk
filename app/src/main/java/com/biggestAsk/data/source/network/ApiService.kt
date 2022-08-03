@@ -80,7 +80,8 @@ interface ApiService {
     suspend fun editMilestone(
         @Query("type") type: String,
         @Query("user_id") user_id: Int,
-        @Query("milestone_id") milestone_id: Int
+        @Query("milestone_id") milestone_id: Int,
+        @Query("partner_id") partner_id: Int
     ): Response<EditMilestoneResponse>
 
     @POST(Constants.UPDATE_MILESTONE_ANS_INFO)
@@ -122,8 +123,6 @@ interface ApiService {
         @Part user_id: MultipartBody.Part?,
         @Part type: MultipartBody.Part?,
         @Part milestone_id: MultipartBody.Part?,
-        @Part note_status: MultipartBody.Part?,
-        @Part note_biggest: MultipartBody.Part?
     ): Response<UpdateUserProfileResponse>
 
     @Multipart

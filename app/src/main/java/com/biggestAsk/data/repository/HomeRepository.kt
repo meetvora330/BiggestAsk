@@ -167,7 +167,8 @@ class HomeRepository @Inject constructor(
                 apiService.editMilestone(
                     editMilestoneRequest.type,
                     editMilestoneRequest.user_id,
-                    editMilestoneRequest.milestone_id
+                    editMilestoneRequest.milestone_id,
+                    editMilestoneRequest.partner_id
                 )
             })
         }.flowOn(Dispatchers.IO)
@@ -190,8 +191,6 @@ class HomeRepository @Inject constructor(
         user_id: MultipartBody.Part?,
         type: MultipartBody.Part?,
         milestone_id: MultipartBody.Part?,
-        note_status: MultipartBody.Part?,
-        note_biggest: MultipartBody.Part?
     ): Flow<NetworkResult<UpdateUserProfileResponse>> {
         return flow {
             emit(safeApiCall {
@@ -200,8 +199,6 @@ class HomeRepository @Inject constructor(
                     user_id,
                     type,
                     milestone_id,
-                    note_status,
-                    note_biggest
                 )
             })
         }.flowOn(Dispatchers.IO)
