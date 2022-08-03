@@ -3,6 +3,7 @@
 package com.biggestAsk.ui.paymentScreen
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -25,7 +26,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.android.billingclient.api.*
 import com.biggestAsk.data.model.LoginStatus
 import com.biggestAsk.data.model.request.UpdatePaymentStatusRequest
@@ -46,7 +46,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.launch
 import java.util.*
-import kotlin.collections.ArrayList
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -60,7 +59,6 @@ fun PaymentScreen(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
     )
     val coroutineScope = rememberCoroutineScope()
-
     BottomSheetScaffold(
         scaffoldState = bottomSheetScaffoldState, sheetContent = {
             PaymentScreenBottomSheet(
@@ -175,40 +173,65 @@ fun PaymentScreen(
                                             // To be implemented in a later section.
                                         }
 
-                                    var billingClient = BillingClient.newBuilder(context)
+                                    var billingClient = BillingClient
+                                        .newBuilder(context)
                                         .setListener(purchasesUpdatedListener)
                                         .enablePendingPurchases()
                                         .build()
 
-                                    billingClient.startConnection(object : BillingClientStateListener {
+                                    billingClient.startConnection(object :
+                                        BillingClientStateListener {
                                         override fun onBillingSetupFinished(billingResult: BillingResult) {
-                                            if (billingResult.responseCode ==  BillingClient.BillingResponseCode.OK) {
-                                                // The BillingClient is ready. You can query purchases here.
+                                            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                                                val queryProductDetailsParams =
+                                                    QueryProductDetailsParams
+                                                        .newBuilder()
+                                                        .setProductList(
+                                                            arrayListOf(
+                                                                QueryProductDetailsParams.Product
+                                                                    .newBuilder()
+                                                                    .setProductId("product_id_example")
+                                                                    .setProductType(BillingClient.ProductType.SUBS)
+                                                                    .build()
+                                                            )
+                                                        )
+                                                        .build()
+
+                                                billingClient.queryProductDetailsAsync(queryProductDetailsParams) { billingResult,
+                                                                                                                    productDetailsList ->
+                                                    Log.e("aa","queryProductDetailsAsync")
+                                                    // check billingResult
+                                                    // process returned productDetailsList
+                                                    val productDetailsParamsList = listOf(
+                                                        BillingFlowParams.ProductDetailsParams
+                                                            .newBuilder()
+                                                            // retrieve a value for "productDetails" by calling queryProductDetailsAsync()
+                                                            .setProductDetails(productDetailsList[0])
+                                                            .build()
+                                                    )
+
+                                                    val billingFlowParams = BillingFlowParams
+                                                        .newBuilder()
+                                                        .setProductDetailsParamsList(productDetailsParamsList)
+                                                        .build()
+
+// Launch the billing flow
+                                                    val billingResult = billingClient.launchBillingFlow(
+                                                        mainActivity,
+                                                        billingFlowParams
+                                                    )
+                                                }
                                             }
+                                            Log.e("aa","onBillingSetupFinished "+billingResult.responseCode)
                                         }
+
                                         override fun onBillingServiceDisconnected() {
                                             // Try to restart the connection on the next request to
                                             // Google Play by calling the startConnection() method.
+                                            Log.e("aa","onBillingServiceDisconnected")
                                         }
                                     })
 
-                                    val queryProductDetailsParams =
-                                        QueryProductDetailsParams.newBuilder()
-                                            .setProductList(
-                                                arrayListOf(
-                                                    QueryProductDetailsParams.Product.newBuilder()
-                                                        .setProductId("product_id_example")
-                                                        .setProductType(BillingClient.ProductType.SUBS)
-                                                        .build())
-                                            )
-                                            .build()
-
-                                    billingClient.queryProductDetailsAsync(queryProductDetailsParams) {
-                                            billingResult,
-                                            productDetailsList ->
-                                        // check billingResult
-                                        // process returned productDetailsList
-                                    }
                                 }
                             },
                         shape = RoundedCornerShape(15.dp),
@@ -266,7 +289,7 @@ fun PaymentScreen(
             }
         }
     }
-    if (homeViewModel.isLoading){
+    if (homeViewModel.isLoading) {
         ProgressBarTransparentBackground(loadingText = "Loading")
     }
 }
