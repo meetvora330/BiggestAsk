@@ -190,7 +190,7 @@ fun PaymentScreen(
                                                             arrayListOf(
                                                                 QueryProductDetailsParams.Product
                                                                     .newBuilder()
-                                                                    .setProductId("product_id_example")
+                                                                    .setProductId("android.test")
                                                                     .setProductType(BillingClient.ProductType.SUBS)
                                                                     .build()
                                                             )

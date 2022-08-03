@@ -2,8 +2,10 @@ package com.biggestAsk.ui
 
 import android.Manifest
 import android.content.pm.ActivityInfo
+import android.net.Uri
 import android.os.Bundle
 import android.view.WindowManager
+import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -20,6 +22,7 @@ import com.biggestAsk.ui.ui.theme.BasicStructureTheme
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 class HomeActivity : BaseActivity() {
+    private var launcher: ManagedActivityResultLauncher<String, Uri?>? = null
     private val mainViewModel: MainViewModel by viewModels()
     private val bottomHomeViewModel: BottomHomeViewModel by viewModels()
     private val bottomMilestoneViewModel: BottomMilestoneViewModel by viewModels()
@@ -27,10 +30,10 @@ class HomeActivity : BaseActivity() {
     val yourAccountViewModel: YourAccountViewModel by viewModels()
     val surrogateViewModel: YourSurrogateViewModel by viewModels()
     val permissionReqLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { it ->
             when {
                 it -> {
-                    // launcher.launch("image/*")
+                    launcher?.launch("image/*")
                     yourAccountViewModel.isPermissionAllowed = false
                     editMilestoneViewModel.isPermissionAllowed.value = false
                 }
@@ -38,19 +41,22 @@ class HomeActivity : BaseActivity() {
                     this,
                     Manifest.permission.READ_EXTERNAL_STORAGE
                 ) -> {
-                    //  permissionState.launchPermissionRequest()
                     yourAccountViewModel.isPermissionAllowed = false
                     editMilestoneViewModel.isPermissionAllowed.value = false
                 }
                 else -> {
                     yourAccountViewModel.isPermissionAllowed = true
                     editMilestoneViewModel.isPermissionAllowed.value = true
-                    //permissionState.launchPermissionRequest()
-//                    yourAccountViewModel.isPermissionAllowed =
-//                        yourAccountViewModel.isRational
                 }
             }
         }
+
+    fun callPermissionRequestLauncher(launcher: ManagedActivityResultLauncher<String, Uri?>) {
+        this.launcher = launcher
+        permissionReqLauncher.launch(
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

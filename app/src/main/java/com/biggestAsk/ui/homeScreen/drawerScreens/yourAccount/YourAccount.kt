@@ -237,7 +237,8 @@ fun YourAccountScreen(
                                         Manifest.permission.READ_EXTERNAL_STORAGE
                                     ) != PackageManager.PERMISSION_GRANTED
                                 ) {
-                                    homeActivity.permissionReqLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                                    homeActivity.callPermissionRequestLauncher(launcher)
+                                    yourAccountViewModel.isPermissionAllowed = false
                                 } else {
                                     launcher.launch("image/*")
                                     yourAccountViewModel.isPermissionAllowed = false

@@ -35,7 +35,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -43,9 +42,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -60,7 +57,6 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
-import coil.compose.ImagePainter.State.Empty.painter
 import coil.compose.rememberImagePainter
 import com.biggestAsk.data.model.request.DeleteMilestoneImageRequest
 import com.biggestAsk.data.model.request.EditMilestoneRequest
@@ -80,13 +76,11 @@ import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PathUtil
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
-import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import retrofit2.Response.error
 import java.io.File
 import java.util.*
 
@@ -936,9 +930,12 @@ fun EditMilestoneScreen(
                                                         Manifest.permission.READ_EXTERNAL_STORAGE
                                                     ) != PackageManager.PERMISSION_GRANTED
                                                 ) {
-                                                    homeActivity.permissionReqLauncher.launch(
-                                                        Manifest.permission.READ_EXTERNAL_STORAGE
-                                                    )
+                                                    homeActivity.callPermissionRequestLauncher(launcher)
+                                                    editMilestoneViewModel.isPermissionAllowed.value =
+                                                        false
+                                                    editMilestoneViewModel.imageListIndex.value =
+                                                        index
+                                                    latestIndex.value = index
                                                 } else {
                                                     launcher.launch("image/*")
                                                     editMilestoneViewModel.isPermissionAllowed.value =
@@ -998,9 +995,12 @@ fun EditMilestoneScreen(
                                                     Manifest.permission.READ_EXTERNAL_STORAGE
                                                 ) != PackageManager.PERMISSION_GRANTED
                                             ) {
-                                                homeActivity.permissionReqLauncher.launch(
-                                                    Manifest.permission.READ_EXTERNAL_STORAGE
-                                                )
+                                                homeActivity.callPermissionRequestLauncher(launcher)
+                                                editMilestoneViewModel.isPermissionAllowed.value =
+                                                    false
+                                                editMilestoneViewModel.imageListIndex.value =
+                                                    index
+                                                latestIndex.value = index
                                             } else {
                                                 launcher.launch("image/*")
                                                 editMilestoneViewModel.isPermissionAllowed.value =
@@ -1130,9 +1130,11 @@ fun EditMilestoneScreen(
                                                         Manifest.permission.READ_EXTERNAL_STORAGE
                                                     ) != PackageManager.PERMISSION_GRANTED
                                                 ) {
-                                                    homeActivity.permissionReqLauncher.launch(
-                                                        Manifest.permission.READ_EXTERNAL_STORAGE
-                                                    )
+                                                    homeActivity.callPermissionRequestLauncher(launcher)
+                                                    editMilestoneViewModel.isPermissionAllowed.value =
+                                                        false
+                                                    editMilestoneViewModel.imageListIndex.value =
+                                                        -1
                                                 } else {
                                                     launcher.launch("image/*")
                                                     editMilestoneViewModel.isPermissionAllowed.value =
@@ -1258,7 +1260,11 @@ fun EditMilestoneScreen(
                                                     Manifest.permission.READ_EXTERNAL_STORAGE
                                                 ) != PackageManager.PERMISSION_GRANTED
                                             ) {
-                                                homeActivity.permissionReqLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                                                homeActivity.callPermissionRequestLauncher(launcher)
+                                                editMilestoneViewModel.isPermissionAllowed.value =
+                                                    false
+                                                editMilestoneViewModel.imageListIndex.value =
+                                                    -1
                                             } else {
                                                 launcher.launch("image/*")
                                                 editMilestoneViewModel.isPermissionAllowed.value =
@@ -1795,9 +1801,9 @@ private fun handleUpdateImageData(
         is NetworkResult.Success -> {
             // bind data to the view
             editMilestoneViewModel.isMilestoneImageUpdated.value = false
-            if (!result.data?.image_url.isNullOrEmpty()) {
+            if (!result.data?.image.isNullOrEmpty()) {
                 editMilestoneViewModel.imageList[selectedImageIndex].image =
-                    result.data?.image_url.toString()
+                    result.data?.image.toString()
             }
             val tempData =
                 editMilestoneViewModel.imageList.toList()
