@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.sp
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
-fun ShimmerTheme(): Brush {
+fun shimmerTheme(): Brush {
     val shimmerColorShades = listOf(
         Color.LightGray.copy(0.9f),
 
@@ -48,7 +48,7 @@ fun ShimmerTheme(): Brush {
 
 @Composable
 fun PregnancyMilestoneShimmerAnimation() {
-    val brush = ShimmerTheme()
+    val brush = shimmerTheme()
     PregnancyMilestoneShimmerItem(brush = brush)
 }
 
@@ -61,8 +61,7 @@ fun PregnancyMilestoneShimmerItem(brush: Brush) {
         Text(
             modifier = Modifier
                 .wrapContentWidth()
-                .padding(start = 24.dp)
-                .background(brush),
+                .padding(start = 24.dp, top = 40.dp),
             text = "",
             style = MaterialTheme.typography.body2,
             fontSize = 16.sp,
@@ -119,7 +118,7 @@ fun PregnancyMilestoneShimmerItem(brush: Brush) {
 
 @Composable
 fun NearestMilestoneShimmerAnimation() {
-    val brush = ShimmerTheme()
+    val brush = shimmerTheme()
     NearestMilestoneShimmerItem(brush = brush)
 }
 
@@ -128,7 +127,7 @@ fun NearestMilestoneShimmerItem(brush: Brush) {
     Text(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 40.dp, start = 24.dp),
+            .padding(start = 24.dp),
         text = "",
         style = MaterialTheme.typography.body2,
         fontSize = 16.sp,
@@ -155,7 +154,8 @@ fun NearestMilestoneShimmerItem(brush: Brush) {
                 GlideImage(
                     modifier = Modifier.padding(
                         top = 14.dp, start = 24.dp, bottom = 24.dp, end = 24.dp
-                    ),
+                    ).width(278.dp)
+                        .height(180.dp),
                     contentScale = ContentScale.Crop, imageModel = ""
                 )
             }
@@ -194,15 +194,15 @@ fun NearestMilestoneShimmerItem(brush: Brush) {
 }
 
 @Composable
-fun HomeScreenShimmerAnimation() {
-    val brush = ShimmerTheme()
+fun HomeScreenQuestionShimmerAnimation() {
+    val brush = shimmerTheme()
     HomeScreenQuestionShimmerItem(brush = brush)
 }
 
 @Composable
 fun HomeScreenQuestionShimmerItem(brush: Brush) {
     Text(
-        modifier = Modifier.padding(start = 24.dp, top = 40.dp),
+        modifier = Modifier.padding(start = 24.dp),
         text = "",
         style = MaterialTheme.typography.body2,
         fontSize = 16.sp,
@@ -211,7 +211,7 @@ fun HomeScreenQuestionShimmerItem(brush: Brush) {
     )
     Surface(
         shape = RoundedCornerShape(12.dp),
-        color = Color(0xFF4479CC),
+        color = Color.White,
         modifier = Modifier
             .fillMaxWidth()
             .padding(
@@ -261,7 +261,8 @@ fun HomeScreenQuestionShimmerItem(brush: Brush) {
                         bottom = 24.dp
                     )
                     .fillMaxWidth()
-                    .height(48.dp),
+                    .height(48.dp)
+                    .background(brush, shape = RoundedCornerShape(30)),
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = Color.LightGray
                 ),
@@ -289,7 +290,7 @@ fun HomeScreenQuestionShimmerItem(brush: Brush) {
 
 @Composable
 fun IntendedParentsShimmerAnimation() {
-    val brush = ShimmerTheme()
+    val brush = shimmerTheme()
     IntendedParentsShimmerItem(brush = brush)
 }
 
