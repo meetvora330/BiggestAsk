@@ -32,6 +32,10 @@ import com.biggestAsk.data.model.response.*
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.ui.HomeActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
+import com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer.HomeScreenShimmerAnimation
+import com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer.IntendedParentsShimmerAnimation
+import com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer.NearestMilestoneShimmerAnimation
+import com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer.PregnancyMilestoneShimmerAnimation
 import com.biggestAsk.ui.main.viewmodel.BottomHomeViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.ET_Bg
@@ -356,7 +360,7 @@ fun BottomHomeScreen(
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState())
                 ) {
-                    if (!bottomHomeViewModel.isPregnancyDataLoaded) {
+                    if (!bottomHomeViewModel.isPregnancyDataLoaded || bottomHomeViewModel.isAllDataLoaded) {
                         if (bottomHomeViewModel.isQuestionDataEmpty) {
                             Text(
                                 modifier = Modifier
@@ -479,8 +483,9 @@ fun BottomHomeScreen(
                                 }
                             }
                         }
-                    }
-                    if (!bottomHomeViewModel.isNearestMilestoneDataLoaded) {
+                    } /*else {
+                        PregnancyMilestoneShimmerAnimation() }*/
+                    if (!bottomHomeViewModel.isNearestMilestoneDataLoaded || bottomHomeViewModel.isAllDataLoaded) {
                         Text(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -550,8 +555,9 @@ fun BottomHomeScreen(
                                 }
                             }
                         }
-                    }
-                    if (!bottomHomeViewModel.isHomeScreenQuestionDataLoaded) {
+                    } /*else{
+                        NearestMilestoneShimmerAnimation() }*/
+                    if (!bottomHomeViewModel.isHomeScreenQuestionDataLoaded || bottomHomeViewModel.isAllDataLoaded) {
                         Text(
                             modifier = Modifier.padding(start = 24.dp, top = 40.dp),
                             text = stringResource(id = R.string.bottom_home_screen_your_last_question),
@@ -644,8 +650,8 @@ fun BottomHomeScreen(
                                 }
                             }
                         }
-                    }
-                    if (!bottomHomeViewModel.isIntendedParentQuestionDataLoaded) {
+                    } /*else { HomeScreenShimmerAnimation()}*/
+                    if (!bottomHomeViewModel.isIntendedParentQuestionDataLoaded || bottomHomeViewModel.isAllDataLoaded) {
                         Text(
                             modifier = Modifier.padding(start = 24.dp, top = 44.dp),
                             text = stringResource(id = if (type == "parent") R.string.bottom_home_screen_your_surrogate_mother else R.string.bottom_home_screen_your_intended_parents),
@@ -709,7 +715,7 @@ fun BottomHomeScreen(
                                 )
                             }
                         }
-                    }
+                    }/* else{ IntendedParentsShimmerAnimation() }*/
                 }
             }
         },

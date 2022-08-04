@@ -34,7 +34,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavHostController
 import com.biggestAsk.data.model.LoginStatus
@@ -64,36 +63,26 @@ fun YourSurrogateMother(
     val isSurrogateConnected =
         PreferenceProvider(context).getBooleanValue("is_surrogate_connected", false)
     surrogateViewModel.invitationSend.value = isSurrogateConnected
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(
-                /*top =  if (viewModel.invitationSend.value) 20.dp else 30.dp,*/
-                bottom = /*if (viewModel.invitationSend.value) 30.dp else*/ 60.dp
-            )
-            .verticalScroll(rememberScrollState())
-    ) {
+//    Column(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .padding(
+//                /*top =  if (viewModel.invitationSend.value) 20.dp else 30.dp,*/
+//                bottom = /*if (viewModel.invitationSend.value) 30.dp else*/ 60.dp
+//            )
+//            .verticalScroll(rememberScrollState())
+//    ) {
         ConstraintLayout(
             modifier = Modifier
                 .fillMaxWidth()
+                .fillMaxHeight()
+                .padding(bottom = 60.dp)
         ) {
-            val (img_icon_your_surrogate_mother, tv_tittle_your_surrogate_mother, img_main_your_surrogate_mother, btn_add_surrogate_mother) = createRefs()
-            Image(
-                modifier = Modifier
-                    .padding(top = 30.dp)
-                    .zIndex(1f)
-                    .constrainAs(img_icon_your_surrogate_mother) {
-                        top.linkTo(parent.top)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    },
-                painter = painterResource(id = R.drawable.ic_empty_icon_surrogate_mother),
-                contentDescription = "",
-            )
+            val (tv_tittle_your_surrogate_mother, img_main_your_surrogate_mother, btn_add_surrogate_mother) = createRefs()
             Image(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight()
+                    .wrapContentHeight()
                     .constrainAs(img_main_your_surrogate_mother) {
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
@@ -111,7 +100,7 @@ fun YourSurrogateMother(
                     .fillMaxWidth()
                     .padding(top = if (surrogateViewModel.invitationSend.value) 60.dp else 22.dp)
                     .constrainAs(tv_tittle_your_surrogate_mother) {
-                        top.linkTo(img_icon_your_surrogate_mother.bottom, margin = 2.dp)
+                        top.linkTo(parent.top)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                     },
@@ -137,10 +126,7 @@ fun YourSurrogateMother(
                     .constrainAs(btn_add_surrogate_mother) {
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
-                        top.linkTo(
-                            img_main_your_surrogate_mother.bottom,
-                            margin = if (surrogateViewModel.invitationSend.value) 60.dp else 19.dp
-                        )
+                        bottom.linkTo(parent.bottom)
                     },
                 enabled = !surrogateViewModel.invitationSend.value,
                 shape = RoundedCornerShape(16.dp),
@@ -193,7 +179,7 @@ fun YourSurrogateMother(
                 }
             }
         }
-    }
+//    }
     if (surrogateViewModel.isSurrogateInvited.value) {
         ProgressBarTransparentBackground(loadingText = "Adding...")
     }

@@ -1,12 +1,10 @@
-package com.biggestAsk.ui.homeScreen.bottomNavScreen
+package com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -19,15 +17,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
-fun ShimmerAnimation() {
+fun ShimmerTheme(): Brush {
     val shimmerColorShades = listOf(
-        Color.LightGray.copy(alpha = 0.6f),
-        Color.LightGray.copy(alpha = 0.2f),
-        Color.LightGray.copy(alpha = 0.6f),
+        Color.LightGray.copy(0.9f),
+
+        Color.LightGray.copy(0.2f),
+
+        Color.LightGray.copy(0.9f)
     )
     val transition = rememberInfiniteTransition()
     val translateAnim by transition.animateFloat(
@@ -40,24 +39,29 @@ fun ShimmerAnimation() {
         )
     )
 
-    val brush = Brush.linearGradient(
+    return Brush.linearGradient(
         colors = shimmerColorShades,
         start = Offset(10f, 10f),
         end = Offset(translateAnim, translateAnim)
     )
-    BottomHomeShimmerItem(brush = brush)
 }
 
 @Composable
-fun BottomHomeShimmerItem(brush: Brush) {
+fun PregnancyMilestoneShimmerAnimation() {
+    val brush = ShimmerTheme()
+    PregnancyMilestoneShimmerItem(brush = brush)
+}
+
+@Composable
+fun PregnancyMilestoneShimmerItem(brush: Brush) {
     Column(
         modifier = Modifier
             .fillMaxSize()
     ) {
         Text(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 24.dp, top = 40.dp)
+                .wrapContentWidth()
+                .padding(start = 24.dp)
                 .background(brush),
             text = "",
             style = MaterialTheme.typography.body2,
@@ -67,16 +71,14 @@ fun BottomHomeShimmerItem(brush: Brush) {
         )
         Surface(
             shape = RoundedCornerShape(14.dp),
-            color = Color.White,
             elevation = 4.dp,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 24.dp, end = 24.dp, top = 16.dp)
+                .padding(start = 24.dp, end = 24.dp)
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(end = 10.dp)
                     .background(brush)
             ) {
                 Column(
@@ -88,7 +90,6 @@ fun BottomHomeShimmerItem(brush: Brush) {
                             .padding(top = 25.dp)
                             .background(brush),
                         text = "",
-                        color = Color.Black,
                         style = MaterialTheme.typography.body2,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.W800,
@@ -96,11 +97,9 @@ fun BottomHomeShimmerItem(brush: Brush) {
                     )
                     Text(
                         modifier = Modifier
-                            .padding(top = 10.dp)
-                            .background(brush),
+                            .padding(top = 10.dp),
                         text = "",
                         style = MaterialTheme.typography.body2,
-                        color = Color.Black,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.W600,
                         lineHeight = 22.sp
@@ -110,41 +109,26 @@ fun BottomHomeShimmerItem(brush: Brush) {
                     modifier = Modifier
                         .width(100.dp)
                         .height(110.dp)
-                        .padding(top = 10.dp, start = 24.dp)
-                        .background(brush),
+                        .padding(top = 10.dp, start = 24.dp),
                     contentScale = ContentScale.Crop, imageModel = ""
                 )
             }
         }
     }
-    Surface(
-        shape = RoundedCornerShape(14.dp),
-        color = Color.White,
-        elevation = 4.dp,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 24.dp, end = 24.dp, top = 30.dp)
-    ) {
-        Column(modifier = Modifier.background(brush)) {
-            Text(
-                modifier = Modifier
-                    .padding(start = 24.dp, top = 19.dp)
-                    .background(brush),
-                text = "",
-                color = Color.Black,
-                style = MaterialTheme.typography.body2,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.W800,
-                lineHeight = 24.sp
-            )
+}
 
-        }
-    }
+@Composable
+fun NearestMilestoneShimmerAnimation() {
+    val brush = ShimmerTheme()
+    NearestMilestoneShimmerItem(brush = brush)
+}
+
+@Composable
+fun NearestMilestoneShimmerItem(brush: Brush) {
     Text(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 40.dp, start = 24.dp)
-            .background(brush),
+            .padding(top = 40.dp, start = 24.dp),
         text = "",
         style = MaterialTheme.typography.body2,
         fontSize = 16.sp,
@@ -157,31 +141,28 @@ fun BottomHomeShimmerItem(brush: Brush) {
         elevation = 4.dp,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 24.dp, end = 24.dp, top = 16.dp)
+            .padding(
+                start = 24.dp,
+                end = 24.dp,
+            )
     ) {
-        Column(modifier = Modifier.background(brush)) {
+        Column(modifier = Modifier.background(brush = brush)) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 GlideImage(
-                    imageModel = "",
-                    modifier = Modifier
-                        .padding(
-                            top = 14.dp, start = 24.dp, bottom = 24.dp, end = 24.dp
-                        )
-                        .background(brush),
-                    contentDescription = "",
-                    contentScale = ContentScale.FillBounds
+                    modifier = Modifier.padding(
+                        top = 14.dp, start = 24.dp, bottom = 24.dp, end = 24.dp
+                    ),
+                    contentScale = ContentScale.Crop, imageModel = ""
                 )
             }
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 24.dp)
-                    .background(brush),
+                    .padding(start = 24.dp),
                 text = "",
                 style = MaterialTheme.typography.body2,
                 fontSize = 24.sp,
@@ -190,20 +171,16 @@ fun BottomHomeShimmerItem(brush: Brush) {
             )
             Row {
                 GlideImage(
+                    modifier = Modifier.padding(
+                        top = 15.dp,
+                        start = 24.dp,
+                        bottom = 26.dp
+                    ),
                     imageModel = "",
-                    modifier = Modifier
-                        .padding(
-                            top = 15.dp,
-                            start = 24.dp,
-                            bottom = 26.dp
-                        )
-                        .background(brush),
                     contentDescription = ""
                 )
                 Text(
-                    modifier = Modifier
-                        .padding(start = 8.dp, top = 17.dp)
-                        .background(brush),
+                    modifier = Modifier.padding(start = 8.dp, top = 17.dp),
                     text = "",
                     color = Color(0xFF9F9D9B),
                     style = MaterialTheme.typography.body2,
@@ -214,10 +191,18 @@ fun BottomHomeShimmerItem(brush: Brush) {
             }
         }
     }
+}
+
+@Composable
+fun HomeScreenShimmerAnimation() {
+    val brush = ShimmerTheme()
+    HomeScreenQuestionShimmerItem(brush = brush)
+}
+
+@Composable
+fun HomeScreenQuestionShimmerItem(brush: Brush) {
     Text(
-        modifier = Modifier
-            .padding(start = 24.dp, top = 40.dp)
-            .background(brush),
+        modifier = Modifier.padding(start = 24.dp, top = 40.dp),
         text = "",
         style = MaterialTheme.typography.body2,
         fontSize = 16.sp,
@@ -232,19 +217,18 @@ fun BottomHomeShimmerItem(brush: Brush) {
             .padding(
                 start = 24.dp,
                 end = 24.dp,
-                top = 16.dp,
-                bottom = 0.dp
             )
     ) {
         Column(
+            modifier = Modifier.background(brush),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 37.dp, top = 24.dp, end = 36.dp)
-                    .background(brush),
+                    .background(brush)
+                    .padding(start = 37.dp, top = 24.dp, end = 36.dp),
                 text = "",
                 color = Color.White,
                 style = MaterialTheme.typography.body2,
@@ -256,8 +240,7 @@ fun BottomHomeShimmerItem(brush: Brush) {
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 24.dp, top = 6.dp)
-                    .background(brush),
+                    .padding(start = 24.dp, top = 6.dp),
                 text = "",
                 color = Color.White,
                 style = MaterialTheme.typography.body2,
@@ -266,14 +249,54 @@ fun BottomHomeShimmerItem(brush: Brush) {
                 lineHeight = 22.sp,
                 textAlign = TextAlign.Center
             )
+            Button(
+                onClick = {
 
+                },
+                modifier = Modifier
+                    .padding(
+                        start = 24.dp,
+                        end = 24.dp,
+                        top = 16.dp,
+                        bottom = 24.dp
+                    )
+                    .fillMaxWidth()
+                    .height(48.dp),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = Color.LightGray
+                ),
+                elevation = ButtonDefaults.elevation(
+                    defaultElevation = 0.dp,
+                    pressedElevation = 0.dp,
+                    disabledElevation = 0.dp,
+                    hoveredElevation = 0.dp,
+                    focusedElevation = 0.dp
+                ),
+                shape = RoundedCornerShape(30),
+            ) {
+                Text(
+                    text = "",
+                    color = Color(0xFF3870C9),
+                    style = MaterialTheme.typography.body2,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.W600,
+                    lineHeight = 22.sp
+                )
+            }
         }
     }
+}
 
+@Composable
+fun IntendedParentsShimmerAnimation() {
+    val brush = ShimmerTheme()
+    IntendedParentsShimmerItem(brush = brush)
+}
+
+@Composable
+fun IntendedParentsShimmerItem(brush: Brush) {
     Text(
-        modifier = Modifier
-            .padding(start = 24.dp, top = 44.dp)
-            .background(brush),
+        modifier = Modifier.padding(start = 24.dp),
         text = "",
         style = MaterialTheme.typography.body2,
         fontSize = 16.sp,
@@ -286,10 +309,9 @@ fun BottomHomeShimmerItem(brush: Brush) {
         elevation = 4.dp,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 25.dp, end = 23.dp, top = 16.dp, bottom = 70.dp)
-
+            .padding(start = 25.dp, end = 23.dp, bottom = 70.dp)
     ) {
-        Column {
+        Column(modifier = Modifier.background(brush)) {
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -303,11 +325,8 @@ fun BottomHomeShimmerItem(brush: Brush) {
             )
             Row {
                 Text(
-                    modifier = Modifier
-                        .padding(start = 24.dp, top = 10.dp)
-                        .background(brush),
+                    modifier = Modifier.padding(start = 24.dp, top = 10.dp),
                     text = "",
-                    color = Custom_Blue,
                     style = MaterialTheme.typography.body2,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Normal,
@@ -315,8 +334,7 @@ fun BottomHomeShimmerItem(brush: Brush) {
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 10.dp, end = 24.dp)
-                        .background(brush),
+                        .padding(top = 10.dp, end = 24.dp),
                     text = "",
                     color = Color(0xFF9F9D9B),
                     style = MaterialTheme.typography.body2,
@@ -326,13 +344,11 @@ fun BottomHomeShimmerItem(brush: Brush) {
                 )
             }
             Text(
-                modifier = Modifier
-                    .padding(
-                        start = 24.dp,
-                        top = 4.dp,
-                        bottom = 22.dp
-                    )
-                    .background(brush),
+                modifier = Modifier.padding(
+                    start = 24.dp,
+                    top = 4.dp,
+                    bottom = 22.dp
+                ),
                 text = "",
                 color = Color.Black,
                 style = MaterialTheme.typography.body2,

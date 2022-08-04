@@ -1327,7 +1327,7 @@ fun EditMilestoneScreen(
                             )
                         }
                         if (type=="parent" && editMilestoneViewModel.surrogateNote.value != null) {
-                            Row(
+                            Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(top = 10.dp)
@@ -1353,7 +1353,7 @@ fun EditMilestoneScreen(
                                     }),
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .height(142.dp)
+                                        .wrapContentHeight()
                                         .padding(top = 12.dp),
                                     textStyle = MaterialTheme.typography.body2,
                                     placeholder = {
