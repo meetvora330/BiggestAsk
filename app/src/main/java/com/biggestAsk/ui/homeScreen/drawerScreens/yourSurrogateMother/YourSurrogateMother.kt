@@ -90,6 +90,7 @@ fun YourSurrogateMother(
                             if (surrogateViewModel.invitationSend.value) parent.top else tv_tittle_your_surrogate_mother.top,
                             margin = if (surrogateViewModel.invitationSend.value) 40.dp else 0.dp
                         )
+                        bottom.linkTo(parent.bottom)
                     },
                 painter = painterResource(id = if (surrogateViewModel.invitationSend.value) R.drawable.ic_img_invitation_send_your_surrogate_mother else R.drawable.ic_img_add_your_surrogate_mother),
                 contentDescription = "",

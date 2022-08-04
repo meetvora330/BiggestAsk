@@ -1326,7 +1326,7 @@ fun EditMilestoneScreen(
                                 text = { Text(text = "Permission is denied, Please allow permission from App Settings") }
                             )
                         }
-                        if (type=="parent" && editMilestoneViewModel.surrogateNote.value != null) {
+                        if (type=="parent" && editMilestoneViewModel.surrogateNote.value != "") {
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -1920,6 +1920,8 @@ private fun handleEditMilestoneData(
                 if (result.data.milestone[0].share_note_with_partner_status != 0) {
                     editMilestoneViewModel.surrogateNote.value =
                         result.data.milestone[0].surrogate_note
+                }else{
+                    editMilestoneViewModel.surrogateNote.value = ""
                 }
                 editMilestoneViewModel.checkBoxShareWithBiggestAsk =
                     result.data.milestone[0].share_note_with_biggestask_status != 0
