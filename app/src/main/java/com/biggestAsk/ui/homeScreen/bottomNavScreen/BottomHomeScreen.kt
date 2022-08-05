@@ -31,7 +31,6 @@ import com.biggestAsk.data.model.request.Answer
 import com.biggestAsk.data.model.response.*
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.ui.HomeActivity
-import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer.HomeScreenQuestionShimmerAnimation
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer.IntendedParentsShimmerAnimation
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer.NearestMilestoneShimmerAnimation
@@ -68,55 +67,13 @@ fun BottomHomeScreen(
         Log.d("TAG", "BottomHomeScreen: User Id $userId")
         Log.d("TAG", "BottomHomeScreen: Type $type")
         Log.d("TAG", "BottomHomeScreen: Partner Id $partnerId")
-        bottomHomeViewModel.getPregnancyMilestone(
-            GetPregnancyMilestoneRequest(
-                user_id = userId,
-                type = type!!
-            )
-        )
-        bottomHomeViewModel.getNearestMilestone(
-            GetPregnancyMilestoneRequest(
-                user_id = userId,
-                type = type
-            )
-        )
-        getHomeScreenQuestion(
-            user_id = userId,
-            type = type,
+        updateHomeScreenData(
             bottomHomeViewModel = bottomHomeViewModel,
-            homeActivity = homeActivity
+            userId = userId,
+            type = type!!,
+            homeActivity = homeActivity,
+            partnerId = partnerId
         )
-        bottomHomeViewModel.getIntendedParentQuestionAns(
-            IntendedParentQuestionAnsRequest(
-                user_id = userId,
-                partner_id = partnerId,
-                type = type
-            )
-        )
-        bottomHomeViewModel.getPregnancyMilestoneResponse.observe(homeActivity) {
-            if (it != null) {
-                handleGetImportantQuestionData(
-                    result = it,
-                    bottomHomeViewModel = bottomHomeViewModel,
-                )
-            }
-        }
-        bottomHomeViewModel.getNearestMilestoneResponse.observe(homeActivity) {
-            if (it != null) {
-                handleNearestMilestoneData(
-                    result = it,
-                    bottomHomeViewModel = bottomHomeViewModel,
-                )
-            }
-        }
-        bottomHomeViewModel.intendedPartnerQuestionAnsResponse.observe(homeActivity) {
-            if (it != null) {
-                handleIntendedParentQuestionAnsData(
-                    result = it,
-                    bottomHomeViewModel = bottomHomeViewModel,
-                )
-            }
-        }
     }
     BottomSheetScaffold(
         scaffoldState = homeBottomSheetScaffoldState,
@@ -360,7 +317,7 @@ fun BottomHomeScreen(
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState())
                 ) {
-                    if (!bottomHomeViewModel.isErrorOccurredPregnancyMilestone){
+                    if (!bottomHomeViewModel.isErrorOccurredPregnancyMilestone) {
                         if (bottomHomeViewModel.isPregnancyDataLoaded) {
                             if (bottomHomeViewModel.isQuestionDataEmpty) {
                                 Text(
@@ -399,7 +356,7 @@ fun BottomHomeScreen(
                                             )
                                             Text(
                                                 modifier = Modifier
-                                                    .width(220.dp)
+                                                    .width(225.dp)
                                                     .padding(top = 10.dp, bottom = 10.dp),
                                                 text = bottomHomeViewModel.pregnancyDescription,
                                                 style = MaterialTheme.typography.body2,
@@ -430,7 +387,10 @@ fun BottomHomeScreen(
                                 ) {
                                     Column {
                                         Text(
-                                            modifier = Modifier.padding(start = 24.dp, top = 19.dp),
+                                            modifier = Modifier.padding(
+                                                start = 24.dp,
+                                                top = 19.dp
+                                            ),
                                             text = bottomHomeViewModel.homeScreenImportantQuestion,
                                             color = Color.Black,
                                             style = MaterialTheme.typography.body2,
@@ -484,10 +444,12 @@ fun BottomHomeScreen(
                                     }
                                 }
                             }
-                        } else { PregnancyMilestoneShimmerAnimation() }
+                        } else {
+                            PregnancyMilestoneShimmerAnimation()
+                        }
                     }
-                    if (!bottomHomeViewModel.isErrorOccurredNearestMilestone){
-                        if (bottomHomeViewModel.isNearestMilestoneDataLoaded ) {
+                    if (!bottomHomeViewModel.isErrorOccurredNearestMilestone) {
+                        if (bottomHomeViewModel.isNearestMilestoneDataLoaded) {
                             Text(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -518,7 +480,10 @@ fun BottomHomeScreen(
                                     ) {
                                         Image(
                                             modifier = Modifier.padding(
-                                                top = 14.dp, start = 24.dp, bottom = 24.dp, end = 24.dp
+                                                top = 14.dp,
+                                                start = 24.dp,
+                                                bottom = 24.dp,
+                                                end = 24.dp
                                             ),
                                             painter = painterResource(id = R.drawable.img_medical_clearence),
                                             contentDescription = "",
@@ -546,7 +511,10 @@ fun BottomHomeScreen(
                                             contentDescription = ""
                                         )
                                         Text(
-                                            modifier = Modifier.padding(start = 8.dp, top = 17.dp),
+                                            modifier = Modifier.padding(
+                                                start = 8.dp,
+                                                top = 17.dp
+                                            ),
                                             text = "${bottomHomeViewModel.nearestMilestoneDate} at ${bottomHomeViewModel.nearestMilestoneTime}",
                                             color = Color(0xFF9F9D9B),
                                             style = MaterialTheme.typography.body2,
@@ -557,10 +525,12 @@ fun BottomHomeScreen(
                                     }
                                 }
                             }
-                        } else{ NearestMilestoneShimmerAnimation() }
+                        } else {
+                            NearestMilestoneShimmerAnimation()
+                        }
                     }
-                    if (!bottomHomeViewModel.isErrorOccurredHomeScreenQuestion){
-                        if (bottomHomeViewModel.isHomeScreenQuestionDataLoaded ) {
+                    if (!bottomHomeViewModel.isErrorOccurredHomeScreenQuestion) {
+                        if (bottomHomeViewModel.isHomeScreenQuestionDataLoaded) {
                             Text(
                                 modifier = Modifier.padding(start = 24.dp, top = 40.dp),
                                 text = stringResource(id = R.string.bottom_home_screen_your_last_question),
@@ -653,10 +623,12 @@ fun BottomHomeScreen(
                                     }
                                 }
                             }
-                        } else { HomeScreenQuestionShimmerAnimation() }
+                        } else {
+                            HomeScreenQuestionShimmerAnimation()
+                        }
                     }
-                    if (!bottomHomeViewModel.isErrorOccurredIntendedParentQuestion){
-                        if (bottomHomeViewModel.isIntendedParentQuestionDataLoaded ) {
+                    if (!bottomHomeViewModel.isErrorOccurredIntendedParentQuestion) {
+                        if (bottomHomeViewModel.isIntendedParentQuestionDataLoaded) {
                             Text(
                                 modifier = Modifier.padding(start = 24.dp, top = 44.dp),
                                 text = stringResource(id = if (type == "parent") R.string.bottom_home_screen_your_surrogate_mother else R.string.bottom_home_screen_your_intended_parents),
@@ -671,7 +643,12 @@ fun BottomHomeScreen(
                                 elevation = 4.dp,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(start = 25.dp, end = 23.dp, top = 16.dp, bottom = 70.dp)
+                                    .padding(
+                                        start = 25.dp,
+                                        end = 23.dp,
+                                        top = 16.dp,
+                                        bottom = 70.dp
+                                    )
                             ) {
                                 Column {
                                     Text(
@@ -687,7 +664,10 @@ fun BottomHomeScreen(
                                     )
                                     Row {
                                         Text(
-                                            modifier = Modifier.padding(start = 24.dp, top = 10.dp),
+                                            modifier = Modifier.padding(
+                                                start = 24.dp,
+                                                top = 10.dp
+                                            ),
                                             text = bottomHomeViewModel.intendedParentUserName,
                                             color = Custom_Blue,
                                             style = MaterialTheme.typography.body2,
@@ -720,13 +700,73 @@ fun BottomHomeScreen(
                                     )
                                 }
                             }
-                        } else{ IntendedParentsShimmerAnimation() }
+                        } else {
+                            IntendedParentsShimmerAnimation()
+                        }
                     }
                 }
             }
         },
         sheetShape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp)
     )
+}
+
+fun updateHomeScreenData(
+    bottomHomeViewModel: BottomHomeViewModel,
+    userId: Int,
+    type: String,
+    homeActivity: HomeActivity,
+    partnerId: Int
+) {
+    bottomHomeViewModel.getPregnancyMilestone(
+        GetPregnancyMilestoneRequest(
+            user_id = userId,
+            type = type
+        )
+    )
+    bottomHomeViewModel.getNearestMilestone(
+        GetPregnancyMilestoneRequest(
+            user_id = userId,
+            type = type
+        )
+    )
+    getHomeScreenQuestion(
+        user_id = userId,
+        type = type,
+        bottomHomeViewModel = bottomHomeViewModel,
+        homeActivity = homeActivity
+    )
+    bottomHomeViewModel.getIntendedParentQuestionAns(
+        IntendedParentQuestionAnsRequest(
+            user_id = userId,
+            partner_id = partnerId,
+            type = type
+        )
+    )
+    bottomHomeViewModel.getPregnancyMilestoneResponse.observe(homeActivity) {
+        if (it != null) {
+            handleGetImportantQuestionData(
+                result = it,
+                bottomHomeViewModel = bottomHomeViewModel,
+            )
+        }
+    }
+    bottomHomeViewModel.getNearestMilestoneResponse.observe(homeActivity) {
+        if (it != null) {
+            handleNearestMilestoneData(
+                result = it,
+                bottomHomeViewModel = bottomHomeViewModel,
+            )
+        }
+    }
+    bottomHomeViewModel.intendedPartnerQuestionAnsResponse.observe(homeActivity) {
+        if (it != null) {
+            handleIntendedParentQuestionAnsData(
+                result = it,
+                bottomHomeViewModel = bottomHomeViewModel,
+            )
+        }
+    }
 }
 
 fun getHomeScreenQuestion(

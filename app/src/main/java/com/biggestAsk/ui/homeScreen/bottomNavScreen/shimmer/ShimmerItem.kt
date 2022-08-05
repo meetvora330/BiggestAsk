@@ -1,7 +1,11 @@
 package com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer
 
+import android.util.Log
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -9,15 +13,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph.BottomNavScreen
+import com.example.biggestAsk.R
 import com.skydoves.landscapist.glide.GlideImage
+import kotlinx.coroutines.launch
 
 @Composable
 fun shimmerTheme(): Brush {
@@ -54,64 +64,60 @@ fun PregnancyMilestoneShimmerAnimation() {
 
 @Composable
 fun PregnancyMilestoneShimmerItem(brush: Brush) {
-    Column(
+    Text(
         modifier = Modifier
-            .fillMaxSize()
+            .width(200.dp)
+            .padding(start = 24.dp, top = 40.dp, bottom = 10.dp)
+            .background(brush, RoundedCornerShape(8.dp)),
+        text = "",
+        style = MaterialTheme.typography.body2,
+        fontSize = 16.sp,
+        fontWeight = FontWeight.W900,
+        lineHeight = 24.sp
+    )
+    Surface(
+        shape = RoundedCornerShape(14.dp),
+        elevation = 4.dp,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 24.dp, end = 24.dp)
     ) {
-        Text(
-            modifier = Modifier
-                .wrapContentWidth()
-                .padding(start = 24.dp, top = 40.dp),
-            text = "",
-            style = MaterialTheme.typography.body2,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.W900,
-            lineHeight = 24.sp
-        )
-        Surface(
-            shape = RoundedCornerShape(14.dp),
-            elevation = 4.dp,
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 24.dp, end = 24.dp)
+                .background(brush)
         ) {
-            Row(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .background(brush)
+                    .padding(start = 18.dp)
             ) {
-                Column(
+                Text(
                     modifier = Modifier
-                        .padding(start = 18.dp)
-                ) {
-                    Text(
-                        modifier = Modifier
-                            .padding(top = 25.dp)
-                            .background(brush),
-                        text = "",
-                        style = MaterialTheme.typography.body2,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.W800,
-                        lineHeight = 24.sp
-                    )
-                    Text(
-                        modifier = Modifier
-                            .padding(top = 10.dp),
-                        text = "",
-                        style = MaterialTheme.typography.body2,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.W600,
-                        lineHeight = 22.sp
-                    )
-                }
-                GlideImage(
+                        .padding(top = 25.dp)
+                        .background(brush),
+                    text = "",
+                    style = MaterialTheme.typography.body2,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.W800,
+                    lineHeight = 24.sp
+                )
+                Text(
                     modifier = Modifier
-                        .width(100.dp)
-                        .height(110.dp)
-                        .padding(top = 10.dp, start = 24.dp),
-                    contentScale = ContentScale.Crop, imageModel = ""
+                        .padding(top = 10.dp),
+                    text = "",
+                    style = MaterialTheme.typography.body2,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.W600,
+                    lineHeight = 22.sp
                 )
             }
+            GlideImage(
+                modifier = Modifier
+                    .width(100.dp)
+                    .height(110.dp)
+                    .padding(top = 10.dp, start = 24.dp),
+                contentScale = ContentScale.Crop, imageModel = ""
+            )
         }
     }
 }
@@ -126,8 +132,9 @@ fun NearestMilestoneShimmerAnimation() {
 fun NearestMilestoneShimmerItem(brush: Brush) {
     Text(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 24.dp),
+            .width(150.dp)
+            .padding(start = 24.dp, top = 40.dp, bottom = 20.dp)
+            .background(brush, RoundedCornerShape(8.dp)),
         text = "",
         style = MaterialTheme.typography.body2,
         fontSize = 16.sp,
@@ -152,10 +159,12 @@ fun NearestMilestoneShimmerItem(brush: Brush) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 GlideImage(
-                    modifier = Modifier.padding(
-                        top = 14.dp, start = 24.dp, bottom = 24.dp, end = 24.dp
-                    ).width(278.dp)
-                        .height(180.dp),
+                    modifier = Modifier
+                        .padding(
+                            top = 14.dp, start = 24.dp, bottom = 24.dp, end = 24.dp
+                        )
+                        .width(278.dp)
+                        .height(160.dp),
                     contentScale = ContentScale.Crop, imageModel = ""
                 )
             }
@@ -202,7 +211,10 @@ fun HomeScreenQuestionShimmerAnimation() {
 @Composable
 fun HomeScreenQuestionShimmerItem(brush: Brush) {
     Text(
-        modifier = Modifier.padding(start = 24.dp),
+        modifier = Modifier
+            .width(180.dp)
+            .padding(start = 24.dp, top = 40.dp, bottom = 18.dp)
+            .background(brush, RoundedCornerShape(8.dp)),
         text = "",
         style = MaterialTheme.typography.body2,
         fontSize = 16.sp,
@@ -297,7 +309,13 @@ fun IntendedParentsShimmerAnimation() {
 @Composable
 fun IntendedParentsShimmerItem(brush: Brush) {
     Text(
-        modifier = Modifier.padding(start = 24.dp),
+        modifier = Modifier
+            .width(180.dp)
+            .padding(start = 24.dp, top = 40.dp, bottom = 20.dp)
+            .background(
+                brush,
+                RoundedCornerShape(8.dp)
+            ),
         text = "",
         style = MaterialTheme.typography.body2,
         fontSize = 16.sp,
@@ -358,4 +376,90 @@ fun IntendedParentsShimmerItem(brush: Brush) {
             )
         }
     }
+}
+
+@Composable
+fun MilestoneScreenShimmerAnimation() {
+    val brush = shimmerTheme()
+    MilestoneScreenShimmerItem(brush)
+}
+
+@Composable
+fun MilestoneScreenShimmerItem(brush: Brush) {
+    val height = 142.dp
+    Column {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(height)
+                .padding(start = 24.dp, end = 24.dp, top = 20.dp)
+                .background(
+                    brush,
+                    RoundedCornerShape(20.dp)
+                )
+        ) {
+
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(height)
+                .padding(start = 24.dp, end = 24.dp, top = 20.dp)
+                .background(
+                    brush,
+                    RoundedCornerShape(20.dp)
+                )
+        ) {
+
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(height)
+                .padding(start = 24.dp, end = 24.dp, top = 20.dp)
+                .background(
+                    brush,
+                    RoundedCornerShape(20.dp)
+                )
+        ) {
+
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(height)
+                .padding(start = 24.dp, end = 24.dp, top = 20.dp)
+                .background(
+                    brush,
+                    RoundedCornerShape(20.dp)
+                )
+        ) {
+
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(height)
+                .padding(start = 24.dp, end = 24.dp, top = 20.dp)
+                .background(
+                    brush,
+                    RoundedCornerShape(20.dp)
+                )
+        ) {
+
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(height)
+                .padding(start = 24.dp, end = 24.dp, top = 20.dp)
+                .background(
+                    brush,
+                    RoundedCornerShape(20.dp)
+                )
+        ) {
+
+        }
+    }
+
 }

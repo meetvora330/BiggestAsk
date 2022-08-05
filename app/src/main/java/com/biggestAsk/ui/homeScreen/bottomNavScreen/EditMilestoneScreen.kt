@@ -43,6 +43,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -930,7 +931,9 @@ fun EditMilestoneScreen(
                                                         Manifest.permission.READ_EXTERNAL_STORAGE
                                                     ) != PackageManager.PERMISSION_GRANTED
                                                 ) {
-                                                    homeActivity.callPermissionRequestLauncher(launcher)
+                                                    homeActivity.callPermissionRequestLauncher(
+                                                        launcher
+                                                    )
                                                     editMilestoneViewModel.isPermissionAllowed.value =
                                                         false
                                                     editMilestoneViewModel.imageListIndex.value =
@@ -1068,7 +1071,7 @@ fun EditMilestoneScreen(
                                                 end.linkTo(border_image_bg.end)
                                                 top.linkTo(border_image_bg.top)
                                             },
-                                        text = "No ultrasound image available",
+                                        text = stringResource(id = R.string.no_image_available),
                                         style = MaterialTheme.typography.body2.copy(
                                             color = Color(0xFF7F7D7C),
                                             fontSize = 16.sp,
@@ -1130,7 +1133,9 @@ fun EditMilestoneScreen(
                                                         Manifest.permission.READ_EXTERNAL_STORAGE
                                                     ) != PackageManager.PERMISSION_GRANTED
                                                 ) {
-                                                    homeActivity.callPermissionRequestLauncher(launcher)
+                                                    homeActivity.callPermissionRequestLauncher(
+                                                        launcher
+                                                    )
                                                     editMilestoneViewModel.isPermissionAllowed.value =
                                                         false
                                                     editMilestoneViewModel.imageListIndex.value =
@@ -1160,6 +1165,69 @@ fun EditMilestoneScreen(
                                             painter = painterResource(id = R.drawable.ic_icon_btn_upload_picture),
                                             contentDescription = "",
                                             tint = Color.White
+                                        )
+                                    }
+                                }
+                            } else if (editMilestoneViewModel.milestoneType.value == "common") {
+                                if (editMilestoneViewModel.imageList.isEmpty()) {
+                                    ConstraintLayout(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(top = 27.dp)
+                                    ) {
+                                        val (border_image_bg, tv_no_img_tittle, tv_no_img_desc) = createRefs()
+                                        Canvas(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(112.dp)
+                                                .constrainAs(border_image_bg) {
+                                                    top.linkTo(parent.top)
+                                                    start.linkTo(parent.start)
+                                                    end.linkTo(parent.end)
+                                                    bottom.linkTo(parent.bottom)
+                                                }
+                                        ) {
+                                            drawRoundRect(
+                                                color = Color(0xFFC6C4C2),
+                                                style = stroke,
+                                                cornerRadius = CornerRadius(18f, 18f)
+                                            )
+                                        }
+                                        Text(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(top = 20.dp)
+                                                .alpha(if (isPicAvailable.value) 1f else 0f)
+                                                .constrainAs(tv_no_img_tittle) {
+                                                    start.linkTo(border_image_bg.start)
+                                                    end.linkTo(border_image_bg.end)
+                                                    top.linkTo(border_image_bg.top)
+                                                },
+                                            text = "No image available",
+                                            style = MaterialTheme.typography.body2.copy(
+                                                color = Color(0xFF7F7D7C),
+                                                fontSize = 16.sp,
+                                                lineHeight = 24.sp
+                                            ),
+                                            textAlign = TextAlign.Center
+                                        )
+                                        Text(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(start = 22.dp, top = 8.dp, end = 22.dp)
+                                                .alpha(if (isPicAvailable.value) 1f else 0f)
+                                                .constrainAs(tv_no_img_desc) {
+                                                    start.linkTo(border_image_bg.start)
+                                                    end.linkTo(border_image_bg.end)
+                                                    top.linkTo(tv_no_img_tittle.bottom)
+                                                },
+                                            text = "For confirmation, you must attach a picture of the ultrasound and leave a comment.",
+                                            style = MaterialTheme.typography.body2.copy(
+                                                color = Color(0xFFC6C4C2),
+                                                fontSize = 12.sp,
+                                                lineHeight = 24.sp
+                                            ),
+                                            textAlign = TextAlign.Center
                                         )
                                     }
                                 }
@@ -1198,7 +1266,7 @@ fun EditMilestoneScreen(
                                             end.linkTo(border_image_bg.end)
                                             top.linkTo(border_image_bg.top)
                                         },
-                                    text = "No ultrasound image available",
+                                    text = stringResource(id = R.string.no_image_available),
                                     style = MaterialTheme.typography.body2.copy(
                                         color = Color(0xFF7F7D7C),
                                         fontSize = 16.sp,
@@ -1326,18 +1394,18 @@ fun EditMilestoneScreen(
                                 text = { Text(text = "Permission is denied, Please allow permission from App Settings") }
                             )
                         }
-                        if (type=="parent" && editMilestoneViewModel.surrogateNote.value != "") {
+                        if (type == "parent" && editMilestoneViewModel.surrogateNote.value != "") {
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(top = 10.dp)
+                                    .padding(top = 26.dp)
                             ) {
                                 Text(
-                                    text = "Surrogate note:",
+                                    text = "Surrogate note",
                                     style = MaterialTheme.typography.body2.copy(
                                         color = Color.Black,
-                                        fontWeight = FontWeight.W600,
-                                        fontSize = 16.sp
+                                        fontWeight = FontWeight.W800,
+                                        fontSize = 12.sp
                                     )
                                 )
                                 TextField(
@@ -1369,6 +1437,53 @@ fun EditMilestoneScreen(
                                 )
                             }
                         }
+
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 26.dp),
+                            text = "Notes", style = MaterialTheme.typography.body2.copy(
+                                color = Color.Black,
+                                fontWeight = FontWeight.W800,
+                                fontSize = 12.sp
+                            )
+                        )
+                        TextField(
+                            value = editMilestoneViewModel.addNewMilestoneNotes.value,
+                            onValueChange = {
+                                editMilestoneViewModel.addNewMilestoneNotes.value = it
+                            },
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Text, imeAction = ImeAction.Done
+                            ),
+                            keyboardActions = KeyboardActions(onDone = {
+                                focusManager.clearFocus()
+                            }),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(142.dp)
+                                .padding(top = 12.dp),
+                            textStyle = MaterialTheme.typography.body2,
+                            placeholder = {
+                                Text(
+                                    text = "Write notes here",
+                                    style = MaterialTheme.typography.body1.copy(
+                                        fontSize = 16.sp,
+                                        color = Text_Color,
+                                        lineHeight = 24.sp,
+                                        fontWeight = FontWeight.W400
+                                    )
+                                )
+                            },
+                            shape = RoundedCornerShape(8.dp),
+                            colors = TextFieldDefaults.textFieldColors(
+                                backgroundColor = ET_Bg,
+                                cursorColor = Custom_Blue,
+                                focusedIndicatorColor = Color.Transparent,
+                                disabledIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                            ),
+                        )
                         if (type == "parent") {
                             Row(modifier = Modifier.padding(top = 10.dp)) {
                                 CompositionLocalProvider(LocalMinimumTouchTargetEnforcement provides false) {
@@ -1450,52 +1565,6 @@ fun EditMilestoneScreen(
                                 }
                             }
                         }
-                        Text(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 6.dp),
-                            text = "Notes", style = MaterialTheme.typography.body2.copy(
-                                color = Color.Black,
-                                fontWeight = FontWeight.W800,
-                                fontSize = 12.sp
-                            )
-                        )
-                        TextField(
-                            value = editMilestoneViewModel.addNewMilestoneNotes.value,
-                            onValueChange = {
-                                editMilestoneViewModel.addNewMilestoneNotes.value = it
-                            },
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Text, imeAction = ImeAction.Done
-                            ),
-                            keyboardActions = KeyboardActions(onDone = {
-                                focusManager.clearFocus()
-                            }),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(142.dp)
-                                .padding(top = 12.dp),
-                            textStyle = MaterialTheme.typography.body2,
-                            placeholder = {
-                                Text(
-                                    text = "Write notes here",
-                                    style = MaterialTheme.typography.body1.copy(
-                                        fontSize = 16.sp,
-                                        color = Text_Color,
-                                        lineHeight = 24.sp,
-                                        fontWeight = FontWeight.W400
-                                    )
-                                )
-                            },
-                            shape = RoundedCornerShape(8.dp),
-                            colors = TextFieldDefaults.textFieldColors(
-                                backgroundColor = ET_Bg,
-                                cursorColor = Custom_Blue,
-                                focusedIndicatorColor = Color.Transparent,
-                                disabledIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                            ),
-                        )
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.Center,
@@ -1920,7 +1989,7 @@ private fun handleEditMilestoneData(
                 if (result.data.milestone[0].share_note_with_partner_status != 0) {
                     editMilestoneViewModel.surrogateNote.value =
                         result.data.milestone[0].surrogate_note
-                }else{
+                } else {
                     editMilestoneViewModel.surrogateNote.value = ""
                 }
                 editMilestoneViewModel.checkBoxShareWithBiggestAsk =

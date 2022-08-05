@@ -24,7 +24,7 @@ import com.example.biggestAsk.R
 
 @Composable
 fun ContactYourProvider(modifier: Modifier = Modifier) {
-    LaunchedEffect(Unit){
+    LaunchedEffect(Unit) {
 
     }
     Column(

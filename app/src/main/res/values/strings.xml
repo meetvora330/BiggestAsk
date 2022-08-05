@@ -64,6 +64,7 @@
     <string name="please_try_again">Please try again later</string>
     <string name="no_data_found">No data found</string>
     <string name="alert_dialog_text_logout">Are you sure want to logout?</string>
+    <string name="no_image_available">No image available</string>
 
 
     <!-- Intro Screen   -->

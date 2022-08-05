@@ -72,114 +72,114 @@ fun YourSurrogateMother(
 //            )
 //            .verticalScroll(rememberScrollState())
 //    ) {
-        ConstraintLayout(
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .padding(bottom = 60.dp)
+    ) {
+        val (tv_tittle_your_surrogate_mother, img_main_your_surrogate_mother, btn_add_surrogate_mother) = createRefs()
+        Image(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight()
-                .padding(bottom = 60.dp)
+                .wrapContentHeight()
+                .constrainAs(img_main_your_surrogate_mother) {
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    top.linkTo(
+                        if (surrogateViewModel.invitationSend.value) parent.top else tv_tittle_your_surrogate_mother.top,
+                        margin = if (surrogateViewModel.invitationSend.value) 40.dp else 0.dp
+                    )
+                    bottom.linkTo(parent.bottom)
+                },
+            painter = painterResource(id = if (surrogateViewModel.invitationSend.value) R.drawable.ic_img_invitation_send_your_surrogate_mother else R.drawable.ic_img_add_your_surrogate_mother),
+            contentDescription = "",
+            contentScale = ContentScale.FillBounds
+        )
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = if (surrogateViewModel.invitationSend.value) 60.dp else 22.dp)
+                .constrainAs(tv_tittle_your_surrogate_mother) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                },
+            text = if (surrogateViewModel.invitationSend.value) stringResource(id = R.string.your_surrogate_mother_invitation_sent) else stringResource(
+                id = R.string.your_surrogate_mother_invitation_not_sent
+            ),
+            style = MaterialTheme.typography.body2.copy(
+                color = if (surrogateViewModel.invitationSend.value) Custom_Blue else Color.Black,
+                fontWeight = FontWeight.W900,
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center,
+                lineHeight = 24.sp
+            )
+        )
+        Button(
+            onClick = {
+                openDialogSurrogateMother.value = true
+            },
+            modifier = Modifier
+                .width(264.dp)
+                .height(56.dp)
+                .padding(bottom = 0.dp)
+                .constrainAs(btn_add_surrogate_mother) {
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    bottom.linkTo(parent.bottom)
+                },
+            enabled = !surrogateViewModel.invitationSend.value,
+            shape = RoundedCornerShape(16.dp),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = Custom_Blue,
+            ),
+            elevation = ButtonDefaults.elevation(
+                defaultElevation = 0.dp,
+                pressedElevation = 0.dp,
+                disabledElevation = 0.dp,
+                hoveredElevation = 0.dp,
+                focusedElevation = 0.dp
+            ),
         ) {
-            val (tv_tittle_your_surrogate_mother, img_main_your_surrogate_mother, btn_add_surrogate_mother) = createRefs()
             Image(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .constrainAs(img_main_your_surrogate_mother) {
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                        top.linkTo(
-                            if (surrogateViewModel.invitationSend.value) parent.top else tv_tittle_your_surrogate_mother.top,
-                            margin = if (surrogateViewModel.invitationSend.value) 40.dp else 0.dp
-                        )
-                        bottom.linkTo(parent.bottom)
-                    },
-                painter = painterResource(id = if (surrogateViewModel.invitationSend.value) R.drawable.ic_img_invitation_send_your_surrogate_mother else R.drawable.ic_img_add_your_surrogate_mother),
-                contentDescription = "",
-                contentScale = ContentScale.FillBounds
+                painter = painterResource(id = R.drawable.ic_img_your_surrogate_mother_add_btn),
+                contentDescription = ""
             )
             Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = if (surrogateViewModel.invitationSend.value) 60.dp else 22.dp)
-                    .constrainAs(tv_tittle_your_surrogate_mother) {
-                        top.linkTo(parent.top)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    },
-                text = if (surrogateViewModel.invitationSend.value) stringResource(id = R.string.your_surrogate_mother_invitation_sent) else stringResource(
-                    id = R.string.your_surrogate_mother_invitation_not_sent
-                ),
+                modifier = Modifier.padding(start = 12.dp),
+                text = stringResource(id = R.string.add_surrogate_mother),
                 style = MaterialTheme.typography.body2.copy(
-                    color = if (surrogateViewModel.invitationSend.value) Custom_Blue else Color.Black,
+                    color = Color.White,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.W900,
-                    fontSize = 20.sp,
-                    textAlign = TextAlign.Center,
                     lineHeight = 24.sp
                 )
             )
-            Button(
-                onClick = {
-                    openDialogSurrogateMother.value = true
-                },
-                modifier = Modifier
-                    .width(264.dp)
-                    .height(56.dp)
-                    .padding(bottom = 0.dp)
-                    .constrainAs(btn_add_surrogate_mother) {
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                        bottom.linkTo(parent.bottom)
-                    },
-                enabled = !surrogateViewModel.invitationSend.value,
-                shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = Custom_Blue,
-                ),
-                elevation = ButtonDefaults.elevation(
-                    defaultElevation = 0.dp,
-                    pressedElevation = 0.dp,
-                    disabledElevation = 0.dp,
-                    hoveredElevation = 0.dp,
-                    focusedElevation = 0.dp
-                ),
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_img_your_surrogate_mother_add_btn),
-                    contentDescription = ""
-                )
-                Text(
-                    modifier = Modifier.padding(start = 12.dp),
-                    text = stringResource(id = R.string.add_surrogate_mother),
-                    style = MaterialTheme.typography.body2.copy(
-                        color = Color.White,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.W900,
-                        lineHeight = 24.sp
+        }
+        if (openDialogSurrogateMother.value) {
+            Dialog(properties = DialogProperties(
+                dismissOnBackPress = true,
+                dismissOnClickOutside = false,
+                usePlatformDefaultWidth = true
+            ), onDismissRequest = { openDialogSurrogateMother.value = false }) {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(250.dp),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    YourSurrogateDialog(
+                        surrogateViewModel = surrogateViewModel,
+                        openDialogCustom = openDialogSurrogateMother,
+                        context = context,
+                        homeActivity = homeActivity,
+                        navHostController = navHostController
                     )
-                )
-            }
-            if (openDialogSurrogateMother.value) {
-                Dialog(properties = DialogProperties(
-                    dismissOnBackPress = true,
-                    dismissOnClickOutside = false,
-                    usePlatformDefaultWidth = true
-                ), onDismissRequest = { openDialogSurrogateMother.value = false }) {
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(250.dp),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        YourSurrogateDialog(
-                            surrogateViewModel = surrogateViewModel,
-                            openDialogCustom = openDialogSurrogateMother,
-                            context = context,
-                            homeActivity = homeActivity,
-                            navHostController = navHostController
-                        )
-                    }
                 }
             }
         }
+    }
 //    }
     if (surrogateViewModel.isSurrogateInvited.value) {
         ProgressBarTransparentBackground(loadingText = "Adding...")
