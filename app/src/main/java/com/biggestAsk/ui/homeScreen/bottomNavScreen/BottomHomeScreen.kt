@@ -578,7 +578,7 @@ fun BottomHomeScreen(
                                         start = 24.dp,
                                         end = 24.dp,
                                         top = 16.dp,
-                                        bottom = if (bottomHomeViewModel.isIntendedParentQuestionDataLoaded) 70.dp else 0.dp
+                                        bottom = if (bottomHomeViewModel.isIntendedParentQuestionDataLoaded) 0.dp else 70.dp
                                     )
                             ) {
                                 Column(
