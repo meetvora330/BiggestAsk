@@ -26,6 +26,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.ImagePainter.State.Empty.painter
+import coil.compose.rememberImagePainter
 import com.biggestAsk.data.model.request.*
 import com.biggestAsk.data.model.request.Answer
 import com.biggestAsk.data.model.response.*
@@ -478,17 +480,36 @@ fun BottomHomeScreen(
                                         horizontalArrangement = Arrangement.Center,
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Image(
-                                            modifier = Modifier.padding(
-                                                top = 14.dp,
-                                                start = 24.dp,
-                                                bottom = 24.dp,
-                                                end = 24.dp
-                                            ),
-                                            painter = painterResource(id = R.drawable.img_medical_clearence),
-                                            contentDescription = "",
-                                            contentScale = ContentScale.FillBounds
-                                        )
+                                        if (bottomHomeViewModel.nearestMilestoneImage.isEmpty()){
+                                            Image(
+                                                modifier = Modifier
+                                                    .width(180.dp)
+                                                    .height(180.dp)
+                                                    .padding(
+                                                        top = 14.dp,
+                                                        start = 24.dp,
+                                                        bottom = 24.dp,
+                                                        end = 24.dp
+                                                    ),
+                                                painter = painterResource(id = R.drawable.img_user_add_new_milestone),
+                                                contentDescription = "",
+                                                contentScale = ContentScale.FillBounds
+                                            )
+                                        }else{
+                                            val painter = rememberImagePainter(
+                                                bottomHomeViewModel.nearestMilestoneImage,
+                                                builder = {
+                                                    placeholder(R.drawable.ic_baseline_place_holder_image_24)
+                                                })
+                                            Image(
+                                                modifier = Modifier
+                                                    .width(180.dp)
+                                                    .height(180.dp),
+                                                painter = painter,
+                                                contentDescription = ""
+                                            )
+                                        }
+
                                     }
                                     Text(
                                         modifier = Modifier
@@ -995,8 +1016,20 @@ private fun handleNearestMilestoneData(
             Log.e("TAG", "handleUserData() --> Success  $result")
             Log.i("TAG", result.message.toString())
             bottomHomeViewModel.nearestMilestoneTittle = result.data?.title!!
-            bottomHomeViewModel.nearestMilestoneDate = result.data.date
-            bottomHomeViewModel.nearestMilestoneTime = result.data.time
+            if (result.data.date.isNullOrEmpty())
+                bottomHomeViewModel.nearestMilestoneDate = ""
+            else
+                bottomHomeViewModel.nearestMilestoneDate = result.data.date
+
+            if (result.data.time.isNullOrEmpty())
+                bottomHomeViewModel.nearestMilestoneTime = ""
+            else
+                bottomHomeViewModel.nearestMilestoneTime = result.data.time
+
+            if (result.data.milestone_image.isNullOrEmpty())
+                bottomHomeViewModel.nearestMilestoneImage = ""
+            else
+                bottomHomeViewModel.nearestMilestoneImage = result.data.milestone_image
             bottomHomeViewModel.isAllDataLoaded = false
             bottomHomeViewModel.isErrorOccurred = false
             bottomHomeViewModel.isNearestMilestoneDataLoaded = true

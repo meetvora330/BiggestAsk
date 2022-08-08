@@ -265,7 +265,7 @@ fun MilestonesScreen(
                                         R.style.CalenderViewCustom,
                                         { _: DatePicker, year: Int, month: Int, day: Int ->
                                             milestoneViewModel.addNewMilestoneDate.value =
-                                                "$year/$month/$day"
+                                                "$year/"+"%02d".format(month+1)+"/"+"%02d".format(day)
                                         }, year, month, day
                                     )
                                     datePickerDialog.show()
@@ -351,7 +351,7 @@ fun MilestonesScreen(
                                                 "PM"
                                             }
                                             milestoneViewModel.addNewMilestoneTime.value =
-                                                "$hourOfDay:$minute $amPm"
+                                                "%02d".format(hourOfDay)+":"+"%02d".format(minute)+" "+ amPm
                                         }, mHour, mMinute, false
                                     )
                                     timePickerDialog.show()

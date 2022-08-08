@@ -25,6 +25,7 @@ class EditMilestoneViewModel @Inject constructor(
     var editMilestoneTittle: MutableState<String> = mutableStateOf("")
     var editMilestoneTittleEmpty: MutableState<Boolean> = mutableStateOf(false)
     var editMilestoneDate: MutableState<String> = mutableStateOf("")
+    var editMilestoneTitleImage: MutableState<String> = mutableStateOf("")
     var editMilestoneDateEmpty: MutableState<Boolean> = mutableStateOf(false)
     var editMilestoneTime: MutableState<String> = mutableStateOf("")
     var editMilestoneTimeEmpty: MutableState<Boolean> = mutableStateOf(false)

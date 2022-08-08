@@ -3,7 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/TheBiggestAsk/app/src/main/res/drawable/ic_baseline_place_holder_image_24.xml" value="0.1345" />
         <entry key="..\:/TheBiggestAsk/app/src/main/res/drawable/ic_img_invitation_send_your_surrogate_mother.xml" value="0.227" />
+        <entry key="..\:/TheBiggestAsk/app/src/main/res/drawable/img_medical_calender_icon.xml" value="0.1335" />
         <entry key="..\:/Users/Admin/AndroidStudioProjects/Biggest Ask/app/src/main/java/com/biggestAsk/ui/homeScreen/HomeScreen.kt" value="0.1443384487764413" />
         <entry key="..\:/Users/Admin/AndroidStudioProjects/Biggest Ask/app/src/main/java/com/biggestAsk/ui/homeScreen/drawerScreens/IntendParents.kt" value="0.27398408043569333" />
         <entry key="..\:/Users/Admin/AndroidStudioProjects/Biggest Ask/app/src/main/java/com/biggestAsk/ui/homeScreen/drawerScreens/YourAccount.kt" value="0.2919983242563888" />

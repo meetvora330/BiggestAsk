@@ -332,7 +332,7 @@ fun EditMilestoneScreen(
                                         R.style.CalenderViewCustom,
                                         { _: DatePicker, year: Int, month: Int, day: Int ->
                                             editMilestoneViewModel.editMilestoneDate.value =
-                                                "$year/$month/$day"
+                                                "$year/"+"%02d".format(month+1)+"/"+"%02d".format(day)
                                         }, year, month, day
                                     )
                                     datePickerDialog.show()
@@ -356,7 +356,6 @@ fun EditMilestoneScreen(
                                 },
                             value = editMilestoneViewModel.editMilestoneDate.value,
                             onValueChange = {
-                                editMilestoneViewModel.editMilestoneDate.value
                                 editMilestoneViewModel.editMilestoneDateEmpty.value = false
                             },
                             shape = RoundedCornerShape(8.dp),
@@ -418,7 +417,7 @@ fun EditMilestoneScreen(
                                                 "PM"
                                             }
                                             editMilestoneViewModel.editMilestoneTime.value =
-                                                "$hourOfDay:$minute $amPm"
+                                                "%02d".format(hourOfDay)+":"+"%02d".format(minute)+" "+ amPm
                                         }, mHour, mMinute, false
                                     )
                                     timePickerDialog.show()
@@ -635,13 +634,31 @@ fun EditMilestoneScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                             ) {
-                                Image(
-                                    modifier = Modifier
-                                        .width(75.dp)
-                                        .height(75.dp),
-                                    painter = painterResource(id = R.drawable.img_user_add_new_milestone),
-                                    contentDescription = ""
-                                )
+                                if (editMilestoneViewModel.editMilestoneTitleImage.value.isEmpty()){
+                                    Image(
+                                        modifier = Modifier
+                                            .width(75.dp)
+                                            .height(75.dp),
+                                        painter = painterResource(id = R.drawable.img_user_add_new_milestone),
+                                        contentDescription = ""
+                                    )
+                                }else{
+                                    val painter = rememberImagePainter(
+                                        editMilestoneViewModel.editMilestoneTitleImage.value,
+                                        builder = {
+                                            placeholder(R.drawable.ic_baseline_place_holder_image_24)
+                                        })
+                                    Image(
+                                        modifier = Modifier
+                                            .width(75.dp)
+                                            .height(75.dp),
+                                        painter = painter,
+                                        contentDescription = "",
+                                        contentScale = ContentScale.Inside
+                                    )
+
+                                }
+
                                 Column(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -881,10 +898,6 @@ fun EditMilestoneScreen(
                                             }
                                         }
                                     } else {
-//                                        Image(
-//                                            painter = rememberImagePainter(editMilestoneViewModel.imageList[index].image),
-//                                            contentDescription = "",
-//                                        )
                                         val painter = rememberImagePainter(
                                             editMilestoneViewModel.imageList[index].image,
                                             builder = {
@@ -1984,6 +1997,11 @@ private fun handleEditMilestoneData(
                 editMilestoneViewModel.editMilestoneTime.value = ""
             } else {
                 editMilestoneViewModel.editMilestoneTime.value = result.data.milestone[0].time
+            }
+            if (!result.data.milestone[0].milestone_image.isNullOrEmpty()){
+                editMilestoneViewModel.editMilestoneTitleImage.value = result.data.milestone[0].milestone_image
+            }else{
+                editMilestoneViewModel.editMilestoneTitleImage.value = ""
             }
             if (type == Constants.PARENT) {
                 if (result.data.milestone[0].share_note_with_partner_status != 0) {

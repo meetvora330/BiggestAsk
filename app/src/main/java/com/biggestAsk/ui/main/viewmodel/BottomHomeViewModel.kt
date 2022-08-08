@@ -35,6 +35,7 @@ class BottomHomeViewModel @Inject constructor(
     var nearestMilestoneTittle: String by mutableStateOf("")
     var nearestMilestoneDate: String by mutableStateOf("")
     var nearestMilestoneTime: String by mutableStateOf("")
+    var nearestMilestoneImage: String by mutableStateOf("")
     var homeScreenQuestionAns: String by mutableStateOf("")
     var homeScreenQuestionCategeryId: Int by mutableStateOf(0)
     var homeScreenQuestionId: Int by mutableStateOf(0)

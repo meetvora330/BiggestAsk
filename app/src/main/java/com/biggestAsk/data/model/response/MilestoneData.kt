@@ -1,6 +1,6 @@
 package com.biggestAsk.data.model.response
 
-data class MilestoneX(
+data class MilestoneData(
     val date: String,
     val id: Int,
     val location: String,
