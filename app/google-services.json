@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "994638545509",
+    "project_id": "thebiggestask-ec66b",
+    "storage_bucket": "thebiggestask-ec66b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:994638545509:android:f7fb23da44118cfbd4bc8c",
+        "android_client_info": {
+          "package_name": "com.biggestAsk"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "994638545509-0j7sc51rlgn7tkeo6jpm08k0njplefim.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.biggestAsk",
+            "certificate_hash": "2a0ca116bc2e3d0bdf945056aecfb81049ed9956"
+          }
+        },
+        {
+          "client_id": "994638545509-cldenk9fi8qh7mmnl5e3ak5s5gdsasu6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCUOYMJIAMQ5znkq8zEZKOx4tvBdTVseMo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "994638545509-cldenk9fi8qh7mmnl5e3ak5s5gdsasu6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

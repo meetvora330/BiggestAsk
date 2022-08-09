@@ -3,6 +3,7 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -57,6 +58,7 @@ android {
 
 dependencies {
 
+    implementation 'com.google.firebase:firebase-messaging-ktx:23.0.5'
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
     def nav_version = "2.4.2"
 
@@ -150,4 +152,7 @@ dependencies {
     implementation "com.android.billingclient:billing:$billing_version"
     //Shimmer Effect
     implementation 'com.valentinilk.shimmer:compose-shimmer:1.0.3'
+
+    implementation platform('com.google.firebase:firebase-bom:30.3.1')
+    implementation 'com.google.firebase:firebase-analytics-ktx'
 }
