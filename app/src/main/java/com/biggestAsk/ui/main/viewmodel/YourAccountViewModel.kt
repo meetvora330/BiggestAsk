@@ -8,8 +8,10 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.biggestAsk.data.model.request.GetUserDetailsRequest
-import com.biggestAsk.data.model.response.GetUserDetailsResponse
+import com.biggestAsk.data.model.request.GetUserDetailsParentRequest
+import com.biggestAsk.data.model.request.GetUserDetailsSurrogateRequest
+import com.biggestAsk.data.model.response.GetUserDetailsParentResponse
+import com.biggestAsk.data.model.response.GetUserDetailsSurrogateResponse
 import com.biggestAsk.data.model.response.UpdateUserProfileResponse
 import com.biggestAsk.data.repository.YourAccountRepository
 import com.biggestAsk.data.source.network.NetworkResult
@@ -18,6 +20,9 @@ import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 import javax.inject.Inject
 
+/**
+ * Created by Abhin.
+ */
 @HiltViewModel
 class YourAccountViewModel @Inject constructor(
     private val yourAccountRepository: YourAccountRepository,
@@ -25,38 +30,66 @@ class YourAccountViewModel @Inject constructor(
 ) : AndroidViewModel(application) {
 
     var isLoading: Boolean by mutableStateOf(false)
+    var isPermissionAllowed: Boolean by mutableStateOf(false)
+    var isRational: Boolean by mutableStateOf(false)
+    var isEditable: MutableState<Boolean> = mutableStateOf(false)
+    val isYourAccountScreen: MutableLiveData<Boolean> = MutableLiveData(false)
+
+    //  surrogate
     var textEmailVerify: String by mutableStateOf("")
-    var yourAccountFullName: String by mutableStateOf("")
-    var profileImg: String by mutableStateOf("")
-    var yourAccountType: String by mutableStateOf("surrogate")
+    var surrogateFullName: String by mutableStateOf("")
+    var surrogateImg: String by mutableStateOf("")
     var yourAccountFullNameEmpty: Boolean by mutableStateOf(false)
-    var yourAccountPhoneNumber: String by mutableStateOf("")
+    var surrogatePhoneNumber: String by mutableStateOf("")
     var yourAccountPhoneNumberEmpty: Boolean by mutableStateOf(false)
-    var yourAccountEmail: String by mutableStateOf("")
+    var surrogateEmail: String by mutableStateOf("")
     var yourAccountEmailIsValid: Boolean by mutableStateOf(false)
     var yourAccountEmailEmpty: Boolean by mutableStateOf(false)
-    var yourAccountHomeAddress: String by mutableStateOf("")
+    var surrogateHomeAddress: String by mutableStateOf("")
     var yourAccountHomeAddressEmpty: Boolean by mutableStateOf(false)
-    var yourAccountDateOfBirth: String by mutableStateOf("")
+    var surrogateDateOfBirth: String by mutableStateOf("")
     var yourAccountDateOfBirthEmpty: Boolean by mutableStateOf(false)
-    var isPermissionAllowed: Boolean by mutableStateOf(false)
-    var yourAccountPartnerName: String by mutableStateOf("")
+    var surrogatePartnerName: String by mutableStateOf("")
     var yourAccountPartnerNameEmpty: Boolean by mutableStateOf(false)
     var yourAccountPassword: String by mutableStateOf("................")
     var yourAccountPasswordEmpty: Boolean by mutableStateOf(false)
-    var isEditable: MutableState<Boolean> = mutableStateOf(false)
-    val isYourAccountScreen: MutableLiveData<Boolean> = MutableLiveData(false)
-    var getUserDetailResponse: MutableLiveData<NetworkResult<GetUserDetailsResponse>> =
+    var getUserDetailResponseSurrogate: MutableLiveData<NetworkResult<GetUserDetailsSurrogateResponse>> =
         MutableLiveData()
-    var updateUserProfileResponse: MutableLiveData<NetworkResult<UpdateUserProfileResponse>> =
+    private var updateUserProfileResponse: MutableLiveData<NetworkResult<UpdateUserProfileResponse>> =
         MutableLiveData()
+    var isSurrogateApiCalled: Boolean by mutableStateOf(false)
+
+    //    parent
+    var parentFullName: String by mutableStateOf("")
+    var parentImg1: String by mutableStateOf("")
+    var parentImg2: String by mutableStateOf("")
+    var parentPhoneNumber: String by mutableStateOf("")
+    var parentPartnerName: String by mutableStateOf("")
+    var parentDateOfBirth: String by mutableStateOf("")
+    var parentHomeAddress: String by mutableStateOf("")
+    var parentEmail: String by mutableStateOf("")
+    var getUserDetailResponseParent: MutableLiveData<NetworkResult<GetUserDetailsParentResponse>> =
+        MutableLiveData()
+    var isParentClicked: Boolean by mutableStateOf(true)
+    var isMotherClicked: Boolean by mutableStateOf(false)
+    var isParentApiCalled: Boolean by mutableStateOf(false)
 
 
-    fun getUserDetails(getUserDetailsRequest: GetUserDetailsRequest) {
-        getUserDetailResponse.value = NetworkResult.Loading()
+
+    fun getUserDetailsSurrogate(getUserDetailsRequestSurrogate: GetUserDetailsSurrogateRequest) {
+        getUserDetailResponseSurrogate.value = NetworkResult.Loading()
         viewModelScope.launch {
-            yourAccountRepository.getUserDetails(getUserDetailsRequest).collect {
-                getUserDetailResponse.value = it
+            yourAccountRepository.getUserDetailsSurrogate(getUserDetailsRequestSurrogate).collect {
+                getUserDetailResponseSurrogate.value = it
+            }
+        }
+    }
+
+    fun getUserDetailsParent(getUserDetailsRequestParent: GetUserDetailsParentRequest) {
+        getUserDetailResponseParent.value = NetworkResult.Loading()
+        viewModelScope.launch {
+            yourAccountRepository.getUserDetailsParent(getUserDetailsRequestParent).collect {
+                getUserDetailResponseParent.value = it
             }
         }
     }
@@ -87,8 +120,7 @@ class YourAccountViewModel @Inject constructor(
                 partnerName,
                 imgFileName1,
                 imgFileName2,
-                type
-            ).collect {
+                type).collect {
                 updateUserProfileResponse.value = it
             }
         }

@@ -39,7 +39,9 @@ fun BottomNavigationDrawerGraph(
     bottomMilestoneViewModel: BottomMilestoneViewModel,
     editMilestoneViewModel: EditMilestoneViewModel,
     yourAccountViewModel: YourAccountViewModel,
-    surrogateViewModel: YourSurrogateViewModel
+    contactYourProviderViewModel: ContactYourProviderViewModel,
+    surrogateViewModel: YourSurrogateViewModel,
+    communityViewModel: CommunityViewModel
 ) {
     NavHost(
         navController = navHostController, startDestination = BottomNavScreen.Home.route
@@ -126,10 +128,16 @@ fun BottomNavigationDrawerGraph(
             )
         }
         composable(route = NavDrawerItem.Community.route) {
-            Community()
+            Community(
+                communityViewModel = communityViewModel,
+                homeActivity = homeActivity
+            )
         }
         composable(route = NavDrawerItem.ContactYourProviders.route) {
-            ContactYourProvider()
+            ContactYourProvider(
+                homeActivity = homeActivity,
+                contactYourProviderViewModel = contactYourProviderViewModel
+            )
         }
         composable(
             route = NavDrawerItem.Notifications.route

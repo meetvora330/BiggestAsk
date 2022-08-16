@@ -1,4 +1,4 @@
-package com.biggestAsk.ui.homeScreen.drawerScreens.community
+package com.biggestAsk.ui.homeScreen.drawerScreens.contactYourProvider
 
 import android.Manifest
 import android.content.Context
@@ -7,7 +7,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.Settings
 import android.text.TextUtils
-import android.util.Log
+import android.util.Patterns
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -41,13 +41,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.app.ActivityCompat
+import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import com.biggestAsk.data.model.response.CreateCommunityResponse
+import com.biggestAsk.data.model.response.CreateContactResponse
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.ui.HomeActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
-import com.biggestAsk.ui.main.viewmodel.CommunityViewModel
+import com.biggestAsk.ui.main.viewmodel.ContactYourProviderViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.Text_Accept_Terms
 import com.biggestAsk.util.PreferenceProvider
@@ -58,9 +59,9 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 
 @Composable
-fun AddCommunityDialog(
+fun CreateContactDialog(
     homeActivity: HomeActivity,
-    communityViewModel: CommunityViewModel,
+    contactYourProviderViewModel: ContactYourProviderViewModel,
     openDialogCustom: MutableState<Boolean>,
     tf_text_first: MutableState<String>,
     tf_text_second: MutableState<String>,
@@ -89,8 +90,8 @@ fun AddCommunityDialog(
         mutableStateOf(false)
     }
 
-    val focusManager = LocalFocusManager.current
     val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
 
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -99,10 +100,12 @@ fun AddCommunityDialog(
         effect = {
             val observer = LifecycleEventObserver { _, event ->
                 if (event == Lifecycle.Event.ON_RESUME) {
-                    if (ActivityCompat.checkSelfPermission(homeActivity,
-                            Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                    if (ActivityCompat.checkSelfPermission(
+                            homeActivity,
+                            Manifest.permission.READ_EXTERNAL_STORAGE
+                        ) == PackageManager.PERMISSION_GRANTED
                     ) {
-                        communityViewModel.isPermissionAllowed = false
+                        contactYourProviderViewModel.isPermissionAllowed = false
                     }
                 }
             }
@@ -113,18 +116,17 @@ fun AddCommunityDialog(
         }
     )
 
-
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent(),
+    val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        communityViewModel.imageData = uri
-        communityViewModel.getImage(context)
-        communityViewModel.isImagePresent.value = uri != null
+        contactYourProviderViewModel.imageData = uri
+        contactYourProviderViewModel.getImage(context)
+        contactYourProviderViewModel.isImagePresent.value = uri != null
     }
 
 
     val type = PreferenceProvider(context).getValue("type", "")
     val userId = PreferenceProvider(context).getIntValue("user_id", 0)
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -291,6 +293,7 @@ fun AddCommunityDialog(
                 onValueChange = {
                     tf_text_third.value = it
                     tfTextThirdEmpty.value = false
+                    contactYourProviderViewModel.isLoginEmailValid = false
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text, imeAction = ImeAction.Next
@@ -309,7 +312,7 @@ fun AddCommunityDialog(
                         color = Text_Accept_Terms
                     )
                 },
-                maxLines = 1,
+                maxLines = 1
             )
             if (tfTextThirdEmpty.value) {
                 Text(
@@ -318,6 +321,16 @@ fun AddCommunityDialog(
                     text = "Enter $tv_text_third",
                     style = MaterialTheme.typography.caption,
                     color = MaterialTheme.colors.error,
+                    fontSize = 12.sp
+                )
+            }
+            if (contactYourProviderViewModel.isLoginEmailValid) {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    text = stringResource(id = R.string.register_error_text_valid_email),
+                    color = MaterialTheme.colors.error,
+                    style = MaterialTheme.typography.caption,
                     fontSize = 12.sp
                 )
             }
@@ -339,11 +352,17 @@ fun AddCommunityDialog(
                     .padding(top = 12.dp),
                 value = tf_text_fourth.value,
                 onValueChange = {
-                    tf_text_fourth.value = it
+                    val maxChar = 8
+                    if (it.length <= maxChar) {
+                        if (it.isDigitsOnly()) {
+                            tf_text_fourth.value = it
+                            contactYourProviderViewModel.phoneErrorVisible = maxChar != it.length
+                        }
+                    }
                     tfTextFourthEmpty.value = false
                 },
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text, imeAction = ImeAction.Done
+                    keyboardType = KeyboardType.Number, imeAction = ImeAction.Done
                 ),
                 keyboardActions = KeyboardActions(onDone = {
                     focusManager.clearFocus()
@@ -374,6 +393,16 @@ fun AddCommunityDialog(
                     fontSize = 12.sp
                 )
             }
+            if (contactYourProviderViewModel.phoneErrorVisible) {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    text = "minimum 8 character required",
+                    style = MaterialTheme.typography.caption,
+                    color = MaterialTheme.colors.error,
+                    fontSize = 12.sp
+                )
+            }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -388,17 +417,17 @@ fun AddCommunityDialog(
                 Text(
                     modifier = Modifier
                         .padding(start = 11.dp)
-                        .clickable() {
+                        .clickable {
                             if (ActivityCompat.checkSelfPermission(
                                     homeActivity,
                                     Manifest.permission.READ_EXTERNAL_STORAGE
                                 ) != PackageManager.PERMISSION_GRANTED
                             ) {
                                 homeActivity.callPermissionRequestLauncher(launcher)
-                                communityViewModel.isPermissionAllowed = false
+                                contactYourProviderViewModel.isPermissionAllowed = false
                             } else {
                                 launcher.launch("image/*")
-                                communityViewModel.isPermissionAllowed = false
+                                contactYourProviderViewModel.isPermissionAllowed = false
                             }
                         },
                     text = stringResource(id = R.string.add_logo),
@@ -409,7 +438,7 @@ fun AddCommunityDialog(
                 )
             }
 
-            communityViewModel.bitmap.value?.let {
+            contactYourProviderViewModel.bitmap.value?.let {
                 Card(
                     modifier = Modifier
                         .width(88.dp)
@@ -431,6 +460,7 @@ fun AddCommunityDialog(
                 }
             }
 
+
             Button(
                 onClick = {
                     when {
@@ -442,8 +472,7 @@ fun AddCommunityDialog(
                             tfTextSecondEmpty.value = true
                             tfTextThirdEmpty.value = true
                             tfTextFourthEmpty.value = true
-
-                            if (!communityViewModel.isImagePresent.value) {
+                            if (!contactYourProviderViewModel.isImagePresent.value) {
                                 Toast.makeText(context, "Please Add Logo", Toast.LENGTH_SHORT)
                                     .show()
                             }
@@ -460,55 +489,62 @@ fun AddCommunityDialog(
                         TextUtils.isEmpty(tf_text_fourth.value) -> {
                             tfTextFourthEmpty.value = true
                         }
-                        !communityViewModel.isImagePresent.value -> {
+
+                        !Patterns.EMAIL_ADDRESS.matcher(tf_text_third.value).matches() -> {
+                            contactYourProviderViewModel.isLoginEmailValid = true
+                        }
+
+                        !contactYourProviderViewModel.isImagePresent.value -> {
                             Toast.makeText(context, "Please Add Logo", Toast.LENGTH_SHORT)
                                 .show()
                         }
 
-                        communityViewModel.isImagePresent.value && !TextUtils.isEmpty(tf_text_first.value) &&
+                        !contactYourProviderViewModel.phoneErrorVisible && contactYourProviderViewModel.isImagePresent.value && !TextUtils.isEmpty(
+                            tf_text_first.value) &&
                                 !TextUtils.isEmpty(tf_text_second.value) &&
                                 !TextUtils.isEmpty(tf_text_third.value) &&
                                 !TextUtils.isEmpty(tf_text_fourth.value) -> {
 
-
+                            //                            CoroutineScope(Dispatchers.Default).launch {
+                            //                                contactYourProviderViewModel.getImage(context)
+                            //                            }
                             val image =
-                                communityViewModel.uriPath?.let { convertImageMultiPart(it) }
-                            Log.e("image", "AddCommunityDialog: $image")
-                            communityViewModel.createCommunity(
+                                contactYourProviderViewModel.uriPath?.let { convertImageMultiPart(it) }
+
+                            contactYourProviderViewModel.createContact(
                                 MultipartBody.Part.createFormData("title", tf_text_first.value),
-                                MultipartBody.Part.createFormData("description",
+                                MultipartBody.Part.createFormData("agency_name",
                                     tf_text_second.value),
-                                MultipartBody.Part.createFormData("forum_link",
+                                MultipartBody.Part.createFormData("agency_email",
                                     tf_text_third.value),
-                                MultipartBody.Part.createFormData("insta_link",
+                                MultipartBody.Part.createFormData("agency_number",
                                     tf_text_fourth.value),
                                 image,
                                 MultipartBody.Part.createFormData("user_id", userId.toString()),
                                 MultipartBody.Part.createFormData("type", type!!)
                             )
-                            communityViewModel.createCommunityResponse.observe(homeActivity) {
+                            contactYourProviderViewModel.createContactResponse.observe(homeActivity) {
                                 if (it != null) {
-                                    handleCreateCommunityApi(
+                                    handleCreateContactData(
                                         result = it,
-                                        communityViewModel = communityViewModel,
+                                        contactYourProviderViewModel = contactYourProviderViewModel,
                                         context = context,
                                         openDialogCustom,
                                         tf_text_first,
                                         tf_text_second,
                                         tf_text_third,
                                         tf_text_fourth,
-                                        type,
-                                        userId,
-                                        homeActivity
+                                        user_id = userId,
+                                        type = type,
+                                        homeActivity = homeActivity
                                     )
                                 }
                             }
                         }
                         else -> {
-                            openDialogCustom.value = false
+                            openDialogCustom.value = contactYourProviderViewModel.phoneErrorVisible
                         }
                     }
-
                 },
                 modifier = Modifier
                     .padding(top = 31.dp, bottom = 12.dp)
@@ -537,13 +573,13 @@ fun AddCommunityDialog(
             }
         }
     }
-    if (communityViewModel.isLoading) {
+    if (contactYourProviderViewModel.isLoading) {
         ProgressBarTransparentBackground("Please wait....")
     }
-    if (communityViewModel.isPermissionAllowed) {
+    if (contactYourProviderViewModel.isPermissionAllowed) {
         AlertDialog(
             onDismissRequest = {
-                communityViewModel.isPermissionAllowed = false
+                contactYourProviderViewModel.isPermissionAllowed = false
             },
             confirmButton = {
                 TextButton(onClick = {
@@ -557,7 +593,7 @@ fun AddCommunityDialog(
             },
             dismissButton = {
                 TextButton(onClick = {
-                    communityViewModel.isPermissionAllowed = false
+                    contactYourProviderViewModel.isPermissionAllowed = false
                 })
                 { Text(text = "CANCEL", color = Color.Red) }
             },
@@ -567,7 +603,7 @@ fun AddCommunityDialog(
     }
 }
 
-private fun convertImageMultiPart(imagePath: String): MultipartBody.Part {
+private fun convertImageMultiPart(imagePath: String): MultipartBody.Part? {
     val file = File(imagePath)
     return MultipartBody.Part.createFormData(
         "image",
@@ -576,9 +612,9 @@ private fun convertImageMultiPart(imagePath: String): MultipartBody.Part {
     )
 }
 
-private fun handleCreateCommunityApi(
-    result: NetworkResult<CreateCommunityResponse>,
-    communityViewModel: CommunityViewModel,
+private fun handleCreateContactData(
+    result: NetworkResult<CreateContactResponse>,
+    contactYourProviderViewModel: ContactYourProviderViewModel,
     context: Context,
     openDialogCustom: MutableState<Boolean>,
     tf_text_first: MutableState<String>,
@@ -592,27 +628,29 @@ private fun handleCreateCommunityApi(
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
-            communityViewModel.isLoading = true
+            contactYourProviderViewModel.isLoading = true
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            communityViewModel.isLoading = false
+            contactYourProviderViewModel.isLoading = false
             openDialogCustom.value = false
-            Toast.makeText(context, result.data!!.message, Toast.LENGTH_SHORT).show()
             tf_text_first.value = ""
             tf_text_second.value = ""
             tf_text_third.value = ""
             tf_text_fourth.value = ""
-            communityViewModel.bitmap.value = null
-            getUpdatedCommunity(type = type,
+            contactYourProviderViewModel.bitmap.value = null
+            Toast.makeText(context, result.data!!.message, Toast.LENGTH_SHORT).show()
+            getUpdatedContact(type = type,
                 user_id = user_id,
-                communityViewModel = communityViewModel,
-                homeActivity = homeActivity)
+                contactYourProviderViewModel = contactYourProviderViewModel,
+                context,
+                homeActivity)
         }
         is NetworkResult.Error -> {
             // show error message
-            communityViewModel.isLoading = false
+            contactYourProviderViewModel.isLoading = false
             Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
         }
     }
 }
+

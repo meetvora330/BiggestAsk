@@ -37,6 +37,7 @@ import com.biggestAsk.ui.HomeActivity
 import com.biggestAsk.ui.MainActivity
 import com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph.*
 import com.biggestAsk.ui.homeScreen.drawerScreens.community.AddCommunityDialog
+import com.biggestAsk.ui.homeScreen.drawerScreens.contactYourProvider.CreateContactDialog
 import com.biggestAsk.ui.homeScreen.drawerScreens.notification.NotificationDetailScreenRoute
 import com.biggestAsk.ui.homeScreen.drawerScreens.settingScreens.SettingSubScreen
 import com.biggestAsk.ui.introScreen.findActivity
@@ -59,7 +60,9 @@ fun HomeScreen(
     bottomMilestoneViewModel: BottomMilestoneViewModel,
     editMilestoneViewModel: EditMilestoneViewModel,
     yourAccountViewModel: YourAccountViewModel,
-    surrogateViewModel: YourSurrogateViewModel
+    contactYourProviderViewModel: ContactYourProviderViewModel,
+    surrogateViewModel: YourSurrogateViewModel,
+    communityViewModel: CommunityViewModel,
 ) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
@@ -95,7 +98,9 @@ fun HomeScreen(
             currentRoute(
                 navController = navController,
                 viewModel = mainViewModel,
-                yourAccountViewModel = yourAccountViewModel
+                yourAccountViewModel = yourAccountViewModel,
+                contactYourProviderViewModel = contactYourProviderViewModel,
+                communityViewModel = communityViewModel
             )
             ConstraintLayout(
                 modifier = Modifier
@@ -197,7 +202,8 @@ fun HomeScreen(
                             (mainViewModel.isSettingSubAboutAppScreen.value ||
                                     mainViewModel.isSettingSubDetailedSettingScreen.value ||
                                     mainViewModel.isSettingSubPrivacyPolicyScreen.value ||
-                                    mainViewModel.isSettingSubTermsOfServiceScreen.value) -> {
+                                    mainViewModel.isSettingSubTermsOfServiceScreen.value),
+                            -> {
                                 R.drawable.ic_baseline_arrow_back_ios_new_24
                             }
                             else -> {
@@ -226,8 +232,8 @@ fun HomeScreen(
                         .width(24.dp)
                         .height(24.dp)
                         .alpha(
-                            if (mainViewModel.isCommunityScreen.value == true ||
-                                mainViewModel.isContactProvidersScreen.value == true ||
+                            if (communityViewModel.isCommunityScreen.value == true ||
+                                contactYourProviderViewModel.isContactProvidersScreen.value == true ||
                                 yourAccountViewModel.isYourAccountScreen.value == true ||
                                 mainViewModel.isNotificationScreen.value == true
                             ) 1f else 0f
@@ -242,26 +248,26 @@ fun HomeScreen(
                             indication = null,
                             interactionSource = MutableInteractionSource()
                         ) {
-                            if (mainViewModel.isCommunityScreen.value == true) {
+                            if (communityViewModel.isCommunityScreen.value == true) {
                                 openDialogCustomCommunity.value = true
                             }
-                            if (mainViewModel.isContactProvidersScreen.value == true) {
+                            if (contactYourProviderViewModel.isContactProvidersScreen.value == true) {
                                 openDialogCustomContact.value = true
                             }
                             if (yourAccountViewModel.isYourAccountScreen.value == true) {
                                 yourAccountViewModel.isEditable.value =
                                     yourAccountViewModel.isEditable.value != true
                             }
-//                            if (mainViewModel.isNotificationScreen.value == true) {
-//
-//                            }
+                            //                            if (mainViewModel.isNotificationScreen.value == true) {
+                            //
+                            //                            }
                         },
                     painter = painterResource(
                         id = when (true) {
-                            mainViewModel.isCommunityScreen.value -> {
+                            communityViewModel.isCommunityScreen.value -> {
                                 R.drawable.ic_icon_toolbar_add
                             }
-                            mainViewModel.isContactProvidersScreen.value -> {
+                            contactYourProviderViewModel.isContactProvidersScreen.value -> {
                                 R.drawable.ic_icon_toolbar_add
                             }
                             yourAccountViewModel.isYourAccountScreen.value -> {
@@ -292,6 +298,8 @@ fun HomeScreen(
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         AddCommunityDialog(
+                            homeActivity = homeActivity,
+                            communityViewModel = communityViewModel,
                             openDialogCustomCommunity,
                             tv_text_tittle = "Create Community",
                             tf_hint_tv1 = "The Happy Agency",
@@ -323,7 +331,9 @@ fun HomeScreen(
                             .wrapContentHeight(),
                         shape = RoundedCornerShape(12.dp)
                     ) {
-                        AddCommunityDialog(
+                        CreateContactDialog(
+                            homeActivity = homeActivity,
+                            contactYourProviderViewModel = contactYourProviderViewModel,
                             openDialogCustomContact,
                             tv_text_tittle = "Create Contact",
                             tf_hint_tv1 = "The Happy Agency",
@@ -353,7 +363,9 @@ fun HomeScreen(
                 bottomMilestoneViewModel = bottomMilestoneViewModel,
                 editMilestoneViewModel = editMilestoneViewModel,
                 yourAccountViewModel = yourAccountViewModel,
-                surrogateViewModel = surrogateViewModel
+                surrogateViewModel = surrogateViewModel,
+                contactYourProviderViewModel = contactYourProviderViewModel,
+                communityViewModel = communityViewModel
             )
         },
         bottomBar = {
@@ -378,15 +390,17 @@ fun HomeScreen(
 fun currentRoute(
     navController: NavHostController,
     viewModel: MainViewModel,
-    yourAccountViewModel: YourAccountViewModel
+    yourAccountViewModel: YourAccountViewModel,
+    contactYourProviderViewModel: ContactYourProviderViewModel,
+    communityViewModel: CommunityViewModel,
 ): String? {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     when (navController.currentDestination?.route) {
         BottomNavItems.Home.navRoute -> {
             viewModel.toolbarTittle = "Home"
-//            viewModel.list = viewModel.emptyList
-            viewModel.isCommunityScreen.value = false
-            viewModel.isContactProvidersScreen.value = false
+            //            viewModel.list = viewModel.emptyList
+            communityViewModel.isCommunityScreen.value = false
+            contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
@@ -398,11 +412,11 @@ fun currentRoute(
             viewModel.isSettingSubPrivacyPolicyScreen.value = false
         }
         BottomNavItems.Questions.navRoute -> {
-//            viewModel.imageList.clear()
+            //            viewModel.imageList.clear()
             viewModel.toolbarTittle = "Questions"
-//            viewModel.list = viewModel.emptyList
-            viewModel.isCommunityScreen.value = false
-            viewModel.isContactProvidersScreen.value = false
+            //            viewModel.list = viewModel.emptyList
+            communityViewModel.isCommunityScreen.value = false
+            contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
@@ -415,14 +429,14 @@ fun currentRoute(
             viewModel.isSettingSubPrivacyPolicyScreen.value = false
         }
         BottomNavItems.Milestones.navRoute -> {
-//            viewModel.imageList.clear()
-//            viewModel.listData.forEachIndexed { index, _ ->
-//                viewModel.listData[index].show = false
-//            }
+            //            viewModel.imageList.clear()
+            //            viewModel.listData.forEachIndexed { index, _ ->
+            //                viewModel.listData[index].show = false
+            //            }
             // viewModel.isSelected = false
             viewModel.toolbarTittle = "Milestones"
-            viewModel.isCommunityScreen.value = false
-            viewModel.isContactProvidersScreen.value = false
+            communityViewModel.isCommunityScreen.value = false
+            contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
@@ -435,11 +449,11 @@ fun currentRoute(
             viewModel.isSettingSubPrivacyPolicyScreen.value = false
         }
         NavDrawerItem.YourSurrogateMother.route -> {
-//            viewModel.imageList.clear()
-//            viewModel.list = viewModel.emptyList
+            //            viewModel.imageList.clear()
+            //            viewModel.list = viewModel.emptyList
             viewModel.toolbarTittle = "Your Surrogate Mother"
-            viewModel.isCommunityScreen.value = false
-            viewModel.isContactProvidersScreen.value = false
+            communityViewModel.isCommunityScreen.value = false
+            contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
@@ -452,11 +466,11 @@ fun currentRoute(
             viewModel.isSettingSubPrivacyPolicyScreen.value = false
         }
         NavDrawerItem.IntendedParents.route -> {
-//            viewModel.imageList.clear()
-//            viewModel.list = viewModel.emptyList
+            //            viewModel.imageList.clear()
+            //            viewModel.list = viewModel.emptyList
             viewModel.toolbarTittle = "Intended Parents"
-            viewModel.isCommunityScreen.value = false
-            viewModel.isContactProvidersScreen.value = false
+            communityViewModel.isCommunityScreen.value = false
+            contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
@@ -470,8 +484,8 @@ fun currentRoute(
         }
         NavDrawerItem.Community.route -> {
             viewModel.toolbarTittle = "Community"
-//            viewModel.list = viewModel.emptyList
-            viewModel.isContactProvidersScreen.value = false
+            //            viewModel.list = viewModel.emptyList
+            contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
@@ -482,12 +496,12 @@ fun currentRoute(
             viewModel.isSettingSubDetailedSettingScreen.value = false
             viewModel.isSettingSubTermsOfServiceScreen.value = false
             viewModel.isSettingSubPrivacyPolicyScreen.value = false
-            viewModel.isCommunityScreen.value = true
+            communityViewModel.isCommunityScreen.value = true
         }
         NavDrawerItem.ContactYourProviders.route -> {
             viewModel.toolbarTittle = "Contact Your Providers"
-//            viewModel.list = viewModel.emptyList
-            viewModel.isCommunityScreen.value = false
+            //            viewModel.list = viewModel.emptyList
+            communityViewModel.isCommunityScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
@@ -498,13 +512,13 @@ fun currentRoute(
             viewModel.isSettingSubDetailedSettingScreen.value = false
             viewModel.isSettingSubTermsOfServiceScreen.value = false
             viewModel.isSettingSubPrivacyPolicyScreen.value = false
-            viewModel.isContactProvidersScreen.value = true
+            contactYourProviderViewModel.isContactProvidersScreen.value = true
         }
         NavDrawerItem.Notifications.route -> {
             viewModel.toolbarTittle = "Notifications"
-//            viewModel.list = viewModel.emptyList
-            viewModel.isCommunityScreen.value = false
-            viewModel.isContactProvidersScreen.value = false
+            //            viewModel.list = viewModel.emptyList
+            communityViewModel.isCommunityScreen.value = false
+            contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
@@ -518,9 +532,9 @@ fun currentRoute(
         }
         NavDrawerItem.Settings.route -> {
             viewModel.toolbarTittle = "Settings"
-//            viewModel.list = viewModel.emptyList
-            viewModel.isCommunityScreen.value = false
-            viewModel.isContactProvidersScreen.value = false
+            //            viewModel.list = viewModel.emptyList
+            communityViewModel.isCommunityScreen.value = false
+            contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
@@ -534,10 +548,10 @@ fun currentRoute(
         }
         MyAccount.MyAccountScreen.route -> {
             viewModel.toolbarTittle = "Your Account"
-//            viewModel.list = viewModel.emptyList
-            viewModel.isCommunityScreen.value = false
+            //            viewModel.list = viewModel.emptyList
+            communityViewModel.isCommunityScreen.value = false
             viewModel.isEditable.value = false
-            viewModel.isContactProvidersScreen.value = false
+            contactYourProviderViewModel.isContactProvidersScreen.value = false
             viewModel.isAddMilestoneScreen.value = false
             viewModel.isNotificationScreen.value = false
             viewModel.isNotificationDetailsScreen.value = false
@@ -550,11 +564,11 @@ fun currentRoute(
         }
         BottomNavScreen.AddNewMileStones.route -> {
             viewModel.toolbarTittle = "Edit milestone"
-//            viewModel.list = viewModel.emptyList
+            //            viewModel.list = viewModel.emptyList
             yourAccountViewModel.isYourAccountScreen.value = false
-            viewModel.isCommunityScreen.value = false
+            communityViewModel.isCommunityScreen.value = false
             viewModel.isEditable.value = false
-            viewModel.isContactProvidersScreen.value = false
+            contactYourProviderViewModel.isContactProvidersScreen.value = false
             viewModel.isNotificationScreen.value = false
             viewModel.isNotificationDetailsScreen.value = false
             viewModel.isSettingSubAboutAppScreen.value = false
@@ -566,9 +580,9 @@ fun currentRoute(
         }
         NotificationDetailScreenRoute.NotificationDetails.route -> {
             viewModel.toolbarTittle = "Notifications"
-//            viewModel.list = viewModel.emptyList
-            viewModel.isCommunityScreen.value = false
-            viewModel.isContactProvidersScreen.value = false
+            //            viewModel.list = viewModel.emptyList
+            communityViewModel.isCommunityScreen.value = false
+            contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
@@ -582,9 +596,9 @@ fun currentRoute(
         }
         SettingSubScreen.AboutApp.route -> {
             viewModel.toolbarTittle = "About App"
-//            viewModel.list = viewModel.emptyList
-            viewModel.isCommunityScreen.value = false
-            viewModel.isContactProvidersScreen.value = false
+            //            viewModel.list = viewModel.emptyList
+            communityViewModel.isCommunityScreen.value = false
+            contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
@@ -597,9 +611,9 @@ fun currentRoute(
         }
         SettingSubScreen.DetailedSetting.route -> {
             viewModel.toolbarTittle = "Detailed Settings"
-//            viewModel.list = viewModel.emptyList
-            viewModel.isCommunityScreen.value = false
-            viewModel.isContactProvidersScreen.value = false
+            //            viewModel.list = viewModel.emptyList
+            communityViewModel.isCommunityScreen.value = false
+            contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
@@ -612,9 +626,9 @@ fun currentRoute(
         }
         SettingSubScreen.PrivacyPolicy.route -> {
             viewModel.toolbarTittle = "Privacy Policy"
-//            viewModel.list = viewModel.emptyList
-            viewModel.isCommunityScreen.value = false
-            viewModel.isContactProvidersScreen.value = false
+            //            viewModel.list = viewModel.emptyList
+            communityViewModel.isCommunityScreen.value = false
+            contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
@@ -627,9 +641,9 @@ fun currentRoute(
         }
         SettingSubScreen.TermsOfService.route -> {
             viewModel.toolbarTittle = "Terms of Service"
-//            viewModel.list = viewModel.emptyList
-            viewModel.isCommunityScreen.value = false
-            viewModel.isContactProvidersScreen.value = false
+            //            viewModel.list = viewModel.emptyList
+            communityViewModel.isCommunityScreen.value = false
+            contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
@@ -649,7 +663,7 @@ fun NavigationDrawerContent(
     scaffoldState: ScaffoldState,
     scope: CoroutineScope,
     context: Context,
-    homeActivity: HomeActivity
+    homeActivity: HomeActivity,
 ) {
     val provider = PreferenceProvider(context)
     val type = provider.getValue("type", "")
@@ -882,7 +896,7 @@ fun BottomNavigation(navController: NavController, viewModel: MainViewModel) {
                                 saveState = true
                             }
                             launchSingleTop = true
-//                            restoreState = true
+                            //                            restoreState = true
                         }
                     },
                 )

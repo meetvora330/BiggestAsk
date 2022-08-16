@@ -28,25 +28,28 @@ class HomeActivity : BaseActivity() {
     private val bottomMilestoneViewModel: BottomMilestoneViewModel by viewModels()
     private val editMilestoneViewModel: EditMilestoneViewModel by viewModels()
     private val yourAccountViewModel: YourAccountViewModel by viewModels()
+    private val contactYourProviderViewModel: ContactYourProviderViewModel by viewModels()
+    private val communityViewModel: CommunityViewModel by viewModels()
     private val surrogateViewModel: YourSurrogateViewModel by viewModels()
-    val permissionReqLauncher =
+
+    private val permissionReqLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { it ->
             when {
                 it -> {
                     launcher?.launch("image/*")
-                    yourAccountViewModel.isPermissionAllowed = false
-                    editMilestoneViewModel.isPermissionAllowed.value = false
+                    communityViewModel.isPermissionAllowed = false
+                    contactYourProviderViewModel.isPermissionAllowed = false
                 }
                 ActivityCompat.shouldShowRequestPermissionRationale(
                     this,
                     Manifest.permission.READ_EXTERNAL_STORAGE
                 ) -> {
-                    yourAccountViewModel.isPermissionAllowed = false
-                    editMilestoneViewModel.isPermissionAllowed.value = false
+                    communityViewModel.isPermissionAllowed = false
+                    contactYourProviderViewModel.isPermissionAllowed = false
                 }
                 else -> {
-                    yourAccountViewModel.isPermissionAllowed = true
-                    editMilestoneViewModel.isPermissionAllowed.value = true
+                    communityViewModel.isPermissionAllowed = true
+                    contactYourProviderViewModel.isPermissionAllowed = true
                 }
             }
         }
@@ -57,6 +60,7 @@ class HomeActivity : BaseActivity() {
             Manifest.permission.READ_EXTERNAL_STORAGE
         )
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,6 +89,8 @@ class HomeActivity : BaseActivity() {
                     bottomMilestoneViewModel = bottomMilestoneViewModel,
                     editMilestoneViewModel = editMilestoneViewModel,
                     yourAccountViewModel = yourAccountViewModel,
+                    contactYourProviderViewModel = contactYourProviderViewModel,
+                    communityViewModel = communityViewModel,
                     surrogateViewModel = surrogateViewModel
                 )
             }

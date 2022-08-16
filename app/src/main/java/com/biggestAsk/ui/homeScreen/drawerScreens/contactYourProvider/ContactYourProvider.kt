@@ -1,5 +1,7 @@
 package com.biggestAsk.ui.homeScreen.drawerScreens.contactYourProvider
 
+import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -9,23 +11,39 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberImagePainter
+import com.biggestAsk.data.model.request.GetContactRequest
+import com.biggestAsk.data.model.response.GetContactResponse
+import com.biggestAsk.data.source.network.NetworkResult
+import com.biggestAsk.ui.HomeActivity
+import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
+import com.biggestAsk.ui.main.viewmodel.ContactYourProviderViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
+import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 
 @Composable
-fun ContactYourProvider(modifier: Modifier = Modifier) {
+fun ContactYourProvider(
+    homeActivity: HomeActivity,
+    contactYourProviderViewModel: ContactYourProviderViewModel,
+) {
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val type = PreferenceProvider(context).getValue("type", "")
+    val userId = PreferenceProvider(context).getIntValue("user_id", 0)
     LaunchedEffect(Unit) {
-
+        getUpdatedContact(type!!, userId, contactYourProviderViewModel, context, homeActivity)
     }
     Column(
         modifier = Modifier
@@ -35,7 +53,7 @@ fun ContactYourProvider(modifier: Modifier = Modifier) {
                 rememberScrollState()
             )
     ) {
-        ListContactProviders.forEach { item ->
+        contactYourProviderViewModel.contactList.forEach { item ->
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -47,12 +65,17 @@ fun ContactYourProvider(modifier: Modifier = Modifier) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                     ) {
+                        val painter = rememberImagePainter(
+                            item.image,
+                            builder = {
+                                placeholder(R.drawable.ic_placeholder_your_account)
+                            })
                         Image(
                             modifier = Modifier
                                 .width(48.dp)
                                 .height(48.dp)
                                 .padding(top = 16.dp, start = 16.dp),
-                            painter = painterResource(id = item.AIcon),
+                            painter = painter,
                             contentDescription = "",
                         )
                         Column(modifier = Modifier.padding(start = 16.dp)) {
@@ -66,14 +89,14 @@ fun ContactYourProvider(modifier: Modifier = Modifier) {
                             )
                             Text(
                                 modifier = Modifier.padding(top = 16.dp),
-                                text = item.ATvRepName,
+                                text = "Agency rep name",
                                 style = MaterialTheme.typography.body1,
                                 fontSize = 14.sp,
                                 color = Color(0xFF8995A3)
                             )
                             Text(
                                 modifier = Modifier.padding(top = 3.dp),
-                                text = item.ARepName,
+                                text = item.agency_name,
                                 style = MaterialTheme.typography.body1,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.W600,
@@ -82,14 +105,14 @@ fun ContactYourProvider(modifier: Modifier = Modifier) {
                             )
                             Text(
                                 modifier = Modifier.padding(top = 16.dp),
-                                text = item.ATvRepEmail,
+                                text = "Agency email",
                                 style = MaterialTheme.typography.body1,
                                 fontSize = 14.sp,
                                 color = Color(0xFF8995A3)
                             )
                             Text(
                                 modifier = Modifier.padding(top = 3.dp),
-                                text = item.ARepEmail,
+                                text = item.agency_email,
                                 style = MaterialTheme.typography.body1,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.W600,
@@ -98,14 +121,14 @@ fun ContactYourProvider(modifier: Modifier = Modifier) {
                             )
                             Text(
                                 modifier = Modifier.padding(top = 16.dp),
-                                text = item.TvRepPhone,
+                                text = "Agency phone number",
                                 style = MaterialTheme.typography.body1,
                                 fontSize = 14.sp,
                                 color = Color(0xFF8995A3)
                             )
                             Text(
                                 modifier = Modifier.padding(top = 3.dp),
-                                text = item.APhoneNumber,
+                                text = item.agency_number,
                                 style = MaterialTheme.typography.body1,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.W600,
@@ -182,12 +205,70 @@ fun ContactYourProvider(modifier: Modifier = Modifier) {
         }
 
     }
+    if (contactYourProviderViewModel.isLoading) {
+
+        ProgressBarTransparentBackground("Loading...")
+    }
+
 }
 
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun ContactYourProviderPreview() {
-    ContactYourProvider(
-        modifier = Modifier
-    )
+fun getUpdatedContact(
+    type: String,
+    user_id: Int,
+    contactYourProviderViewModel: ContactYourProviderViewModel,
+    context: Context,
+    homeActivity: HomeActivity,
+) {
+    contactYourProviderViewModel.getContact(getContactRequest = GetContactRequest(
+        type = type,
+        user_id = user_id
+    ))
+
+    contactYourProviderViewModel.getContactResponse.observe(homeActivity) {
+        if (it != null) {
+            handleGetContactApi(
+                result = it,
+                contactYourProviderViewModel = contactYourProviderViewModel,
+                type = type,
+                user_id = user_id,
+                context = context,
+                homeActivity = homeActivity
+            )
+        } else {
+            Log.e("TAG", "GetContactData is null: ")
+        }
+    }
 }
+
+private fun handleGetContactApi(
+    result: NetworkResult<GetContactResponse>,
+    contactYourProviderViewModel: ContactYourProviderViewModel,
+    type: String,
+    user_id: Int,
+    context: Context,
+    homeActivity: HomeActivity,
+) {
+    when (result) {
+        is NetworkResult.Loading -> {
+            // show a progress bar
+            contactYourProviderViewModel.isLoading = true
+        }
+        is NetworkResult.Success -> {
+            // bind data to the view
+            contactYourProviderViewModel.isLoading = false
+            contactYourProviderViewModel.contactList = result.data!!.data.toMutableStateList()
+        }
+        is NetworkResult.Error -> {
+            //show error message
+            contactYourProviderViewModel.isLoading = false
+        }
+    }
+}
+
+//@Preview(showSystemUi = true, showBackground = true)
+//@Composable
+//fun ContactYourProviderPreview() {
+//    ContactYourProvider(
+//        modifier = Modifier
+//    )
+//}

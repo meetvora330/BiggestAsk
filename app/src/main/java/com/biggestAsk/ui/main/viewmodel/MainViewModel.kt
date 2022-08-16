@@ -26,7 +26,7 @@ class MainViewModel : ViewModel() {
     val isCommunityScreen: MutableLiveData<Boolean> = MutableLiveData(false)
 
     //Contact Providers Screen
-    val isContactProvidersScreen: MutableLiveData<Boolean> = MutableLiveData(false)
+
 
     //Add New Community Screen
     val communityTittle: MutableLiveData<String> = MutableLiveData("")

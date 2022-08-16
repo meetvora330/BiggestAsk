@@ -98,7 +98,10 @@ interface ApiService {
 
 
     @POST(Constants.GET_USER_DETAIL)
-    suspend fun getUserDetails(@Body user: GetUserDetailsRequest): Response<GetUserDetailsResponse>
+    suspend fun getUserDetailsSurrogate(@Body user: GetUserDetailsSurrogateRequest): Response<GetUserDetailsSurrogateResponse>
+
+    @POST(Constants.GET_USER_DETAIL)
+    suspend fun getUserDetailsParent(@Body user: GetUserDetailsParentRequest): Response<GetUserDetailsParentResponse>
 
     @Multipart
     @POST(Constants.USER_PROFILE_UPDATE + "{id}")
@@ -115,6 +118,42 @@ interface ApiService {
         @Part imgFileName2: MultipartBody.Part?,
         @Part type: MultipartBody.Part?,
     ): Response<UpdateUserProfileResponse>
+
+    @Multipart
+    @POST(Constants.CREATE_CONTACT)
+    suspend fun createContact(
+        @Part title: MultipartBody.Part?,
+        @Part agency_name: MultipartBody.Part?,
+        @Part agency_email: MultipartBody.Part?,
+        @Part agency_number: MultipartBody.Part?,
+        @Part image: MultipartBody.Part?,
+        @Part user_id: MultipartBody.Part?,
+        @Part type: MultipartBody.Part?,
+    ): Response<CreateContactResponse>
+
+    @GET(Constants.GET_CONTACT)
+    suspend fun getContact(
+        @Query("type") type: String,
+        @Query("user_id") user_id: Int
+    ): Response<GetContactResponse>
+
+    @GET(Constants.GET_COMMUNITY)
+    suspend fun getCommunity(
+        @Query("type") type: String,
+        @Query("user_id") user_id: Int
+    ): Response<GetCommunityResponse>
+
+    @Multipart
+    @POST(Constants.CREATE_COMMUNITY)
+    suspend fun createCommunity(
+        @Part title: MultipartBody.Part?,
+        @Part description: MultipartBody.Part?,
+        @Part forum_link: MultipartBody.Part?,
+        @Part insta_link: MultipartBody.Part?,
+        @Part image: MultipartBody.Part?,
+        @Part user_id: MultipartBody.Part?,
+        @Part type: MultipartBody.Part?,
+    ): Response<CreateCommunityResponse>
 
     @Multipart
     @POST(Constants.STORE_MILESTONE_ANS)

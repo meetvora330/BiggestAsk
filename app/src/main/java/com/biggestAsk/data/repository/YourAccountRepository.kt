@@ -1,8 +1,10 @@
 package com.biggestAsk.data.repository
 
 import android.content.Context
-import com.biggestAsk.data.model.request.GetUserDetailsRequest
-import com.biggestAsk.data.model.response.GetUserDetailsResponse
+import com.biggestAsk.data.model.request.GetUserDetailsParentRequest
+import com.biggestAsk.data.model.request.GetUserDetailsSurrogateRequest
+import com.biggestAsk.data.model.response.GetUserDetailsParentResponse
+import com.biggestAsk.data.model.response.GetUserDetailsSurrogateResponse
 import com.biggestAsk.data.model.response.UpdateUserProfileResponse
 import com.biggestAsk.data.source.network.ApiService
 import com.biggestAsk.data.source.network.BaseApiResponse
@@ -22,9 +24,15 @@ class YourAccountRepository @Inject constructor(
     private val apiService: ApiService, @ApplicationContext context: Context,
 ) : BaseApiResponse(context) {
 
-    suspend fun getUserDetails(getUserDetailsRequest: GetUserDetailsRequest): Flow<NetworkResult<GetUserDetailsResponse>> {
+    suspend fun getUserDetailsSurrogate(getUserDetailsSurrogateRequest: GetUserDetailsSurrogateRequest): Flow<NetworkResult<GetUserDetailsSurrogateResponse>> {
         return flow {
-            emit(safeApiCall { apiService.getUserDetails(getUserDetailsRequest) })
+            emit(safeApiCall { apiService.getUserDetailsSurrogate(getUserDetailsSurrogateRequest) })
+        }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun getUserDetailsParent(getUserDetailsParentRequest: GetUserDetailsParentRequest): Flow<NetworkResult<GetUserDetailsParentResponse>> {
+        return flow {
+            emit(safeApiCall { apiService.getUserDetailsParent(getUserDetailsParentRequest) })
         }.flowOn(Dispatchers.IO)
     }
 

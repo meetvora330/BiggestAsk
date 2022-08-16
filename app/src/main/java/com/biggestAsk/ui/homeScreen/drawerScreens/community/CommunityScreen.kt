@@ -1,24 +1,46 @@
 package com.biggestAsk.ui.homeScreen.drawerScreens.community
 
+import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberImagePainter
+import com.biggestAsk.data.model.request.GetCommunityRequest
+import com.biggestAsk.data.model.response.GetCommunityResponse
+import com.biggestAsk.data.source.network.NetworkResult
+import com.biggestAsk.ui.HomeActivity
+import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
+import com.biggestAsk.ui.main.viewmodel.CommunityViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
+import com.biggestAsk.util.PreferenceProvider
+import com.example.biggestAsk.R
 
 @Composable
-fun Community() {
+fun Community(
+    communityViewModel: CommunityViewModel,
+    homeActivity: HomeActivity,
+) {
+    val context = LocalContext.current
+    val type = PreferenceProvider(context).getValue("type", "")
+    val userId = PreferenceProvider(context).getIntValue("user_id", 0)
+    LaunchedEffect(Unit) {
+        getUpdatedCommunity(type!!, userId, communityViewModel = communityViewModel, homeActivity)
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -31,7 +53,7 @@ fun Community() {
             modifier = Modifier
                 .padding(top = 24.dp, bottom = 55.dp)
         ) {
-            listCommunity.forEach { item ->
+            communityViewModel.communityList.forEach { item ->
                 Surface(
                     shape = RoundedCornerShape(14.dp),
                     color = Color.White,
@@ -49,15 +71,24 @@ fun Community() {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                         ) {
+                            val painter = rememberImagePainter(
+                                data = item.image,
+                                builder = {
+                                    placeholder(R.drawable.ic_placeholder_your_account)
+                                })
                             Image(
-                                modifier = Modifier.padding(top = 16.dp, start = 16.dp),
-                                painter = painterResource(id = item.cIcon),
-                                contentDescription = "",
+                                modifier = Modifier
+                                    .width(48.dp)
+                                    .height(48.dp)
+                                    .padding(top = 16.dp, start = 16.dp).clip(RoundedCornerShape(10.dp)),
+                                contentScale = ContentScale.Crop,
+                                painter = painter,
+                                contentDescription = ""
                             )
                             Column(modifier = Modifier.padding(start = 16.dp)) {
                                 Text(
                                     modifier = Modifier.padding(top = 16.dp),
-                                    text = item.cTittle,
+                                    text = item.title,
                                     style = MaterialTheme.typography.body1,
                                     fontSize = 16.sp,
                                     fontWeight = FontWeight.W600,
@@ -65,7 +96,7 @@ fun Community() {
                                 )
                                 Text(
                                     modifier = Modifier.padding(top = 8.dp),
-                                    text = item.cDescription,
+                                    text = item.description,
                                     style = MaterialTheme.typography.body1,
                                     fontSize = 14.sp,
                                     color = Color(0xFF8995A3)
@@ -103,7 +134,7 @@ fun Community() {
                                 colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)
                             ) {
                                 Text(
-                                    text = item.btn1Text,
+                                    text = "Instagram",
                                     style = MaterialTheme.typography.body1,
                                     fontWeight = FontWeight.W600,
                                     fontSize = 16.sp,
@@ -125,7 +156,7 @@ fun Community() {
                                 colors = ButtonDefaults.buttonColors(backgroundColor = Custom_Blue)
                             ) {
                                 Text(
-                                    text = item.btn2Text,
+                                    text = "To Forum",
                                     style = MaterialTheme.typography.body1,
                                     fontWeight = FontWeight.W600,
                                     fontSize = 16.sp,
@@ -139,11 +170,57 @@ fun Community() {
             }
         }
     }
+    if (communityViewModel.isLoading) {
+        ProgressBarTransparentBackground("Loading...")
+    }
 }
 
+fun getUpdatedCommunity(
+    type: String,
+    user_id: Int,
+    communityViewModel: CommunityViewModel,
+    homeActivity: HomeActivity,
+) {
+    communityViewModel.getCommunity(getCommunityRequest = GetCommunityRequest(
+        type = type,
+        user_id = user_id
+    ))
 
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun CommunityPreview() {
-    Community()
+    communityViewModel.getCommunityResponse.observe(homeActivity) {
+        if (it != null) {
+            handleGetCommunityApi(
+                result = it,
+                communityViewModel = communityViewModel
+            )
+        } else {
+            Log.e("TAG", "GetCommunityData is null: ")
+        }
+    }
 }
+
+private fun handleGetCommunityApi(
+    result: NetworkResult<GetCommunityResponse>,
+    communityViewModel: CommunityViewModel,
+) {
+    when (result) {
+        is NetworkResult.Loading -> {
+            // show a progress bar
+            communityViewModel.isLoading = true
+        }
+        is NetworkResult.Success -> {
+            // bind data to the view
+            communityViewModel.isLoading = false
+            communityViewModel.communityList = result.data!!.data.toMutableStateList()
+        }
+        is NetworkResult.Error -> {
+            //show error message
+            communityViewModel.isLoading = false
+        }
+    }
+}
+
+//@Preview(showSystemUi = true, showBackground = true)
+//@Composable
+//fun CommunityPreview() {
+//    Community()
+//}
