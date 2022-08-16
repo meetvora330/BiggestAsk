@@ -21,6 +21,7 @@ import com.biggestAsk.ui.homeScreen.drawerScreens.intendParents.IntendParentsScr
 import com.biggestAsk.ui.homeScreen.drawerScreens.notification.*
 import com.biggestAsk.ui.homeScreen.drawerScreens.settingScreens.*
 import com.biggestAsk.ui.homeScreen.drawerScreens.yourAccount.YourAccountScreen
+import com.biggestAsk.ui.homeScreen.drawerScreens.yourAccount.YourAccountScreenTemp
 import com.biggestAsk.ui.homeScreen.drawerScreens.yourSurrogateMother.SurrogateParentNotAssignScreen
 import com.biggestAsk.ui.homeScreen.drawerScreens.yourSurrogateMother.YourSurrogateMother
 import com.biggestAsk.ui.main.viewmodel.*
@@ -195,8 +196,15 @@ fun BottomNavigationDrawerGraph(
             YourAccountScreen(
                 navHostController = navHostController,
                 yourAccountViewModel = yourAccountViewModel,
-                homeActivity = homeActivity
+                homeActivity = homeActivity,
+                context = context
             )
+//            YourAccountScreenTemp(
+//                navHostController = navHostController,
+//                yourAccountViewModel = yourAccountViewModel,
+//                homeActivity = homeActivity,
+//                context = context
+//            )
         }
 
     }

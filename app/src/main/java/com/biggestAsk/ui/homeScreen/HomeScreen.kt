@@ -5,6 +5,7 @@ package com.biggestAsk.ui.homeScreen
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -332,6 +333,7 @@ fun HomeScreen(
                             if (yourAccountViewModel.isYourAccountScreen.value == true) {
                                 yourAccountViewModel.isEditable.value =
                                     yourAccountViewModel.isEditable.value != true
+                                Log.d("TAG", "HomeScreen: isEditable ${yourAccountViewModel.isEditable.value}")
                             }
                             if (notificationViewModel.isNotificationScreen.value == true) {
 //                                if (notificationViewModel.searchText != ""){

@@ -1,6 +1,13 @@
 package com.biggestAsk.ui.main.viewmodel
 
 import android.app.Application
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -15,14 +22,13 @@ import com.biggestAsk.data.model.response.GetUserDetailsSurrogateResponse
 import com.biggestAsk.data.model.response.UpdateUserProfileResponse
 import com.biggestAsk.data.repository.YourAccountRepository
 import com.biggestAsk.data.source.network.NetworkResult
+import com.biggestAsk.util.PathUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 import javax.inject.Inject
 
-/**
- * Created by Abhin.
- */
+
 @HiltViewModel
 class YourAccountViewModel @Inject constructor(
     private val yourAccountRepository: YourAccountRepository,
@@ -34,6 +40,10 @@ class YourAccountViewModel @Inject constructor(
     var isRational: Boolean by mutableStateOf(false)
     var isEditable: MutableState<Boolean> = mutableStateOf(false)
     val isYourAccountScreen: MutableLiveData<Boolean> = MutableLiveData(false)
+    val bitmap = mutableStateOf<Bitmap?>(null)
+    var imageData: Uri? = (null)
+    var uriPath: String? = ""
+    val isImagePresent = mutableStateOf(false)
 
     //  surrogate
     var textEmailVerify: String by mutableStateOf("")
@@ -55,7 +65,7 @@ class YourAccountViewModel @Inject constructor(
     var yourAccountPasswordEmpty: Boolean by mutableStateOf(false)
     var getUserDetailResponseSurrogate: MutableLiveData<NetworkResult<GetUserDetailsSurrogateResponse>> =
         MutableLiveData()
-    private var updateUserProfileResponse: MutableLiveData<NetworkResult<UpdateUserProfileResponse>> =
+    var updateUserProfileResponse: MutableLiveData<NetworkResult<UpdateUserProfileResponse>> =
         MutableLiveData()
     var isSurrogateApiCalled: Boolean by mutableStateOf(false)
 
@@ -90,6 +100,24 @@ class YourAccountViewModel @Inject constructor(
         viewModelScope.launch {
             yourAccountRepository.getUserDetailsParent(getUserDetailsRequestParent).collect {
                 getUserDetailResponseParent.value = it
+            }
+        }
+    }
+
+    fun getImage(context: Context) {
+        viewModelScope.launch {
+            imageData.let {
+                val uri = it
+                Log.e("uri", "AddCommunityDialog: $uri")
+                uriPath = uri?.let { it1 -> PathUtil.getPath(context, it1) }
+                Log.e("uriPath", "AddCommunityDialog: $uriPath")
+                if (Build.VERSION.SDK_INT < 28) {
+                    bitmap.value = MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+                } else {
+                    val source =
+                        uri?.let { it1 -> ImageDecoder.createSource(context.contentResolver, it1) }
+                    bitmap.value = source?.let { it1 -> ImageDecoder.decodeBitmap(it1) }
+                }
             }
         }
     }

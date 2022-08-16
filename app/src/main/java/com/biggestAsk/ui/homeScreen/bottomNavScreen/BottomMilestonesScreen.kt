@@ -50,6 +50,7 @@ import com.biggestAsk.data.model.response.GetMilestoneResponse
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.ui.HomeActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
+import com.biggestAsk.ui.homeScreen.ClearRippleTheme
 //import com.biggestAsk.ui.homeScreen.ClearRippleTheme
 import com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph.BottomNavScreen
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer.MilestoneScreenShimmerAnimation
@@ -687,7 +688,7 @@ fun MilestonesScreen(
                                 ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
                                     val (card_main, img_select) = createRefs()
                                     CompositionLocalProvider(
-//                                        LocalRippleTheme provides ClearRippleTheme
+                                        LocalRippleTheme provides ClearRippleTheme
                                     ) {
                                         Image(
                                             modifier = Modifier
