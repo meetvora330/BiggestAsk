@@ -191,8 +191,7 @@ fun BottomNavigationDrawerGraph(
             YourAccountScreen(
                 navHostController = navHostController,
                 yourAccountViewModel = yourAccountViewModel,
-                homeActivity = homeActivity,
-                context = context
+                homeActivity = homeActivity
             )
         }
 
