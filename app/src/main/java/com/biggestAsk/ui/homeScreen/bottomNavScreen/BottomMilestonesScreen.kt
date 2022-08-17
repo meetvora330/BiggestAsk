@@ -938,7 +938,7 @@ fun MilestonesScreen(
                                                 openDialogResetMilestone = openDialogReset,
                                                 tittle = R.string.are_you_sure_reset_milestone,
                                                 milestoneViewModel = milestoneViewModel,
-                                                homeActivity = homeActivity
+                                                homeActivity = homeActivity,
                                             )
                                         }
                                     }

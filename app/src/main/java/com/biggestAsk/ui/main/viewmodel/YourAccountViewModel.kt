@@ -42,7 +42,7 @@ class YourAccountViewModel @Inject constructor(
     val isYourAccountScreen: MutableLiveData<Boolean> = MutableLiveData(false)
     val bitmap = mutableStateOf<Bitmap?>(null)
     var imageData: Uri? = (null)
-    var uriPath: String? = ""
+    var uriPath: String? = null
     val isImagePresent = mutableStateOf(false)
 
     //  surrogate
@@ -85,7 +85,6 @@ class YourAccountViewModel @Inject constructor(
     var isParentApiCalled: Boolean by mutableStateOf(false)
 
 
-
     fun getUserDetailsSurrogate(getUserDetailsRequestSurrogate: GetUserDetailsSurrogateRequest) {
         getUserDetailResponseSurrogate.value = NetworkResult.Loading()
         viewModelScope.launch {
@@ -126,7 +125,6 @@ class YourAccountViewModel @Inject constructor(
         userId: Int,
         name: MultipartBody.Part,
         email: MultipartBody.Part,
-        password: MultipartBody.Part,
         number: MultipartBody.Part,
         address: MultipartBody.Part,
         dateOfBirth: MultipartBody.Part,
@@ -141,14 +139,14 @@ class YourAccountViewModel @Inject constructor(
                 userId,
                 name,
                 email,
-                password,
                 number,
                 address,
                 dateOfBirth,
                 partnerName,
                 imgFileName1,
                 imgFileName2,
-                type).collect {
+                type
+            ).collect {
                 updateUserProfileResponse.value = it
             }
         }

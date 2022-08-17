@@ -109,7 +109,6 @@ interface ApiService {
         @Path(Constants.ID) userId: Int?,
         @Part name: MultipartBody.Part?,
         @Part email: MultipartBody.Part?,
-        @Part password: MultipartBody.Part?,
         @Part number: MultipartBody.Part?,
         @Part address: MultipartBody.Part?,
         @Part date_of_birth: MultipartBody.Part?,

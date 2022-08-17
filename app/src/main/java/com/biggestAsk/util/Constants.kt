@@ -58,7 +58,7 @@ object Constants {
     const val STORE_BASE_SCREEN_QUESTION_ANS = "store_question_ans"
     const val STORE_ANS_IMPORTANT_QUESTION = "store_ans_important_question"
 
-    //prefrence data
+    //preference data
     const val LOGIN_STATUS = "login_status"
     const val IS_INTRO_DONE = "isIntroDone"
     const val USER_LOGOUT = "user_logout"

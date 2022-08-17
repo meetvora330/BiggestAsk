@@ -12,6 +12,7 @@
     <string name="ask_surrogate">Ask Surrogate</string>
     <string name="reset_milestone">Reset milestones</string>
     <string name="are_you_sure_reset_milestone">You sure you want to Reset all\nmilestones?</string>
+    <string name="are_you_sure_you_want_to_logout">Are you sure you want to logout?</string>
     <string name="negative_btn_text">No</string>
     <string name="positive_btn_text">Yes</string>
     <string name="reset_milestone_success_message">All Milestone Reset Successfully</string>

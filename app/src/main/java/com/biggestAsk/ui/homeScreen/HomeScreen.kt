@@ -50,6 +50,7 @@ import com.biggestAsk.ui.homeScreen.drawerScreens.community.AddCommunityDialog
 import com.biggestAsk.ui.homeScreen.drawerScreens.contactYourProvider.CreateContactDialog
 import com.biggestAsk.ui.homeScreen.drawerScreens.notification.NotificationDetailScreenRoute
 import com.biggestAsk.ui.homeScreen.drawerScreens.settingScreens.SettingSubScreen
+import com.biggestAsk.ui.homeScreen.drawerScreens.yourAccount.LogoutDialog
 import com.biggestAsk.ui.introScreen.findActivity
 import com.biggestAsk.ui.main.viewmodel.*
 import com.biggestAsk.ui.ui.theme.Custom_Blue
@@ -366,7 +367,7 @@ fun HomeScreen(
                         }
                     ),
                     contentDescription = "",
-                    tint = if (mainViewModel.isEditable.value) Custom_Blue else Color.Black
+                    tint = if (yourAccountViewModel.isEditable.value) Custom_Blue else Color.Black
                 )
             }
             if (openDialogCustomCommunity.value) {
@@ -746,6 +747,7 @@ fun currentRoute(
     return navBackStackEntry?.arguments?.getString(Constants.COMMUNITY_TITTLE)
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun NavigationDrawerContent(
     navController: NavHostController,
@@ -765,6 +767,7 @@ fun NavigationDrawerContent(
         NavDrawerItem.Notifications,
         NavDrawerItem.Settings
     )
+    val openLogoutDialog = remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
             .padding(start = 24.dp, top = 40.dp)
@@ -904,20 +907,36 @@ fun NavigationDrawerContent(
                 modifier = Modifier
                     .padding(start = 16.dp, bottom = 3.dp)
                     .clickable(indication = null, interactionSource = MutableInteractionSource()) {
-                        PreferenceProvider(context).setValue(Constants.USER_LOGOUT, true)
-                        val intent = Intent(homeActivity, MainActivity::class.java)
-                        context.startActivity(intent)
-                        context
-                            .findActivity()
-                            ?.finish()
-                        PreferenceProvider(context).clear()
-                        PreferenceProvider(context).setValue(Constants.IS_INTRO_DONE, true)
+                     openLogoutDialog.value = true
                     },
                 text = stringResource(id = R.string.log_out),
                 style = MaterialTheme.typography.body1,
                 fontSize = 16.sp,
                 color = Color.Black
             )
+        }
+        if (openLogoutDialog.value) {
+            Dialog(
+                onDismissRequest = { openLogoutDialog.value = false },
+                properties = DialogProperties(
+                    dismissOnBackPress = true,
+                    dismissOnClickOutside = false,
+                    usePlatformDefaultWidth = true,
+                )
+            ) {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp),
+                    shape = RoundedCornerShape(10.dp)
+                ) {
+                    LogoutDialog(
+                        openLogoutDialog = openLogoutDialog,
+                        context = context,
+                        homeActivity = homeActivity
+                    )
+                }
+            }
         }
     }
 }
