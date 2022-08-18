@@ -41,6 +41,7 @@ class HomeActivity : BaseActivity() {
                 it -> {
                     launcher?.launch(Constants.IMAGE_LAUNCHER)
                     communityViewModel.isPermissionAllowed = false
+                    yourAccountViewModel.isPermissionAllowed = false
                     contactYourProviderViewModel.isPermissionAllowed = false
                 }
                 ActivityCompat.shouldShowRequestPermissionRationale(
@@ -48,10 +49,12 @@ class HomeActivity : BaseActivity() {
                     Manifest.permission.READ_EXTERNAL_STORAGE
                 ) -> {
                     communityViewModel.isPermissionAllowed = false
+                    yourAccountViewModel.isPermissionAllowed = false
                     contactYourProviderViewModel.isPermissionAllowed = false
                 }
                 else -> {
                     communityViewModel.isPermissionAllowed = true
+                    yourAccountViewModel.isPermissionAllowed = true
                     contactYourProviderViewModel.isPermissionAllowed = true
                 }
             }

@@ -3,6 +3,7 @@ package com.biggestAsk.data.repository
 import android.content.Context
 import com.biggestAsk.data.model.request.GetUserDetailsParentRequest
 import com.biggestAsk.data.model.request.GetUserDetailsSurrogateRequest
+import com.biggestAsk.data.model.response.GetIntendedProfileResponse
 import com.biggestAsk.data.model.response.GetUserDetailsParentResponse
 import com.biggestAsk.data.model.response.GetUserDetailsSurrogateResponse
 import com.biggestAsk.data.model.response.UpdateUserProfileResponse
@@ -62,6 +63,14 @@ class YourAccountRepository @Inject constructor(
                     imgFileName2,
                     type
                 )
+            })
+        }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun getIntendedParentProfile(type:String,user_id:Int):Flow<NetworkResult<GetIntendedProfileResponse>>{
+        return flow<NetworkResult<GetIntendedProfileResponse>> {
+            emit(safeApiCall {
+                apiService.getIntendedParentProfile(type = type, user_id = user_id)
             })
         }.flowOn(Dispatchers.IO)
     }

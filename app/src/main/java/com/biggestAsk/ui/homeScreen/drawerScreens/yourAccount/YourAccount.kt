@@ -2,8 +2,10 @@ package com.biggestAsk.ui.homeScreen.drawerScreens.yourAccount
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.provider.Settings
 import android.text.TextUtils
 import android.util.Log
 import android.util.Patterns
@@ -44,13 +46,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.constraintlayout.compose.ChainStyle
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.biggestAsk.data.model.request.GetUserDetailsParentRequest
 import com.biggestAsk.data.model.request.GetUserDetailsSurrogateRequest
+import com.biggestAsk.data.model.response.GetIntendedProfileResponse
 import com.biggestAsk.data.model.response.GetUserDetailsParentResponse
 import com.biggestAsk.data.model.response.GetUserDetailsSurrogateResponse
 import com.biggestAsk.data.model.response.UpdateUserProfileResponse
@@ -120,6 +122,9 @@ fun YourAccountScreen(
                 Log.e("TAG", "YourAccountScreen: no surrogate no parent")
             }
         }
+        if (type != null) {
+            getIntendedProfile(userId, type, homeActivity, yourAccountViewModel)
+        }
     }
     val openLogoutDialog = remember { mutableStateOf(false) }
     val launcher = rememberLauncherForActivityResult(
@@ -167,7 +172,7 @@ fun YourAccountScreen(
                                         top.linkTo(parent.top)
                                     }
                                     .placeholder(
-                                        visible = yourAccountViewModel.isLoading,
+                                        visible = yourAccountViewModel.isSurrogateDataLoading,
                                         color = Color.LightGray,
                                         shape = RoundedCornerShape(4.dp),
                                         highlight = PlaceholderHighlight.shimmer(
@@ -224,18 +229,20 @@ fun YourAccountScreen(
                                     indication = null,
                                     interactionSource = MutableInteractionSource()
                                 ) {
-                                    if (ActivityCompat.checkSelfPermission(
-                                            homeActivity,
-                                            Manifest.permission.READ_EXTERNAL_STORAGE
-                                        ) != PackageManager.PERMISSION_GRANTED
-                                    ) {
-                                        homeActivity.callPermissionRequestLauncher(launcher)
-                                        yourAccountViewModel.isPermissionAllowed =
-                                            false
-                                    } else {
-                                        launcher.launch("image/*")
-                                        yourAccountViewModel.isPermissionAllowed =
-                                            false
+                                    if (yourAccountViewModel.isEditable.value) {
+                                        if (ActivityCompat.checkSelfPermission(
+                                                homeActivity,
+                                                Manifest.permission.READ_EXTERNAL_STORAGE
+                                            ) != PackageManager.PERMISSION_GRANTED
+                                        ) {
+                                            homeActivity.callPermissionRequestLauncher(launcher)
+                                            yourAccountViewModel.isPermissionAllowed =
+                                                false
+                                        } else {
+                                            launcher.launch("image/*")
+                                            yourAccountViewModel.isPermissionAllowed =
+                                                false
+                                        }
                                     }
                                 },
                             painter = painterResource(id = R.drawable.ic_icon_camera_edit_img_your_account),
@@ -729,7 +736,7 @@ fun YourAccountScreen(
                                     modifier = Modifier
                                         .wrapContentWidth()
                                         .placeholder(
-                                            visible = yourAccountViewModel.isLoading,
+                                            visible = yourAccountViewModel.isSurrogateDataLoading,
                                             color = Color.LightGray,
                                             shape = RoundedCornerShape(4.dp),
                                             highlight = PlaceholderHighlight.shimmer(
@@ -759,7 +766,7 @@ fun YourAccountScreen(
                                             .wrapContentWidth()
                                             .padding(end = 2.dp)
                                             .placeholder(
-                                                visible = yourAccountViewModel.isLoading,
+                                                visible = yourAccountViewModel.isSurrogateDataLoading,
                                                 color = Color.LightGray,
                                                 shape = RoundedCornerShape(4.dp),
                                                 highlight = PlaceholderHighlight.shimmer(
@@ -778,7 +785,7 @@ fun YourAccountScreen(
                                         modifier = Modifier
                                             .wrapContentWidth()
                                             .placeholder(
-                                                visible = yourAccountViewModel.isLoading,
+                                                visible = yourAccountViewModel.isSurrogateDataLoading,
                                                 color = Color.LightGray,
                                                 shape = RoundedCornerShape(4.dp),
                                                 highlight = PlaceholderHighlight.shimmer(
@@ -806,15 +813,14 @@ fun YourAccountScreen(
                                         .wrapContentWidth()
                                         .padding(top = 18.dp)
                                         .placeholder(
-                                            visible = yourAccountViewModel.isLoading,
+                                            visible = yourAccountViewModel.isSurrogateDataLoading,
                                             color = Color.LightGray,
                                             shape = RoundedCornerShape(4.dp),
                                             highlight = PlaceholderHighlight.shimmer(
                                                 highlightColor = Color.White,
                                             )
                                         ),
-                                    text =
-                                    yourAccountViewModel.surrogateHomeAddress,
+                                    text = yourAccountViewModel.surrogateHomeAddress,
                                     style = MaterialTheme.typography.body2.copy(
                                         color = Color.Black,
                                         fontSize = 14.sp,
@@ -829,7 +835,7 @@ fun YourAccountScreen(
                                         .wrapContentWidth()
                                         .padding(top = 11.dp)
                                         .placeholder(
-                                            visible = yourAccountViewModel.isLoading,
+                                            visible = yourAccountViewModel.isSurrogateDataLoading,
                                             color = Color.LightGray,
                                             shape = RoundedCornerShape(4.dp),
                                             highlight = PlaceholderHighlight.shimmer(
@@ -852,7 +858,7 @@ fun YourAccountScreen(
                                         .wrapContentWidth()
                                         .padding(top = 16.dp)
                                         .placeholder(
-                                            visible = yourAccountViewModel.isLoading,
+                                            visible = yourAccountViewModel.isSurrogateDataLoading,
                                             color = Color.LightGray,
                                             shape = RoundedCornerShape(4.dp),
                                             highlight = PlaceholderHighlight.shimmer(
@@ -877,6 +883,14 @@ fun YourAccountScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = 25.dp, end = 23.dp, top = 34.dp)
+                            .placeholder(
+                                visible = yourAccountViewModel.isSurrogateDataLoading,
+                                color = Color.LightGray,
+                                shape = RoundedCornerShape(12.dp),
+                                highlight = PlaceholderHighlight.shimmer(
+                                    highlightColor = Color.White,
+                                )
+                            )
                     ) {
                         Column {
                             Text(
@@ -938,6 +952,14 @@ fun YourAccountScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = 25.dp, end = 23.dp, top = 16.dp, bottom = 18.dp)
+                            .placeholder(
+                                visible = yourAccountViewModel.isSurrogateDataLoading,
+                                color = Color.LightGray,
+                                shape = RoundedCornerShape(12.dp),
+                                highlight = PlaceholderHighlight.shimmer(
+                                    highlightColor = Color.White,
+                                )
+                            )
                     ) {
                         Column {
                             Text(
@@ -992,7 +1014,31 @@ fun YourAccountScreen(
                         }
                     }
                 }
-
+            }
+            if (yourAccountViewModel.isPermissionAllowed){
+                AlertDialog(
+                    onDismissRequest = {
+                        yourAccountViewModel.isPermissionAllowed = false
+                    },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            val uri = Uri.fromParts("package", context.packageName, null)
+                            intent.data = uri
+                            context.startActivity(intent)
+                        })
+                        { Text(text = "APP SETTINGS", color = Color.Red) }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = {
+                            yourAccountViewModel.isPermissionAllowed = false
+                        })
+                        { Text(text = "CANCEL", color = Color.Red) }
+                    },
+                    title = { Text(text = "Permission Denied") },
+                    text = { Text(text = "Permission is denied, Please allow permission from App Settings") }
+                )
             }
         }
         PARENT -> {
@@ -1002,83 +1048,123 @@ fun YourAccountScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(top = 34.dp, bottom = 50.dp)
             ) {
-                ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
-                    val (img_father, img_edit_father, img_father_arrow, img_mother, img_edit_mother, img_mother_arrow) = createRefs()
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(
+                        32.dp,
+                        Alignment.CenterHorizontally
+                    )
+                ) {
                     val painter1 = rememberImagePainter(yourAccountViewModel.parentImg1,
                         builder = { placeholder(R.drawable.ic_placeholder_your_account) })
                     val painter2 = rememberImagePainter(
                         yourAccountViewModel.parentImg2,
                         builder = { placeholder(R.drawable.ic_placeholder_your_account) }
                     )
-                    Image(
-                        modifier = Modifier
-                            .width(88.dp)
-                            .height(88.dp)
-                            .padding(end = 10.dp)
-                            .constrainAs(img_father) {
-                                top.linkTo(parent.top)
-                                bottom.linkTo(parent.bottom)
-                            }
-                            .clickable(
-                                indication = null,
-                                interactionSource = MutableInteractionSource()
-                            ) {
-                                yourAccountViewModel.isParentClicked = true
-                                yourAccountViewModel.isMotherClicked = false
-                            }
-                            .placeholder(
-                                visible = yourAccountViewModel.isLoading,
-                                color = Color.LightGray,
-                                shape = RoundedCornerShape(4.dp),
-                                highlight = PlaceholderHighlight.shimmer(
-                                    highlightColor = Color.White,
-                                )
-                            ),
-                        painter = if (yourAccountViewModel.parentImg1 != "") painter1 else painterResource(
-                            id = R.drawable.ic_placeholder_your_account
-                        ),
-                        contentDescription = "",
-                    )
-                    if (yourAccountViewModel.isParentClicked) {
+                    Box {
                         Image(
                             modifier = Modifier
-                                .constrainAs(img_edit_father) {
-                                    start.linkTo(img_father.start)
-                                    end.linkTo(img_father.end)
-                                    top.linkTo(img_father.top)
-                                    bottom.linkTo(img_father.bottom)
-                                }
-                                .alpha(if (yourAccountViewModel.isEditable.value) 1f else 0f)
+                                .width(88.dp)
+                                .height(88.dp)
                                 .clickable(
                                     indication = null,
                                     interactionSource = MutableInteractionSource()
                                 ) {
-                                    if (yourAccountViewModel.isEditable.value) {
-                                        if (ActivityCompat.checkSelfPermission(
-                                                homeActivity,
-                                                Manifest.permission.READ_EXTERNAL_STORAGE
-                                            ) != PackageManager.PERMISSION_GRANTED
-                                        ) {
-                                            homeActivity.callPermissionRequestLauncher(launcher)
-                                            yourAccountViewModel.isPermissionAllowed =
-                                                false
-                                        } else {
-                                            launcher.launch("image/*")
-                                            yourAccountViewModel.isPermissionAllowed =
-                                                false
-                                        }
-                                    }
+                                    yourAccountViewModel.isParentClicked = true
+                                    yourAccountViewModel.isMotherClicked = false
                                 },
-                            painter = painterResource(id = R.drawable.ic_icon_camera_edit_img_your_account),
-                            contentDescription = ""
+                            painter = if (yourAccountViewModel.parentImg1 != "") painter1 else painterResource(
+                                id = R.drawable.ic_placeholder_your_account
+                            ),
+                            contentDescription = "",
                         )
+                        if (yourAccountViewModel.isEditable.value && yourAccountViewModel.isParentClicked) {
+                            Image(
+                                modifier = Modifier
+                                    .align(Alignment.Center)
+                                    .clickable(
+                                        indication = null,
+                                        interactionSource = MutableInteractionSource()
+                                    ) {
+                                        if (yourAccountViewModel.isEditable.value && yourAccountViewModel.isParentClicked) {
+                                            if (ActivityCompat.checkSelfPermission(
+                                                    homeActivity,
+                                                    Manifest.permission.READ_EXTERNAL_STORAGE
+                                                ) != PackageManager.PERMISSION_GRANTED
+                                            ) {
+                                                homeActivity.callPermissionRequestLauncher(launcher)
+                                                yourAccountViewModel.isPermissionAllowed =
+                                                    false
+                                            } else {
+                                                launcher.launch("image/*")
+                                                yourAccountViewModel.isPermissionAllowed =
+                                                    false
+                                            }
+                                        }
+                                    },
+                                painter = painterResource(id = R.drawable.ic_icon_camera_edit_img_your_account),
+                                contentDescription = ""
+                            )
+                        }
                     }
+                    Box {
+                        Image(
+                            modifier = Modifier
+                                .width(88.dp)
+                                .height(88.dp)
+                                .clickable(
+                                    indication = null,
+                                    interactionSource = MutableInteractionSource()
+                                ) {
+                                    yourAccountViewModel.isParentClicked = false
+                                    yourAccountViewModel.isMotherClicked = true
+                                },
+                            painter = if (yourAccountViewModel.parentImg1 != "") painter2 else painterResource(
+                                id = R.drawable.ic_placeholder_your_account
+                            ),
+                            contentDescription = "",
+                        )
+                        if (yourAccountViewModel.isEditable.value && yourAccountViewModel.isMotherClicked) {
+                            Image(
+                                modifier = Modifier
+                                    .align(Alignment.Center)
+                                    .clickable(
+                                        indication = null,
+                                        interactionSource = MutableInteractionSource()
+                                    ) {
+                                        if (yourAccountViewModel.isEditable.value && yourAccountViewModel.isMotherClicked) {
+                                            if (ActivityCompat.checkSelfPermission(
+                                                    homeActivity,
+                                                    Manifest.permission.READ_EXTERNAL_STORAGE
+                                                ) != PackageManager.PERMISSION_GRANTED
+                                            ) {
+                                                homeActivity.callPermissionRequestLauncher(launcher)
+                                                yourAccountViewModel.isPermissionAllowed =
+                                                    false
+                                            } else {
+                                                launcher.launch("image/*")
+                                                yourAccountViewModel.isPermissionAllowed =
+                                                    false
+                                            }
+                                        }
+                                    },
+                                painter = painterResource(id = R.drawable.ic_icon_camera_edit_img_your_account),
+                                contentDescription = ""
+                            )
+                        }
+                    }
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(
+                        92.dp,
+                        Alignment.CenterHorizontally
+                    )
+                ) {
                     Image(
-                        modifier = Modifier.padding(end = 10.dp).constrainAs(img_father_arrow) {
-                            start.linkTo(img_father.start)
-                            end.linkTo(img_father.end)
-                            top.linkTo(img_father.bottom)
-                        },
+                        modifier = Modifier,
                         painter = painterResource(
                             id = R.drawable.ic_baseline_arrow_drop_up_24
                         ),
@@ -1086,84 +1172,12 @@ fun YourAccountScreen(
                         alpha = if (!yourAccountViewModel.isParentClicked) 0f else 1f
                     )
                     Image(
-                        modifier = Modifier
-                            .width(88.dp)
-                            .height(88.dp)
-                            .padding(start = 15.dp)
-                            .constrainAs(img_mother) {
-                                top.linkTo(parent.top)
-                                bottom.linkTo(parent.bottom)
-                            }
-                            .clickable(
-                                indication = null,
-                                interactionSource = MutableInteractionSource()
-                            ) {
-                                yourAccountViewModel.isParentClicked = false
-                                yourAccountViewModel.isMotherClicked = true
-                            }
-                            .placeholder(
-                                visible = yourAccountViewModel.isLoading,
-                                color = Color.LightGray,
-                                shape = RoundedCornerShape(4.dp),
-                                highlight = PlaceholderHighlight.shimmer(
-                                    highlightColor = Color.White,
-                                )
-                            ),
-                        painter = if (yourAccountViewModel.parentImg2 != "") painter2 else painterResource(
-                            id = R.drawable.ic_placeholder_your_account
-                        ),
-                        contentDescription = "",
-                    )
-                    if (yourAccountViewModel.isMotherClicked) {
-                        Image(
-                            modifier = Modifier
-                                .constrainAs(img_edit_mother) {
-                                    start.linkTo(img_mother.start)
-                                    end.linkTo(img_mother.end)
-                                    top.linkTo(img_mother.top)
-                                    bottom.linkTo(img_mother.bottom)
-                                }
-                                .alpha(if (yourAccountViewModel.isEditable.value) 1f else 0f)
-                                .clickable(
-                                    indication = null,
-                                    interactionSource = MutableInteractionSource()
-                                ) {
-                                    if (yourAccountViewModel.isEditable.value) {
-                                        if (ActivityCompat.checkSelfPermission(
-                                                homeActivity,
-                                                Manifest.permission.READ_EXTERNAL_STORAGE
-                                            ) != PackageManager.PERMISSION_GRANTED
-                                        ) {
-                                            homeActivity.callPermissionRequestLauncher(launcher)
-                                            yourAccountViewModel.isPermissionAllowed =
-                                                false
-                                        } else {
-                                            launcher.launch("image/*")
-                                            yourAccountViewModel.isPermissionAllowed =
-                                                false
-                                        }
-                                    }
-                                },
-                            painter = painterResource(id = R.drawable.ic_icon_camera_edit_img_your_account),
-                            contentDescription = ""
-                        )
-                    }
-                    Image(
-                        modifier = Modifier.padding(start = 10.dp).constrainAs(img_mother_arrow) {
-                            start.linkTo(img_mother.start)
-                            end.linkTo(img_mother.end)
-                            top.linkTo(img_mother.bottom)
-                        },
+                        modifier = Modifier,
                         painter = painterResource(
                             id = R.drawable.ic_baseline_arrow_drop_up_24
                         ),
                         contentDescription = "",
-                        alpha = if (!yourAccountViewModel.isMotherClicked) 0f else 1f
-                    )
-                    createHorizontalChain(
-                        img_father,
-                        img_mother,
-                        chainStyle = ChainStyle.Packed
+                        alpha = if (yourAccountViewModel.isMotherClicked) 1f else 0f
                     )
                 }
                 if (!yourAccountViewModel.isEditable.value) {
@@ -1556,59 +1570,6 @@ fun YourAccountScreen(
                                         .fillMaxWidth()
                                         .padding(start = 24.dp),
                                     text = "Enter your date of birth",
-                                    style = MaterialTheme.typography.caption,
-                                    color = MaterialTheme.colors.error,
-                                    fontSize = 12.sp
-                                )
-                            }
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 16.dp, start = 24.dp),
-                                text = "Your partner’s name",
-                                style = MaterialTheme.typography.body1,
-                                fontWeight = FontWeight.W400,
-                                fontSize = 14.sp,
-                                color = Text_Accept_Terms
-                            )
-                            TextField(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 12.dp, start = 24.dp, end = 24.dp),
-                                value = yourAccountViewModel.parentPartnerName,
-                                onValueChange = {
-                                    yourAccountViewModel.surrogatePartnerName = it
-                                    yourAccountViewModel.yourAccountPartnerNameEmpty = false
-                                },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Text,
-                                    imeAction = ImeAction.Next
-                                ),
-                                shape = RoundedCornerShape(8.dp),
-                                colors = TextFieldDefaults.textFieldColors(
-                                    backgroundColor = if (!yourAccountViewModel.isEditable.value) ET_Bg
-                                    else Color(0xFFD0E1FA),
-                                    cursorColor = Custom_Blue,
-                                    focusedIndicatorColor = Color.Transparent,
-                                    disabledIndicatorColor = Color.Transparent,
-                                    unfocusedIndicatorColor = Color.Transparent,
-                                    textColor = Color.Black
-                                ), readOnly = !yourAccountViewModel.isEditable.value,
-                                maxLines = 1,
-                                textStyle = MaterialTheme.typography.body2,
-                                trailingIcon = {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_icon_et_parent_name_your_account),
-                                        "error",
-                                    )
-                                }
-                            )
-                            if (yourAccountViewModel.yourAccountPartnerNameEmpty) {
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 24.dp),
-                                    text = "Enter your partner name",
                                     style = MaterialTheme.typography.caption,
                                     color = MaterialTheme.colors.error,
                                     fontSize = 12.sp
@@ -2554,6 +2515,74 @@ fun YourAccountScreen(
                     }
                 }
             }
+            if (yourAccountViewModel.isPermissionAllowed){
+                AlertDialog(
+                    onDismissRequest = {
+                        yourAccountViewModel.isPermissionAllowed = false
+                    },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            val uri = Uri.fromParts("package", context.packageName, null)
+                            intent.data = uri
+                            context.startActivity(intent)
+                        })
+                        { Text(text = "APP SETTINGS", color = Color.Red) }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = {
+                            yourAccountViewModel.isPermissionAllowed = false
+                        })
+                        { Text(text = "CANCEL", color = Color.Red) }
+                    },
+                    title = { Text(text = "Permission Denied") },
+                    text = { Text(text = "Permission is denied, Please allow permission from App Settings") }
+                )
+            }
+        }
+    }
+}
+
+fun getIntendedProfile(
+    userId: Int,
+    type: String,
+    homeActivity: HomeActivity,
+    yourAccountViewModel: YourAccountViewModel
+) {
+    yourAccountViewModel.getIntendedParentProfile(type = type, userId = userId)
+    yourAccountViewModel.getIntendedProfileResponse.observe(homeActivity) {
+        if (it != null) {
+            handleGetIntendedProfileData(
+                result = it,
+                yourAccountViewModel = yourAccountViewModel
+            )
+        }
+    }
+}
+
+private fun handleGetIntendedProfileData(
+    result: NetworkResult<GetIntendedProfileResponse>,
+    yourAccountViewModel: YourAccountViewModel
+) {
+    when (result) {
+        is NetworkResult.Loading -> {
+            // show a progress bar
+            yourAccountViewModel.isLoading = true
+        }
+        is NetworkResult.Success -> {
+            // bind data to the view
+            yourAccountViewModel.isLoading = false
+            yourAccountViewModel.intendedProfileResponseQuestionList.clear()
+            result.data?.question_ans?.let {
+                yourAccountViewModel.intendedProfileResponseQuestionList.addAll(
+                    it
+                )
+            }
+        }
+        is NetworkResult.Error -> {
+            // show error message
+            yourAccountViewModel.isLoading = false
         }
     }
 }
@@ -2566,11 +2595,19 @@ private fun handleUserDataSurrogate(
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
-            yourAccountViewModel.isLoading = true
+            yourAccountViewModel.isSurrogateDataLoading = true
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            yourAccountViewModel.isLoading = false
+            yourAccountViewModel.surrogateFullName = ""
+            yourAccountViewModel.surrogatePhoneNumber = ""
+            yourAccountViewModel.surrogateEmail = ""
+            yourAccountViewModel.surrogateHomeAddress = ""
+            yourAccountViewModel.surrogateDateOfBirth = ""
+            yourAccountViewModel.surrogateHomeAddress = ""
+            yourAccountViewModel.surrogatePartnerName = ""
+            yourAccountViewModel.surrogateImg = ""
+            yourAccountViewModel.isSurrogateDataLoading = false
             if ((result.data?.name != null)) {
                 yourAccountViewModel.surrogateFullName = result.data.name
             }
@@ -2595,7 +2632,7 @@ private fun handleUserDataSurrogate(
         }
         is NetworkResult.Error -> {
             // show error message
-            yourAccountViewModel.isLoading = false
+            yourAccountViewModel.isSurrogateDataLoading = false
             Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
         }
     }
@@ -2656,19 +2693,19 @@ private fun handleUserUpdateData(
         is NetworkResult.Loading -> {
             // show a progress bar
             Log.e("TAG", "handleUserData() --> Loading  $result")
-            yourAccountViewModel.isLoading = true
+            yourAccountViewModel.isSurrogateDataLoading = true
         }
         is NetworkResult.Success -> {
             // bind data to the view
             Log.e("TAG", "handleUserData() --> Success  $result")
-            yourAccountViewModel.isLoading = false
+            yourAccountViewModel.isSurrogateDataLoading = false
             Toast.makeText(context, result.data?.message, Toast.LENGTH_SHORT).show()
 
         }
         is NetworkResult.Error -> {
             // show error message
             Log.e("TAG", "handleUserData() --> Error ${result.message}")
-            yourAccountViewModel.isLoading = false
+            yourAccountViewModel.isSurrogateDataLoading = false
         }
     }
 }

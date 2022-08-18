@@ -46,6 +46,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.biggestAsk.ui.HomeActivity
 import com.biggestAsk.ui.MainActivity
 import com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph.*
+import com.biggestAsk.ui.homeScreen.bottomNavScreen.BackHandler
 import com.biggestAsk.ui.homeScreen.drawerScreens.community.AddCommunityDialog
 import com.biggestAsk.ui.homeScreen.drawerScreens.contactYourProvider.CreateContactDialog
 import com.biggestAsk.ui.homeScreen.drawerScreens.notification.NotificationDetailScreenRoute
@@ -334,7 +335,10 @@ fun HomeScreen(
                             if (yourAccountViewModel.isYourAccountScreen.value == true) {
                                 yourAccountViewModel.isEditable.value =
                                     yourAccountViewModel.isEditable.value != true
-                                Log.d("TAG", "HomeScreen: isEditable ${yourAccountViewModel.isEditable.value}")
+                                Log.d(
+                                    "TAG",
+                                    "HomeScreen: isEditable ${yourAccountViewModel.isEditable.value}"
+                                )
                             }
                             if (notificationViewModel.isNotificationScreen.value == true) {
 //                                if (notificationViewModel.searchText != ""){
@@ -452,8 +456,14 @@ fun HomeScreen(
                 contactYourProviderViewModel = contactYourProviderViewModel,
                 communityViewModel = communityViewModel,
                 notificationViewModel = notificationViewModel,
-                aboutAppViewModel = aboutAppViewModel
+                aboutAppViewModel = aboutAppViewModel,
+                scaffoldState = scaffoldState
             )
+            BackHandler(scaffoldState.drawerState.isOpen) {
+                scope.launch {
+                    scaffoldState.drawerState.close()
+                }
+            }
         },
         bottomBar = {
             BottomNavigation(
@@ -491,6 +501,7 @@ fun currentRoute(
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
+            yourAccountViewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
             notificationViewModel.isNotificationScreen.value = false
             viewModel.isSettingSubAboutAppScreen.value = false
@@ -505,6 +516,7 @@ fun currentRoute(
             //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
+            yourAccountViewModel.isEditable.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
@@ -524,6 +536,7 @@ fun currentRoute(
             // viewModel.isSelected = false
             viewModel.toolbarTittle = stringResource(id = R.string.text_home_bottom_nav_milestone)
             communityViewModel.isCommunityScreen.value = false
+            yourAccountViewModel.isEditable.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
@@ -542,6 +555,7 @@ fun currentRoute(
             viewModel.toolbarTittle = stringResource(id = R.string.your_surrogate_mother)
             communityViewModel.isCommunityScreen.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
+            yourAccountViewModel.isEditable.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
@@ -558,6 +572,7 @@ fun currentRoute(
             //            viewModel.list = viewModel.emptyList
             viewModel.toolbarTittle = stringResource(id = R.string.intended_parents)
             communityViewModel.isCommunityScreen.value = false
+            yourAccountViewModel.isEditable.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
@@ -575,6 +590,7 @@ fun currentRoute(
             //            viewModel.list = viewModel.emptyList
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
+            yourAccountViewModel.isEditable.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
             notificationViewModel.isNotificationScreen.value = false
@@ -591,6 +607,7 @@ fun currentRoute(
             //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
+            yourAccountViewModel.isEditable.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
             notificationViewModel.isNotificationScreen.value = false
@@ -609,6 +626,7 @@ fun currentRoute(
             notificationViewModel.isSearchClicked.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
+            yourAccountViewModel.isEditable.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
             notificationViewModel.isNotificationDetailsScreen.value = false
@@ -626,6 +644,7 @@ fun currentRoute(
             communityViewModel.isCommunityScreen.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
+            yourAccountViewModel.isEditable.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
             notificationViewModel.isNotificationScreen.value = false
@@ -657,6 +676,7 @@ fun currentRoute(
             //            viewModel.list = viewModel.emptyList
             yourAccountViewModel.isYourAccountScreen.value = false
             communityViewModel.isCommunityScreen.value = false
+            yourAccountViewModel.isEditable.value = false
             viewModel.isEditable.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             notificationViewModel.isNotificationScreen.value = false
@@ -672,6 +692,7 @@ fun currentRoute(
             viewModel.toolbarTittle = stringResource(id = R.string.notifications)
             //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false
+            yourAccountViewModel.isEditable.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
@@ -690,6 +711,7 @@ fun currentRoute(
             communityViewModel.isCommunityScreen.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
+            yourAccountViewModel.isEditable.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
             notificationViewModel.isNotificationScreen.value = false
@@ -706,6 +728,7 @@ fun currentRoute(
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
+            yourAccountViewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
             notificationViewModel.isNotificationScreen.value = false
             notificationViewModel.isNotificationDetailsScreen.value = false
@@ -720,6 +743,7 @@ fun currentRoute(
             communityViewModel.isCommunityScreen.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
+            yourAccountViewModel.isEditable.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
             notificationViewModel.isNotificationScreen.value = false
@@ -736,6 +760,7 @@ fun currentRoute(
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
+            yourAccountViewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
             notificationViewModel.isNotificationScreen.value = false
             notificationViewModel.isNotificationDetailsScreen.value = false

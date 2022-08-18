@@ -103,6 +103,12 @@ interface ApiService {
     @POST(Constants.GET_USER_DETAIL)
     suspend fun getUserDetailsParent(@Body user: GetUserDetailsParentRequest): Response<GetUserDetailsParentResponse>
 
+    @GET(Constants.GET_INTENDED_PROFILE)
+    suspend fun getIntendedParentProfile(
+        @Query("type") type:String,
+        @Query("user_id") user_id: Int
+    ):Response<GetIntendedProfileResponse>
+
     @Multipart
     @POST(Constants.USER_PROFILE_UPDATE + "{id}")
     suspend fun updateUserProfile(

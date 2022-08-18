@@ -8,22 +8,18 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.biggestAsk.data.model.request.GetUserDetailsParentRequest
 import com.biggestAsk.data.model.request.GetUserDetailsSurrogateRequest
-import com.biggestAsk.data.model.response.GetUserDetailsParentResponse
-import com.biggestAsk.data.model.response.GetUserDetailsSurrogateResponse
-import com.biggestAsk.data.model.response.UpdateUserProfileResponse
+import com.biggestAsk.data.model.response.*
 import com.biggestAsk.data.repository.YourAccountRepository
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.util.PathUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 import javax.inject.Inject
@@ -36,6 +32,8 @@ class YourAccountViewModel @Inject constructor(
 ) : AndroidViewModel(application) {
 
     var isLoading: Boolean by mutableStateOf(false)
+    var isSurrogateDataLoading: Boolean by mutableStateOf(false)
+    var isIntendedProfileDataLoading: Boolean by mutableStateOf(false)
     var isPermissionAllowed: Boolean by mutableStateOf(false)
     var isRational: Boolean by mutableStateOf(false)
     var isEditable: MutableState<Boolean> = mutableStateOf(false)
@@ -44,6 +42,7 @@ class YourAccountViewModel @Inject constructor(
     var imageData: Uri? = (null)
     var uriPath: String? = null
     val isImagePresent = mutableStateOf(false)
+    var intendedProfileResponseQuestionList = mutableStateListOf<QuestionAn>()
 
     //  surrogate
     var textEmailVerify: String by mutableStateOf("")
@@ -83,6 +82,7 @@ class YourAccountViewModel @Inject constructor(
     var isParentClicked: Boolean by mutableStateOf(true)
     var isMotherClicked: Boolean by mutableStateOf(false)
     var isParentApiCalled: Boolean by mutableStateOf(false)
+    var getIntendedProfileResponse: MutableLiveData<NetworkResult<GetIntendedProfileResponse>> = MutableLiveData()
 
 
     fun getUserDetailsSurrogate(getUserDetailsRequestSurrogate: GetUserDetailsSurrogateRequest) {
@@ -148,6 +148,15 @@ class YourAccountViewModel @Inject constructor(
                 type
             ).collect {
                 updateUserProfileResponse.value = it
+            }
+        }
+    }
+
+    fun getIntendedParentProfile(type:String,userId: Int) {
+        getIntendedProfileResponse.value = NetworkResult.Loading()
+        viewModelScope.launch {
+            yourAccountRepository.getIntendedParentProfile(type = type, user_id = userId).collect{
+                getIntendedProfileResponse.value = it
             }
         }
     }

@@ -2,6 +2,9 @@ package com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.material.BottomSheetScaffoldState
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
@@ -43,7 +46,8 @@ fun BottomNavigationDrawerGraph(
     surrogateViewModel: YourSurrogateViewModel,
     communityViewModel: CommunityViewModel,
     notificationViewModel: NotificationViewModel,
-    aboutAppViewModel: AboutAppViewModel
+    aboutAppViewModel: AboutAppViewModel,
+    scaffoldState: ScaffoldState
 ) {
     NavHost(
         navController = navHostController, startDestination = BottomNavScreen.Home.route
@@ -54,7 +58,8 @@ fun BottomNavigationDrawerGraph(
             MilestonesScreen(
                 navHostController = navHostController,
                 milestoneViewModel = bottomMilestoneViewModel,
-                homeActivity = homeActivity
+                homeActivity = homeActivity,
+                scaffoldState = scaffoldState
             )
         }
         composable(

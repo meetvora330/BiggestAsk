@@ -57,6 +57,7 @@ object Constants {
     const val UPDATE_PAYMENT_STATUS = "update_payment_status"
     const val STORE_BASE_SCREEN_QUESTION_ANS = "store_question_ans"
     const val STORE_ANS_IMPORTANT_QUESTION = "store_ans_important_question"
+    const val GET_INTENDED_PROFILE = "get_intended_profile"
 
     //preference data
     const val LOGIN_STATUS = "login_status"

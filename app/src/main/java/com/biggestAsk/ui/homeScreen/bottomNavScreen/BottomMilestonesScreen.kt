@@ -71,7 +71,8 @@ import java.util.*
 fun MilestonesScreen(
     navHostController: NavHostController,
     milestoneViewModel: BottomMilestoneViewModel,
-    homeActivity: HomeActivity
+    homeActivity: HomeActivity,
+    scaffoldState: ScaffoldState
 ) {
     val addNewMilestoneBottomSheetState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
@@ -97,20 +98,28 @@ fun MilestonesScreen(
             homeActivity = homeActivity
         )
     }
-    BackHandler(back.value) {
-        if (milestoneViewModel.isSelected) {
-            milestoneViewModel.milestoneList.forEachIndexed { index, _ ->
-                milestoneViewModel.milestoneList[index].show = false
+    if (scaffoldState.drawerState.isOpen){
+        BackHandler(scaffoldState.drawerState.isOpen) {
+            coroutineScope.launch {
+                scaffoldState.drawerState.close()
             }
-            val milestoneListNew =
-                milestoneViewModel.milestoneList.toList()
-            milestoneViewModel.milestoneList.clear()
-            milestoneViewModel.milestoneList.addAll(milestoneListNew)
-            milestoneViewModel.isSelected = false
-        } else {
-            navHostController.popBackStack(BottomNavScreen.MileStones.route, true)
         }
-        back.value = false
+    }else{
+        BackHandler(back.value) {
+            if (milestoneViewModel.isSelected) {
+                milestoneViewModel.milestoneList.forEachIndexed { index, _ ->
+                    milestoneViewModel.milestoneList[index].show = false
+                }
+                val milestoneListNew =
+                    milestoneViewModel.milestoneList.toList()
+                milestoneViewModel.milestoneList.clear()
+                milestoneViewModel.milestoneList.addAll(milestoneListNew)
+                milestoneViewModel.isSelected = false
+            } else {
+                navHostController.popBackStack(BottomNavScreen.MileStones.route, true)
+            }
+            back.value = false
+        }
     }
 
     if (milestoneViewModel.isAnyErrorOccurred) {
@@ -268,7 +277,8 @@ fun MilestonesScreen(
                                         { _: DatePicker, year: Int, month: Int, day: Int ->
                                             milestoneViewModel.addNewMilestoneDate.value =
                                                 "$year/" + "%02d".format(month + 1) + "/" + "%02d".format(
-                                                    day)
+                                                    day
+                                                )
                                         }, year, month, day
                                     )
                                     datePickerDialog.show()
@@ -355,7 +365,8 @@ fun MilestonesScreen(
                                             }
                                             milestoneViewModel.addNewMilestoneTime.value =
                                                 "%02d".format(hourOfDay) + ":" + "%02d".format(
-                                                    minute) + " " + amPm
+                                                    minute
+                                                ) + " " + amPm
                                         }, mHour, mMinute, false
                                     )
                                     timePickerDialog.show()
@@ -670,7 +681,8 @@ fun MilestonesScreen(
                                                     milestoneViewModel.milestoneList.toList()
                                                 milestoneViewModel.milestoneList.clear()
                                                 milestoneViewModel.milestoneList.addAll(
-                                                    milestoneListNew)
+                                                    milestoneListNew
+                                                )
                                             },
                                         ),
                                     text = stringResource(id = R.string.select_all),
@@ -712,8 +724,10 @@ fun MilestonesScreen(
                                                 }
                                                 .background(
                                                     Color.White,
-                                                    RoundedCornerShape(topStart = 20.dp,
-                                                        topEnd = 20.dp)
+                                                    RoundedCornerShape(
+                                                        topStart = 20.dp,
+                                                        topEnd = 20.dp
+                                                    )
                                                 )
                                         ) {
                                             Card(
@@ -862,8 +876,10 @@ fun MilestonesScreen(
                                                                 modifier = Modifier
                                                                     .fillMaxWidth()
                                                                     .height(36.dp)
-                                                                    .padding(top = 6.dp,
-                                                                        bottom = 6.dp),
+                                                                    .padding(
+                                                                        top = 6.dp,
+                                                                        bottom = 6.dp
+                                                                    ),
                                                                 text = stringResource(id = R.string.ask_surrogate),
                                                                 color = Color(0xFF3870C9),
                                                                 style = MaterialTheme.typography.body2,
