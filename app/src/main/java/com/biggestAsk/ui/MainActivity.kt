@@ -23,6 +23,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -82,7 +83,7 @@ class MainActivity : BaseActivity() {
                 windowInsetsAnimationsEnabled = true
             ) {
                 val provider = PreferenceProvider(this)
-                val isIntroDone = provider.getBooleanValue("isIntroDone", false)
+                val isIntroDone = provider.getBooleanValue(Constants.IS_INTRO_DONE, false)
                 if (!isIntroDone) {
                     LaunchedEffect(Unit) {
                         introViewModel.getIntroInfo()
@@ -113,8 +114,8 @@ class MainActivity : BaseActivity() {
                         }
                     }
 
-                    val userId = provider.getIntValue("user_id", 0)
-                    val type = provider.getValue("type", "")
+                    val userId = provider.getIntValue(Constants.USER_ID, 0)
+                    val type = provider.getValue(Constants.TYPE, "")
                     if (userId != 0 && !type.isNullOrEmpty()) {
                         LaunchedEffect(Unit) {
                             introViewModel.getUpdatedStatus(userId, type)
@@ -184,7 +185,7 @@ class MainActivity : BaseActivity() {
                 contentDescription = ""
             )
             Text(
-                text = "The Biggest Ask",
+                text = stringResource(id = R.string.the_biggest_ask),
                 modifier = Modifier.fillMaxWidth(),
                 style = MaterialTheme.typography.body2.copy(
                     color = Color.Black,
@@ -288,7 +289,7 @@ private fun handleUpdatedStatusData(
                 )
             }
             result.data?.partner_id?.let {
-                provider.setValue("partner_id", it)
+                provider.setValue(Constants.PARTNER_ID, it)
             }
             introViewModel.isUserStatusDataLoaded = true
             introViewModel.isIntroDataLoaded = true

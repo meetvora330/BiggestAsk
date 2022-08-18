@@ -76,7 +76,7 @@ sealed class NotificationDetailScreenRoute(
             icon: Int,
             tittle: String,
             desc: String,
-            days: String
+            days: Int
         ): String {
             return "notification_details/$icon/$tittle/$desc/$days"
         }

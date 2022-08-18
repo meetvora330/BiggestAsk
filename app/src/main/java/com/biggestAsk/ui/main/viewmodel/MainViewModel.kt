@@ -58,10 +58,6 @@ class MainViewModel : ViewModel() {
     var isFatherClicked: Boolean by mutableStateOf(true)
     var isMotherClicked: Boolean by mutableStateOf(false)
 
-    //Notification & Notification Details
-    val isNotificationScreen: MutableLiveData<Boolean> = MutableLiveData(false)
-    val isNotificationDetailsScreen: MutableState<Boolean> = mutableStateOf(false)
-
     //Setting Screen
     val isSettingSubAboutAppScreen: MutableState<Boolean> = mutableStateOf(false)
     val isSettingSubDetailedSettingScreen: MutableState<Boolean> = mutableStateOf(false)

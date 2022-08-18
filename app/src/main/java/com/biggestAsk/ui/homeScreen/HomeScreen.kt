@@ -5,6 +5,7 @@ package com.biggestAsk.ui.homeScreen
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -43,6 +45,7 @@ import com.biggestAsk.ui.homeScreen.drawerScreens.settingScreens.SettingSubScree
 import com.biggestAsk.ui.introScreen.findActivity
 import com.biggestAsk.ui.main.viewmodel.*
 import com.biggestAsk.ui.ui.theme.Custom_Blue
+import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 import kotlinx.coroutines.CoroutineScope
@@ -63,6 +66,7 @@ fun HomeScreen(
     contactYourProviderViewModel: ContactYourProviderViewModel,
     surrogateViewModel: YourSurrogateViewModel,
     communityViewModel: CommunityViewModel,
+    notificationViewModel: NotificationViewModel,
 ) {
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
@@ -100,7 +104,8 @@ fun HomeScreen(
                 viewModel = mainViewModel,
                 yourAccountViewModel = yourAccountViewModel,
                 contactYourProviderViewModel = contactYourProviderViewModel,
-                communityViewModel = communityViewModel
+                communityViewModel = communityViewModel,
+                notificationViewModel = notificationViewModel
             )
             ConstraintLayout(
                 modifier = Modifier
@@ -130,7 +135,7 @@ fun HomeScreen(
                                 navController.navigate(BottomNavItems.Milestones.navRoute)
                                 navController.popBackStack(BottomNavScreen.MileStones.route, true)
                             }
-                            if (mainViewModel.isNotificationDetailsScreen.value) {
+                            if (notificationViewModel.isNotificationDetailsScreen.value) {
                                 navController.popBackStack(
                                     NotificationDetailScreenRoute.NotificationDetails.route,
                                     true
@@ -196,7 +201,7 @@ fun HomeScreen(
                             mainViewModel.isAddMilestoneScreen.value -> {
                                 R.drawable.ic_baseline_arrow_back_ios_new_24
                             }
-                            mainViewModel.isNotificationDetailsScreen.value -> {
+                            notificationViewModel.isNotificationDetailsScreen.value -> {
                                 R.drawable.ic_icon_back_notification_tb
                             }
                             (mainViewModel.isSettingSubAboutAppScreen.value ||
@@ -235,7 +240,7 @@ fun HomeScreen(
                             if (communityViewModel.isCommunityScreen.value == true ||
                                 contactYourProviderViewModel.isContactProvidersScreen.value == true ||
                                 yourAccountViewModel.isYourAccountScreen.value == true ||
-                                mainViewModel.isNotificationScreen.value == true
+                                notificationViewModel.isNotificationScreen.value == true
                             ) 1f else 0f
                         )
                         .constrainAs(icon_add)
@@ -258,9 +263,10 @@ fun HomeScreen(
                                 yourAccountViewModel.isEditable.value =
                                     yourAccountViewModel.isEditable.value != true
                             }
-                            //                            if (mainViewModel.isNotificationScreen.value == true) {
-                            //
-                            //                            }
+                            if (notificationViewModel.isNotificationScreen.value == true) {
+                                notificationViewModel.isSearchClicked.value =
+                                    notificationViewModel.isSearchClicked.value != true
+                            }
                         },
                     painter = painterResource(
                         id = when (true) {
@@ -273,7 +279,7 @@ fun HomeScreen(
                             yourAccountViewModel.isYourAccountScreen.value -> {
                                 R.drawable.ic_icon_your_account_edit_disable
                             }
-                            mainViewModel.isNotificationScreen.value -> {
+                            notificationViewModel.isNotificationScreen.value -> {
                                 R.drawable.ic_baseline_search_24
                             }
                             else -> {
@@ -301,15 +307,15 @@ fun HomeScreen(
                             homeActivity = homeActivity,
                             communityViewModel = communityViewModel,
                             openDialogCustomCommunity,
-                            tv_text_tittle = "Create Community",
-                            tf_hint_tv1 = "The Happy Agency",
-                            tf_hint_tv2 = "Jane Doe",
-                            tv_text_second = "Description",
-                            tv_text_third = "Link to Forum",
-                            tf_hint_tv3 = "Jane Doe",
-                            tv_text_fourth = "Link to Instagram",
-                            tf_hint_tv4 = "(222)-333-4444",
-                            btn_text_add = "+ Add a new Community",
+                            tv_text_tittle = stringResource(id = R.string.create_community),
+                            tf_hint_tv1 = stringResource(id = R.string.the_happy_agency),
+                            tf_hint_tv2 = stringResource(id = R.string.jane_doe),
+                            tv_text_second = stringResource(id = R.string.description),
+                            tv_text_third = stringResource(id = R.string.link_to_forum),
+                            tf_hint_tv3 = stringResource(id = R.string.jane_doe),
+                            tv_text_fourth = stringResource(id = R.string.link_to_instagram),
+                            tf_hint_tv4 = stringResource(id = R.string.dialog_phone),
+                            btn_text_add = stringResource(id = R.string.add_community),
                             tf_text_first = tfTextFirstCommunity,
                             tf_text_second = tfTextSecondCommunity,
                             tf_text_third = tfTextThirdCommunity,
@@ -335,15 +341,15 @@ fun HomeScreen(
                             homeActivity = homeActivity,
                             contactYourProviderViewModel = contactYourProviderViewModel,
                             openDialogCustomContact,
-                            tv_text_tittle = "Create Contact",
-                            tf_hint_tv1 = "The Happy Agency",
-                            tf_hint_tv2 = "Jane Doe",
-                            tv_text_second = "Agency rep name",
-                            tv_text_third = "Agency email",
-                            tf_hint_tv3 = "agencyemail@gmail.ua",
-                            tv_text_fourth = "Agency phone number",
-                            tf_hint_tv4 = "(222)-333-4444",
-                            btn_text_add = "+ Add a new Contact",
+                            tv_text_tittle = stringResource(id = R.string.create_contact),
+                            tf_hint_tv1 = stringResource(id = R.string.the_happy_agency),
+                            tf_hint_tv2 = stringResource(id = R.string.jane_doe),
+                            tv_text_second = stringResource(id = R.string.agency_rep_name),
+                            tv_text_third = stringResource(id = R.string.agency_email),
+                            tf_hint_tv3 = stringResource(id = R.string.agency_email_hint),
+                            tv_text_fourth = stringResource(id = R.string.agency_phone_number),
+                            tf_hint_tv4 = stringResource(id = R.string.dialog_phone),
+                            btn_text_add = stringResource(id = R.string.add_contact),
                             tf_text_first = tfTextFirstContact,
                             tf_text_second = tfTextSecondContact,
                             tf_text_third = tfTextThirdContact,
@@ -365,7 +371,8 @@ fun HomeScreen(
                 yourAccountViewModel = yourAccountViewModel,
                 surrogateViewModel = surrogateViewModel,
                 contactYourProviderViewModel = contactYourProviderViewModel,
-                communityViewModel = communityViewModel
+                communityViewModel = communityViewModel,
+                notificationViewModel = notificationViewModel
             )
         },
         bottomBar = {
@@ -393,18 +400,19 @@ fun currentRoute(
     yourAccountViewModel: YourAccountViewModel,
     contactYourProviderViewModel: ContactYourProviderViewModel,
     communityViewModel: CommunityViewModel,
+    notificationViewModel: NotificationViewModel,
 ): String? {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     when (navController.currentDestination?.route) {
         BottomNavItems.Home.navRoute -> {
-            viewModel.toolbarTittle = "Home"
+            viewModel.toolbarTittle = stringResource(id = R.string.text_home_bottom_nav_home)
             //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
-            viewModel.isNotificationScreen.value = false
+            notificationViewModel.isNotificationScreen.value = false
             viewModel.isSettingSubAboutAppScreen.value = false
             viewModel.isSettingSubAboutAppScreen.value = false
             viewModel.isSettingSubDetailedSettingScreen.value = false
@@ -413,15 +421,15 @@ fun currentRoute(
         }
         BottomNavItems.Questions.navRoute -> {
             //            viewModel.imageList.clear()
-            viewModel.toolbarTittle = "Questions"
+            viewModel.toolbarTittle = stringResource(id = R.string.text_home_bottom_nav_question)
             //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
-            viewModel.isNotificationScreen.value = false
-            viewModel.isNotificationDetailsScreen.value = false
+            notificationViewModel.isNotificationScreen.value = false
+            notificationViewModel.isNotificationDetailsScreen.value = false
             viewModel.isSettingSubAboutAppScreen.value = false
             viewModel.isSettingSubAboutAppScreen.value = false
             viewModel.isSettingSubDetailedSettingScreen.value = false
@@ -434,14 +442,14 @@ fun currentRoute(
             //                viewModel.listData[index].show = false
             //            }
             // viewModel.isSelected = false
-            viewModel.toolbarTittle = "Milestones"
+            viewModel.toolbarTittle = stringResource(id = R.string.text_home_bottom_nav_milestone)
             communityViewModel.isCommunityScreen.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
-            viewModel.isNotificationScreen.value = false
-            viewModel.isNotificationDetailsScreen.value = false
+            notificationViewModel.isNotificationScreen.value = false
+            notificationViewModel.isNotificationDetailsScreen.value = false
             viewModel.isSettingSubAboutAppScreen.value = false
             viewModel.isSettingSubAboutAppScreen.value = false
             viewModel.isSettingSubDetailedSettingScreen.value = false
@@ -451,14 +459,14 @@ fun currentRoute(
         NavDrawerItem.YourSurrogateMother.route -> {
             //            viewModel.imageList.clear()
             //            viewModel.list = viewModel.emptyList
-            viewModel.toolbarTittle = "Your Surrogate Mother"
+            viewModel.toolbarTittle = stringResource(id = R.string.your_surrogate_mother)
             communityViewModel.isCommunityScreen.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
-            viewModel.isNotificationScreen.value = false
-            viewModel.isNotificationDetailsScreen.value = false
+            notificationViewModel.isNotificationScreen.value = false
+            notificationViewModel.isNotificationDetailsScreen.value = false
             viewModel.isSettingSubAboutAppScreen.value = false
             viewModel.isSettingSubAboutAppScreen.value = false
             viewModel.isSettingSubDetailedSettingScreen.value = false
@@ -468,14 +476,14 @@ fun currentRoute(
         NavDrawerItem.IntendedParents.route -> {
             //            viewModel.imageList.clear()
             //            viewModel.list = viewModel.emptyList
-            viewModel.toolbarTittle = "Intended Parents"
+            viewModel.toolbarTittle = stringResource(id = R.string.intended_parents)
             communityViewModel.isCommunityScreen.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
-            viewModel.isNotificationScreen.value = false
-            viewModel.isNotificationDetailsScreen.value = false
+            notificationViewModel.isNotificationScreen.value = false
+            notificationViewModel.isNotificationDetailsScreen.value = false
             viewModel.isSettingSubAboutAppScreen.value = false
             viewModel.isSettingSubAboutAppScreen.value = false
             viewModel.isSettingSubTermsOfServiceScreen.value = false
@@ -483,14 +491,14 @@ fun currentRoute(
             viewModel.isSettingSubDetailedSettingScreen.value = false
         }
         NavDrawerItem.Community.route -> {
-            viewModel.toolbarTittle = "Community"
+            viewModel.toolbarTittle = stringResource(id = R.string.community)
             //            viewModel.list = viewModel.emptyList
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
-            viewModel.isNotificationScreen.value = false
-            viewModel.isNotificationDetailsScreen.value = false
+            notificationViewModel.isNotificationScreen.value = false
+            notificationViewModel.isNotificationDetailsScreen.value = false
             viewModel.isSettingSubAboutAppScreen.value = false
             viewModel.isSettingSubAboutAppScreen.value = false
             viewModel.isSettingSubDetailedSettingScreen.value = false
@@ -499,14 +507,14 @@ fun currentRoute(
             communityViewModel.isCommunityScreen.value = true
         }
         NavDrawerItem.ContactYourProviders.route -> {
-            viewModel.toolbarTittle = "Contact Your Providers"
+            viewModel.toolbarTittle = stringResource(id = R.string.contact_your_providers)
             //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
-            viewModel.isNotificationScreen.value = false
-            viewModel.isNotificationDetailsScreen.value = false
+            notificationViewModel.isNotificationScreen.value = false
+            notificationViewModel.isNotificationDetailsScreen.value = false
             viewModel.isSettingSubAboutAppScreen.value = false
             viewModel.isSettingSubAboutAppScreen.value = false
             viewModel.isSettingSubDetailedSettingScreen.value = false
@@ -515,31 +523,31 @@ fun currentRoute(
             contactYourProviderViewModel.isContactProvidersScreen.value = true
         }
         NavDrawerItem.Notifications.route -> {
-            viewModel.toolbarTittle = "Notifications"
+            viewModel.toolbarTittle = stringResource(id = R.string.notifications)
             //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
-            viewModel.isNotificationDetailsScreen.value = false
+            notificationViewModel.isNotificationDetailsScreen.value = false
             viewModel.isSettingSubAboutAppScreen.value = false
             viewModel.isSettingSubAboutAppScreen.value = false
             viewModel.isSettingSubDetailedSettingScreen.value = false
             viewModel.isSettingSubTermsOfServiceScreen.value = false
             viewModel.isSettingSubPrivacyPolicyScreen.value = false
-            viewModel.isNotificationScreen.value = true
+            notificationViewModel.isNotificationScreen.value = true
         }
         NavDrawerItem.Settings.route -> {
-            viewModel.toolbarTittle = "Settings"
+            viewModel.toolbarTittle = stringResource(id = R.string.settings)
             //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
-            viewModel.isNotificationScreen.value = false
-            viewModel.isNotificationDetailsScreen.value = false
+            notificationViewModel.isNotificationScreen.value = false
+            notificationViewModel.isNotificationDetailsScreen.value = false
             viewModel.isSettingSubAboutAppScreen.value = false
             viewModel.isSettingSubAboutAppScreen.value = false
             viewModel.isSettingSubDetailedSettingScreen.value = false
@@ -547,14 +555,14 @@ fun currentRoute(
             viewModel.isSettingSubPrivacyPolicyScreen.value = false
         }
         MyAccount.MyAccountScreen.route -> {
-            viewModel.toolbarTittle = "Your Account"
+            viewModel.toolbarTittle = stringResource(id = R.string.your_account)
             //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false
             viewModel.isEditable.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             viewModel.isAddMilestoneScreen.value = false
-            viewModel.isNotificationScreen.value = false
-            viewModel.isNotificationDetailsScreen.value = false
+            notificationViewModel.isNotificationScreen.value = false
+            notificationViewModel.isNotificationDetailsScreen.value = false
             viewModel.isSettingSubAboutAppScreen.value = false
             viewModel.isSettingSubAboutAppScreen.value = false
             viewModel.isSettingSubDetailedSettingScreen.value = false
@@ -563,14 +571,14 @@ fun currentRoute(
             yourAccountViewModel.isYourAccountScreen.value = true
         }
         BottomNavScreen.AddNewMileStones.route -> {
-            viewModel.toolbarTittle = "Edit milestone"
+            viewModel.toolbarTittle = stringResource(id = R.string.edit_milestone)
             //            viewModel.list = viewModel.emptyList
             yourAccountViewModel.isYourAccountScreen.value = false
             communityViewModel.isCommunityScreen.value = false
             viewModel.isEditable.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
-            viewModel.isNotificationScreen.value = false
-            viewModel.isNotificationDetailsScreen.value = false
+            notificationViewModel.isNotificationScreen.value = false
+            notificationViewModel.isNotificationDetailsScreen.value = false
             viewModel.isSettingSubAboutAppScreen.value = false
             viewModel.isSettingSubAboutAppScreen.value = false
             viewModel.isSettingSubDetailedSettingScreen.value = false
@@ -579,82 +587,82 @@ fun currentRoute(
             viewModel.isAddMilestoneScreen.value = true
         }
         NotificationDetailScreenRoute.NotificationDetails.route -> {
-            viewModel.toolbarTittle = "Notifications"
+            viewModel.toolbarTittle = stringResource(id = R.string.notifications)
             //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
-            viewModel.isNotificationScreen.value = false
+            notificationViewModel.isNotificationScreen.value = false
             viewModel.isSettingSubAboutAppScreen.value = false
-            viewModel.isNotificationDetailsScreen.value = true
+            notificationViewModel.isNotificationDetailsScreen.value = true
             viewModel.isSettingSubAboutAppScreen.value = false
             viewModel.isSettingSubDetailedSettingScreen.value = false
             viewModel.isSettingSubTermsOfServiceScreen.value = false
             viewModel.isSettingSubPrivacyPolicyScreen.value = false
         }
         SettingSubScreen.AboutApp.route -> {
-            viewModel.toolbarTittle = "About App"
+            viewModel.toolbarTittle = stringResource(id = R.string.about_app)
             //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
-            viewModel.isNotificationScreen.value = false
-            viewModel.isNotificationDetailsScreen.value = false
+            notificationViewModel.isNotificationScreen.value = false
+            notificationViewModel.isNotificationDetailsScreen.value = false
             viewModel.isSettingSubTermsOfServiceScreen.value = false
             viewModel.isSettingSubPrivacyPolicyScreen.value = false
             viewModel.isSettingSubAboutAppScreen.value = true
             viewModel.isSettingSubDetailedSettingScreen.value = false
         }
         SettingSubScreen.DetailedSetting.route -> {
-            viewModel.toolbarTittle = "Detailed Settings"
+            viewModel.toolbarTittle = stringResource(id = R.string.detailed_settings)
             //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
-            viewModel.isNotificationScreen.value = false
-            viewModel.isNotificationDetailsScreen.value = false
+            notificationViewModel.isNotificationScreen.value = false
+            notificationViewModel.isNotificationDetailsScreen.value = false
             viewModel.isSettingSubAboutAppScreen.value = false
             viewModel.isSettingSubTermsOfServiceScreen.value = false
             viewModel.isSettingSubPrivacyPolicyScreen.value = false
             viewModel.isSettingSubDetailedSettingScreen.value = true
         }
         SettingSubScreen.PrivacyPolicy.route -> {
-            viewModel.toolbarTittle = "Privacy Policy"
+            viewModel.toolbarTittle = stringResource(id = R.string.privacy_policy)
             //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
-            viewModel.isNotificationScreen.value = false
-            viewModel.isNotificationDetailsScreen.value = false
+            notificationViewModel.isNotificationScreen.value = false
+            notificationViewModel.isNotificationDetailsScreen.value = false
             viewModel.isSettingSubAboutAppScreen.value = false
             viewModel.isSettingSubDetailedSettingScreen.value = false
             viewModel.isSettingSubTermsOfServiceScreen.value = false
             viewModel.isSettingSubPrivacyPolicyScreen.value = true
         }
         SettingSubScreen.TermsOfService.route -> {
-            viewModel.toolbarTittle = "Terms of Service"
+            viewModel.toolbarTittle = stringResource(id = R.string.terms_of_service)
             //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
             viewModel.isAddMilestoneScreen.value = false
-            viewModel.isNotificationScreen.value = false
-            viewModel.isNotificationDetailsScreen.value = false
+            notificationViewModel.isNotificationScreen.value = false
+            notificationViewModel.isNotificationDetailsScreen.value = false
             viewModel.isSettingSubAboutAppScreen.value = false
             viewModel.isSettingSubDetailedSettingScreen.value = false
             viewModel.isSettingSubTermsOfServiceScreen.value = true
         }
     }
-    return navBackStackEntry?.arguments?.getString("Community")
+    return navBackStackEntry?.arguments?.getString(Constants.COMMUNITY_TITTLE)
 }
 
 @Composable
@@ -666,9 +674,9 @@ fun NavigationDrawerContent(
     homeActivity: HomeActivity,
 ) {
     val provider = PreferenceProvider(context)
-    val type = provider.getValue("type", "")
+    val type = provider.getValue(Constants.TYPE, "")
     val isSurrogate =
-        if (type == "parent") NavDrawerItem.YourSurrogateMother else NavDrawerItem.IntendedParents
+        if (type == Constants.PARENT) NavDrawerItem.YourSurrogateMother else NavDrawerItem.IntendedParents
     val navDrawerItems = mutableListOf(
         isSurrogate,
         NavDrawerItem.Community,
@@ -706,7 +714,7 @@ fun NavigationDrawerContent(
             )
             Column {
                 Text(
-                    text = "Mark Baggins", modifier = Modifier
+                    text = stringResource(id = R.string.mark_baggins), modifier = Modifier
                         .wrapContentWidth()
                         .padding(start = 13.dp),
                     style = MaterialTheme.typography.body2,
@@ -716,7 +724,8 @@ fun NavigationDrawerContent(
                     color = Color.Black
                 )
                 Text(
-                    text = "Parents", modifier = Modifier
+                    text = stringResource(id = R.string.text_home_bottom_sheet_parent),
+                    modifier = Modifier
                         .wrapContentWidth()
                         .padding(start = 13.dp, top = 5.dp),
                     style = MaterialTheme.typography.body1,
@@ -778,7 +787,7 @@ fun NavigationDrawerContent(
         ) {
             val checkedState = remember { mutableStateOf(true) }
             Text(
-                text = "Show Pregnancy Milestone",
+                text = stringResource(id = R.string.show_pregnancy_milestone),
                 style = MaterialTheme.typography.body1,
                 fontSize = 16.sp,
                 color = Color.Black
@@ -814,16 +823,16 @@ fun NavigationDrawerContent(
                 modifier = Modifier
                     .padding(start = 16.dp, bottom = 3.dp)
                     .clickable(indication = null, interactionSource = MutableInteractionSource()) {
-                        PreferenceProvider(context).setValue("user_logout", true)
+                        PreferenceProvider(context).setValue(Constants.USER_LOGOUT, true)
                         val intent = Intent(homeActivity, MainActivity::class.java)
                         context.startActivity(intent)
                         context
                             .findActivity()
                             ?.finish()
                         PreferenceProvider(context).clear()
-                        PreferenceProvider(context).setValue("isIntroDone", true)
+                        PreferenceProvider(context).setValue(Constants.IS_INTRO_DONE, true)
                     },
-                text = "Log out",
+                text = stringResource(id = R.string.log_out),
                 style = MaterialTheme.typography.body1,
                 fontSize = 16.sp,
                 color = Color.Black

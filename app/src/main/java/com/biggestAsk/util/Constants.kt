@@ -1,5 +1,7 @@
 package com.biggestAsk.util
 
+import com.biggestAsk.data.model.response.Milestone
+
 
 object Constants {
     const val UNAUTHORISED = 401
@@ -42,6 +44,8 @@ object Constants {
     const val CREATE_COMMUNITY = "community_create"
     const val GET_CONTACT = "get_contact"
     const val GET_COMMUNITY = "get_community"
+    const val GET_NOTIFICATION = "get_notification"
+    const val GET_NOTIFICATION_DETAIL = "get_notification_detail"
     const val STORE_MILESTONE_ANS = "store_milestone_ans"
     const val UPDATE_MILESTONE_IMAGE = "update_milestone_image"
     const val DELETE_MILESTONE_IMAGE = "delete_milestone_image"
@@ -51,6 +55,8 @@ object Constants {
 
     //prefrence data
     const val LOGIN_STATUS = "login_status"
+    const val IS_INTRO_DONE = "isIntroDone"
+    const val USER_LOGOUT = "user_logout"
 
     //login user type
     const val PARENT = "parent"
@@ -58,5 +64,90 @@ object Constants {
 
     // error body
     const val ERROR_BODY_MESSAGE = "message"
+
+    // HomeRepository
+    const val ON_BOARDING_PREF = "on_boarding_pref"
+    const val ON_BOARDING_COMPLETED = "on_boarding_completed"
+
+    //ApiService
+    const val USER_ID = "user_id"
+    const val TYPE = "type"
+    const val PARTNER_ID = "partner_id"
+    const val MILESTONE_ID = "milestone_id"
+    const val ID = "id"
+
+    //Screen
+    const val ROUTE_INTRO_SCREEN = "intro_screen"
+    const val ROUTE_VERIFY_EMAIL_SCREEN = "verify_email"
+    const val ROUTE_LOGIN_SCREEN = "login_screen"
+    const val ROUTE_PAYMENT_SCREEN = "payment_screen"
+    const val ROUTE_QUESTION_SCREEN = "question_screen"
+    const val ROUTE_HOME_SCREEN = "home_screen"
+    const val ROUTE_REGISTER_SCREEN = "register_screen"
+    const val BOTTOM_NAV_MILESTONES_SCREEN = "milestones"
+    const val BOTTOM_NAV_HOME_SCREEN = "home"
+    const val BOTTOM_NAV_QUESTION_SCREEN = "question"
+    const val BOTTOM_NAV_SURROGATE_PARENT_NOT_ASSIGN_SCREEN = "surrogate_parent_not_assign"
+
+    //BottomNavItems
+    const val MILESTONE = "Milestone"
+    const val HOME = "Home"
+    const val QUESTIONS = "Questions"
+
+    //Route
+    const val YOUR_SURROGATE_MOTHER = "your_surrogate_mother"
+    const val INTENDED_PARENTS = "intended_parents"
+    const val COMMUNITY = "community"
+    const val SETTINGS = "settings"
+    const val NOTIFICATIONS = "notifications"
+    const val CONTACT_YOUR_PROVIDER = "contact_your_providers"
+    const val YOUR_SURROGATE_MOTHER_TITTLE = "Your Surrogate Mother"
+    const val INTENDED_PARENTS_TITTLE = "Intended Parents"
+    const val COMMUNITY_TITTLE = "Community"
+    const val SETTINGS_TITTLE = "Settings"
+    const val NOTIFICATIONS_TITTLE = "Notifications"
+    const val CONTACT_YOUR_PROVIDER_TITTLE = "Contact Your Provider"
+    const val MY_ACCOUNT = "my_account"
+
+    //Common
+    const val IMAGE_ID = "image_id"
+    const val IMAGE_ARRAY = "image[]"
+    const val IMAGE = "image"
+    const val HELP_URL = "https://thebiggestask.com/the-biggest-ask-surrogacy-service/"
+    const val HELP = "Help"
+    const val ABOUT = "About"
+    const val PRIVACY_POLICY = "Privacy Policy"
+    const val TERMS_OF_SERVICE = "Terms of Service"
+    const val DETAILED_SETTINGS = "Detailed Settings"
+    const val ROUTE_ABOUT_APP = "about_app"
+    const val ROUTE_PRIVACY_POLICY = "privacy_policy"
+    const val ROUTE_TERMS_OF_SERVICE = "terms_of_service"
+    const val ROUTE_DETAILED_SETTINGS = "detailed_setting"
+    const val PLEASE_ADD_LOGO = "Please Add Logo"
+
+
+    //EditMileStone Screen
+    const val LONGITUDE = "00000000002"
+    const val LATITUDE = "00005000505"
+    const val IMAGE_LAUNCHER = "image/*"
+    const val COMMON = "common"
+    const val ENTER_NOTE = "Enter note"
+    const val SELECT_IMAGE_FIRST = "Select image first"
+    const val MAX_5_IMAGE = "You can select maximum 5 images."
+
+    //YourSurrogateMother
+    const val IS_SURROGATE_CONNECTED = "is_surrogate_connected"
+
+    //Create Contact
+    const val TITLE = "title"
+    const val AGENCY_NAME_CREATE_CONTACT = "agency_name"
+    const val AGENCY_EMAIL_CREATE_CONTACT = "agency_email"
+    const val AGENCY_NUMBER_CREATE_CONTACT = "agency_number"
+
+    //Create Community
+    const val INST_LINK = "insta_link"
+    const val FORUM_LINK = "forum_link"
+    const val DESCRIPTION = "description"
+
 }
 

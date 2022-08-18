@@ -8,6 +8,7 @@ import android.os.Build
 import android.util.Log
 import com.biggestAsk.util.Constants
 import com.biggestAsk.util.Constants.ERROR_BODY_MESSAGE
+import com.example.biggestAsk.R
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Response
@@ -52,7 +53,7 @@ abstract class BaseApiResponse(val context: Context) {
                     else -> error("${response.code()} ${response.message()}")
                 }
             } else {
-                error("No Internet available")
+                error(R.string.no_internet_available)
             }
 
         } catch (e: Exception) {

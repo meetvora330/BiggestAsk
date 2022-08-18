@@ -145,7 +145,7 @@ fun EditMilestoneScreen(
                 val image = uriPath?.let { convertImageMultiPartSingle(it) }
                 editMilestoneViewModel.updateMilestoneImage(
                     MultipartBody.Part.createFormData(
-                        "image_id",
+                        Constants.IMAGE_ID,
                         editMilestoneViewModel.imageList[latestIndex.value].id.toString()
                     ),
                     image
@@ -179,8 +179,8 @@ fun EditMilestoneScreen(
         mutableStateOf(true)
     }
     val coroutineScope = rememberCoroutineScope()
-    val type = provider.getValue("type", "")
-    val partnerId = provider.getIntValue("partner_id", 0)
+    val type = provider.getValue(Constants.TYPE, "")
+    val partnerId = provider.getIntValue(Constants.PARTNER_ID, 0)
     val milestoneType = remember { mutableStateOf("") }
     LaunchedEffect(Unit) {
         editMilestoneViewModel.editMilestoneLocationB.value = ""
@@ -224,7 +224,7 @@ fun EditMilestoneScreen(
                                 .wrapContentWidth()
                                 .padding(top = 11.dp)
                                 .align(Alignment.CenterHorizontally),
-                            text = "Update information", style = MaterialTheme.typography.h2.copy(
+                            text = stringResource(id = R.string.update_information), style = MaterialTheme.typography.h2.copy(
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.W600,
                                 lineHeight = 32.sp,
@@ -249,7 +249,7 @@ fun EditMilestoneScreen(
                             modifier = Modifier
                                 .wrapContentWidth()
                                 .padding(start = 24.dp, top = 20.dp),
-                            text = "Title",
+                            text = stringResource(id = R.string.tittle),
                             style = MaterialTheme.typography.body1.copy(
                                 fontWeight = FontWeight.W600,
                                 fontSize = 12.sp,
@@ -282,7 +282,7 @@ fun EditMilestoneScreen(
                             }),
                             placeholder = {
                                 Text(
-                                    text = "Enter Tittle",
+                                    text = stringResource(id = R.string.enter_tittle),
                                     style = MaterialTheme.typography.body2.copy(Color(0xFF7F7D7C))
                                 )
                             }, readOnly = editMilestoneViewModel.isMilestoneTittleEditable.value,
@@ -300,7 +300,7 @@ fun EditMilestoneScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(start = 24.dp),
-                                    text = "Enter tittle",
+                                    text = stringResource(id = R.string.enter_tittle),
                                     style = MaterialTheme.typography.caption,
                                     color = MaterialTheme.colors.error,
                                     fontSize = 12.sp
@@ -311,7 +311,7 @@ fun EditMilestoneScreen(
                             modifier = Modifier
                                 .wrapContentWidth()
                                 .padding(start = 24.dp, top = 15.dp),
-                            text = "Date",
+                            text = stringResource(id = R.string.date),
                             style = MaterialTheme.typography.body1.copy(
                                 fontWeight = FontWeight.W600,
                                 fontSize = 12.sp,
@@ -367,7 +367,7 @@ fun EditMilestoneScreen(
                                 unfocusedIndicatorColor = Color.Transparent
                             ), readOnly = true, enabled = false, placeholder = {
                                 Text(
-                                    text = "Select date",
+                                    text = stringResource(id = R.string.select_date),
                                     style = MaterialTheme.typography.body2.copy(Color(0xFF7F7D7C))
                                 )
                             },
@@ -380,7 +380,7 @@ fun EditMilestoneScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(start = 24.dp),
-                                text = "Enter date",
+                                text = stringResource(id = R.string.enter_date),
                                 style = MaterialTheme.typography.caption,
                                 color = MaterialTheme.colors.error,
                                 fontSize = 12.sp
@@ -390,7 +390,7 @@ fun EditMilestoneScreen(
                             modifier = Modifier
                                 .wrapContentWidth()
                                 .padding(start = 24.dp, top = 15.dp),
-                            text = "Start Time",
+                            text = stringResource(id = R.string.start_time),
                             style = MaterialTheme.typography.body1.copy(
                                 fontWeight = FontWeight.W600,
                                 fontSize = 12.sp,
@@ -454,7 +454,7 @@ fun EditMilestoneScreen(
                             ),
                             placeholder = {
                                 Text(
-                                    text = "Select time",
+                                    text = stringResource(id = R.string.select_time),
                                     style = MaterialTheme.typography.body2.copy(Color(0xFF7F7D7C))
                                 )
                             },
@@ -467,7 +467,7 @@ fun EditMilestoneScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(start = 24.dp),
-                                text = "Enter time",
+                                text = stringResource(id = R.string.enter_time),
                                 style = MaterialTheme.typography.caption,
                                 color = MaterialTheme.colors.error,
                                 fontSize = 12.sp
@@ -477,7 +477,7 @@ fun EditMilestoneScreen(
                             modifier = Modifier
                                 .wrapContentWidth()
                                 .padding(start = 24.dp, top = 15.dp),
-                            text = "Location",
+                            text = stringResource(id = R.string.location),
                             style = MaterialTheme.typography.body1.copy(
                                 fontWeight = FontWeight.W600,
                                 fontSize = 12.sp,
@@ -503,7 +503,7 @@ fun EditMilestoneScreen(
                                 unfocusedIndicatorColor = Color.Transparent
                             ), enabled = true, placeholder = {
                                 Text(
-                                    text = "Enter Location",
+                                    text = stringResource(id = R.string.enter_location),
                                     style = MaterialTheme.typography.body2.copy(Color(0xFF7F7D7C))
                                 )
                             }, singleLine = true,
@@ -520,7 +520,7 @@ fun EditMilestoneScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(start = 24.dp),
-                                text = "Enter location",
+                                text = stringResource(id = R.string.enter_location),
                                 style = MaterialTheme.typography.caption,
                                 color = MaterialTheme.colors.error,
                                 fontSize = 12.sp
@@ -558,17 +558,17 @@ fun EditMilestoneScreen(
                                             true
                                     }
                                     else -> {
-                                        val type = PreferenceProvider(context).getValue("type", "")
+                                        val type = PreferenceProvider(context).getValue(Constants.TYPE, "")
                                         val userId =
-                                            PreferenceProvider(context).getIntValue("user_id", 0)
+                                            PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
                                         val updateMilestoneAnsInfoRequest =
                                             UpdateMilestoneAnsInfoRequest(
                                                 title = editMilestoneViewModel.editMilestoneTittle.value,
                                                 time = editMilestoneViewModel.editMilestoneTime.value,
                                                 date = editMilestoneViewModel.editMilestoneDate.value,
                                                 location = editMilestoneViewModel.editMilestoneLocationB.value,
-                                                longitude = "00000000002",
-                                                latitude = "00005000505",
+                                                longitude = Constants.LONGITUDE,
+                                                latitude = Constants.LATITUDE,
                                                 user_id = userId,
                                                 type = type!!,
                                                 milestone_id = editMilestoneViewModel.milestoneId.value
@@ -606,7 +606,7 @@ fun EditMilestoneScreen(
                             )
                         ) {
                             Text(
-                                text = "Confirm",
+                                text = stringResource(id = R.string.confirm),
                                 style = MaterialTheme.typography.body2.copy(
                                     color = Color.White,
                                     fontSize = 16.sp,
@@ -749,8 +749,8 @@ fun EditMilestoneScreen(
                                 horizontalArrangement = Arrangement.End,
                                 verticalAlignment = Alignment.Top
                             ) {
-                                if (type == "parent") {
-                                    if (editMilestoneViewModel.milestoneType.value == "parent") {
+                                if (type == Constants.PARENT) {
+                                    if (editMilestoneViewModel.milestoneType.value == Constants.PARENT) {
                                         Icon(
                                             modifier = Modifier
                                                 .width(25.dp)
@@ -913,8 +913,8 @@ fun EditMilestoneScreen(
                                     }
                                 }
                             }
-                            if (type == "parent") {
-                                if (editMilestoneViewModel.milestoneType.value == "parent") {
+                            if (type == Constants.PARENT) {
+                                if (editMilestoneViewModel.milestoneType.value == Constants.PARENT) {
                                     Row(
                                         modifier = Modifier
                                             .fillMaxWidth()
@@ -953,7 +953,7 @@ fun EditMilestoneScreen(
                                                         index
                                                     latestIndex.value = index
                                                 } else {
-                                                    launcher.launch("image/*")
+                                                    launcher.launch(Constants.IMAGE_LAUNCHER)
                                                     editMilestoneViewModel.isPermissionAllowed.value =
                                                         false
                                                     editMilestoneViewModel.imageListIndex.value =
@@ -963,7 +963,7 @@ fun EditMilestoneScreen(
                                             }) {
                                             Text(
                                                 modifier = Modifier.wrapContentWidth(),
-                                                text = "Change photo",
+                                                text = stringResource(id = R.string.change_photo),
                                                 style = MaterialTheme.typography.h1.copy(
                                                     fontWeight = FontWeight.W900,
                                                     color = Color.White,
@@ -1018,7 +1018,7 @@ fun EditMilestoneScreen(
                                                     index
                                                 latestIndex.value = index
                                             } else {
-                                                launcher.launch("image/*")
+                                                launcher.launch(Constants.IMAGE_LAUNCHER)
                                                 editMilestoneViewModel.isPermissionAllowed.value =
                                                     false
                                                 editMilestoneViewModel.imageListIndex.value =
@@ -1028,7 +1028,7 @@ fun EditMilestoneScreen(
                                         }) {
                                         Text(
                                             modifier = Modifier.wrapContentWidth(),
-                                            text = "Change photo",
+                                            text = stringResource(id = R.string.change_photo),
                                             style = MaterialTheme.typography.h1.copy(
                                                 fontWeight = FontWeight.W900,
                                                 color = Color.White,
@@ -1049,8 +1049,8 @@ fun EditMilestoneScreen(
                         }
                     }
                     item {
-                        if (type == "parent") {
-                            if (editMilestoneViewModel.milestoneType.value == "parent") {
+                        if (type == Constants.PARENT) {
+                            if (editMilestoneViewModel.milestoneType.value == Constants.PARENT) {
                                 ConstraintLayout(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -1102,7 +1102,7 @@ fun EditMilestoneScreen(
                                                 end.linkTo(border_image_bg.end)
                                                 top.linkTo(tv_no_img_tittle.bottom)
                                             },
-                                        text = "For confirmation, you must attach a picture of the ultrasound and leave a comment.",
+                                        text = stringResource(id = R.string.attach_photo_and_comment),
                                         style = MaterialTheme.typography.body2.copy(
                                             color = Color(0xFFC6C4C2),
                                             fontSize = 12.sp,
@@ -1137,7 +1137,7 @@ fun EditMilestoneScreen(
                                             if (editMilestoneViewModel.imageList.size > 4) {
                                                 Toast.makeText(
                                                     context,
-                                                    "You can select maximum 5 images.",
+                                                    Constants.MAX_5_IMAGE,
                                                     Toast.LENGTH_SHORT
                                                 ).show()
                                             } else {
@@ -1154,7 +1154,7 @@ fun EditMilestoneScreen(
                                                     editMilestoneViewModel.imageListIndex.value =
                                                         -1
                                                 } else {
-                                                    launcher.launch("image/*")
+                                                    launcher.launch(Constants.IMAGE_LAUNCHER)
                                                     editMilestoneViewModel.isPermissionAllowed.value =
                                                         false
                                                     editMilestoneViewModel.imageListIndex.value =
@@ -1164,7 +1164,7 @@ fun EditMilestoneScreen(
                                         }) {
                                         Text(
                                             modifier = Modifier.wrapContentWidth(),
-                                            text = "Upload picture",
+                                            text = stringResource(id = R.string.upload_picture),
                                             style = MaterialTheme.typography.h1.copy(
                                                 fontWeight = FontWeight.W900,
                                                 color = Color.White,
@@ -1181,7 +1181,7 @@ fun EditMilestoneScreen(
                                         )
                                     }
                                 }
-                            } else if (editMilestoneViewModel.milestoneType.value == "common") {
+                            } else if (editMilestoneViewModel.milestoneType.value == Constants.COMMON) {
                                 if (editMilestoneViewModel.imageList.isEmpty()) {
                                     ConstraintLayout(
                                         modifier = Modifier
@@ -1216,7 +1216,7 @@ fun EditMilestoneScreen(
                                                     end.linkTo(border_image_bg.end)
                                                     top.linkTo(border_image_bg.top)
                                                 },
-                                            text = "No image available",
+                                            text = stringResource(id = R.string.no_image_available),
                                             style = MaterialTheme.typography.body2.copy(
                                                 color = Color(0xFF7F7D7C),
                                                 fontSize = 16.sp,
@@ -1234,7 +1234,7 @@ fun EditMilestoneScreen(
                                                     end.linkTo(border_image_bg.end)
                                                     top.linkTo(tv_no_img_tittle.bottom)
                                                 },
-                                            text = "For confirmation, you must attach a picture of the ultrasound and leave a comment.",
+                                            text = stringResource(id = R.string.attach_photo_and_comment),
                                             style = MaterialTheme.typography.body2.copy(
                                                 color = Color(0xFFC6C4C2),
                                                 fontSize = 12.sp,
@@ -1297,7 +1297,7 @@ fun EditMilestoneScreen(
                                             end.linkTo(border_image_bg.end)
                                             top.linkTo(tv_no_img_tittle.bottom)
                                         },
-                                    text = "For confirmation, you must attach a picture of the ultrasound and leave a comment.",
+                                    text = stringResource(id = R.string.attach_photo_and_comment),
                                     style = MaterialTheme.typography.body2.copy(
                                         color = Color(0xFFC6C4C2),
                                         fontSize = 12.sp,
@@ -1332,7 +1332,7 @@ fun EditMilestoneScreen(
                                         if (editMilestoneViewModel.imageList.size > 4) {
                                             Toast.makeText(
                                                 context,
-                                                "You can select maximum 5 images.",
+                                                Constants.MAX_5_IMAGE,
                                                 Toast.LENGTH_SHORT
                                             ).show()
                                         } else {
@@ -1347,7 +1347,7 @@ fun EditMilestoneScreen(
                                                 editMilestoneViewModel.imageListIndex.value =
                                                     -1
                                             } else {
-                                                launcher.launch("image/*")
+                                                launcher.launch(Constants.IMAGE_LAUNCHER)
                                                 editMilestoneViewModel.isPermissionAllowed.value =
                                                     false
                                                 editMilestoneViewModel.imageListIndex.value =
@@ -1357,7 +1357,7 @@ fun EditMilestoneScreen(
                                     }) {
                                     Text(
                                         modifier = Modifier.wrapContentWidth(),
-                                        text = "Upload picture",
+                                        text = stringResource(id = R.string.upload_picture),
                                         style = MaterialTheme.typography.h1.copy(
                                             fontWeight = FontWeight.W900,
                                             color = Color.White,
@@ -1395,26 +1395,26 @@ fun EditMilestoneScreen(
                                         intent.data = uri
                                         context.startActivity(intent)
                                     })
-                                    { Text(text = "APP SETTINGS", color = Color.Red) }
+                                    { Text(text = stringResource(id = R.string.app_settings), color = Color.Red) }
                                 },
                                 dismissButton = {
                                     TextButton(onClick = {
                                         editMilestoneViewModel.isPermissionAllowed.value = false
                                     })
-                                    { Text(text = "CANCEL", color = Color.Red) }
+                                    { Text(text = stringResource(id = R.string.cancel_dialog), color = Color.Red) }
                                 },
-                                title = { Text(text = "Permission Denied") },
-                                text = { Text(text = "Permission is denied, Please allow permission from App Settings") }
+                                title = { Text(text = stringResource(id = R.string.permission_denied_dialog)) },
+                                text = { Text(text = stringResource(id = R.string.allow_permission_dialog)) }
                             )
                         }
-                        if (type == "parent" && editMilestoneViewModel.surrogateNote.value != "") {
+                        if (type == Constants.PARENT && editMilestoneViewModel.surrogateNote.value != "") {
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(top = 26.dp)
                             ) {
                                 Text(
-                                    text = "Surrogate note",
+                                    text = stringResource(id = R.string.surrogate_note),
                                     style = MaterialTheme.typography.body2.copy(
                                         color = Color.Black,
                                         fontWeight = FontWeight.W800,
@@ -1455,7 +1455,7 @@ fun EditMilestoneScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(top = 26.dp),
-                            text = "Notes", style = MaterialTheme.typography.body2.copy(
+                            text = stringResource(id = R.string.notes), style = MaterialTheme.typography.body2.copy(
                                 color = Color.Black,
                                 fontWeight = FontWeight.W800,
                                 fontSize = 12.sp
@@ -1479,7 +1479,7 @@ fun EditMilestoneScreen(
                             textStyle = MaterialTheme.typography.body2,
                             placeholder = {
                                 Text(
-                                    text = "Write notes here",
+                                    text = stringResource(id = R.string.write_notes_here),
                                     style = MaterialTheme.typography.body1.copy(
                                         fontSize = 16.sp,
                                         color = Text_Color,
@@ -1497,7 +1497,7 @@ fun EditMilestoneScreen(
                                 unfocusedIndicatorColor = Color.Transparent,
                             ),
                         )
-                        if (type == "parent") {
+                        if (type == Constants.PARENT) {
                             Row(modifier = Modifier.padding(top = 10.dp)) {
                                 CompositionLocalProvider(LocalMinimumTouchTargetEnforcement provides false) {
                                     Checkbox(modifier = Modifier.padding(
@@ -1515,7 +1515,7 @@ fun EditMilestoneScreen(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(top = 20.dp, start = 10.dp),
-                                        text = "Share with the biggest ask",
+                                        text = stringResource(id = R.string.share_with_the_biggest_ask),
                                         style = MaterialTheme.typography.body2.copy(
                                             color = Color.Black,
                                             fontWeight = FontWeight.W600,
@@ -1542,7 +1542,7 @@ fun EditMilestoneScreen(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(top = 20.dp, start = 10.dp),
-                                        text = "Share with Intended parents",
+                                        text = stringResource(id = R.string.share_with_intended_parents),
                                         style = MaterialTheme.typography.body2.copy(
                                             color = Color.Black,
                                             fontWeight = FontWeight.W600,
@@ -1568,7 +1568,7 @@ fun EditMilestoneScreen(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(top = 20.dp, start = 10.dp),
-                                        text = "Share with the biggest ask",
+                                        text = stringResource(id = R.string.share_with_the_biggest_ask),
                                         style = MaterialTheme.typography.body2.copy(
                                             color = Color.Black,
                                             fontWeight = FontWeight.W600,
@@ -1587,7 +1587,7 @@ fun EditMilestoneScreen(
                                 modifier = Modifier
                                     .padding(
                                         top = 30.dp,
-                                        bottom = if (type == "parent" && editMilestoneViewModel.milestoneType.value == "parent") 0.dp else 20.dp
+                                        bottom = if (type == Constants.PARENT && editMilestoneViewModel.milestoneType.value == Constants.PARENT) 0.dp else 20.dp
                                     ),
                                 onClick = {
                                     if (!TextUtils.isEmpty(editMilestoneViewModel.addNewMilestoneNotes.value)) {
@@ -1614,7 +1614,7 @@ fun EditMilestoneScreen(
                                     } else {
                                         Toast.makeText(
                                             context,
-                                            "Enter note",
+                                            Constants.ENTER_NOTE,
                                             Toast.LENGTH_SHORT
                                         )
                                             .show()
@@ -1632,7 +1632,7 @@ fun EditMilestoneScreen(
                                 )
                             ) {
                                 Text(
-                                    text = "Save notes",
+                                    text = stringResource(id = R.string.save_notes),
                                     style = MaterialTheme.typography.body1.copy(
                                         fontSize = 16.sp,
                                         color = Color.White,
@@ -1642,8 +1642,8 @@ fun EditMilestoneScreen(
                                 )
                             }
                         }
-                        if (type == "parent") {
-                            if (editMilestoneViewModel.milestoneType.value == "parent") {
+                        if (type == Constants.PARENT) {
+                            if (editMilestoneViewModel.milestoneType.value == Constants.PARENT) {
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -1656,7 +1656,7 @@ fun EditMilestoneScreen(
                                         onClick = {
                                             val userId =
                                                 PreferenceProvider(context).getIntValue(
-                                                    "user_id",
+                                                    Constants.USER_ID,
                                                     0
                                                 )
                                             val imageList = ArrayList<MultipartBody.Part?>()
@@ -1673,7 +1673,7 @@ fun EditMilestoneScreen(
                                                 val toast =
                                                     Toast.makeText(
                                                         context,
-                                                        "Select image first",
+                                                        Constants.SELECT_IMAGE_FIRST,
                                                         Toast.LENGTH_LONG
                                                     )
                                                 toast.setGravity(Gravity.CENTER, 0, 0)
@@ -1682,15 +1682,15 @@ fun EditMilestoneScreen(
                                                 editMilestoneViewModel.storeMilestoneAns(
                                                     images = imageList,
                                                     user_id = MultipartBody.Part.createFormData(
-                                                        "user_id",
+                                                        Constants.USER_ID,
                                                         userId.toString()
                                                     ),
                                                     type = MultipartBody.Part.createFormData(
-                                                        "type",
+                                                        Constants.TYPE,
                                                         type
                                                     ),
                                                     milestone_id = MultipartBody.Part.createFormData(
-                                                        "milestone_id",
+                                                        Constants.MILESTONE_ID,
                                                         milestoneId.toString()
                                                     )
                                                 )
@@ -1720,7 +1720,7 @@ fun EditMilestoneScreen(
                                         )
                                     ) {
                                         Text(
-                                            text = "Update milestone",
+                                            text = stringResource(id = R.string.update_milestone),
                                             style = MaterialTheme.typography.body2.copy(
                                                 color = Color.White,
                                                 fontWeight = FontWeight.W900,
@@ -1748,7 +1748,7 @@ fun EditMilestoneScreen(
                                     modifier = Modifier.width(218.dp),
                                     onClick = {
                                         val userId =
-                                            PreferenceProvider(context).getIntValue("user_id", 0)
+                                            PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
                                         val imageList = ArrayList<MultipartBody.Part?>()
                                         editMilestoneViewModel.imageList.forEach {
                                             if (it.is_need_to_upload) {
@@ -1763,7 +1763,7 @@ fun EditMilestoneScreen(
                                             val toast =
                                                 Toast.makeText(
                                                     context,
-                                                    "Select image first",
+                                                    Constants.SELECT_IMAGE_FIRST,
                                                     Toast.LENGTH_LONG
                                                 )
                                             toast.setGravity(Gravity.CENTER, 0, 0)
@@ -1772,15 +1772,15 @@ fun EditMilestoneScreen(
                                             editMilestoneViewModel.storeMilestoneAns(
                                                 images = imageList,
                                                 user_id = MultipartBody.Part.createFormData(
-                                                    "user_id",
+                                                    Constants.USER_ID,
                                                     userId.toString()
                                                 ),
                                                 type = MultipartBody.Part.createFormData(
-                                                    "type",
+                                                    Constants.TYPE,
                                                     type!!
                                                 ),
                                                 milestone_id = MultipartBody.Part.createFormData(
-                                                    "milestone_id",
+                                                    Constants.MILESTONE_ID,
                                                     milestoneId.toString()
                                                 )
                                             )
@@ -1810,7 +1810,7 @@ fun EditMilestoneScreen(
                                     )
                                 ) {
                                     Text(
-                                        text = "Update milestone",
+                                        text = stringResource(id = R.string.update_milestone),
                                         style = MaterialTheme.typography.body2.copy(
                                             color = Color.White,
                                             fontWeight = FontWeight.W900,
@@ -1834,16 +1834,16 @@ fun EditMilestoneScreen(
         )
     }
     if (editMilestoneViewModel.isEditMilestoneDataLoaded.value) {
-        ProgressBarTransparentBackground(loadingText = "Loading...")
+        ProgressBarTransparentBackground(loadingText = stringResource(id = R.string.loading))
     }
     if (editMilestoneViewModel.isMilestoneDataUpdated.value || editMilestoneViewModel.isNoteSaved.value) {
-        ProgressBarTransparentBackground(loadingText = if (editMilestoneViewModel.isMilestoneDataUpdated.value) "Updating..." else "Saving")
+        ProgressBarTransparentBackground(loadingText = if (editMilestoneViewModel.isMilestoneDataUpdated.value) stringResource(id = R.string.updating) else stringResource(id = R.string.saving))
     }
     if (editMilestoneViewModel.isMilestoneAnsUpdated.value || editMilestoneViewModel.isMilestoneImageUpdated.value) {
-        ProgressBarTransparentBackground(loadingText = "Updating...")
+        ProgressBarTransparentBackground(loadingText = stringResource(id = R.string.updating))
     }
     if (editMilestoneViewModel.isImageDeleted.value) {
-        ProgressBarTransparentBackground(loadingText = "Removing...")
+        ProgressBarTransparentBackground(loadingText = stringResource(id = R.string.removing))
     }
 }
 
@@ -1855,7 +1855,7 @@ private fun getUpdatedMilestone(
     milestoneId: Int,
     partner_id: Int,
 ) {
-    val userId = PreferenceProvider(context).getIntValue("user_id", 0)
+    val userId = PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
     editMilestoneViewModel.getMilestoneDetails(
         EditMilestoneRequest(
             type = type!!,
@@ -2097,18 +2097,18 @@ private fun handleUpdateMilestoneData(
 fun convertImageMultiPart(imagePath: String): MultipartBody.Part {
     val file = File(imagePath)
     return MultipartBody.Part.createFormData(
-        "image[]",
+        Constants.IMAGE_ARRAY,
         file.name,
-        file.asRequestBody("image/*".toMediaTypeOrNull())
+        file.asRequestBody(Constants.IMAGE_LAUNCHER.toMediaTypeOrNull())
     )
 }
 
 fun convertImageMultiPartSingle(imagePath: String): MultipartBody.Part {
     val file = File(imagePath)
     return MultipartBody.Part.createFormData(
-        "image",
+        Constants.IMAGE,
         file.name,
-        file.asRequestBody("image/*".toMediaTypeOrNull())
+        file.asRequestBody(Constants.IMAGE_LAUNCHER.toMediaTypeOrNull())
     )
 }
 

@@ -51,8 +51,8 @@ fun SetUpNavGraph(
 ) {
     var startDestination = Screen.Intro.route
     val provider = PreferenceProvider(mainActivity.applicationContext)
-    val isIntroDone = provider.getBooleanValue("isIntroDone", false)
-    val isUserLogout = provider.getBooleanValue("user_logout", false)
+    val isIntroDone = provider.getBooleanValue(Constants.IS_INTRO_DONE, false)
+    val isUserLogout = provider.getBooleanValue(Constants.USER_LOGOUT, false)
     if (isIntroDone) {
         startDestination = if (isUserLogout) {
             Screen.Login.route

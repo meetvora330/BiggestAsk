@@ -1,14 +1,15 @@
 package com.biggestAsk.ui.homeScreen.drawerScreens.settingScreens
 
+import com.biggestAsk.util.Constants
 import com.example.biggestAsk.R
 
 sealed class SettingSubScreen(
     val route: String
 ) {
-    object AboutApp : SettingSubScreen(route = "about_app")
-    object PrivacyPolicy : SettingSubScreen(route = "privacy_policy")
-    object TermsOfService : SettingSubScreen(route = "terms_of_service")
-    object DetailedSetting : SettingSubScreen(route = "detailed_setting")
+    object AboutApp : SettingSubScreen(route = Constants.ROUTE_ABOUT_APP)
+    object PrivacyPolicy : SettingSubScreen(route = Constants.ROUTE_PRIVACY_POLICY)
+    object TermsOfService : SettingSubScreen(route = Constants.ROUTE_TERMS_OF_SERVICE)
+    object DetailedSetting : SettingSubScreen(route = Constants.ROUTE_DETAILED_SETTINGS)
 }
 
 data class SettingsItem(
@@ -19,22 +20,22 @@ data class SettingsItem(
 val listSettingsItem = mutableListOf(
     SettingsItem(
         icon = R.drawable.ic_baseline_help_outline_24,
-        title = "Help"
+        title = Constants.HELP
     ),
     SettingsItem(
         icon = R.drawable.ic_baseline_help_outline_24,
-        title = "About"
+        title = Constants.ABOUT
     ),
     SettingsItem(
         icon = R.drawable.ic_icon_setting_item_detailed,
-        title = "Detailed Settings"
+        title = Constants.DETAILED_SETTINGS
     ),
     SettingsItem(
         icon = R.drawable.ic_icon_setting_item_privacy_policy,
-        title = "Privacy Policy"
+        title = Constants.PRIVACY_POLICY
     ),
     SettingsItem(
         icon = R.drawable.ic_icon_setting_item_privacy_policy,
-        title = "Terms of Service"
+        title = Constants.TERMS_OF_SERVICE
     )
 )

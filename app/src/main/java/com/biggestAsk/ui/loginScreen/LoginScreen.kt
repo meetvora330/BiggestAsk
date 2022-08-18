@@ -357,7 +357,7 @@ fun LoginScreen(
         }
     }
     if (loginViewModel.isLoading) {
-        ProgressBarTransparentBackground("Please wait....")
+        ProgressBarTransparentBackground(stringResource(id = R.string.please_wait))
     }
 }
 

@@ -1,6 +1,5 @@
 package com.biggestAsk.ui.homeScreen.drawerScreens.community
 
-import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,6 +14,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -27,6 +27,7 @@ import com.biggestAsk.ui.HomeActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
 import com.biggestAsk.ui.main.viewmodel.CommunityViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
+import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 
@@ -36,8 +37,8 @@ fun Community(
     homeActivity: HomeActivity,
 ) {
     val context = LocalContext.current
-    val type = PreferenceProvider(context).getValue("type", "")
-    val userId = PreferenceProvider(context).getIntValue("user_id", 0)
+    val type = PreferenceProvider(context).getValue(Constants.TYPE, "")
+    val userId = PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
     LaunchedEffect(Unit) {
         getUpdatedCommunity(type!!, userId, communityViewModel = communityViewModel, homeActivity)
     }
@@ -134,7 +135,7 @@ fun Community(
                                 colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)
                             ) {
                                 Text(
-                                    text = "Instagram",
+                                    text = stringResource(id = R.string.instagram),
                                     style = MaterialTheme.typography.body1,
                                     fontWeight = FontWeight.W600,
                                     fontSize = 16.sp,
@@ -156,7 +157,7 @@ fun Community(
                                 colors = ButtonDefaults.buttonColors(backgroundColor = Custom_Blue)
                             ) {
                                 Text(
-                                    text = "To Forum",
+                                    text = stringResource(id = R.string.to_forum),
                                     style = MaterialTheme.typography.body1,
                                     fontWeight = FontWeight.W600,
                                     fontSize = 16.sp,
@@ -171,7 +172,16 @@ fun Community(
         }
     }
     if (communityViewModel.isLoading) {
-        ProgressBarTransparentBackground("Loading...")
+        ProgressBarTransparentBackground(stringResource(id = R.string.loading))
+    }
+    if (communityViewModel.isDataNull) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = stringResource(id = R.string.no_community_found))
+        }
     }
 }
 
@@ -192,8 +202,6 @@ fun getUpdatedCommunity(
                 result = it,
                 communityViewModel = communityViewModel
             )
-        } else {
-            Log.e("TAG", "GetCommunityData is null: ")
         }
     }
 }
@@ -206,11 +214,13 @@ private fun handleGetCommunityApi(
         is NetworkResult.Loading -> {
             // show a progress bar
             communityViewModel.isLoading = true
+            communityViewModel.isDataNull = false
         }
         is NetworkResult.Success -> {
             // bind data to the view
             communityViewModel.isLoading = false
             communityViewModel.communityList = result.data!!.data.toMutableStateList()
+            communityViewModel.isDataNull = communityViewModel.communityList.isEmpty()
         }
         is NetworkResult.Error -> {
             //show error message

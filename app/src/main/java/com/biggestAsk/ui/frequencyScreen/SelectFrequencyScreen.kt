@@ -149,7 +149,7 @@ fun SelectFrequencyScreen(
         }
     }
     if (frequencyViewModel.isLoading) {
-        ProgressBarTransparentBackground("Please wait....")
+        ProgressBarTransparentBackground(stringResource(id = R.string.please_wait))
     }
 }
 
@@ -160,8 +160,8 @@ private fun frequencySubmitApiCall(
     selectedText: String
 ) {
     val provider = PreferenceProvider(context)
-    val type = provider.getValue("type", "")
-    val userId = provider.getIntValue("user_id", 0)
+    val type = provider.getValue(Constants.TYPE, "")
+    val userId = provider.getIntValue(Constants.USER_ID, 0)
     val frequency =
         if (frequencyViewModel.selectedValueEveryDayRb.value) "everyday" else if (frequencyViewModel.selectedValueEvery3DaysRb.value) "every_3_day" else "every_week"
     Log.d("TAG", "QuestionScreenF: $frequency")

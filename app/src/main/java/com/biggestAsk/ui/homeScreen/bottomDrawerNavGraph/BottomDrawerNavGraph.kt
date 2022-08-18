@@ -41,7 +41,8 @@ fun BottomNavigationDrawerGraph(
     yourAccountViewModel: YourAccountViewModel,
     contactYourProviderViewModel: ContactYourProviderViewModel,
     surrogateViewModel: YourSurrogateViewModel,
-    communityViewModel: CommunityViewModel
+    communityViewModel: CommunityViewModel,
+    notificationViewModel: NotificationViewModel,
 ) {
     NavHost(
         navController = navHostController, startDestination = BottomNavScreen.Home.route
@@ -59,7 +60,7 @@ fun BottomNavigationDrawerGraph(
             route = BottomNavScreen.Home.route
         ) {
             val provider = PreferenceProvider(context)
-            val type = provider.getValue("type", "")
+            val type = provider.getValue(Constants.TYPE, "")
             when (provider.getValue(Constants.LOGIN_STATUS, "")) {
                 LoginStatus.PARTNER_NOT_ASSIGN.name.lowercase(Locale.getDefault()) -> {
                     if (type == Constants.PARENT) {
@@ -142,7 +143,9 @@ fun BottomNavigationDrawerGraph(
         composable(
             route = NavDrawerItem.Notifications.route
         ) {
-            Notification(navHostController = navHostController)
+            Notification(navHostController = navHostController,
+                notificationViewModel = notificationViewModel,
+                homeActivity = homeActivity)
         }
         composable(
             route = NotificationDetailScreenRoute.NotificationDetails.route, arguments = listOf(

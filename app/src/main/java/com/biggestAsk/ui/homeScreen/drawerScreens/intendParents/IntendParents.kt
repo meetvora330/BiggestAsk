@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -101,7 +102,7 @@ fun IntendParentsScreen(viewModel: MainViewModel) {
             ) {
                 Text(
                     modifier = Modifier.wrapContentWidth(),
-                    text = if (viewModel.isFatherClicked) "Mark Baggins" else "Samantha Jones",
+                    text = if (viewModel.isFatherClicked) stringResource(id = R.string.mark_baggins) else stringResource(id = R.string.samantha_jones),
                     style = MaterialTheme.typography.h2.copy(
                         color = Color.Black,
                         fontSize = 24.sp,
@@ -120,7 +121,7 @@ fun IntendParentsScreen(viewModel: MainViewModel) {
                         modifier = Modifier
                             .wrapContentWidth()
                             .padding(end = 2.dp),
-                        text = if (viewModel.isFatherClicked) "01/02/1988" else "05/01/1995",
+                        text = if (viewModel.isFatherClicked) stringResource(id = R.string.father_dob) else stringResource(id = R.string.mother_dob),
                         style = MaterialTheme.typography.body2.copy(
                             color = Color(0xFF7F7D7C),
                             fontSize = 14.sp,
@@ -130,7 +131,7 @@ fun IntendParentsScreen(viewModel: MainViewModel) {
                     )
                     Text(
                         modifier = Modifier.wrapContentWidth(),
-                        text = if (viewModel.isFatherClicked) "(37 Year)" else "(30 Year)",
+                        text = if (viewModel.isFatherClicked) stringResource(id = R.string.father_age) else stringResource(id = R.string.mother_age),
                         style = MaterialTheme.typography.body2.copy(
                             color = Color.Black,
                             fontSize = 14.sp,
@@ -148,7 +149,7 @@ fun IntendParentsScreen(viewModel: MainViewModel) {
                     modifier = Modifier
                         .wrapContentWidth()
                         .padding(top = 18.dp),
-                    text = "888 Main St,Seattle,WA 98006",
+                    text = stringResource(id = R.string.intended_home_address),
                     style = MaterialTheme.typography.body2.copy(
                         color = Color.Black,
                         fontSize = 14.sp,
@@ -160,7 +161,7 @@ fun IntendParentsScreen(viewModel: MainViewModel) {
                     modifier = Modifier
                         .wrapContentWidth()
                         .padding(top = 11.dp),
-                    text = "+880 9589876",
+                    text = stringResource(id = R.string.intended_number),
                     style = MaterialTheme.typography.body2.copy(
                         color = Custom_Blue,
                         fontSize = 14.sp,
@@ -172,7 +173,7 @@ fun IntendParentsScreen(viewModel: MainViewModel) {
                     modifier = Modifier
                         .wrapContentWidth()
                         .padding(top = 16.dp),
-                    text = if (viewModel.isFatherClicked) "marktvan@gmail.ua" else "samnthvan@gmail.ua",
+                    text = if (viewModel.isFatherClicked) stringResource(id = R.string.father_email) else stringResource(id = R.string.mother_email),
                     style = MaterialTheme.typography.body2.copy(
                         color = Color.Black,
                         fontSize = 14.sp,
@@ -184,7 +185,7 @@ fun IntendParentsScreen(viewModel: MainViewModel) {
                     modifier = Modifier
                         .wrapContentWidth()
                         .padding(top = 16.dp),
-                    text = "goodmark@gmail.com",
+                    text = stringResource(id = R.string.intended_email),
                     style = MaterialTheme.typography.body2.copy(
                         color = Color.Black,
                         fontSize = 14.sp,
@@ -207,7 +208,7 @@ fun IntendParentsScreen(viewModel: MainViewModel) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 24.dp, top = 24.dp, end = 56.dp),
-                    text = "What is your favorite snack?",
+                    text = stringResource(id = R.string.what_is_your_favourite_snack),
                     color = Color.Black,
                     style = MaterialTheme.typography.body2.copy(
                         color = Color.Black,
@@ -220,7 +221,7 @@ fun IntendParentsScreen(viewModel: MainViewModel) {
                 Row {
                     Text(
                         modifier = Modifier.padding(start = 24.dp, top = 10.dp),
-                        text = "Martha Smith",
+                        text = stringResource(id = R.string.martha_smith),
                         style = MaterialTheme.typography.body2.copy(
                             color = Custom_Blue,
                             fontSize = 16.sp,
@@ -232,7 +233,7 @@ fun IntendParentsScreen(viewModel: MainViewModel) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 10.dp, end = 24.dp),
-                        text = "1 Day ago",
+                        text = stringResource(id = R.string.one_day_ago),
                         color = Color(0xFF9F9D9B),
                         style = MaterialTheme.typography.body1,
                         fontSize = 12.sp,
@@ -242,7 +243,7 @@ fun IntendParentsScreen(viewModel: MainViewModel) {
                 }
                 Text(
                     modifier = Modifier.padding(start = 24.dp, top = 4.dp, bottom = 22.dp),
-                    text = "Chocolate all the way!!",
+                    text = stringResource(id = R.string.chocolate_all_the_way),
                     style = MaterialTheme.typography.body2.copy(
                         color = Color.Black,
                         fontSize = 14.sp,
@@ -265,7 +266,7 @@ fun IntendParentsScreen(viewModel: MainViewModel) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 24.dp, top = 24.dp, end = 56.dp),
-                    text = "What is your favorite snack?",
+                    text = stringResource(id = R.string.what_is_your_favourite_snack),
                     style = MaterialTheme.typography.body2.copy(
                         color = Color.Black,
                         fontSize = 16.sp,
@@ -276,7 +277,7 @@ fun IntendParentsScreen(viewModel: MainViewModel) {
                 Row {
                     Text(
                         modifier = Modifier.padding(start = 24.dp, top = 10.dp),
-                        text = "Samantha  Jones",
+                        text = stringResource(id = R.string.samantha_jones),
                         style = MaterialTheme.typography.body2.copy(
                             color = Custom_Blue,
                             fontSize = 16.sp,
@@ -288,7 +289,7 @@ fun IntendParentsScreen(viewModel: MainViewModel) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 10.dp, end = 24.dp),
-                        text = "1 Day ago",
+                        text = stringResource(id = R.string.one_day_ago),
                         color = Color(0xFF9F9D9B),
                         style = MaterialTheme.typography.body1,
                         fontSize = 12.sp,
@@ -298,7 +299,7 @@ fun IntendParentsScreen(viewModel: MainViewModel) {
                 }
                 Text(
                     modifier = Modifier.padding(start = 24.dp, top = 4.dp, bottom = 22.dp),
-                    text = "Basketball and Miami Heat",
+                    text = stringResource(id = R.string.basketball_and_miami_heat),
                     style = MaterialTheme.typography.body2.copy(
                         color = Color.Black,
                         fontSize = 14.sp,

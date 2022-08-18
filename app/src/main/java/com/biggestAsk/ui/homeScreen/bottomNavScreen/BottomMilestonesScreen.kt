@@ -55,6 +55,7 @@ import com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph.BottomNavScreen
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer.MilestoneScreenShimmerAnimation
 import com.biggestAsk.ui.main.viewmodel.BottomMilestoneViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
+import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 import kotlinx.coroutines.CoroutineScope
@@ -159,7 +160,7 @@ fun MilestonesScreen(
                                 .wrapContentWidth()
                                 .padding(top = 11.dp)
                                 .align(CenterHorizontally),
-                            text = "Add milestone", style = MaterialTheme.typography.h2.copy(
+                            text = stringResource(id = R.string.add_milestone), style = MaterialTheme.typography.h2.copy(
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.W600,
                                 lineHeight = 32.sp,
@@ -184,7 +185,7 @@ fun MilestonesScreen(
                             modifier = Modifier
                                 .wrapContentWidth()
                                 .padding(start = 24.dp, top = 20.dp),
-                            text = "Title",
+                            text = stringResource(id = R.string.title),
                             style = MaterialTheme.typography.body1.copy(
                                 fontWeight = FontWeight.W600,
                                 fontSize = 12.sp,
@@ -217,7 +218,7 @@ fun MilestonesScreen(
                             }),
                             placeholder = {
                                 Text(
-                                    text = "Enter Tittle",
+                                    text = stringResource(id = R.string.enter_title),
                                     style = MaterialTheme.typography.body2.copy(Color(0xFF7F7D7C))
                                 )
                             },
@@ -234,7 +235,7 @@ fun MilestonesScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(start = 24.dp),
-                                text = "Enter tittle",
+                                text = stringResource(id = R.string.enter_title),
                                 style = MaterialTheme.typography.caption,
                                 color = MaterialTheme.colors.error,
                                 fontSize = 12.sp
@@ -244,7 +245,7 @@ fun MilestonesScreen(
                             modifier = Modifier
                                 .wrapContentWidth()
                                 .padding(start = 24.dp, top = 15.dp),
-                            text = "Date",
+                            text = stringResource(id = R.string.date),
                             style = MaterialTheme.typography.body1.copy(
                                 fontWeight = FontWeight.W600,
                                 fontSize = 12.sp,
@@ -265,7 +266,8 @@ fun MilestonesScreen(
                                         R.style.CalenderViewCustom,
                                         { _: DatePicker, year: Int, month: Int, day: Int ->
                                             milestoneViewModel.addNewMilestoneDate.value =
-                                                "$year/"+"%02d".format(month+1)+"/"+"%02d".format(day)
+                                                "$year/" + "%02d".format(month + 1) + "/" + "%02d".format(
+                                                    day)
                                         }, year, month, day
                                     )
                                     datePickerDialog.show()
@@ -301,7 +303,7 @@ fun MilestonesScreen(
                                 unfocusedIndicatorColor = Color.Transparent
                             ), readOnly = true, enabled = false, placeholder = {
                                 Text(
-                                    text = "Select date",
+                                    text = stringResource(id = R.string.select_date),
                                     style = MaterialTheme.typography.body2.copy(Color(0xFF7F7D7C))
                                 )
                             },
@@ -314,7 +316,7 @@ fun MilestonesScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(start = 24.dp),
-                                text = "Enter date",
+                                text = stringResource(id = R.string.enter_date),
                                 style = MaterialTheme.typography.caption,
                                 color = MaterialTheme.colors.error,
                                 fontSize = 12.sp
@@ -324,7 +326,7 @@ fun MilestonesScreen(
                             modifier = Modifier
                                 .wrapContentWidth()
                                 .padding(start = 24.dp, top = 15.dp),
-                            text = "Start Time",
+                            text = stringResource(id = R.string.start_time),
                             style = MaterialTheme.typography.body1.copy(
                                 fontWeight = FontWeight.W600,
                                 fontSize = 12.sp,
@@ -351,7 +353,8 @@ fun MilestonesScreen(
                                                 "PM"
                                             }
                                             milestoneViewModel.addNewMilestoneTime.value =
-                                                "%02d".format(hourOfDay)+":"+"%02d".format(minute)+" "+ amPm
+                                                "%02d".format(hourOfDay) + ":" + "%02d".format(
+                                                    minute) + " " + amPm
                                         }, mHour, mMinute, false
                                     )
                                     timePickerDialog.show()
@@ -388,7 +391,7 @@ fun MilestonesScreen(
                             ),
                             placeholder = {
                                 Text(
-                                    text = "Select time",
+                                    text = stringResource(id = R.string.select_time),
                                     style = MaterialTheme.typography.body2.copy(Color(0xFF7F7D7C))
                                 )
                             },
@@ -401,7 +404,7 @@ fun MilestonesScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(start = 24.dp),
-                                text = "Enter time",
+                                text = stringResource(id = R.string.enter_time),
                                 style = MaterialTheme.typography.caption,
                                 color = MaterialTheme.colors.error,
                                 fontSize = 12.sp
@@ -411,7 +414,7 @@ fun MilestonesScreen(
                             modifier = Modifier
                                 .wrapContentWidth()
                                 .padding(start = 24.dp, top = 15.dp),
-                            text = "Location",
+                            text = stringResource(id = R.string.location),
                             style = MaterialTheme.typography.body1.copy(
                                 fontWeight = FontWeight.W600,
                                 fontSize = 12.sp,
@@ -437,7 +440,7 @@ fun MilestonesScreen(
                                 unfocusedIndicatorColor = Color.Transparent
                             ), enabled = true, placeholder = {
                                 Text(
-                                    text = "Enter Location",
+                                    text = stringResource(id = R.string.enter_location),
                                     style = MaterialTheme.typography.body2.copy(Color(0xFF7F7D7C))
                                 )
                             }, singleLine = true,
@@ -454,7 +457,7 @@ fun MilestonesScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(start = 24.dp),
-                                text = "Enter location",
+                                text = stringResource(id = R.string.enter_location),
                                 style = MaterialTheme.typography.caption,
                                 color = MaterialTheme.colors.error,
                                 fontSize = 12.sp
@@ -492,9 +495,9 @@ fun MilestonesScreen(
                                             true
                                     }
                                     else -> {
-                                        val type = PreferenceProvider(context).getValue("type", "")
+                                        val type = PreferenceProvider(context).getValue(Constants.TYPE, "")
                                         val userId =
-                                            PreferenceProvider(context).getIntValue("user_id", 0)
+                                            PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
                                         val createMilestoneRequest = CreateMilestoneRequest(
                                             milestone = milestoneViewModel.addNewMilestoneTittle.value,
                                             user_type = type!!,
@@ -537,7 +540,7 @@ fun MilestonesScreen(
                             )
                         ) {
                             Text(
-                                text = "Add",
+                                text = stringResource(id = R.string.add),
                                 style = MaterialTheme.typography.body2.copy(
                                     color = Color.White,
                                     fontSize = 16.sp,
@@ -659,12 +662,14 @@ fun MilestonesScreen(
                                         .combinedClickable(
                                             onClick = {
                                                 milestoneViewModel.milestoneList.forEachIndexed { index, _ ->
-                                                    milestoneViewModel.milestoneList[index].show = true
+                                                    milestoneViewModel.milestoneList[index].show =
+                                                        true
                                                 }
                                                 val milestoneListNew =
                                                     milestoneViewModel.milestoneList.toList()
                                                 milestoneViewModel.milestoneList.clear()
-                                                milestoneViewModel.milestoneList.addAll(milestoneListNew)
+                                                milestoneViewModel.milestoneList.addAll(
+                                                    milestoneListNew)
                                             },
                                         ),
                                     text = stringResource(id = R.string.select_all),
@@ -706,7 +711,8 @@ fun MilestonesScreen(
                                                 }
                                                 .background(
                                                     Color.White,
-                                                    RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
+                                                    RoundedCornerShape(topStart = 20.dp,
+                                                        topEnd = 20.dp)
                                                 )
                                         ) {
                                             Card(
@@ -732,7 +738,8 @@ fun MilestonesScreen(
                                                                             return@launch
                                                                         }
                                                                     }
-                                                                    milestoneViewModel.isSelected = false
+                                                                    milestoneViewModel.isSelected =
+                                                                        false
                                                                 }
                                                             } else {
                                                                 navHostController.popBackStack(
@@ -757,7 +764,8 @@ fun MilestonesScreen(
                                                                 if (!milestoneViewModel.isSelected) {
                                                                     milestoneViewModel.milestoneList[index].show =
                                                                         true
-                                                                    milestoneViewModel.isSelected = true
+                                                                    milestoneViewModel.isSelected =
+                                                                        true
                                                                 }
                                                                 back.value = true
                                                                 //  viewModel.list = viewModel.listMilestoneDetails
@@ -853,7 +861,8 @@ fun MilestonesScreen(
                                                                 modifier = Modifier
                                                                     .fillMaxWidth()
                                                                     .height(36.dp)
-                                                                    .padding(top = 6.dp, bottom = 6.dp),
+                                                                    .padding(top = 6.dp,
+                                                                        bottom = 6.dp),
                                                                 text = stringResource(id = R.string.ask_surrogate),
                                                                 color = Color(0xFF3870C9),
                                                                 style = MaterialTheme.typography.body2,
@@ -950,8 +959,8 @@ fun getMilestones(
     context: Context,
     homeActivity: HomeActivity
 ) {
-    val userId = PreferenceProvider(context).getIntValue("user_id", 0)
-    val type = PreferenceProvider(context).getValue("type", "")
+    val userId = PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
+    val type = PreferenceProvider(context).getValue(Constants.TYPE, "")
 //    if (milestoneViewModel.milestoneList.isEmpty()) {
     milestoneViewModel.getMilestones(
         GetPregnancyMilestoneRequest(
@@ -1083,8 +1092,8 @@ fun resetMilestoneApiCall(
     milestoneViewModel.milestoneList.clear()
     milestoneViewModel.milestoneList.addAll(milestoneListNew)
     milestoneViewModel.isSelected = false
-    val userId = PreferenceProvider(context).getIntValue("user_id", 0)
-    val type = PreferenceProvider(context).getValue("type", "")
+    val userId = PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
+    val type = PreferenceProvider(context).getValue(Constants.TYPE, "")
 
     milestoneViewModel.resetMilestone(
         ResetMilestoneRequest(

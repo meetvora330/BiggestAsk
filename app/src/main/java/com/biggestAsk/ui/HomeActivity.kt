@@ -19,6 +19,7 @@ import com.biggestAsk.ui.homeScreen.HomeScreen
 import com.biggestAsk.ui.introScreen.LockScreenOrientation
 import com.biggestAsk.ui.main.viewmodel.*
 import com.biggestAsk.ui.ui.theme.BasicStructureTheme
+import com.biggestAsk.util.Constants
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 class HomeActivity : BaseActivity() {
@@ -31,12 +32,13 @@ class HomeActivity : BaseActivity() {
     private val contactYourProviderViewModel: ContactYourProviderViewModel by viewModels()
     private val communityViewModel: CommunityViewModel by viewModels()
     private val surrogateViewModel: YourSurrogateViewModel by viewModels()
+    private val notificationViewModel: NotificationViewModel by viewModels()
 
     private val permissionReqLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { it ->
             when {
                 it -> {
-                    launcher?.launch("image/*")
+                    launcher?.launch(Constants.IMAGE_LAUNCHER)
                     communityViewModel.isPermissionAllowed = false
                     contactYourProviderViewModel.isPermissionAllowed = false
                 }
@@ -91,7 +93,8 @@ class HomeActivity : BaseActivity() {
                     yourAccountViewModel = yourAccountViewModel,
                     contactYourProviderViewModel = contactYourProviderViewModel,
                     communityViewModel = communityViewModel,
-                    surrogateViewModel = surrogateViewModel
+                    surrogateViewModel = surrogateViewModel,
+                    notificationViewModel = notificationViewModel
                 )
             }
         }

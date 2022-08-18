@@ -42,7 +42,7 @@ fun PrivacyPolicy() {
                 contentDescription = ""
             )
             Text(
-                text = "Last Updated on June 2, 2020",
+                text = stringResource(id = R.string.last_updated),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 29.dp),

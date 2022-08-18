@@ -1,5 +1,8 @@
 package com.biggestAsk.ui.homeScreen.drawerScreens.notification
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -11,24 +14,51 @@ import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.toMutableStateList
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.core.app.ActivityCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
+import com.biggestAsk.data.model.request.GetContactRequest
+import com.biggestAsk.data.model.request.GetNotificationRequest
+import com.biggestAsk.data.model.response.GetContactResponse
+import com.biggestAsk.data.model.response.GetNotificationResponse
+import com.biggestAsk.data.source.network.NetworkResult
+import com.biggestAsk.ui.HomeActivity
+import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
+import com.biggestAsk.ui.main.viewmodel.NotificationViewModel
+import com.biggestAsk.util.Constants
+import com.biggestAsk.util.PreferenceProvider
+import com.example.biggestAsk.R
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.placeholder
+import com.google.accompanist.placeholder.shimmer
+import kotlin.time.Duration.Companion.days
 
 @Composable
-fun Notification(navHostController: NavHostController) {
+fun Notification(
+    navHostController: NavHostController,
+    notificationViewModel: NotificationViewModel,
+    homeActivity: HomeActivity,
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -36,12 +66,18 @@ fun Notification(navHostController: NavHostController) {
                 rememberScrollState()
             )
     ) {
+        val context = LocalContext.current
+        val type = PreferenceProvider(context).getValue(Constants.TYPE, "")
+        val userId = PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
+        LaunchedEffect(Unit) {
+            getUpdatedNotification("parent", 191, notificationViewModel, homeActivity)
+        }
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 24.dp, bottom = 55.dp)
         ) {
-            listNotification.forEach { item ->
+            notificationViewModel.notificationList.forEachIndexed { index,item ->
                 Card(
                     shape = RoundedCornerShape(14.dp),
                     elevation = 8.dp,
@@ -54,10 +90,10 @@ fun Notification(navHostController: NavHostController) {
                         ) {
                             navHostController.navigate(
                                 NotificationDetailScreenRoute.NotificationDetails.notificationDetails(
-                                    item.nIcon,
-                                    item.nTittle.replace(".", ""),
-                                    item.nDescription,
-                                    item.nDays
+                                    R.drawable.ic_icon_notification_1,
+                                    item.title.replace(".", ""),
+                                    item.notification,
+                                    notificationViewModel.notificationDaysList[index]
                                 )
                             )
                         }
@@ -68,6 +104,14 @@ fun Notification(navHostController: NavHostController) {
                             shadowBlurRadius = 0.2.dp,
                             offsetX = 0.dp,
                             offsetY = 4.dp
+                        ).placeholder(
+                            visible = notificationViewModel.isLoading,
+                            color = Color.LightGray,
+                            // optional, defaults to RectangleShape
+                            shape = RoundedCornerShape(14.dp),
+                            highlight = PlaceholderHighlight.shimmer(
+                                highlightColor = Color.White,
+                            ),
                         )
                 ) {
                     Column {
@@ -76,7 +120,7 @@ fun Notification(navHostController: NavHostController) {
                         ) {
                             Image(
                                 modifier = Modifier.padding(top = 16.dp, start = 16.dp),
-                                painter = painterResource(id = item.nIcon),
+                                painter = painterResource(id = R.drawable.ic_icon_notification_1),
                                 contentDescription = "",
                             )
                             Column(modifier = Modifier.padding(start = 16.dp)) {
@@ -91,7 +135,7 @@ fun Notification(navHostController: NavHostController) {
                                             start.linkTo(parent.start)
                                             top.linkTo(parent.top)
                                         },
-                                        text = item.nTittle,
+                                        text = item.title,
                                         style = MaterialTheme.typography.body1,
                                         fontSize = 16.sp,
                                         fontWeight = FontWeight.W600,
@@ -104,7 +148,7 @@ fun Notification(navHostController: NavHostController) {
                                                 end.linkTo(parent.end)
                                             }
                                             .padding(top = 2.dp, end = 24.dp),
-                                        text = item.nDays,
+                                        text = "${notificationViewModel.notificationDaysList[index]} Day ago",
                                         style = MaterialTheme.typography.body1,
                                         fontSize = 14.sp,
                                         fontWeight = FontWeight.W400,
@@ -113,7 +157,7 @@ fun Notification(navHostController: NavHostController) {
                                 }
                                 Text(
                                     modifier = Modifier.padding(top = 8.dp, bottom = 16.dp),
-                                    text = item.nDescription,
+                                    text = item.notification,
                                     style = MaterialTheme.typography.body1,
                                     fontSize = 14.sp,
                                     lineHeight = 22.sp,
@@ -126,6 +170,15 @@ fun Notification(navHostController: NavHostController) {
             }
         }
     }
+    if (notificationViewModel.isDataNull) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = stringResource(id = R.string.NO_NOTIFICATION_FOUND))
+        }
+    }
 }
 
 fun Modifier.advancedShadow(
@@ -134,7 +187,7 @@ fun Modifier.advancedShadow(
     cornersRadius: Dp = 0.dp,
     shadowBlurRadius: Dp = 0.dp,
     offsetY: Dp = 0.dp,
-    offsetX: Dp = 0.dp
+    offsetX: Dp = 0.dp,
 ) = drawBehind {
 
     val shadowColor = color.copy(alpha = alpha).toArgb()
@@ -162,8 +215,57 @@ fun Modifier.advancedShadow(
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun NotificationPreview() {
-    Notification(navHostController = rememberNavController())
+fun getUpdatedNotification(
+    type: String,
+    user_id: Int,
+    notificationViewModel: NotificationViewModel,
+    homeActivity: HomeActivity,
+) {
+    notificationViewModel.getNotification(getNotificationRequest = GetNotificationRequest(
+        type = type,
+        user_id = user_id
+    ))
+
+    notificationViewModel.getNotificationResponse.observe(homeActivity) {
+        if (it != null) {
+            handleGetNotificationApi(
+                result = it,
+                notificationViewModel = notificationViewModel,
+            )
+        } else {
+            Log.e("TAG", "GetContactData is null: ")
+        }
+    }
 }
+
+private fun handleGetNotificationApi(
+    result: NetworkResult<GetNotificationResponse>,
+    notificationViewModel: NotificationViewModel,
+) {
+    when (result) {
+        is NetworkResult.Loading -> {
+            // show a progress bar
+            notificationViewModel.isLoading = true
+            notificationViewModel.isDataNull = false
+        }
+        is NetworkResult.Success -> {
+            // bind data to the view
+            notificationViewModel.isLoading = false
+            notificationViewModel.notificationList.clear()
+            result.data?.data?.let { notificationViewModel.notificationList.addAll(it) }
+            notificationViewModel.notificationDaysList.clear()
+            result.data?.let { notificationViewModel.notificationDaysList.addAll(it.days) }
+            notificationViewModel.isDataNull = notificationViewModel.notificationList.isEmpty()
+        }
+        is NetworkResult.Error -> {
+            //show error message
+            notificationViewModel.isLoading = false
+        }
+    }
+}
+
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//fun NotificationPreview() {
+//    Notification(navHostController = rememberNavController())
+//}

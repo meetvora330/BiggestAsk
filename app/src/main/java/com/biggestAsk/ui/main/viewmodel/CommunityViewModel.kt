@@ -38,6 +38,7 @@ class CommunityViewModel @Inject constructor(
 
     val isCommunityScreen: MutableLiveData<Boolean> = MutableLiveData(false)
     var isLoading: Boolean by mutableStateOf(false)
+    var isDataNull: Boolean by mutableStateOf(false)
     var getCommunityResponse: MutableLiveData<NetworkResult<GetCommunityResponse>> =
         MutableLiveData()
     var createCommunityResponse: MutableLiveData<NetworkResult<CreateCommunityResponse>> =

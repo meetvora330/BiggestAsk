@@ -12,6 +12,7 @@ import com.biggestAsk.data.model.response.*
 import com.biggestAsk.data.source.network.ApiService
 import com.biggestAsk.data.source.network.BaseApiResponse
 import com.biggestAsk.data.source.network.NetworkResult
+import com.biggestAsk.util.Constants
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +21,7 @@ import okhttp3.MultipartBody
 import java.io.IOException
 import javax.inject.Inject
 
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "on_boarding_pref")
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = Constants.ON_BOARDING_PREF)
 
 @ActivityRetainedScoped
 class HomeRepository @Inject constructor(
@@ -28,7 +29,7 @@ class HomeRepository @Inject constructor(
 ) : BaseApiResponse(context) {
 
     companion object PreferencesKey {
-        val onBoardingKey = booleanPreferencesKey(name = "on_boarding_completed")
+        val onBoardingKey = booleanPreferencesKey(name = Constants.ON_BOARDING_COMPLETED)
     }
 
     private val dataStore = context.dataStore

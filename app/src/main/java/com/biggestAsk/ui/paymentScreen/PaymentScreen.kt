@@ -298,7 +298,7 @@ fun PaymentScreen(
         }
     }
     if (homeViewModel.isLoading) {
-        ProgressBarTransparentBackground(loadingText = "Loading")
+        ProgressBarTransparentBackground(loadingText = stringResource(id = R.string.loading))
     }
 }
 
@@ -421,7 +421,7 @@ fun PaymentScreenBottomSheet(
                         .wrapContentWidth()
                         .wrapContentHeight()
                         .padding(start = 18.dp, top = 2.dp),
-                    text = "kate.gorushenko@gmail.com",
+                    text = stringResource(id = R.string.kate_gorushenko_gmail_com),
                     fontSize = 15.sp,
                     color = Color(0xFF3E3E3E)
                 )
@@ -501,7 +501,7 @@ private fun changePaymentStatusApi(
     navHostController: NavHostController
 ) {
     val provider = PreferenceProvider(context)
-    val userId = provider.getIntValue("user_id", 0)
+    val userId = provider.getIntValue(Constants.USER_ID, 0)
     homeViewModel.updatePaymentStatus(
         UpdatePaymentStatusRequest(
             user_id = userId,

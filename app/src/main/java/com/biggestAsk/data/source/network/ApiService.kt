@@ -14,8 +14,8 @@ interface ApiService {
 
     @GET(Constants.GET_UPDATED_STATUS)
     suspend fun getUpdatedStatus(
-        @Query("user_id") user_id: Int,
-        @Query("type") type: String
+        @Query(Constants.USER_ID) user_id: Int,
+        @Query(Constants.TYPE) type: String,
     ): Response<UpdatedStatusResponse>
 
     @POST(Constants.SEND_OTP)
@@ -41,33 +41,33 @@ interface ApiService {
 
     @GET(Constants.GET_IMPORTANT_QUESTION)
     suspend fun getPregnancyMilestone(
-        @Query("type") type: String,
-        @Query("user_id") user_id: Int
+        @Query(Constants.TYPE) type: String,
+        @Query(Constants.USER_ID) user_id: Int,
     ): Response<GetImportantQuestionResponse>
 
     @GET(Constants.GET_HOME_SCREEN_QUESTION)
     suspend fun getHomeScreenQuestion(
-        @Query("user_id") user_id: Int,
-        @Query("type") type: String
+        @Query(Constants.USER_ID) user_id: Int,
+        @Query(Constants.TYPE) type: String,
     ): Response<GetHomeScreenQuestionResponse>
 
     @GET(Constants.INTENDED_PARTNER_QUESTION_ANS)
     suspend fun getIntendedParentQuestionAns(
-        @Query("user_id") user_id: Int,
-        @Query("partner_id") partner_id: Int,
-        @Query("type") type: String
+        @Query(Constants.USER_ID) user_id: Int,
+        @Query(Constants.PARTNER_ID) partner_id: Int,
+        @Query(Constants.TYPE) type: String,
     ): Response<IntendedParentQuestionResponse>
 
     @GET(Constants.GET_NEAREST_MILESTONE)
     suspend fun getNearestMilestone(
-        @Query("user_id") user_id: Int,
-        @Query("type") type: String
+        @Query(Constants.USER_ID) user_id: Int,
+        @Query(Constants.TYPE) type: String,
     ): Response<GetNearestMilestoneResponse>
 
     @GET(Constants.GET_MILESTONE)
     suspend fun getMilestones(
-        @Query("user_id") user_id: Int,
-        @Query("type") type: String
+        @Query(Constants.USER_ID) user_id: Int,
+        @Query(Constants.TYPE) type: String,
     ): Response<GetMilestoneResponse>
 
     @POST(Constants.CREATE_MILESTONE)
@@ -78,10 +78,10 @@ interface ApiService {
 
     @GET(Constants.EDIT_MILESTONE)
     suspend fun editMilestone(
-        @Query("type") type: String,
-        @Query("user_id") user_id: Int,
-        @Query("milestone_id") milestone_id: Int,
-        @Query("partner_id") partner_id: Int
+        @Query(Constants.TYPE) type: String,
+        @Query(Constants.USER_ID) user_id: Int,
+        @Query(Constants.MILESTONE_ID) milestone_id: Int,
+        @Query(Constants.PARTNER_ID) partner_id: Int,
     ): Response<EditMilestoneResponse>
 
     @POST(Constants.UPDATE_MILESTONE_ANS_INFO)
@@ -92,8 +92,8 @@ interface ApiService {
 
     @POST(Constants.INVITE_SURROGATE + "{id}")
     suspend fun inviteSurrogate(
-        @Path("id") user_id: Int,
-        @Body inviteSurrogateRequest: InviteSurrogateRequest
+        @Path(Constants.ID) user_id: Int,
+        @Body inviteSurrogateRequest: InviteSurrogateRequest,
     ): Response<InviteSurrogateResponse>
 
 
@@ -106,7 +106,7 @@ interface ApiService {
     @Multipart
     @POST(Constants.USER_PROFILE_UPDATE + "{id}")
     suspend fun updateUserProfile(
-        @Path("id") userId: Int?,
+        @Path(Constants.ID) userId: Int?,
         @Part name: MultipartBody.Part?,
         @Part email: MultipartBody.Part?,
         @Part password: MultipartBody.Part?,
@@ -133,15 +133,21 @@ interface ApiService {
 
     @GET(Constants.GET_CONTACT)
     suspend fun getContact(
-        @Query("type") type: String,
-        @Query("user_id") user_id: Int
+        @Query(Constants.TYPE) type: String,
+        @Query(Constants.USER_ID) user_id: Int,
     ): Response<GetContactResponse>
 
     @GET(Constants.GET_COMMUNITY)
     suspend fun getCommunity(
-        @Query("type") type: String,
-        @Query("user_id") user_id: Int
+        @Query(Constants.TYPE) type: String,
+        @Query(Constants.USER_ID) user_id: Int,
     ): Response<GetCommunityResponse>
+
+    @GET(Constants.GET_NOTIFICATION)
+    suspend fun getNotification(
+        @Query(Constants.TYPE) type: String,
+        @Query(Constants.USER_ID) user_id: Int,
+    ): Response<GetNotificationResponse>
 
     @Multipart
     @POST(Constants.CREATE_COMMUNITY)
@@ -168,7 +174,7 @@ interface ApiService {
     @POST(Constants.UPDATE_MILESTONE_IMAGE)
     suspend fun updateMilestoneImage(
         @Part image_id: MultipartBody.Part?,
-        @Part image: MultipartBody.Part?
+        @Part image: MultipartBody.Part?,
     ): Response<UpdateImageResponse>
 
     @POST(Constants.DELETE_MILESTONE_IMAGE)

@@ -208,7 +208,7 @@ fun QuestionScreen(
         }
     }
     if (homeViewModel.isLoading) {
-        ProgressBarTransparentBackground("Please wait....")
+        ProgressBarTransparentBackground(stringResource(id = R.string.please_wait))
     }
 }
 

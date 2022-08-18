@@ -41,6 +41,7 @@ import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.ui.HomeActivity
 import com.biggestAsk.ui.main.viewmodel.YourAccountViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
+import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -55,14 +56,14 @@ fun YourAccountScreen(
     homeActivity: HomeActivity,
 ) {
     val context = LocalContext.current
-    val type = PreferenceProvider(context).getValue("type", "")
-    val userId = PreferenceProvider(context).getIntValue("user_id", 0)
+    val type = PreferenceProvider(context).getValue(Constants.TYPE, "")
+    val userId = PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
     val bitmap = remember {
         mutableStateOf<Bitmap?>(null)
     }
     LaunchedEffect(Unit) {
         when(type){
-            "surrogate" ->{
+            Constants.SURROGATE ->{
                 yourAccountViewModel.isSurrogateApiCalled = true
                 yourAccountViewModel.getUserDetailsSurrogate(GetUserDetailsSurrogateRequest(userId, type))
                 yourAccountViewModel.getUserDetailResponseSurrogate.observe(homeActivity) {
@@ -75,7 +76,7 @@ fun YourAccountScreen(
                     }
                 }
             }
-            "parent" ->{
+            Constants.PARENT ->{
                 yourAccountViewModel.isParentApiCalled = true
                 yourAccountViewModel.getUserDetailsParent(GetUserDetailsParentRequest(userId, type))
                 yourAccountViewModel.getUserDetailResponseParent.observe(homeActivity) {

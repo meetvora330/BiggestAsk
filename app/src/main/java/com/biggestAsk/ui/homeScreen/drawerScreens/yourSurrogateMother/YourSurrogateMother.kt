@@ -61,7 +61,7 @@ fun YourSurrogateMother(
 ) {
     val openDialogSurrogateMother = remember { mutableStateOf(false) }
     val isSurrogateConnected =
-        PreferenceProvider(context).getBooleanValue("is_surrogate_connected", false)
+        PreferenceProvider(context).getBooleanValue(Constants.IS_SURROGATE_CONNECTED, false)
     surrogateViewModel.invitationSend.value = isSurrogateConnected
 //    Column(
 //        modifier = Modifier
@@ -182,7 +182,7 @@ fun YourSurrogateMother(
     }
 //    }
     if (surrogateViewModel.isSurrogateInvited.value) {
-        ProgressBarTransparentBackground(loadingText = "Adding...")
+        ProgressBarTransparentBackground(loadingText = stringResource(id = R.string.adding))
     }
 
 }
@@ -314,8 +314,8 @@ fun YourSurrogateDialog(
                 } else {
                     openDialogCustom.value = false
                     val provider = PreferenceProvider(context)
-                    val userId = provider.getIntValue("user_id", 0)
-                    val type = provider.getValue("type", "")
+                    val userId = provider.getIntValue(Constants.USER_ID, 0)
+                    val type = provider.getValue(Constants.TYPE, "")
                     val inviteSurrogateRequest = InviteSurrogateRequest(
                         email = surrogateViewModel.textSurrogateDialogEmail.value,
                         type = type!!
@@ -348,7 +348,7 @@ fun YourSurrogateDialog(
             )
         ) {
             Text(
-                text = "Send invitation",
+                text = stringResource(id = R.string.send_invitation),
                 style = MaterialTheme.typography.body2.copy(
                     color = Color.White,
                     fontSize = 16.sp,

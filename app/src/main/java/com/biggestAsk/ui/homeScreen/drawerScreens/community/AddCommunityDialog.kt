@@ -50,6 +50,7 @@ import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
 import com.biggestAsk.ui.main.viewmodel.CommunityViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.Text_Accept_Terms
+import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -123,8 +124,8 @@ fun AddCommunityDialog(
     }
 
 
-    val type = PreferenceProvider(context).getValue("type", "")
-    val userId = PreferenceProvider(context).getIntValue("user_id", 0)
+    val type = PreferenceProvider(context).getValue(Constants.TYPE, "")
+    val userId = PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -397,7 +398,7 @@ fun AddCommunityDialog(
                                 homeActivity.callPermissionRequestLauncher(launcher)
                                 communityViewModel.isPermissionAllowed = false
                             } else {
-                                launcher.launch("image/*")
+                                launcher.launch(Constants.IMAGE_LAUNCHER)
                                 communityViewModel.isPermissionAllowed = false
                             }
                         },
@@ -444,7 +445,7 @@ fun AddCommunityDialog(
                             tfTextFourthEmpty.value = true
 
                             if (!communityViewModel.isImagePresent.value) {
-                                Toast.makeText(context, "Please Add Logo", Toast.LENGTH_SHORT)
+                                Toast.makeText(context, Constants.PLEASE_ADD_LOGO, Toast.LENGTH_SHORT)
                                     .show()
                             }
                         }
@@ -461,7 +462,7 @@ fun AddCommunityDialog(
                             tfTextFourthEmpty.value = true
                         }
                         !communityViewModel.isImagePresent.value -> {
-                            Toast.makeText(context, "Please Add Logo", Toast.LENGTH_SHORT)
+                            Toast.makeText(context, Constants.PLEASE_ADD_LOGO, Toast.LENGTH_SHORT)
                                 .show()
                         }
 
@@ -473,18 +474,18 @@ fun AddCommunityDialog(
 
                             val image =
                                 communityViewModel.uriPath?.let { convertImageMultiPart(it) }
-                            Log.e("image", "AddCommunityDialog: $image")
+                            Log.e(Constants.IMAGE, "AddCommunityDialog: $image")
                             communityViewModel.createCommunity(
-                                MultipartBody.Part.createFormData("title", tf_text_first.value),
-                                MultipartBody.Part.createFormData("description",
+                                MultipartBody.Part.createFormData(Constants.TITLE, tf_text_first.value),
+                                MultipartBody.Part.createFormData(Constants.DESCRIPTION,
                                     tf_text_second.value),
-                                MultipartBody.Part.createFormData("forum_link",
+                                MultipartBody.Part.createFormData(Constants.FORUM_LINK,
                                     tf_text_third.value),
-                                MultipartBody.Part.createFormData("insta_link",
+                                MultipartBody.Part.createFormData(Constants.INST_LINK,
                                     tf_text_fourth.value),
                                 image,
-                                MultipartBody.Part.createFormData("user_id", userId.toString()),
-                                MultipartBody.Part.createFormData("type", type!!)
+                                MultipartBody.Part.createFormData(Constants.USER_ID, userId.toString()),
+                                MultipartBody.Part.createFormData(Constants.TYPE, type!!)
                             )
                             communityViewModel.createCommunityResponse.observe(homeActivity) {
                                 if (it != null) {
@@ -538,7 +539,7 @@ fun AddCommunityDialog(
         }
     }
     if (communityViewModel.isLoading) {
-        ProgressBarTransparentBackground("Please wait....")
+        ProgressBarTransparentBackground(stringResource(id = R.string.please_wait))
     }
     if (communityViewModel.isPermissionAllowed) {
         AlertDialog(
@@ -553,16 +554,16 @@ fun AddCommunityDialog(
                     intent.data = uri
                     context.startActivity(intent)
                 })
-                { Text(text = "APP SETTINGS", color = Color.Red) }
+                { Text(text = stringResource(id = R.string.app_settings), color = Color.Red) }
             },
             dismissButton = {
                 TextButton(onClick = {
                     communityViewModel.isPermissionAllowed = false
                 })
-                { Text(text = "CANCEL", color = Color.Red) }
+                { Text(text = stringResource(id = R.string.cancel_dialog), color = Color.Red) }
             },
-            title = { Text(text = "Permission Denied") },
-            text = { Text(text = "Permission is denied, Please allow permission from App Settings") }
+            title = { Text(text = stringResource(id = R.string.permission_denied_dialog)) },
+            text = { Text(text = stringResource(id = R.string.allow_permission_dialog)) }
         )
     }
 }
@@ -570,9 +571,9 @@ fun AddCommunityDialog(
 private fun convertImageMultiPart(imagePath: String): MultipartBody.Part {
     val file = File(imagePath)
     return MultipartBody.Part.createFormData(
-        "image",
+        Constants.IMAGE,
         file.name,
-        file.asRequestBody("image/*".toMediaTypeOrNull())
+        file.asRequestBody(Constants.IMAGE_LAUNCHER.toMediaTypeOrNull())
     )
 }
 

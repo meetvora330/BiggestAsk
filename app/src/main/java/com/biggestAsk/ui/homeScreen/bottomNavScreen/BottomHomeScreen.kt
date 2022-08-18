@@ -41,6 +41,7 @@ import com.biggestAsk.ui.main.viewmodel.BottomHomeViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.ET_Bg
 import com.biggestAsk.ui.ui.theme.Text_Color
+import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 import com.skydoves.landscapist.glide.GlideImage
@@ -61,9 +62,9 @@ fun BottomHomeScreen(
     val coroutineScope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
     val provider = PreferenceProvider(context)
-    val userId = provider.getIntValue("user_id", 0)
-    val type = provider.getValue("type", "")
-    val partnerId = provider.getIntValue("partner_id", 0)
+    val userId = provider.getIntValue(Constants.USER_ID, 0)
+    val type = provider.getValue(Constants.TYPE, "")
+    val partnerId = provider.getIntValue(Constants.PARTNER_ID, 0)
     val selectedText = remember { mutableStateOf("") }
     LaunchedEffect(Unit) {
         Log.d("TAG", "BottomHomeScreen: User Id $userId")
@@ -173,7 +174,7 @@ fun BottomHomeScreen(
                         fontSize = 12.sp
                     )
                 }
-                if (type != "surrogate") {
+                if (type != stringResource(id = R.string.surrogate)) {
                     Text(
                         modifier = Modifier
                             .wrapContentWidth()
@@ -187,7 +188,7 @@ fun BottomHomeScreen(
                     if (bottomHomeViewModel.parentList.isNotEmpty()) selectedText.value =
                         simpleDropDown(
                             suggestions = bottomHomeViewModel.parentList,
-                            hint = "Select user name",
+                            hint = stringResource(id = R.string.select_user_name_hint),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(start = 12.dp, end = 12.dp, top = 12.dp),
@@ -213,7 +214,7 @@ fun BottomHomeScreen(
                                         StoreAnsImportantQuestionRequest(
                                             question_id = bottomHomeViewModel.homeScreenImportantQuestionId,
                                             answer = bottomHomeViewModel.homeScreenQuestionAns,
-                                            user_name = if (type == "parent") selectedText.value else bottomHomeViewModel.parentList[0]
+                                            user_name = if (type == Constants.PARENT) selectedText.value else bottomHomeViewModel.parentList[0]
                                         )
                                     )
                                     bottomHomeViewModel.storeAnsImportantQuestionResponse.observe(
@@ -652,7 +653,7 @@ fun BottomHomeScreen(
                         if (bottomHomeViewModel.isIntendedParentQuestionDataLoaded) {
                             Text(
                                 modifier = Modifier.padding(start = 24.dp, top = 44.dp),
-                                text = stringResource(id = if (type == "parent") R.string.bottom_home_screen_your_surrogate_mother else R.string.bottom_home_screen_your_intended_parents),
+                                text = stringResource(id = if (type == Constants.PARENT) R.string.bottom_home_screen_your_surrogate_mother else R.string.bottom_home_screen_your_intended_parents),
                                 style = MaterialTheme.typography.body2,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.W900,

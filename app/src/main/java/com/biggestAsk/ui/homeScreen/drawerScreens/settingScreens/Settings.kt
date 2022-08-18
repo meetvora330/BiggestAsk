@@ -31,9 +31,10 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.biggestAsk.ui.ui.theme.Custom_Blue
+import com.biggestAsk.util.Constants
 import com.example.biggestAsk.R
 
-const val HELP_URL = "https://thebiggestask.com/the-biggest-ask-surrogacy-service/"
+const val HELP_URL = Constants.HELP_URL
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -53,7 +54,7 @@ fun Settings(navHostController: NavHostController) {
                     .padding(top = 24.dp)
                     .clickable(indication = null, interactionSource = MutableInteractionSource()) {
                         when (item.title) {
-                            "Help" -> {
+                            Constants.HELP -> {
                                 startActivity(
                                     context,
                                     Intent(
@@ -63,16 +64,16 @@ fun Settings(navHostController: NavHostController) {
                                     Bundle()
                                 )
                             }
-                            "About" -> {
+                            Constants.ABOUT -> {
                                 navHostController.navigate(SettingSubScreen.AboutApp.route)
                             }
-                            "Detailed Settings" -> {
+                            Constants.DETAILED_SETTINGS -> {
                                 navHostController.navigate(SettingSubScreen.DetailedSetting.route)
                             }
-                            "Privacy Policy" -> {
+                            Constants.PRIVACY_POLICY -> {
                                 navHostController.navigate(SettingSubScreen.PrivacyPolicy.route)
                             }
-                            "Terms of Service" -> {
+                            Constants.TERMS_OF_SERVICE -> {
                                 navHostController.navigate(SettingSubScreen.TermsOfService.route)
                             }
                         }

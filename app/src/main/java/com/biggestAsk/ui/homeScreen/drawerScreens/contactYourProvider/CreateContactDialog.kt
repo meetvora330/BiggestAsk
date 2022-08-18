@@ -51,6 +51,7 @@ import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
 import com.biggestAsk.ui.main.viewmodel.ContactYourProviderViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.Text_Accept_Terms
+import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -124,8 +125,8 @@ fun CreateContactDialog(
     }
 
 
-    val type = PreferenceProvider(context).getValue("type", "")
-    val userId = PreferenceProvider(context).getIntValue("user_id", 0)
+    val type = PreferenceProvider(context).getValue(Constants.TYPE, "")
+    val userId = PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
 
     Column(
         modifier = Modifier
@@ -397,7 +398,7 @@ fun CreateContactDialog(
                 Text(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    text = "minimum 8 character required",
+                    text = stringResource(id = R.string.minimum_8_character_required),
                     style = MaterialTheme.typography.caption,
                     color = MaterialTheme.colors.error,
                     fontSize = 12.sp
@@ -426,7 +427,7 @@ fun CreateContactDialog(
                                 homeActivity.callPermissionRequestLauncher(launcher)
                                 contactYourProviderViewModel.isPermissionAllowed = false
                             } else {
-                                launcher.launch("image/*")
+                                launcher.launch(Constants.IMAGE_LAUNCHER)
                                 contactYourProviderViewModel.isPermissionAllowed = false
                             }
                         },
@@ -473,7 +474,7 @@ fun CreateContactDialog(
                             tfTextThirdEmpty.value = true
                             tfTextFourthEmpty.value = true
                             if (!contactYourProviderViewModel.isImagePresent.value) {
-                                Toast.makeText(context, "Please Add Logo", Toast.LENGTH_SHORT)
+                                Toast.makeText(context, Constants.PLEASE_ADD_LOGO, Toast.LENGTH_SHORT)
                                     .show()
                             }
                         }
@@ -495,7 +496,7 @@ fun CreateContactDialog(
                         }
 
                         !contactYourProviderViewModel.isImagePresent.value -> {
-                            Toast.makeText(context, "Please Add Logo", Toast.LENGTH_SHORT)
+                            Toast.makeText(context, Constants.PLEASE_ADD_LOGO, Toast.LENGTH_SHORT)
                                 .show()
                         }
 
@@ -505,23 +506,20 @@ fun CreateContactDialog(
                                 !TextUtils.isEmpty(tf_text_third.value) &&
                                 !TextUtils.isEmpty(tf_text_fourth.value) -> {
 
-                            //                            CoroutineScope(Dispatchers.Default).launch {
-                            //                                contactYourProviderViewModel.getImage(context)
-                            //                            }
                             val image =
                                 contactYourProviderViewModel.uriPath?.let { convertImageMultiPart(it) }
 
                             contactYourProviderViewModel.createContact(
-                                MultipartBody.Part.createFormData("title", tf_text_first.value),
-                                MultipartBody.Part.createFormData("agency_name",
+                                MultipartBody.Part.createFormData(Constants.TITLE, tf_text_first.value),
+                                MultipartBody.Part.createFormData(Constants.AGENCY_NAME_CREATE_CONTACT,
                                     tf_text_second.value),
-                                MultipartBody.Part.createFormData("agency_email",
+                                MultipartBody.Part.createFormData(Constants.AGENCY_EMAIL_CREATE_CONTACT,
                                     tf_text_third.value),
-                                MultipartBody.Part.createFormData("agency_number",
+                                MultipartBody.Part.createFormData(Constants.AGENCY_NUMBER_CREATE_CONTACT,
                                     tf_text_fourth.value),
                                 image,
-                                MultipartBody.Part.createFormData("user_id", userId.toString()),
-                                MultipartBody.Part.createFormData("type", type!!)
+                                MultipartBody.Part.createFormData(Constants.USER_ID, userId.toString()),
+                                MultipartBody.Part.createFormData(Constants.TYPE, type!!)
                             )
                             contactYourProviderViewModel.createContactResponse.observe(homeActivity) {
                                 if (it != null) {
@@ -574,7 +572,7 @@ fun CreateContactDialog(
         }
     }
     if (contactYourProviderViewModel.isLoading) {
-        ProgressBarTransparentBackground("Please wait....")
+        ProgressBarTransparentBackground(stringResource(id = R.string.please_wait))
     }
     if (contactYourProviderViewModel.isPermissionAllowed) {
         AlertDialog(
@@ -589,16 +587,16 @@ fun CreateContactDialog(
                     intent.data = uri
                     context.startActivity(intent)
                 })
-                { Text(text = "APP SETTINGS", color = Color.Red) }
+                { Text(text = stringResource(id = R.string.app_settings), color = Color.Red) }
             },
             dismissButton = {
                 TextButton(onClick = {
                     contactYourProviderViewModel.isPermissionAllowed = false
                 })
-                { Text(text = "CANCEL", color = Color.Red) }
+                { Text(text = stringResource(id = R.string.cancel_dialog), color = Color.Red) }
             },
-            title = { Text(text = "Permission Denied") },
-            text = { Text(text = "Permission is denied, Please allow permission from App Settings") }
+            title = { Text(text = stringResource(id = R.string.permission_denied_dialog)) },
+            text = { Text(text = stringResource(id = R.string.allow_permission_dialog)) }
         )
     }
 }
@@ -606,9 +604,9 @@ fun CreateContactDialog(
 private fun convertImageMultiPart(imagePath: String): MultipartBody.Part? {
     val file = File(imagePath)
     return MultipartBody.Part.createFormData(
-        "image",
+        Constants.IMAGE,
         file.name,
-        file.asRequestBody("image/*".toMediaTypeOrNull())
+        file.asRequestBody(Constants.IMAGE_LAUNCHER.toMediaTypeOrNull())
     )
 }
 

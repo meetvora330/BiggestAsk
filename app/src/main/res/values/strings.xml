@@ -63,12 +63,59 @@
     <string name="all_field_compulsory">All field compulsory</string>
     <string name="please_try_again">Please try again later</string>
     <string name="no_data_found">No data found</string>
+    <string name="add_milestone">Add milestone</string>
+    <string name="title">Title</string>
+    <string name="enter_title">Enter Tittle</string>
+    <string name="date">Date</string>
+    <string name="select_date">Select date</string>
+    <string name="enter_date">Enter date</string>
+    <string name="start_time">Start Time</string>
+    <string name="select_time">Select time</string>
+    <string name="enter_time">Enter time</string>
+    <string name="location">Location</string>
+    <string name="enter_location">Enter Location</string>
+    <string name="add">Add</string>
     <string name="alert_dialog_text_logout">Are you sure want to logout?</string>
     <string name="no_image_available">No image available</string>
+    <string name="no_internet_available">No Internet available</string>
+    <string name="please_wait">Please wait....</string>
+    <string name="surrogate">surrogate</string>
+    <string name="parent">parent</string>
+    <string name="loading">Loading…</string>
+    <string name="updating">Updating…</string>
+    <string name="removing">Removing…</string>
+    <string name="adding">Adding…</string>
+    <string name="saving">Saving</string>
+    <string name="intended_parents">Intended Parents</string>
+    <string name="community">Community</string>
+    <string name="notifications">Notifications</string>
+    <string name="about_app">About App</string>
+    <string name="detailed_settings">Detailed Settings</string>
+    <string name="settings">Settings</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="terms_of_service">Terms of Service</string>
+    <string name="your_account">Your Account</string>
+    <string name="edit_milestone">Edit milestone</string>
+    <string name="contact_your_providers">Contact Your Providers</string>
+    <string name="mark_baggins">Mark Baggins</string>
+    <string name="samantha_jones">Samantha Jones</string>
+    <string name="father_dob">01/02/1988</string>
+    <string name="mother_dob">05/01/1995</string>
+    <string name="father_age">(37 Year)</string>
+    <string name="mother_age">(30 Year)</string>
+    <string name="intended_home_address">888 Main St,Seattle,WA 98006</string>
+    <string name="intended_number">+880 9589876</string>
+    <string name="intended_email">goodmark@gmail.com</string>
+    <string name="father_email">marktvan@gmail.ua</string>
+    <string name="mother_email">samnthvan@gmail.ua</string>
+    <string name="martha_smith">Martha Smith</string>
+    <string name="one_day_ago">1 Day ago</string>
+    <string name="log_out">Log out</string>
 
 
     <!-- Intro Screen   -->
     <string name="intro_screen_btn_next_text">Next</string>
+    <string name="the_biggest_ask">The Biggest Ask</string>
 
     <!-- Email Verification   -->
     <string name="email_verification_text_login">Login</string>
@@ -98,6 +145,7 @@
     <string name="payment_tv_text_option1_use_app">You can use the app for 7 days</string>
     <string name="payment_tv_text_option2">Option 2</string>
     <string name="payment_tv_text_option2_price">$3</string>
+    <string name="kate_gorushenko_gmail_com">kate.gorushenko@gmail.com</string>
     <string name="payment_tv_text_option2_12_subscription">12 month subscription</string>
     <string name="payment_tv_text_option2_app_av_365">Application available 365 days</string>
     <string name="payment_bs_subscribe_btn_text">Subscribe</string>
@@ -143,6 +191,11 @@
     <string name="text_home_bottom_nav_milestone">Milestones</string>
     <string name="text_home_bottom_nav_home">Home</string>
     <string name="text_home_bottom_nav_question">Questions</string>
+    <string name="select_user_name_hint">Select user name</string>
+    <string name="your_surrogate_mother">Your Surrogate Mother</string>
+    <string name="parents_hint">Parents</string>
+    <string name="show_pregnancy_milestone">Show Pregnancy Milestone</string>
+
 
     <!-- Bottom Milestone Screen   -->
     <string name="tittle_bottom_milestone">Euismod eget auctor eget risus tristique ipsum urna.</string>
@@ -154,6 +207,12 @@
     <string name="bottom_ques_exist_ques">Existing questions in the profile</string>
     <string name="bottom_ques_drop_down_hint_day">Days</string>
     <string name="frequency_drop_down_hint_day">Select frequency</string>
+    <string name="what_is_your_favourite_snack">What is your favorite snack?</string>
+    <string name="emily_cooper">Emily Cooper</string>
+    <string name="two_hr_ago">2h ago</string>
+    <string name="three_hr_ago">3h ago</string>
+    <string name="basketball_and_miami_heat">Basketball and Miami Heat</string>
+    <string name="chocolate_all_the_way">Chocolate all the way!!</string>
 
     <!--  Question Screen   -->
     <string name="question_tv_tittle_text">Please select the frequency of question</string>
@@ -179,6 +238,7 @@
     <string name="setting_terms_of_service_service_tittle">Service</string>
     <string name="setting_terms_of_service_service_desc">A Privacy Policy is a legal statement that\nspecifies what the business owner does with\nthe personal data collected from users, along\nwith how the data is processed.</string>
     <string name="setting_privacy_policy_tittle">Privacy Policy</string>
+    <string name="last_updated">Last Updated on June 2, 2020</string>
     <string name="setting_privacy_policy_desc">A Privacy Policy is a legal statement that\nspecifies what the business owner does with\nthe personal data collected from users, along\nwith how the data is processed. This marks the\nstart of what we know now as a "Privacy\nPolicy." While the name "Privacy Policy" refers\nto the legal agreement.\n\nA Privacy Policy is a legal statement that\nspecifies what the business owner does with\nthe personal data collected from users, along\nwith how the data is processed.</string>
 
     <!--  Your Surrogate Mother -->
@@ -192,5 +252,50 @@
     <string name="title_activity_splash">SplashActivity</string>
     <string name="label_surrogate_parent_not_available">Expect your parent\n to invite you</string>
     <string name="label_add_milestone_date">Please add milestone date\n in 2nd milestone \nin milestone listing screen</string>
+    <string name="send_invitation">Send invitation</string>
+
+
+    <!--    EditMilestoneScreen-->
+    <string name="update_information">Update information</string>
+    <string name="confirm">Confirm</string>
+    <string name="change_photo">Change photo</string>
+    <string name="upload_picture">Upload picture</string>
+    <string name="app_settings">APP SETTINGS</string>
+    <string name="cancel_dialog">CANCEL</string>
+    <string name="surrogate_note">Surrogate note</string>
+    <string name="notes">Notes</string>
+    <string name="update_milestone">Update milestone</string>
+    <string name="save_notes">Save notes</string>
+    <string name="write_notes_here">Write notes here</string>
+    <string name="share_with_the_biggest_ask">Share with the biggest ask</string>
+    <string name="share_with_intended_parents">Share with Intended parents</string>
+    <string name="permission_denied_dialog">Permission Denied</string>
+    <string name="allow_permission_dialog">Permission is denied, Please allow permission from App Settings</string>
+    <string name="attach_photo_and_comment">For confirmation, you must attach a picture of the ultrasound and leave a comment.</string>
+
+<!--    Create Contact and Community Dialog-->
+    <string name="create_community">Create Community</string>
+    <string name="create_contact">Create Contact</string>
+    <string name="the_happy_agency">The Happy Agency</string>
+    <string name="jane_doe">Jane Doe</string>
+    <string name="description">Description</string>
+    <string name="link_to_forum">Link to Forum</string>
+    <string name="link_to_instagram">Link to Instagram</string>
+    <string name="dialog_phone">(222)–333–4444</string>
+    <string name="add_community">+ Add a new Community</string>
+    <string name="add_contact">+ Add a new Contact</string>
+    <string name="agency_rep_name">Agency rep name</string>
+    <string name="agency_email">Agency email</string>
+    <string name="agency_email_hint">agencyemail@gmail.ua</string>
+    <string name="agency_phone_number">Agency phone number</string>
+    <string name="no_community_found">No Community Found</string>
+    <string name="no_contact_found">No Contact Found</string>
+    <string name="minimum_8_character_required">minimum 8 character required</string>
+    <string name="to_forum">To Forum</string>
+    <string name="instagram">Instagram</string>
+
+<!--    Notification Screen-->
+    <string name="NO_NOTIFICATION_FOUND">No Notification Found</string>
+
 
 </resources>

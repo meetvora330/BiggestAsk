@@ -14,6 +14,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -206,8 +207,16 @@ fun ContactYourProvider(
 
     }
     if (contactYourProviderViewModel.isLoading) {
-
         ProgressBarTransparentBackground("Loading...")
+    }
+    if (contactYourProviderViewModel.isDataNull) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = stringResource(id = R.string.no_contact_found))
+        }
     }
 
 }
@@ -252,11 +261,14 @@ private fun handleGetContactApi(
         is NetworkResult.Loading -> {
             // show a progress bar
             contactYourProviderViewModel.isLoading = true
+            contactYourProviderViewModel.isDataNull = false
         }
         is NetworkResult.Success -> {
             // bind data to the view
             contactYourProviderViewModel.isLoading = false
             contactYourProviderViewModel.contactList = result.data!!.data.toMutableStateList()
+            contactYourProviderViewModel.isDataNull =
+                contactYourProviderViewModel.contactList.isEmpty()
         }
         is NetworkResult.Error -> {
             //show error message

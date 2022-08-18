@@ -30,6 +30,7 @@ import com.biggestAsk.ui.main.viewmodel.IntroViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.Light_Gray
 import com.biggestAsk.ui.ui.theme.Orange
+import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -166,7 +167,7 @@ fun IntroScreen(
                             )
                         } else {
 //                        homeViewModel.saveOnBoardingState(completed = true)
-                            PreferenceProvider(context).setValue("isIntroDone", true)
+                            PreferenceProvider(context).setValue(Constants.IS_INTRO_DONE, true)
                             navController.popBackStack()
                             navController.navigate(route = Screen.VerifyEmail.route)
                         }

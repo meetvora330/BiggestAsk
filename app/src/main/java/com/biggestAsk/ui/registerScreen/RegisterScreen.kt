@@ -47,6 +47,7 @@ import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
 import com.biggestAsk.ui.main.viewmodel.EmailVerificationViewModel
 import com.biggestAsk.ui.main.viewmodel.RegisterViewModel
 import com.biggestAsk.ui.ui.theme.*
+import com.biggestAsk.util.Constants
 import com.example.biggestAsk.R
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
@@ -450,7 +451,7 @@ fun RegisterScreen(
                     else -> {
                         if (registerViewModel.textPass == registerViewModel.textReEnterPass) {
                             val value =
-                                if (registerViewModel.selectedValueIntendParentRb.value) "parent" else "surrogate"
+                                if (registerViewModel.selectedValueIntendParentRb.value) Constants.PARENT else Constants.SURROGATE
                             val registrationBodyRequest = RegistrationBodyRequest(
                                 type = value,
                                 name = registerViewModel.textFullName,
@@ -508,7 +509,7 @@ fun RegisterScreen(
         }
     }
     if (registerViewModel.isLoading) {
-        ProgressBarTransparentBackground("Please wait....")
+        ProgressBarTransparentBackground(stringResource(id = R.string.please_wait))
     }
 }
 

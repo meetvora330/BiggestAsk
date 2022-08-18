@@ -49,6 +49,7 @@ class ContactYourProviderViewModel @Inject constructor(
     var imageData: Uri? = (null)
     var uriPath: String? = ""
     val isImagePresent = mutableStateOf(false)
+    var isDataNull: Boolean by mutableStateOf(false)
 
 
     fun createContact(

@@ -141,7 +141,7 @@ fun BottomQuestionScreen() {
             )
             simpleDropDown(
                 suggestions = suggestions,
-                hint = "Parents",
+                hint = stringResource(id = R.string.parents_hint),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 12.dp, end = 13.dp, top = 10.dp),
@@ -332,7 +332,7 @@ fun BottomQuestionScreen() {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = 24.dp, top = 24.dp, end = 56.dp),
-                        text = "What is your favorite snack?",
+                        text = stringResource(id = R.string.what_is_your_favourite_snack),
                         color = Color.Black,
                         style = MaterialTheme.typography.body2,
                         fontSize = 16.sp,
@@ -341,7 +341,7 @@ fun BottomQuestionScreen() {
                     Row {
                         Text(
                             modifier = Modifier.padding(start = 24.dp, top = 10.dp),
-                            text = "Emily Cooper",
+                            text = stringResource(id = R.string.emily_cooper),
                             color = Custom_Blue,
                             style = MaterialTheme.typography.body2,
                             fontSize = 14.sp,
@@ -351,7 +351,7 @@ fun BottomQuestionScreen() {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(top = 10.dp, end = 24.dp),
-                            text = "2h ago",
+                            text = stringResource(id = R.string.two_hr_ago),
                             color = Color(0xFF9F9D9B),
                             style = MaterialTheme.typography.body2,
                             fontSize = 14.sp,
@@ -361,7 +361,7 @@ fun BottomQuestionScreen() {
                     }
                     Text(
                         modifier = Modifier.padding(start = 24.dp, top = 4.dp, bottom = 22.dp),
-                        text = "Basketball and Miami Heat",
+                        text = stringResource(id = R.string.basketball_and_miami_heat),
                         color = Color.Black,
                         style = MaterialTheme.typography.body2,
                         fontSize = 16.sp,
@@ -382,7 +382,7 @@ fun BottomQuestionScreen() {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = 24.dp, top = 24.dp, end = 56.dp),
-                        text = "What is your favorite snack?",
+                        text = stringResource(id = R.string.what_is_your_favourite_snack),
                         color = Color.Black,
                         style = MaterialTheme.typography.body2,
                         fontSize = 16.sp,
@@ -391,7 +391,7 @@ fun BottomQuestionScreen() {
                     Row {
                         Text(
                             modifier = Modifier.padding(start = 24.dp, top = 10.dp),
-                            text = "Emily Cooper",
+                            text = stringResource(id = R.string.emily_cooper),
                             color = Custom_Blue,
                             style = MaterialTheme.typography.body2,
                             fontSize = 14.sp,
@@ -401,7 +401,7 @@ fun BottomQuestionScreen() {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(top = 10.dp, end = 24.dp),
-                            text = "3h ago",
+                            text = stringResource(id = R.string.three_hr_ago),
                             color = Color(0xFF9F9D9B),
                             style = MaterialTheme.typography.body2,
                             fontSize = 14.sp,
@@ -411,7 +411,7 @@ fun BottomQuestionScreen() {
                     }
                     Text(
                         modifier = Modifier.padding(start = 24.dp, top = 4.dp, bottom = 22.dp),
-                        text = "Chocolate all the way!!",
+                        text = stringResource(id = R.string.chocolate_all_the_way),
                         color = Color.Black,
                         style = MaterialTheme.typography.body2,
                         fontSize = 16.sp,
