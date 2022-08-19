@@ -44,7 +44,6 @@ class YourAccountRepository @Inject constructor(
         number: MultipartBody.Part,
         address: MultipartBody.Part,
         dateOfBirth: MultipartBody.Part,
-        partnerName: MultipartBody.Part,
         imgFileName1: MultipartBody.Part?=null,
         imgFileName2: MultipartBody.Part?=null,
         type: MultipartBody.Part,
@@ -58,7 +57,6 @@ class YourAccountRepository @Inject constructor(
                     number,
                     address,
                     dateOfBirth,
-                    partnerName,
                     imgFileName1,
                     imgFileName2,
                     type
@@ -67,12 +65,6 @@ class YourAccountRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    suspend fun getIntendedParentProfile(type:String,user_id:Int):Flow<NetworkResult<GetIntendedProfileResponse>>{
-        return flow<NetworkResult<GetIntendedProfileResponse>> {
-            emit(safeApiCall {
-                apiService.getIntendedParentProfile(type = type, user_id = user_id)
-            })
-        }.flowOn(Dispatchers.IO)
-    }
+
 
 }

@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.provider.Settings
 import android.text.TextUtils
 import android.util.Log
@@ -73,6 +74,8 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
+import java.time.LocalDate
+import java.time.Period
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -121,9 +124,6 @@ fun YourAccountScreen(
             else -> {
                 Log.e("TAG", "YourAccountScreen: no surrogate no parent")
             }
-        }
-        if (type != null) {
-            getIntendedProfile(userId, type, homeActivity, yourAccountViewModel)
         }
     }
     val openLogoutDialog = remember { mutableStateOf(false) }
@@ -612,10 +612,6 @@ fun YourAccountScreen(
                                                     "date_of_birth",
                                                     yourAccountViewModel.surrogateDateOfBirth
                                                 ),
-                                                MultipartBody.Part.createFormData(
-                                                    "partner_name",
-                                                    yourAccountViewModel.surrogatePartnerName
-                                                ),
                                                 image,
                                                 null,
                                                 MultipartBody.Part.createFormData(
@@ -1015,7 +1011,7 @@ fun YourAccountScreen(
                     }
                 }
             }
-            if (yourAccountViewModel.isPermissionAllowed){
+            if (yourAccountViewModel.isPermissionAllowed) {
                 AlertDialog(
                     onDismissRequest = {
                         yourAccountViewModel.isPermissionAllowed = false
@@ -1195,8 +1191,7 @@ fun YourAccountScreen(
                             if (yourAccountViewModel.parentFullName != "") {
                                 Text(
                                     modifier = Modifier.wrapContentWidth(),
-                                    text =
-                                    yourAccountViewModel.parentFullName,
+                                    text = if (yourAccountViewModel.isParentClicked) yourAccountViewModel.parentFullName else yourAccountViewModel.parentPartnerName,
                                     style = MaterialTheme.typography.h2.copy(
                                         color = Color.Black,
                                         fontSize = 24.sp,
@@ -1217,8 +1212,7 @@ fun YourAccountScreen(
                                         modifier = Modifier
                                             .wrapContentWidth()
                                             .padding(end = 2.dp),
-                                        text =
-                                        yourAccountViewModel.parentDateOfBirth,
+                                        text =if (yourAccountViewModel.isParentClicked) yourAccountViewModel.parentDateOfBirth else yourAccountViewModel.parentPartnerDateOfBirth,
                                         style = MaterialTheme.typography.body2.copy(
                                             color = Color(0xFF7F7D7C),
                                             fontSize = 14.sp,
@@ -1248,8 +1242,7 @@ fun YourAccountScreen(
                                     modifier = Modifier
                                         .wrapContentWidth()
                                         .padding(top = 18.dp),
-                                    text =
-                                    yourAccountViewModel.parentHomeAddress,
+                                    text = if (yourAccountViewModel.isParentClicked) yourAccountViewModel.parentHomeAddress else yourAccountViewModel.parentPartnerHomeAddress,
                                     style = MaterialTheme.typography.body2.copy(
                                         color = Color.Black,
                                         fontSize = 14.sp,
@@ -1258,13 +1251,12 @@ fun YourAccountScreen(
                                     )
                                 )
                             }
-                            if (yourAccountViewModel.parentPhoneNumber != "") {
+                            if (yourAccountViewModel.parentPhoneNumber != "" ) {
                                 Text(
                                     modifier = Modifier
                                         .wrapContentWidth()
                                         .padding(top = 11.dp),
-                                    text =
-                                    yourAccountViewModel.parentPhoneNumber,
+                                    text = if (yourAccountViewModel.isParentClicked) yourAccountViewModel.parentPhoneNumber else yourAccountViewModel.parentPartnerPhoneNumber,
                                     style = MaterialTheme.typography.body2.copy(
                                         color = Custom_Blue,
                                         fontSize = 14.sp,
@@ -1598,8 +1590,6 @@ fun YourAccountScreen(
                                                 yourAccountViewModel.parentHomeAddress
                                             ) && TextUtils.isEmpty(
                                                 yourAccountViewModel.parentDateOfBirth
-                                            ) && TextUtils.isEmpty(
-                                                yourAccountViewModel.parentPartnerName
                                             ) -> {
                                                 yourAccountViewModel.yourAccountFullNameEmpty = true
                                                 yourAccountViewModel.yourAccountPhoneNumberEmpty =
@@ -1635,11 +1625,6 @@ fun YourAccountScreen(
                                                 yourAccountViewModel.yourAccountDateOfBirthEmpty =
                                                     true
                                                 Log.i("TAG", "DOB Empty")
-                                            }
-                                            TextUtils.isEmpty(yourAccountViewModel.parentPartnerName) -> {
-                                                yourAccountViewModel.yourAccountPartnerNameEmpty =
-                                                    true
-                                                Log.i("TAG", "Partner Name Empty")
                                             }
                                             !Patterns.EMAIL_ADDRESS.matcher(yourAccountViewModel.parentEmail)
                                                 .matches() -> {
@@ -1679,10 +1664,6 @@ fun YourAccountScreen(
                                                     MultipartBody.Part.createFormData(
                                                         "date_of_birth",
                                                         yourAccountViewModel.parentDateOfBirth
-                                                    ),
-                                                    MultipartBody.Part.createFormData(
-                                                        "partner_name",
-                                                        yourAccountViewModel.parentPartnerName
                                                     ),
                                                     image,
                                                     null,
@@ -1779,9 +1760,9 @@ fun YourAccountScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(top = 12.dp, start = 24.dp, end = 24.dp),
-                                value = yourAccountViewModel.surrogateFullName,
+                                value = yourAccountViewModel.parentPartnerName,
                                 onValueChange = {
-                                    yourAccountViewModel.surrogateFullName = it
+                                    yourAccountViewModel.parentPartnerName = it
                                     yourAccountViewModel.yourAccountFullNameEmpty = false
                                 },
                                 keyboardOptions = KeyboardOptions(
@@ -1832,9 +1813,9 @@ fun YourAccountScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(top = 12.dp, start = 24.dp, end = 24.dp),
-                                value = yourAccountViewModel.surrogatePhoneNumber,
+                                value = yourAccountViewModel.parentPartnerPhoneNumber,
                                 onValueChange = {
-                                    yourAccountViewModel.surrogatePhoneNumber = it
+                                    yourAccountViewModel.parentPartnerPhoneNumber = it
                                     yourAccountViewModel.yourAccountPhoneNumberEmpty = false
                                 },
                                 keyboardOptions = KeyboardOptions(
@@ -1886,9 +1867,9 @@ fun YourAccountScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(top = 12.dp, start = 24.dp, end = 24.dp),
-                                value = yourAccountViewModel.surrogateEmail,
+                                value = yourAccountViewModel.parentEmail,
                                 onValueChange = {
-                                    yourAccountViewModel.surrogateEmail = it
+                                    yourAccountViewModel.parentEmail = it
                                     yourAccountViewModel.yourAccountEmailEmpty = false
                                     yourAccountViewModel.yourAccountEmailIsValid = false
                                 },
@@ -1915,28 +1896,6 @@ fun YourAccountScreen(
                                     )
                                 }
                             )
-                            if (yourAccountViewModel.yourAccountEmailEmpty) {
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 24.dp),
-                                    text = "Enter your email",
-                                    style = MaterialTheme.typography.caption,
-                                    color = MaterialTheme.colors.error,
-                                    fontSize = 12.sp
-                                )
-                            }
-                            if (yourAccountViewModel.yourAccountEmailIsValid) {
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 24.dp),
-                                    text = "Enter valid email",
-                                    style = MaterialTheme.typography.caption,
-                                    color = MaterialTheme.colors.error,
-                                    fontSize = 12.sp
-                                )
-                            }
                             Text(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -1951,9 +1910,9 @@ fun YourAccountScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(top = 12.dp, start = 24.dp, end = 24.dp),
-                                value = yourAccountViewModel.surrogateHomeAddress,
+                                value = yourAccountViewModel.parentPartnerHomeAddress,
                                 onValueChange = {
-                                    yourAccountViewModel.surrogateHomeAddress = it
+                                    yourAccountViewModel.parentPartnerHomeAddress = it
                                     yourAccountViewModel.yourAccountHomeAddressEmpty = false
                                 },
                                 keyboardOptions = KeyboardOptions(
@@ -2004,9 +1963,9 @@ fun YourAccountScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(top = 12.dp, start = 24.dp, end = 24.dp),
-                                value = yourAccountViewModel.surrogateDateOfBirth,
+                                value = yourAccountViewModel.parentPartnerDateOfBirth,
                                 onValueChange = {
-                                    yourAccountViewModel.surrogateDateOfBirth = it
+                                    yourAccountViewModel.parentPartnerDateOfBirth = it
                                     yourAccountViewModel.yourAccountDateOfBirthEmpty = false
                                 },
                                 keyboardOptions = KeyboardOptions(
@@ -2207,10 +2166,6 @@ fun YourAccountScreen(
                                                     MultipartBody.Part.createFormData(
                                                         "date_of_birth",
                                                         yourAccountViewModel.surrogateDateOfBirth
-                                                    ),
-                                                    MultipartBody.Part.createFormData(
-                                                        "partner_name",
-                                                        yourAccountViewModel.surrogatePartnerName
                                                     ),
                                                     image,
                                                     null,
@@ -2515,7 +2470,7 @@ fun YourAccountScreen(
                     }
                 }
             }
-            if (yourAccountViewModel.isPermissionAllowed){
+            if (yourAccountViewModel.isPermissionAllowed) {
                 AlertDialog(
                     onDismissRequest = {
                         yourAccountViewModel.isPermissionAllowed = false
@@ -2544,48 +2499,8 @@ fun YourAccountScreen(
     }
 }
 
-fun getIntendedProfile(
-    userId: Int,
-    type: String,
-    homeActivity: HomeActivity,
-    yourAccountViewModel: YourAccountViewModel
-) {
-    yourAccountViewModel.getIntendedParentProfile(type = type, userId = userId)
-    yourAccountViewModel.getIntendedProfileResponse.observe(homeActivity) {
-        if (it != null) {
-            handleGetIntendedProfileData(
-                result = it,
-                yourAccountViewModel = yourAccountViewModel
-            )
-        }
-    }
-}
 
-private fun handleGetIntendedProfileData(
-    result: NetworkResult<GetIntendedProfileResponse>,
-    yourAccountViewModel: YourAccountViewModel
-) {
-    when (result) {
-        is NetworkResult.Loading -> {
-            // show a progress bar
-            yourAccountViewModel.isLoading = true
-        }
-        is NetworkResult.Success -> {
-            // bind data to the view
-            yourAccountViewModel.isLoading = false
-            yourAccountViewModel.intendedProfileResponseQuestionList.clear()
-            result.data?.question_ans?.let {
-                yourAccountViewModel.intendedProfileResponseQuestionList.addAll(
-                    it
-                )
-            }
-        }
-        is NetworkResult.Error -> {
-            // show error message
-            yourAccountViewModel.isLoading = false
-        }
-    }
-}
+
 
 private fun handleUserDataSurrogate(
     result: NetworkResult<GetUserDetailsSurrogateResponse>,
@@ -2667,13 +2582,25 @@ private fun handleUserDataParent(
                 yourAccountViewModel.parentDateOfBirth = result.data.parent_date_of_birth
             }
             if (result.data?.parent_partner_name != null) {
-                yourAccountViewModel.parentPartnerName = result.data.parent_partner_name
+                yourAccountViewModel.parentName = result.data.parent_partner_name
             }
             if (result.data?.parent_image1 != null) {
                 yourAccountViewModel.parentImg1 = result.data.parent_image1
             }
             if (result.data?.parent_image2 != null) {
                 yourAccountViewModel.parentImg2 = result.data.parent_image2
+            }
+            if (result.data?.parent_partner_address!=null){
+                yourAccountViewModel.parentPartnerHomeAddress = result.data.parent_partner_address
+            }
+            if (result.data?.parent_partner_dob!=null){
+                yourAccountViewModel.parentPartnerDateOfBirth = result.data.parent_partner_dob
+            }
+            if (result.data?.parent_partner_phone!=null){
+                yourAccountViewModel.parentPartnerPhoneNumber = result.data.parent_partner_phone.toString()
+            }
+            if (result.data?.parent_partner_name!=null){
+                yourAccountViewModel.parentPartnerName = result.data.parent_partner_name
             }
         }
         is NetworkResult.Error -> {
@@ -2707,6 +2634,17 @@ private fun handleUserUpdateData(
             Log.e("TAG", "handleUserData() --> Error ${result.message}")
             yourAccountViewModel.isSurrogateDataLoading = false
         }
+    }
+}
+
+fun getAge(year: Int, month: Int, dayOfMonth: Int): Int {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        Period.between(
+            LocalDate.of(year, month, dayOfMonth),
+            LocalDate.now()
+        ).years
+    } else {
+        TODO("VERSION.SDK_INT < O")
     }
 }
 

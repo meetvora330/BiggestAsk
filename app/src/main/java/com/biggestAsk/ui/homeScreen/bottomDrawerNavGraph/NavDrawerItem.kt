@@ -44,6 +44,7 @@ sealed class NavDrawerItem(
         icon = R.drawable.ic_icon_nav_drawer_settings,
         tittle = Constants.SETTINGS_TITTLE
     )
+
 }
 
 sealed class MyAccount(

@@ -34,6 +34,7 @@ class HomeActivity : BaseActivity() {
     private val surrogateViewModel: YourSurrogateViewModel by viewModels()
     private val notificationViewModel: NotificationViewModel by viewModels()
     private val aboutAppViewModel: AboutAppViewModel by viewModels()
+    private val yourSurrogateMotherViewModel: YourSurrogateMotherViewModel by viewModels()
 
     private val permissionReqLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { it ->
@@ -99,7 +100,8 @@ class HomeActivity : BaseActivity() {
                     communityViewModel = communityViewModel,
                     surrogateViewModel = surrogateViewModel,
                     notificationViewModel = notificationViewModel,
-                    aboutAppViewModel = aboutAppViewModel
+                    aboutAppViewModel = aboutAppViewModel,
+                    yourSurrogateMotherViewModel = yourSurrogateMotherViewModel
                 )
             }
         }

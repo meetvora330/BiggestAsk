@@ -118,7 +118,6 @@ interface ApiService {
         @Part number: MultipartBody.Part?,
         @Part address: MultipartBody.Part?,
         @Part date_of_birth: MultipartBody.Part?,
-        @Part partner_name: MultipartBody.Part?,
         @Part imgFileName1: MultipartBody.Part?,
         @Part imgFileName2: MultipartBody.Part?,
         @Part type: MultipartBody.Part?,

@@ -1,11 +1,10 @@
 package com.biggestAsk.data.model.response
 
 data class IndendedUser(
-    val address: Any,
-    val date_of_birth: Any,
+    val address: String,
+    val date_of_birth: String,
     val email: String,
-    val image1: Any,
-    val image2: Any,
+    val image: String,
     val name: String,
-    val number: Any
+    val number: String
 )

@@ -300,5 +300,7 @@
 <!--    Notification Screen-->
     <string name="NO_NOTIFICATION_FOUND">No Notification Found</string>
 
+    <string name="existing_question_profile">Existing questions in the profile</string>
+    <string name="no_surrogate_found">No surrogate found!!</string>
 
 </resources>

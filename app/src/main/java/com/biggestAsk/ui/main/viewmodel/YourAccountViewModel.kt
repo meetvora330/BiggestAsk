@@ -42,7 +42,7 @@ class YourAccountViewModel @Inject constructor(
     var imageData: Uri? = (null)
     var uriPath: String? = null
     val isImagePresent = mutableStateOf(false)
-    var intendedProfileResponseQuestionList = mutableStateListOf<QuestionAn>()
+
 
     //  surrogate
     var textEmailVerify: String by mutableStateOf("")
@@ -70,19 +70,24 @@ class YourAccountViewModel @Inject constructor(
 
     //    parent
     var parentFullName: String by mutableStateOf("")
+    var parentPartnerFullName: String by mutableStateOf("")
     var parentImg1: String by mutableStateOf("")
     var parentImg2: String by mutableStateOf("")
     var parentPhoneNumber: String by mutableStateOf("")
+    var parentPartnerPhoneNumber: String by mutableStateOf("")
+    var parentName: String by mutableStateOf("")
     var parentPartnerName: String by mutableStateOf("")
     var parentDateOfBirth: String by mutableStateOf("")
+    var parentPartnerDateOfBirth: String by mutableStateOf("")
     var parentHomeAddress: String by mutableStateOf("")
+    var parentPartnerHomeAddress: String by mutableStateOf("")
     var parentEmail: String by mutableStateOf("")
     var getUserDetailResponseParent: MutableLiveData<NetworkResult<GetUserDetailsParentResponse>> =
         MutableLiveData()
     var isParentClicked: Boolean by mutableStateOf(true)
     var isMotherClicked: Boolean by mutableStateOf(false)
     var isParentApiCalled: Boolean by mutableStateOf(false)
-    var getIntendedProfileResponse: MutableLiveData<NetworkResult<GetIntendedProfileResponse>> = MutableLiveData()
+
 
 
     fun getUserDetailsSurrogate(getUserDetailsRequestSurrogate: GetUserDetailsSurrogateRequest) {
@@ -128,7 +133,6 @@ class YourAccountViewModel @Inject constructor(
         number: MultipartBody.Part,
         address: MultipartBody.Part,
         dateOfBirth: MultipartBody.Part,
-        partnerName: MultipartBody.Part,
         imgFileName1: MultipartBody.Part? = null,
         imgFileName2: MultipartBody.Part? = null,
         type: MultipartBody.Part,
@@ -142,7 +146,6 @@ class YourAccountViewModel @Inject constructor(
                 number,
                 address,
                 dateOfBirth,
-                partnerName,
                 imgFileName1,
                 imgFileName2,
                 type
@@ -152,12 +155,5 @@ class YourAccountViewModel @Inject constructor(
         }
     }
 
-    fun getIntendedParentProfile(type:String,userId: Int) {
-        getIntendedProfileResponse.value = NetworkResult.Loading()
-        viewModelScope.launch {
-            yourAccountRepository.getIntendedParentProfile(type = type, user_id = userId).collect{
-                getIntendedProfileResponse.value = it
-            }
-        }
-    }
+
 }

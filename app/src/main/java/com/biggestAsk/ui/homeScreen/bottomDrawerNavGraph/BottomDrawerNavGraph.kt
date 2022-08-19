@@ -2,8 +2,6 @@ package com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph
 
 import android.content.Context
 import android.util.Log
-import androidx.compose.material.BottomSheetScaffoldState
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
@@ -24,6 +22,7 @@ import com.biggestAsk.ui.homeScreen.drawerScreens.intendParents.IntendParentsScr
 import com.biggestAsk.ui.homeScreen.drawerScreens.notification.*
 import com.biggestAsk.ui.homeScreen.drawerScreens.settingScreens.*
 import com.biggestAsk.ui.homeScreen.drawerScreens.yourAccount.YourAccountScreen
+import com.biggestAsk.ui.homeScreen.drawerScreens.yourSurrogateMother.AddSurrogateMother
 import com.biggestAsk.ui.homeScreen.drawerScreens.yourSurrogateMother.SurrogateParentNotAssignScreen
 import com.biggestAsk.ui.homeScreen.drawerScreens.yourSurrogateMother.YourSurrogateMother
 import com.biggestAsk.ui.main.viewmodel.*
@@ -47,6 +46,7 @@ fun BottomNavigationDrawerGraph(
     communityViewModel: CommunityViewModel,
     notificationViewModel: NotificationViewModel,
     aboutAppViewModel: AboutAppViewModel,
+    yourSurrogateMotherViewModel: YourSurrogateMotherViewModel,
     scaffoldState: ScaffoldState
 ) {
     NavHost(
@@ -70,7 +70,7 @@ fun BottomNavigationDrawerGraph(
             when (provider.getValue(Constants.LOGIN_STATUS, "")) {
                 LoginStatus.PARTNER_NOT_ASSIGN.name.lowercase(Locale.getDefault()) -> {
                     if (type == Constants.PARENT) {
-                        YourSurrogateMother(
+                        AddSurrogateMother(
                             surrogateViewModel = surrogateViewModel,
                             context = context,
                             homeActivity = homeActivity,
@@ -128,10 +128,9 @@ fun BottomNavigationDrawerGraph(
         }
         composable(route = NavDrawerItem.YourSurrogateMother.route) {
             YourSurrogateMother(
-                surrogateViewModel,
-                context,
                 homeActivity = homeActivity,
-                navHostController = navHostController
+                yourSurrogateMotherViewModel = yourSurrogateMotherViewModel,
+                context = context
             )
         }
         composable(route = NavDrawerItem.Community.route) {
