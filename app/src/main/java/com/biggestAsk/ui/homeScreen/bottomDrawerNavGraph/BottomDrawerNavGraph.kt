@@ -1,7 +1,6 @@
 package com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.material.ScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
@@ -47,6 +46,7 @@ fun BottomNavigationDrawerGraph(
     notificationViewModel: NotificationViewModel,
     aboutAppViewModel: AboutAppViewModel,
     yourSurrogateMotherViewModel: YourSurrogateMotherViewModel,
+    intendedParentsViewModel: IntendedParentsViewModel,
     scaffoldState: ScaffoldState
 ) {
     NavHost(
@@ -112,10 +112,6 @@ fun BottomNavigationDrawerGraph(
                     type = NavType.IntType
                 })
         ) {
-            Log.d(
-                "TAG",
-                "BottomNavigationDrawerGraph: ${it.arguments?.getInt(ADD_NEW_MILESTONE_ARGS_ID)}"
-            )
             EditMilestoneScreen(
                 navHostController,
                 it.arguments?.getInt(ADD_NEW_MILESTONE_ARGS_ID)!!,
@@ -124,9 +120,14 @@ fun BottomNavigationDrawerGraph(
             )
         }
         composable(route = NavDrawerItem.IntendedParents.route) {
-            IntendParentsScreen(viewModel = mainViewModel)
+            IntendParentsScreen(
+                homeActivity = homeActivity,
+                context = context,
+                intendedParentsViewModel = intendedParentsViewModel
+            )
         }
         composable(route = NavDrawerItem.YourSurrogateMother.route) {
+//            NoSurrogateAssigned()
             YourSurrogateMother(
                 homeActivity = homeActivity,
                 yourSurrogateMotherViewModel = yourSurrogateMotherViewModel,

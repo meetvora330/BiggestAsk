@@ -116,7 +116,6 @@ fun YourSurrogateMother(
                         )
                     }
                 }
-
             }
         }
         Column(
@@ -515,19 +514,21 @@ fun YourSurrogateMother(
                         )
                 ) {
                     Column {
-                        Text(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 24.dp, top = 24.dp, end = 56.dp),
-                            text = item.question,
-                            color = Color.Black,
-                            style = MaterialTheme.typography.body2.copy(
+                        item.question?.let {
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 24.dp, top = 24.dp, end = 56.dp),
+                                text = it,
                                 color = Color.Black,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.W600,
-                                lineHeight = 24.sp
-                            ),
-                        )
+                                style = MaterialTheme.typography.body2.copy(
+                                    color = Color.Black,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.W600,
+                                    lineHeight = 24.sp
+                                ),
+                            )
+                        }
                         Row {
                             Text(
                                 modifier = Modifier.padding(start = 24.dp, top = 10.dp),
@@ -551,20 +552,22 @@ fun YourSurrogateMother(
                                 textAlign = TextAlign.End
                             )
                         }
-                        Text(
-                            modifier = Modifier.padding(
-                                start = 24.dp,
-                                top = 4.dp,
-                                bottom = 22.dp
-                            ),
-                            text = item.answer,
-                            style = MaterialTheme.typography.body2.copy(
-                                color = Color.Black,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.W600,
-                                lineHeight = 22.sp
-                            ),
-                        )
+                        item.answer?.let {
+                            Text(
+                                modifier = Modifier.padding(
+                                    start = 24.dp,
+                                    top = 4.dp,
+                                    bottom = 22.dp
+                                ),
+                                text = it,
+                                style = MaterialTheme.typography.body2.copy(
+                                    color = Color.Black,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.W600,
+                                    lineHeight = 22.sp
+                                ),
+                            )
+                        }
                     }
                 }
             }
@@ -653,8 +656,8 @@ private fun handleGetIntendedProfileData(
             } else {
                 yourSurrogateMotherViewModel.surrogateMotherEmail = "Not inserted"
             }
-            if (result.data?.indended_user?.image != null) {
-                yourSurrogateMotherViewModel.surrogateMotherImg = result.data.indended_user.image
+            if (result.data?.indended_user?.image1 != null) {
+                yourSurrogateMotherViewModel.surrogateMotherImg = result.data.indended_user.image1
             }
             yourSurrogateMotherViewModel.intendedProfileResponseQuestionList.clear()
             yourSurrogateMotherViewModel.intendedProfileResponseDaysList.clear()

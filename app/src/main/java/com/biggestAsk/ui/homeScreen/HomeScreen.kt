@@ -77,8 +77,9 @@ fun HomeScreen(
     surrogateViewModel: YourSurrogateViewModel,
     communityViewModel: CommunityViewModel,
     notificationViewModel: NotificationViewModel,
-    aboutAppViewModel: AboutAppViewModel
-    yourSurrogateMotherViewModel: YourSurrogateMotherViewModel
+    aboutAppViewModel: AboutAppViewModel,
+    yourSurrogateMotherViewModel: YourSurrogateMotherViewModel,
+    intendedParentsViewModel: IntendedParentsViewModel
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val requester = FocusRequester()
@@ -459,6 +460,7 @@ fun HomeScreen(
                 notificationViewModel = notificationViewModel,
                 aboutAppViewModel = aboutAppViewModel,
                 yourSurrogateMotherViewModel = yourSurrogateMotherViewModel,
+                intendedParentsViewModel = intendedParentsViewModel,
                 scaffoldState = scaffoldState
             )
             BackHandler(scaffoldState.drawerState.isOpen) {

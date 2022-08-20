@@ -3,7 +3,6 @@ package com.biggestAsk.data.repository
 import android.content.Context
 import com.biggestAsk.data.model.request.GetUserDetailsParentRequest
 import com.biggestAsk.data.model.request.GetUserDetailsSurrogateRequest
-import com.biggestAsk.data.model.response.GetIntendedProfileResponse
 import com.biggestAsk.data.model.response.GetUserDetailsParentResponse
 import com.biggestAsk.data.model.response.GetUserDetailsSurrogateResponse
 import com.biggestAsk.data.model.response.UpdateUserProfileResponse
@@ -44,27 +43,32 @@ class YourAccountRepository @Inject constructor(
         number: MultipartBody.Part,
         address: MultipartBody.Part,
         dateOfBirth: MultipartBody.Part,
-        imgFileName1: MultipartBody.Part?=null,
-        imgFileName2: MultipartBody.Part?=null,
+        imgFileName1: MultipartBody.Part? = null,
+        imgFileName2: MultipartBody.Part? = null,
         type: MultipartBody.Part,
+        partner_phone: MultipartBody.Part? = null,
+        partner_dob: MultipartBody.Part? = null,
+        partner_address: MultipartBody.Part? = null
     ): Flow<NetworkResult<UpdateUserProfileResponse>> {
         return flow {
             emit(safeApiCall {
                 apiService.updateUserProfile(
-                    userId,
-                    name,
-                    email,
-                    number,
-                    address,
-                    dateOfBirth,
-                    imgFileName1,
-                    imgFileName2,
-                    type
+                    userId = userId,
+                    name = name,
+                    email = email,
+                    number = number,
+                    address = address,
+                    date_of_birth = dateOfBirth,
+                    imgFileName1 = imgFileName1,
+                    imgFileName2 = imgFileName2,
+                    type = type,
+                    partner_phone = partner_phone,
+                    partner_dob = partner_dob,
+                    partner_address = partner_address
                 )
             })
         }.flowOn(Dispatchers.IO)
     }
-
 
 
 }

@@ -8,18 +8,22 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
-import androidx.compose.runtime.*
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.biggestAsk.data.model.request.GetUserDetailsParentRequest
 import com.biggestAsk.data.model.request.GetUserDetailsSurrogateRequest
-import com.biggestAsk.data.model.response.*
+import com.biggestAsk.data.model.response.GetUserDetailsParentResponse
+import com.biggestAsk.data.model.response.GetUserDetailsSurrogateResponse
+import com.biggestAsk.data.model.response.UpdateUserProfileResponse
 import com.biggestAsk.data.repository.YourAccountRepository
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.util.PathUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 import javax.inject.Inject
@@ -33,6 +37,7 @@ class YourAccountViewModel @Inject constructor(
 
     var isLoading: Boolean by mutableStateOf(false)
     var isSurrogateDataLoading: Boolean by mutableStateOf(false)
+    var isParentDataLoading: Boolean by mutableStateOf(false)
     var isIntendedProfileDataLoading: Boolean by mutableStateOf(false)
     var isPermissionAllowed: Boolean by mutableStateOf(false)
     var isRational: Boolean by mutableStateOf(false)
@@ -89,7 +94,6 @@ class YourAccountViewModel @Inject constructor(
     var isParentApiCalled: Boolean by mutableStateOf(false)
 
 
-
     fun getUserDetailsSurrogate(getUserDetailsRequestSurrogate: GetUserDetailsSurrogateRequest) {
         getUserDetailResponseSurrogate.value = NetworkResult.Loading()
         viewModelScope.launch {
@@ -136,6 +140,9 @@ class YourAccountViewModel @Inject constructor(
         imgFileName1: MultipartBody.Part? = null,
         imgFileName2: MultipartBody.Part? = null,
         type: MultipartBody.Part,
+        partner_phone: MultipartBody.Part? = null,
+        partner_dob: MultipartBody.Part? = null,
+        partner_address: MultipartBody.Part? = null
     ) {
         updateUserProfileResponse.value = NetworkResult.Loading()
         viewModelScope.launch {
@@ -148,7 +155,10 @@ class YourAccountViewModel @Inject constructor(
                 dateOfBirth,
                 imgFileName1,
                 imgFileName2,
-                type
+                type,
+                partner_phone,
+                partner_dob,
+                partner_address
             ).collect {
                 updateUserProfileResponse.value = it
             }

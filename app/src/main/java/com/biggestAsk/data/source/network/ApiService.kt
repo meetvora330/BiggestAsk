@@ -121,6 +121,9 @@ interface ApiService {
         @Part imgFileName1: MultipartBody.Part?,
         @Part imgFileName2: MultipartBody.Part?,
         @Part type: MultipartBody.Part?,
+        @Part partner_phone:MultipartBody.Part?,
+        @Part partner_dob:MultipartBody.Part?,
+        @Part partner_address:MultipartBody.Part?
     ): Response<UpdateUserProfileResponse>
 
     @Multipart
