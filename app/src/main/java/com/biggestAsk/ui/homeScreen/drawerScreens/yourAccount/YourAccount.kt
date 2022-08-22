@@ -9,7 +9,6 @@ import android.os.Build
 import android.provider.Settings
 import android.text.TextUtils
 import android.util.Log
-import android.util.Patterns
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -92,34 +91,31 @@ fun YourAccountScreen(
         when (type) {
             SURROGATE -> {
                 yourAccountViewModel.isSurrogateApiCalled = true
-                yourAccountViewModel.getUserDetailsSurrogate(
-                    GetUserDetailsSurrogateRequest(
-                        userId,
-                        type
-                    )
-                )
-                yourAccountViewModel.getUserDetailResponseSurrogate.observe(homeActivity) {
-                    if (it != null) {
-                        handleUserDataSurrogate(
-                            result = it,
-                            yourAccountViewModel = yourAccountViewModel,
-                            context = context
-                        )
-                    }
-                }
+                yourAccountViewModel.surrogateFullName = ""
+                yourAccountViewModel.surrogatePhoneNumber = ""
+                yourAccountViewModel.surrogateEmail = ""
+                yourAccountViewModel.surrogateHomeAddress = ""
+                yourAccountViewModel.surrogateDateOfBirth = ""
+                yourAccountViewModel.surrogateHomeAddress = ""
+                yourAccountViewModel.surrogatePartnerName = ""
+                yourAccountViewModel.surrogateImg = ""
+                getUserDetailsSurrogate(userId, type, homeActivity, yourAccountViewModel, context)
             }
             PARENT -> {
                 yourAccountViewModel.isParentApiCalled = true
-                yourAccountViewModel.getUserDetailsParent(GetUserDetailsParentRequest(userId, type))
-                yourAccountViewModel.getUserDetailResponseParent.observe(homeActivity) {
-                    if (it != null) {
-                        handleUserDataParent(
-                            result = it,
-                            yourAccountViewModel = yourAccountViewModel,
-                            context = context
-                        )
-                    }
-                }
+                yourAccountViewModel.parentFullName = ""
+                yourAccountViewModel.parentPhoneNumber = ""
+                yourAccountViewModel.parentEmail = ""
+                yourAccountViewModel.parentHomeAddress = ""
+                yourAccountViewModel.parentDateOfBirth = ""
+                yourAccountViewModel.parentImg1 = ""
+                yourAccountViewModel.parentImg2 = ""
+                yourAccountViewModel.parentPartnerHomeAddress = ""
+                yourAccountViewModel.parentPartnerDateOfBirth = ""
+                yourAccountViewModel.parentPartnerPhoneNumber = ""
+                yourAccountViewModel.parentPartnerName = ""
+                getUserDetailsParent(userId, type, homeActivity, yourAccountViewModel, context)
+
             }
             else -> {
                 Log.e("TAG", "YourAccountScreen: no surrogate no parent")
@@ -156,7 +152,7 @@ fun YourAccountScreen(
                             .padding(top = 28.dp)
                     ) {
                         val (img_camera, img_user) = createRefs()
-                        if (yourAccountViewModel.bitmap.value == null) {
+                        if (yourAccountViewModel.bitmapImage1.value == null) {
                             val painter = rememberImagePainter(
                                 yourAccountViewModel.surrogateImg,
                                 builder = { placeholder(R.drawable.ic_placeholder_your_account) }
@@ -184,7 +180,7 @@ fun YourAccountScreen(
                                 )
                             )
                         } else {
-                            yourAccountViewModel.bitmap.value?.let {
+                            yourAccountViewModel.bitmapImage1.value?.let {
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -352,17 +348,6 @@ fun YourAccountScreen(
                                 )
                             }
                         )
-                        if (yourAccountViewModel.yourAccountPhoneNumberEmpty) {
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 24.dp),
-                                text = stringResource(id = R.string.enter_phone_number),
-                                style = MaterialTheme.typography.caption,
-                                color = MaterialTheme.colors.error,
-                                fontSize = 12.sp
-                            )
-                        }
                         Text(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -406,28 +391,6 @@ fun YourAccountScreen(
                                 )
                             }
                         )
-                        if (yourAccountViewModel.yourAccountEmailEmpty) {
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 24.dp),
-                                text = "Enter your email",
-                                style = MaterialTheme.typography.caption,
-                                color = MaterialTheme.colors.error,
-                                fontSize = 12.sp
-                            )
-                        }
-                        if (yourAccountViewModel.yourAccountEmailIsValid) {
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 24.dp),
-                                text = "Enter valid email",
-                                style = MaterialTheme.typography.caption,
-                                color = MaterialTheme.colors.error,
-                                fontSize = 12.sp
-                            )
-                        }
                         Text(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -470,17 +433,6 @@ fun YourAccountScreen(
                                 )
                             }
                         )
-                        if (yourAccountViewModel.yourAccountHomeAddressEmpty) {
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 24.dp),
-                                text = "Enter your address",
-                                style = MaterialTheme.typography.caption,
-                                color = MaterialTheme.colors.error,
-                                fontSize = 12.sp
-                            )
-                        }
                         Text(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -523,173 +475,88 @@ fun YourAccountScreen(
                                 )
                             }
                         )
-                        if (yourAccountViewModel.yourAccountDateOfBirthEmpty) {
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 24.dp),
-                                text = "Enter your date of birth",
-                                style = MaterialTheme.typography.caption,
-                                color = MaterialTheme.colors.error,
-                                fontSize = 12.sp
-                            )
-                        }
-                        if (yourAccountViewModel.isEditable.value) {
-                            Button(
-                                onClick = {
-                                    when {
-                                        TextUtils.isEmpty(yourAccountViewModel.surrogateFullName) && TextUtils.isEmpty(
-                                            yourAccountViewModel.surrogatePhoneNumber
-                                        ) && TextUtils.isEmpty(
-                                            yourAccountViewModel.surrogateEmail
-                                        ) && TextUtils.isEmpty(
-                                            yourAccountViewModel.surrogateHomeAddress
-                                        ) && TextUtils.isEmpty(
-                                            yourAccountViewModel.surrogateDateOfBirth
-                                        ) && TextUtils.isEmpty(
-                                            yourAccountViewModel.surrogatePartnerName
-                                        ) && TextUtils.isEmpty(
-                                            yourAccountViewModel.yourAccountPassword
-                                        ) -> {
-                                            yourAccountViewModel.yourAccountFullNameEmpty = true
-                                            yourAccountViewModel.yourAccountPhoneNumberEmpty = true
-                                            yourAccountViewModel.yourAccountEmailEmpty = true
-                                            yourAccountViewModel.yourAccountHomeAddressEmpty = true
-                                            yourAccountViewModel.yourAccountDateOfBirthEmpty = true
-                                            yourAccountViewModel.yourAccountPartnerNameEmpty = true
-                                            yourAccountViewModel.yourAccountPasswordEmpty = true
-                                            Log.i("TAG", "All Empty")
-                                        }
-                                        TextUtils.isEmpty(yourAccountViewModel.surrogateFullName) -> {
-                                            yourAccountViewModel.yourAccountFullNameEmpty = true
-                                            Log.i("TAG", "Full Name Empty")
-                                        }
-                                        TextUtils.isEmpty(yourAccountViewModel.surrogatePhoneNumber) -> {
-                                            yourAccountViewModel.yourAccountPhoneNumberEmpty = true
-                                            Log.i("TAG", "Phone Number Empty")
-                                        }
-                                        TextUtils.isEmpty(yourAccountViewModel.surrogateEmail) -> {
-                                            yourAccountViewModel.yourAccountEmailEmpty = true
-                                            Log.i("TAG", "Email Empty")
-                                        }
-                                        TextUtils.isEmpty(yourAccountViewModel.surrogateHomeAddress) -> {
-                                            yourAccountViewModel.yourAccountHomeAddressEmpty = true
-                                            Log.i("TAG", "Home Address Empty")
-                                        }
-                                        TextUtils.isEmpty(yourAccountViewModel.surrogateDateOfBirth) -> {
-                                            yourAccountViewModel.yourAccountDateOfBirthEmpty = true
-                                            Log.i("TAG", "DOB Empty")
-                                        }
-                                        !Patterns.EMAIL_ADDRESS.matcher(yourAccountViewModel.surrogateEmail)
-                                            .matches() -> {
-                                            Log.i("TAG", "Invalid Email Empty")
-                                            yourAccountViewModel.yourAccountEmailIsValid = true
-                                        }
-                                        else -> {
-                                            yourAccountViewModel.isEditable.value = false
-                                            val image = yourAccountViewModel.uriPath?.let {
-                                                convertImageMultiPart(it)
-                                            }
-                                            yourAccountViewModel.updateUserProfile(
-                                                userId,
-                                                MultipartBody.Part.createFormData(
-                                                    "name",
-                                                    yourAccountViewModel.surrogateFullName
-                                                ),
-                                                MultipartBody.Part.createFormData(
-                                                    "email",
-                                                    yourAccountViewModel.surrogateEmail
-                                                ),
-                                                MultipartBody.Part.createFormData(
-                                                    "number",
-                                                    yourAccountViewModel.surrogatePhoneNumber
-                                                ),
-                                                MultipartBody.Part.createFormData(
-                                                    "address",
-                                                    yourAccountViewModel.surrogateHomeAddress
-                                                ),
-                                                MultipartBody.Part.createFormData(
-                                                    "date_of_birth",
-                                                    yourAccountViewModel.surrogateDateOfBirth
-                                                ),
-                                                image,
-                                                null,
-                                                MultipartBody.Part.createFormData(
-                                                    "type",
-                                                    type
-                                                ),
-                                            )
-                                            yourAccountViewModel.updateUserProfileResponse.observe(
-                                                homeActivity
-                                            ) {
-                                                if (it != null) {
-                                                    handleUserUpdateData(
-                                                        result = it,
-                                                        yourAccountViewModel = yourAccountViewModel,
-                                                        context = context
-                                                    )
-                                                }
-                                            }
-                                        }
+                        Button(
+                            onClick = {
+                                when {
+                                    TextUtils.isEmpty(yourAccountViewModel.surrogateFullName) -> {
+                                        yourAccountViewModel.yourAccountFullNameEmpty = true
+                                        Log.i("TAG", "Full Name Empty")
                                     }
-                                },
-                                modifier = Modifier
-                                    .padding(top = 25.dp, start = 24.dp, end = 24.dp)
-                                    .fillMaxWidth()
-                                    .height(56.dp),
-                                elevation = ButtonDefaults.elevation(
-                                    defaultElevation = 0.dp,
-                                    pressedElevation = 0.dp,
-                                    disabledElevation = 0.dp,
-                                    hoveredElevation = 0.dp,
-                                    focusedElevation = 0.dp
-                                ),
-                                shape = RoundedCornerShape(30),
-                                colors = ButtonDefaults.buttonColors(
-                                    backgroundColor = Custom_Blue,
-                                )
-                            ) {
-                                Text(
-                                    text = "Save Editing",
-                                    color = Color.White,
-                                    style = MaterialTheme.typography.body1,
-                                    lineHeight = 28.sp,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.W900
-                                )
-                            }
-                        }
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            val logout = context.resources.getString(R.string.logout)
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 40.dp, bottom = 32.dp)
-                                    .clickable(
-                                        indication = null,
-                                        interactionSource = MutableInteractionSource()
-                                    ) {
-                                        openLogoutDialog.value = true
-                                    },
-                                textAlign = TextAlign.Center,
-                                style = MaterialTheme.typography.subtitle1,
-                                lineHeight = 16.sp,
-                                text = buildAnnotatedString {
-                                    withStyle(
-                                        style = SpanStyle(
-                                            fontWeight = FontWeight.W400,
-                                            textDecoration = TextDecoration.Underline,
-                                            color = Color(0xFFAE4B2B),
-                                            fontSize = 14.sp,
+                                    else -> {
+                                        yourAccountViewModel.isEditable.value = false
+                                        val image = yourAccountViewModel.uriPathParent?.let {
+                                            convertImageMultiPart(it)
+                                        }
+                                        yourAccountViewModel.updateUserProfile(
+                                            userId,
+                                            MultipartBody.Part.createFormData(
+                                                "name",
+                                                yourAccountViewModel.surrogateFullName
+                                            ),
+                                            MultipartBody.Part.createFormData(
+                                                "email",
+                                                yourAccountViewModel.surrogateEmail
+                                            ),
+                                            MultipartBody.Part.createFormData(
+                                                "number",
+                                                yourAccountViewModel.surrogatePhoneNumber
+                                            ),
+                                            MultipartBody.Part.createFormData(
+                                                "address",
+                                                yourAccountViewModel.surrogateHomeAddress
+                                            ),
+                                            MultipartBody.Part.createFormData(
+                                                "date_of_birth",
+                                                yourAccountViewModel.surrogateDateOfBirth
+                                            ),
+                                            image,
+                                            null,
+                                            MultipartBody.Part.createFormData(
+                                                "type",
+                                                type
+                                            ),
                                         )
-                                    ) {
-                                        append(logout)
+                                        yourAccountViewModel.updateUserProfileResponse.observe(
+                                            homeActivity
+                                        ) {
+                                            if (it != null) {
+                                                handleUserUpdateData(
+                                                    result = it,
+                                                    yourAccountViewModel = yourAccountViewModel,
+                                                    context = context,
+                                                    type = type,
+                                                    userId = userId,
+                                                    homeActivity = homeActivity
+                                                )
+                                            }
+                                        }
                                     }
-                                })
+                                }
+                            },
+                            modifier = Modifier
+                                .padding(top = 25.dp, start = 24.dp, end = 24.dp, bottom = 32.dp)
+                                .fillMaxWidth()
+                                .height(56.dp),
+                            elevation = ButtonDefaults.elevation(
+                                defaultElevation = 0.dp,
+                                pressedElevation = 0.dp,
+                                disabledElevation = 0.dp,
+                                hoveredElevation = 0.dp,
+                                focusedElevation = 0.dp
+                            ),
+                            shape = RoundedCornerShape(30),
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = Custom_Blue,
+                            )
+                        ) {
+                            Text(
+                                text = "Save Editing",
+                                color = Color.White,
+                                style = MaterialTheme.typography.body1,
+                                lineHeight = 28.sp,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.W900
+                            )
                         }
                         if (openLogoutDialog.value) {
                             Dialog(
@@ -757,6 +624,9 @@ fun YourAccountScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 if (yourAccountViewModel.surrogateDateOfBirth != "") {
+                                    val dateOfBirth =
+                                        yourAccountViewModel.surrogateDateOfBirth.replace("/", "")
+                                    Log.d("TAG", "YourAccountScreen: $dateOfBirth")
                                     Text(
                                         modifier = Modifier
                                             .wrapContentWidth()
@@ -1052,37 +922,60 @@ fun YourAccountScreen(
                         Alignment.CenterHorizontally
                     )
                 ) {
-                    val painter1 = rememberImagePainter(yourAccountViewModel.parentImg1,
-                        builder = { placeholder(R.drawable.ic_placeholder_your_account) })
-                    val painter2 = rememberImagePainter(
-                        yourAccountViewModel.parentImg2,
-                        builder = { placeholder(R.drawable.ic_placeholder_your_account) }
-                    )
                     Box {
-                        Image(
-                            modifier = Modifier
-                                .width(88.dp)
-                                .height(88.dp)
-                                .clickable(
-                                    indication = null,
-                                    interactionSource = MutableInteractionSource()
-                                ) {
-                                    yourAccountViewModel.isParentClicked = true
-                                    yourAccountViewModel.isMotherClicked = false
-                                }
-                                .placeholder(
-                                    visible = yourAccountViewModel.isParentDataLoading,
-                                    color = light_gray,
-                                    shape = RoundedCornerShape(4.dp),
-                                    highlight = PlaceholderHighlight.shimmer(
-                                        highlightColor = Color.White,
-                                    )
+                        if (yourAccountViewModel.bitmapImage1.value == null) {
+                            val painter1 = rememberImagePainter(yourAccountViewModel.parentImg1,
+                                builder = { placeholder(R.drawable.ic_placeholder_your_account) })
+                            Image(
+                                modifier = Modifier
+                                    .width(88.dp)
+                                    .height(88.dp)
+                                    .clickable(
+                                        indication = null,
+                                        interactionSource = MutableInteractionSource()
+                                    ) {
+                                        yourAccountViewModel.isParentClicked = true
+                                        yourAccountViewModel.isMotherClicked = false
+                                    }
+                                    .placeholder(
+                                        visible = yourAccountViewModel.isParentDataLoading,
+                                        color = light_gray,
+                                        shape = RoundedCornerShape(4.dp),
+                                        highlight = PlaceholderHighlight.shimmer(
+                                            highlightColor = Color.White,
+                                        )
+                                    ),
+                                painter = if (yourAccountViewModel.parentImg1 != "") painter1 else painterResource(
+                                    id = R.drawable.ic_placeholder_your_account
                                 ),
-                            painter = if (yourAccountViewModel.parentImg1 != "") painter1 else painterResource(
-                                id = R.drawable.ic_placeholder_your_account
-                            ),
-                            contentDescription = "",
-                        )
+                                contentDescription = "",
+                            )
+                        } else {
+                            yourAccountViewModel.bitmapImage1.value?.let {
+                                Image(
+                                    modifier = Modifier
+                                        .width(88.dp)
+                                        .height(88.dp)
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = MutableInteractionSource()
+                                        ) {
+                                            yourAccountViewModel.isParentClicked = true
+                                            yourAccountViewModel.isMotherClicked = false
+                                        }
+                                        .placeholder(
+                                            visible = yourAccountViewModel.isParentDataLoading,
+                                            color = light_gray,
+                                            shape = RoundedCornerShape(4.dp),
+                                            highlight = PlaceholderHighlight.shimmer(
+                                                highlightColor = Color.White,
+                                            )
+                                        ),
+                                    bitmap = it.asImageBitmap(),
+                                    contentDescription = "",
+                                )
+                            }
+                        }
                         if (yourAccountViewModel.isEditable.value && yourAccountViewModel.isParentClicked) {
                             Icon(
                                 modifier = Modifier
@@ -1114,30 +1007,61 @@ fun YourAccountScreen(
                         }
                     }
                     Box {
-                        Image(
-                            modifier = Modifier
-                                .width(88.dp)
-                                .height(88.dp)
-                                .clickable(
-                                    indication = null,
-                                    interactionSource = MutableInteractionSource()
-                                ) {
-                                    yourAccountViewModel.isParentClicked = false
-                                    yourAccountViewModel.isMotherClicked = true
-                                }
-                                .placeholder(
-                                    visible = yourAccountViewModel.isParentDataLoading,
-                                    color = light_gray,
-                                    shape = RoundedCornerShape(4.dp),
-                                    highlight = PlaceholderHighlight.shimmer(
-                                        highlightColor = Color.White,
-                                    )
+                        if (yourAccountViewModel.bitmapImage2.value == null) {
+                            val painter2 = rememberImagePainter(
+                                yourAccountViewModel.parentImg2,
+                                builder = { placeholder(R.drawable.ic_placeholder_your_account) }
+                            )
+                            Image(
+                                modifier = Modifier
+                                    .width(88.dp)
+                                    .height(88.dp)
+                                    .clickable(
+                                        indication = null,
+                                        interactionSource = MutableInteractionSource()
+                                    ) {
+                                        yourAccountViewModel.isParentClicked = false
+                                        yourAccountViewModel.isMotherClicked = true
+                                    }
+                                    .placeholder(
+                                        visible = yourAccountViewModel.isParentDataLoading,
+                                        color = light_gray,
+                                        shape = RoundedCornerShape(4.dp),
+                                        highlight = PlaceholderHighlight.shimmer(
+                                            highlightColor = Color.White,
+                                        )
+                                    ),
+                                painter = if (yourAccountViewModel.parentImg2 != "") painter2 else painterResource(
+                                    id = R.drawable.ic_placeholder_your_account
                                 ),
-                            painter = if (yourAccountViewModel.parentImg1 != "") painter2 else painterResource(
-                                id = R.drawable.ic_placeholder_your_account
-                            ),
-                            contentDescription = "",
-                        )
+                                contentDescription = "",
+                            )
+                        } else {
+                            yourAccountViewModel.bitmapImage2.value?.let {
+                                Image(
+                                    modifier = Modifier
+                                        .width(88.dp)
+                                        .height(88.dp)
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = MutableInteractionSource()
+                                        ) {
+                                            yourAccountViewModel.isParentClicked = false
+                                            yourAccountViewModel.isMotherClicked = true
+                                        }
+                                        .placeholder(
+                                            visible = yourAccountViewModel.isParentDataLoading,
+                                            color = light_gray,
+                                            shape = RoundedCornerShape(4.dp),
+                                            highlight = PlaceholderHighlight.shimmer(
+                                                highlightColor = Color.White,
+                                            )
+                                        ),
+                                    bitmap = it.asImageBitmap(),
+                                    contentDescription = "",
+                                )
+                            }
+                        }
                         if (yourAccountViewModel.isEditable.value && yourAccountViewModel.isMotherClicked) {
                             Icon(
                                 modifier = Modifier
@@ -1164,7 +1088,6 @@ fun YourAccountScreen(
                                     },
                                 painter = painterResource(id = R.drawable.ic_icon_camera_edit_img_your_account),
                                 contentDescription = "",
-                                tint = if (yourAccountViewModel.parentImg2 == "") Color.Black else Color.White
                             )
                         }
                     }
@@ -1281,7 +1204,7 @@ fun YourAccountScreen(
                                 painter = painterResource(id = R.drawable.ic_img_intended_parents_liner),
                                 contentDescription = ""
                             )
-                            if (yourAccountViewModel.parentHomeAddress != "") {
+                            if (yourAccountViewModel.parentHomeAddress != "" && yourAccountViewModel.isParentClicked) {
                                 Text(
                                     modifier = Modifier
                                         .wrapContentWidth()
@@ -1294,7 +1217,28 @@ fun YourAccountScreen(
                                                 highlightColor = Color.White,
                                             )
                                         ),
-                                    text = if (yourAccountViewModel.isParentClicked) yourAccountViewModel.parentHomeAddress else yourAccountViewModel.parentPartnerHomeAddress,
+                                    text = yourAccountViewModel.parentHomeAddress,
+                                    style = MaterialTheme.typography.body2.copy(
+                                        color = Color.Black,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.W500,
+                                        lineHeight = 22.sp
+                                    )
+                                )
+                            } else if (yourAccountViewModel.parentPartnerHomeAddress != "" && yourAccountViewModel.isMotherClicked) {
+                                Text(
+                                    modifier = Modifier
+                                        .wrapContentWidth()
+                                        .padding(top = 18.dp)
+                                        .placeholder(
+                                            visible = yourAccountViewModel.isParentDataLoading,
+                                            color = light_gray,
+                                            shape = RoundedCornerShape(4.dp),
+                                            highlight = PlaceholderHighlight.shimmer(
+                                                highlightColor = Color.White,
+                                            )
+                                        ),
+                                    text = yourAccountViewModel.parentPartnerHomeAddress,
                                     style = MaterialTheme.typography.body2.copy(
                                         color = Color.Black,
                                         fontSize = 14.sp,
@@ -1303,7 +1247,7 @@ fun YourAccountScreen(
                                     )
                                 )
                             }
-                            if (yourAccountViewModel.parentPhoneNumber != "") {
+                            if (yourAccountViewModel.parentPhoneNumber != "" && yourAccountViewModel.isParentClicked) {
                                 Text(
                                     modifier = Modifier
                                         .wrapContentWidth()
@@ -1316,7 +1260,28 @@ fun YourAccountScreen(
                                                 highlightColor = Color.White,
                                             )
                                         ),
-                                    text = if (yourAccountViewModel.isParentClicked) yourAccountViewModel.parentPhoneNumber else yourAccountViewModel.parentPartnerPhoneNumber,
+                                    text = yourAccountViewModel.parentPhoneNumber,
+                                    style = MaterialTheme.typography.body2.copy(
+                                        color = Custom_Blue,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.W500,
+                                        lineHeight = 22.sp
+                                    )
+                                )
+                            } else if (yourAccountViewModel.parentPhoneNumber != "" && yourAccountViewModel.isMotherClicked) {
+                                Text(
+                                    modifier = Modifier
+                                        .wrapContentWidth()
+                                        .padding(top = 11.dp)
+                                        .placeholder(
+                                            visible = yourAccountViewModel.isParentDataLoading,
+                                            color = light_gray,
+                                            shape = RoundedCornerShape(4.dp),
+                                            highlight = PlaceholderHighlight.shimmer(
+                                                highlightColor = Color.White,
+                                            )
+                                        ),
+                                    text = yourAccountViewModel.parentPartnerPhoneNumber,
                                     style = MaterialTheme.typography.body2.copy(
                                         color = Custom_Blue,
                                         fontSize = 14.sp,
@@ -1453,17 +1418,6 @@ fun YourAccountScreen(
                                     )
                                 }
                             )
-                            if (yourAccountViewModel.yourAccountPhoneNumberEmpty) {
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 24.dp),
-                                    text = stringResource(id = R.string.enter_phone_number),
-                                    style = MaterialTheme.typography.caption,
-                                    color = MaterialTheme.colors.error,
-                                    fontSize = 12.sp
-                                )
-                            }
                             Text(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -1507,28 +1461,6 @@ fun YourAccountScreen(
                                     )
                                 }
                             )
-                            if (yourAccountViewModel.yourAccountEmailEmpty) {
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 24.dp),
-                                    text = "Enter your email",
-                                    style = MaterialTheme.typography.caption,
-                                    color = MaterialTheme.colors.error,
-                                    fontSize = 12.sp
-                                )
-                            }
-                            if (yourAccountViewModel.yourAccountEmailIsValid) {
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 24.dp),
-                                    text = "Enter valid email",
-                                    style = MaterialTheme.typography.caption,
-                                    color = MaterialTheme.colors.error,
-                                    fontSize = 12.sp
-                                )
-                            }
                             Text(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -1571,17 +1503,6 @@ fun YourAccountScreen(
                                     )
                                 }
                             )
-                            if (yourAccountViewModel.yourAccountHomeAddressEmpty) {
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 24.dp),
-                                    text = "Enter your address",
-                                    style = MaterialTheme.typography.caption,
-                                    color = MaterialTheme.colors.error,
-                                    fontSize = 12.sp
-                                )
-                            }
                             Text(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -1624,93 +1545,19 @@ fun YourAccountScreen(
                                     )
                                 }
                             )
-                            if (yourAccountViewModel.yourAccountDateOfBirthEmpty) {
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 24.dp),
-                                    text = "Enter your date of birth",
-                                    style = MaterialTheme.typography.caption,
-                                    color = MaterialTheme.colors.error,
-                                    fontSize = 12.sp
-                                )
-                            }
-                            if (yourAccountViewModel.yourAccountPasswordEmpty) {
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 24.dp),
-                                    text = "Enter password",
-                                    style = MaterialTheme.typography.caption,
-                                    color = MaterialTheme.colors.error,
-                                    fontSize = 12.sp
-                                )
-                            }
                             if (yourAccountViewModel.isEditable.value) {
                                 Button(
                                     onClick = {
                                         when {
-                                            TextUtils.isEmpty(yourAccountViewModel.parentFullName) && TextUtils.isEmpty(
-                                                yourAccountViewModel.parentPhoneNumber
-                                            ) && TextUtils.isEmpty(
-                                                yourAccountViewModel.parentEmail
-                                            ) && TextUtils.isEmpty(
-                                                yourAccountViewModel.parentHomeAddress
-                                            ) && TextUtils.isEmpty(
-                                                yourAccountViewModel.parentDateOfBirth
-                                            ) -> {
-                                                yourAccountViewModel.yourAccountFullNameEmpty = true
-                                                yourAccountViewModel.yourAccountPhoneNumberEmpty =
-                                                    true
-                                                yourAccountViewModel.yourAccountEmailEmpty = true
-                                                yourAccountViewModel.yourAccountHomeAddressEmpty =
-                                                    true
-                                                yourAccountViewModel.yourAccountDateOfBirthEmpty =
-                                                    true
-                                                yourAccountViewModel.yourAccountPartnerNameEmpty =
-                                                    true
-                                                Log.i("TAG", "All Empty")
-                                            }
                                             TextUtils.isEmpty(yourAccountViewModel.parentFullName) -> {
                                                 yourAccountViewModel.yourAccountFullNameEmpty = true
                                                 Log.i("TAG", "Full Name Empty")
                                             }
-                                            TextUtils.isEmpty(yourAccountViewModel.parentPhoneNumber) -> {
-                                                yourAccountViewModel.yourAccountPhoneNumberEmpty =
-                                                    true
-                                                Log.i("TAG", "Phone Number Empty")
-                                            }
-                                            TextUtils.isEmpty(yourAccountViewModel.parentEmail) -> {
-                                                yourAccountViewModel.yourAccountEmailEmpty = true
-                                                Log.i("TAG", "Email Empty")
-                                            }
-                                            TextUtils.isEmpty(yourAccountViewModel.parentHomeAddress) -> {
-                                                yourAccountViewModel.yourAccountHomeAddressEmpty =
-                                                    true
-                                                Log.i("TAG", "Home Address Empty")
-                                            }
-                                            TextUtils.isEmpty(yourAccountViewModel.parentDateOfBirth) -> {
-                                                yourAccountViewModel.yourAccountDateOfBirthEmpty =
-                                                    true
-                                                Log.i("TAG", "DOB Empty")
-                                            }
-                                            !Patterns.EMAIL_ADDRESS.matcher(yourAccountViewModel.parentEmail)
-                                                .matches() -> {
-                                                Log.i("TAG", "Invalid Email Empty")
-                                                yourAccountViewModel.yourAccountEmailIsValid = true
-                                            }
-                                            yourAccountViewModel.uriPath == null -> {
-                                                Toast.makeText(
-                                                    context,
-                                                    "Please select image",
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
-                                            }
                                             else -> {
-                                                yourAccountViewModel.isEditable.value = false
-                                                val image = yourAccountViewModel.uriPath?.let {
-                                                    convertImageMultiPart(it)
-                                                }
+                                                val image =
+                                                    yourAccountViewModel.uriPathParent?.let {
+                                                        convertImageMultiPart(it)
+                                                    }
                                                 yourAccountViewModel.updateUserProfile(
                                                     userId,
                                                     MultipartBody.Part.createFormData(
@@ -1739,6 +1586,9 @@ fun YourAccountScreen(
                                                         "type",
                                                         type
                                                     ),
+                                                    null,
+                                                    null,
+                                                    null
                                                 )
                                                 yourAccountViewModel.updateUserProfileResponse.observe(
                                                     homeActivity
@@ -1747,16 +1597,18 @@ fun YourAccountScreen(
                                                         handleUserUpdateData(
                                                             result = it,
                                                             yourAccountViewModel = yourAccountViewModel,
-                                                            context = context
+                                                            context = context,
+                                                            type = type,
+                                                            userId = userId,
+                                                            homeActivity = homeActivity
                                                         )
                                                     }
                                                 }
                                             }
                                         }
-
                                     },
                                     modifier = Modifier
-                                        .padding(top = 25.dp, start = 24.dp, end = 24.dp)
+                                        .padding(top = 25.dp, start = 24.dp, end = 24.dp, bottom = 32.dp)
                                         .fillMaxWidth()
                                         .height(56.dp),
                                     elevation = ButtonDefaults.elevation(
@@ -1780,32 +1632,6 @@ fun YourAccountScreen(
                                         fontWeight = FontWeight.W900
                                     )
                                 }
-                            }
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                val logout = context.resources.getString(R.string.logout)
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(top = 40.dp, bottom = 32.dp),
-                                    textAlign = TextAlign.Center,
-                                    style = MaterialTheme.typography.subtitle1,
-                                    lineHeight = 16.sp,
-                                    text = buildAnnotatedString {
-                                        withStyle(
-                                            style = SpanStyle(
-                                                fontWeight = FontWeight.W400,
-                                                textDecoration = TextDecoration.Underline,
-                                                color = Color(0xFFAE4B2B),
-                                                fontSize = 14.sp,
-                                            )
-                                        ) {
-                                            append(logout)
-                                        }
-                                    })
                             }
                         }
                     } else if (yourAccountViewModel.isMotherClicked) {
@@ -1910,17 +1736,6 @@ fun YourAccountScreen(
                                     )
                                 }
                             )
-                            if (yourAccountViewModel.yourAccountPhoneNumberEmpty) {
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 24.dp),
-                                    text = stringResource(id = R.string.enter_phone_number),
-                                    style = MaterialTheme.typography.caption,
-                                    color = MaterialTheme.colors.error,
-                                    fontSize = 12.sp
-                                )
-                            }
                             Text(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -2006,17 +1821,6 @@ fun YourAccountScreen(
                                     )
                                 }
                             )
-                            if (yourAccountViewModel.yourAccountHomeAddressEmpty) {
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 24.dp),
-                                    text = "Enter your address",
-                                    style = MaterialTheme.typography.caption,
-                                    color = MaterialTheme.colors.error,
-                                    fontSize = 12.sp
-                                )
-                            }
                             Text(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -2038,7 +1842,7 @@ fun YourAccountScreen(
                                 },
                                 keyboardOptions = KeyboardOptions(
                                     keyboardType = KeyboardType.Text,
-                                    imeAction = ImeAction.Next
+                                    imeAction = ImeAction.Done
                                 ), readOnly = !yourAccountViewModel.isEditable.value,
                                 shape = RoundedCornerShape(8.dp),
                                 colors = TextFieldDefaults.textFieldColors(
@@ -2059,71 +1863,19 @@ fun YourAccountScreen(
                                     )
                                 }
                             )
-                            if (yourAccountViewModel.yourAccountDateOfBirthEmpty) {
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 24.dp),
-                                    text = "Enter your date of birth",
-                                    style = MaterialTheme.typography.caption,
-                                    color = MaterialTheme.colors.error,
-                                    fontSize = 12.sp
-                                )
-                            }
                             if (yourAccountViewModel.isEditable.value) {
                                 Button(
                                     onClick = {
                                         when {
-                                            TextUtils.isEmpty(yourAccountViewModel.parentPartnerName) && TextUtils.isEmpty(
-                                                yourAccountViewModel.parentPartnerPhoneNumber
-                                            ) && TextUtils.isEmpty(
-                                                yourAccountViewModel.parentPartnerHomeAddress
-                                            ) && TextUtils.isEmpty(
-                                                yourAccountViewModel.parentPartnerDateOfBirth
-                                            ) -> {
-                                                yourAccountViewModel.yourAccountFullNameEmpty = true
-                                                yourAccountViewModel.yourAccountPhoneNumberEmpty =
-                                                    true
-                                                yourAccountViewModel.yourAccountHomeAddressEmpty =
-                                                    true
-                                                yourAccountViewModel.yourAccountDateOfBirthEmpty =
-                                                    true
-                                                yourAccountViewModel.yourAccountPartnerNameEmpty =
-                                                    true
-                                                yourAccountViewModel.yourAccountPasswordEmpty = true
-                                                Log.i("TAG", "All Empty")
-                                            }
                                             TextUtils.isEmpty(yourAccountViewModel.parentPartnerName) -> {
                                                 yourAccountViewModel.yourAccountFullNameEmpty = true
                                                 Log.i("TAG", "Full Name Empty")
                                             }
-                                            TextUtils.isEmpty(yourAccountViewModel.parentPartnerPhoneNumber) -> {
-                                                yourAccountViewModel.yourAccountPhoneNumberEmpty =
-                                                    true
-                                                Log.i("TAG", "Phone Number Empty")
-                                            }
-                                            TextUtils.isEmpty(yourAccountViewModel.parentPartnerHomeAddress) -> {
-                                                yourAccountViewModel.yourAccountHomeAddressEmpty =
-                                                    true
-                                                Log.i("TAG", "Home Address Empty")
-                                            }
-                                            TextUtils.isEmpty(yourAccountViewModel.parentPartnerDateOfBirth) -> {
-                                                yourAccountViewModel.yourAccountDateOfBirthEmpty =
-                                                    true
-                                                Log.i("TAG", "DOB Empty")
-                                            }
-                                            yourAccountViewModel.uriPath == null -> {
-                                                Toast.makeText(
-                                                    context,
-                                                    "Please select image",
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
-                                            }
                                             else -> {
-                                                yourAccountViewModel.isEditable.value = false
-                                                val image = yourAccountViewModel.uriPath?.let {
-                                                    convertImageMultiPart(it)
-                                                }
+                                                val image =
+                                                    yourAccountViewModel.uriPathMother?.let {
+                                                        convertImageMultiPart(it)
+                                                    }
                                                 yourAccountViewModel.updateUserProfile(
                                                     userId,
                                                     MultipartBody.Part.createFormData(
@@ -2132,7 +1884,7 @@ fun YourAccountScreen(
                                                     ),
                                                     MultipartBody.Part.createFormData(
                                                         "email",
-                                                        yourAccountViewModel.surrogateEmail
+                                                        yourAccountViewModel.parentEmail
                                                     ),
                                                     MultipartBody.Part.createFormData(
                                                         "number",
@@ -2172,16 +1924,18 @@ fun YourAccountScreen(
                                                         handleUserUpdateData(
                                                             result = it,
                                                             yourAccountViewModel = yourAccountViewModel,
-                                                            context = context
+                                                            context = context,
+                                                            type = type,
+                                                            userId = userId,
+                                                            homeActivity = homeActivity
                                                         )
                                                     }
                                                 }
                                             }
                                         }
-
                                     },
                                     modifier = Modifier
-                                        .padding(top = 25.dp, start = 24.dp, end = 24.dp)
+                                        .padding(top = 25.dp, start = 24.dp, end = 24.dp, bottom = 32.dp)
                                         .fillMaxWidth()
                                         .height(56.dp),
                                     elevation = ButtonDefaults.elevation(
@@ -2205,32 +1959,6 @@ fun YourAccountScreen(
                                         fontWeight = FontWeight.W900
                                     )
                                 }
-                            }
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                val logout = context.resources.getString(R.string.logout)
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(top = 40.dp, bottom = 32.dp),
-                                    textAlign = TextAlign.Center,
-                                    style = MaterialTheme.typography.subtitle1,
-                                    lineHeight = 16.sp,
-                                    text = buildAnnotatedString {
-                                        withStyle(
-                                            style = SpanStyle(
-                                                fontWeight = FontWeight.W400,
-                                                textDecoration = TextDecoration.Underline,
-                                                color = Color(0xFFAE4B2B),
-                                                fontSize = 14.sp,
-                                            )
-                                        ) {
-                                            append(logout)
-                                        }
-                                    })
                             }
                         }
                     }
@@ -2490,6 +2218,49 @@ fun YourAccountScreen(
     }
 }
 
+fun getUserDetailsParent(
+    userId: Int,
+    type: String,
+    homeActivity: HomeActivity,
+    yourAccountViewModel: YourAccountViewModel,
+    context: Context
+) {
+    yourAccountViewModel.getUserDetailsParent(GetUserDetailsParentRequest(userId, type))
+    yourAccountViewModel.getUserDetailResponseParent.observe(homeActivity) {
+        if (it != null) {
+            handleUserDataParent(
+                result = it,
+                yourAccountViewModel = yourAccountViewModel,
+                context = context
+            )
+        }
+    }
+}
+
+fun getUserDetailsSurrogate(
+    userId: Int,
+    type: String,
+    homeActivity: HomeActivity,
+    yourAccountViewModel: YourAccountViewModel,
+    context: Context
+) {
+    yourAccountViewModel.getUserDetailsSurrogate(
+        GetUserDetailsSurrogateRequest(
+            userId,
+            type
+        )
+    )
+    yourAccountViewModel.getUserDetailResponseSurrogate.observe(homeActivity) {
+        if (it != null) {
+            handleUserDataSurrogate(
+                result = it,
+                yourAccountViewModel = yourAccountViewModel,
+                context = context
+            )
+        }
+    }
+}
+
 
 private fun handleUserDataSurrogate(
     result: NetworkResult<GetUserDetailsSurrogateResponse>,
@@ -2503,14 +2274,7 @@ private fun handleUserDataSurrogate(
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            yourAccountViewModel.surrogateFullName = ""
-            yourAccountViewModel.surrogatePhoneNumber = ""
-            yourAccountViewModel.surrogateEmail = ""
-            yourAccountViewModel.surrogateHomeAddress = ""
-            yourAccountViewModel.surrogateDateOfBirth = ""
-            yourAccountViewModel.surrogateHomeAddress = ""
-            yourAccountViewModel.surrogatePartnerName = ""
-            yourAccountViewModel.surrogateImg = ""
+
             yourAccountViewModel.isSurrogateDataLoading = false
             if ((result.data?.name != null)) {
                 yourAccountViewModel.surrogateFullName = result.data.name
@@ -2555,6 +2319,7 @@ private fun handleUserDataParent(
         is NetworkResult.Success -> {
             // bind data to the view
             yourAccountViewModel.isParentDataLoading = false
+
             if (result.data?.parent_name != null) {
                 yourAccountViewModel.parentFullName = result.data.parent_name
             }
@@ -2569,9 +2334,6 @@ private fun handleUserDataParent(
             }
             if (result.data?.parent_date_of_birth != null) {
                 yourAccountViewModel.parentDateOfBirth = result.data.parent_date_of_birth
-            }
-            if (result.data?.parent_partner_name != null) {
-                yourAccountViewModel.parentName = result.data.parent_partner_name
             }
             if (result.data?.parent_image1 != null) {
                 yourAccountViewModel.parentImg1 = result.data.parent_image1
@@ -2605,24 +2367,50 @@ private fun handleUserUpdateData(
     result: NetworkResult<UpdateUserProfileResponse>,
     yourAccountViewModel: YourAccountViewModel,
     context: Context,
+    type: String,
+    userId: Int,
+    homeActivity: HomeActivity
 ) {
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
             Log.e("TAG", "handleUserData() --> Loading  $result")
             yourAccountViewModel.isSurrogateDataLoading = true
+            yourAccountViewModel.isParentDataLoading = true
         }
         is NetworkResult.Success -> {
             // bind data to the view
             Log.e("TAG", "handleUserData() --> Success  $result")
             yourAccountViewModel.isSurrogateDataLoading = false
+            yourAccountViewModel.isParentDataLoading = false
+            when (type) {
+                SURROGATE -> {
+                    getUserDetailsSurrogate(
+                        userId = userId,
+                        type = type,
+                        homeActivity = homeActivity,
+                        yourAccountViewModel = yourAccountViewModel,
+                        context = context
+                    )
+                }
+                PARENT -> {
+                    getUserDetailsParent(
+                        userId = userId,
+                        homeActivity = homeActivity,
+                        type = type,
+                        yourAccountViewModel = yourAccountViewModel,
+                        context = context
+                    )
+                }
+            }
             Toast.makeText(context, result.data?.message, Toast.LENGTH_SHORT).show()
-
         }
         is NetworkResult.Error -> {
             // show error message
             Log.e("TAG", "handleUserData() --> Error ${result.message}")
+            yourAccountViewModel.isEditable.value = true
             yourAccountViewModel.isSurrogateDataLoading = false
+            yourAccountViewModel.isParentDataLoading = false
         }
     }
 }

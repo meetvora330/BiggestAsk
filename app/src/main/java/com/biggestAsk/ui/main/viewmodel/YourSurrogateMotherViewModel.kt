@@ -29,7 +29,6 @@ class YourSurrogateMotherViewModel @Inject constructor(
         MutableLiveData()
 
     var surrogateMotherFullName: String by mutableStateOf("")
-    var surrogatePartnerFullName: String by mutableStateOf("Not inserted")
     var surrogateMotherImg: String by mutableStateOf("")
     var surrogateMotherPhoneNumber: String by mutableStateOf("")
     var surrogateMotherEmail: String by mutableStateOf("")

@@ -4,6 +4,7 @@ data class IndendedUser(
     val address: String,
     val date_of_birth: String,
     val email: String,
+    val image:String?=null,
     val image1: String? = null,
     val image2: String? = null,
     val name: String,

@@ -12,6 +12,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Path
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -23,6 +24,7 @@ import com.biggestAsk.data.model.response.UpdateUserProfileResponse
 import com.biggestAsk.data.repository.YourAccountRepository
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.util.PathUtil
+import com.biggestAsk.util.PreferenceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
@@ -43,9 +45,13 @@ class YourAccountViewModel @Inject constructor(
     var isRational: Boolean by mutableStateOf(false)
     var isEditable: MutableState<Boolean> = mutableStateOf(false)
     val isYourAccountScreen: MutableLiveData<Boolean> = MutableLiveData(false)
-    val bitmap = mutableStateOf<Bitmap?>(null)
+    val bitmapImage1 = mutableStateOf<Bitmap?>(null)
+    val bitmapImage2 = mutableStateOf<Bitmap?>(null)
     var imageData: Uri? = (null)
-    var uriPath: String? = null
+    var uriPathParent: String? = null
+    var uriPathMother: String? = null
+    var parentUriPath1: String? = null
+    var parentUriPath2: String? = null
     val isImagePresent = mutableStateOf(false)
 
 
@@ -117,18 +123,41 @@ class YourAccountViewModel @Inject constructor(
             imageData.let {
                 val uri = it
                 Log.e("uri", "AddCommunityDialog: $uri")
-                uriPath = uri?.let { it1 -> PathUtil.getPath(context, it1) }
-                Log.e("uriPath", "AddCommunityDialog: $uriPath")
+                if (PreferenceProvider(context).getValue("type", "") == "parent") {
+                    if (isParentClicked) {
+                        uriPathParent = uri?.let { it1-> PathUtil.getPath(context,it1) }
+                    }
+                    if (isMotherClicked) {
+                        uriPathMother = uri?.let { it1-> PathUtil.getPath(context,it1) }
+                    }
+                } else {
+                    uriPathParent = uri?.let { it1 -> PathUtil.getPath(context, it1) }
+                }
+                Log.e("uriPath", "AddCommunityDialog: $uriPathParent")
                 if (Build.VERSION.SDK_INT < 28) {
-                    bitmap.value = MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+                    if (isParentClicked) {
+                        bitmapImage1.value =
+                            MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+                    }
+                    if (isMotherClicked) {
+                        bitmapImage2.value =
+                            MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+                    }
                 } else {
                     val source =
                         uri?.let { it1 -> ImageDecoder.createSource(context.contentResolver, it1) }
-                    bitmap.value = source?.let { it1 -> ImageDecoder.decodeBitmap(it1) }
+                    if (isParentClicked) {
+                        bitmapImage1.value = source?.let { it1 -> ImageDecoder.decodeBitmap(it1) }
+                    }
+                    if (isMotherClicked) {
+                        bitmapImage2.value = source?.let { it1 -> ImageDecoder.decodeBitmap(it1) }
+                    }
+
                 }
             }
         }
     }
+
 
     fun updateUserProfile(
         userId: Int,

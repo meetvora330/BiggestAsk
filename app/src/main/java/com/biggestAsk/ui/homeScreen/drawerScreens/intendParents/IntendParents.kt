@@ -423,62 +423,42 @@ fun handleGetIntendedProfileDataParent(
             if (result.data?.indended_user?.name != null) {
                 intendedParentsViewModel.parentFullName =
                     result.data.indended_user.name
-            } else {
-                intendedParentsViewModel.parentFullName = "Not inserted"
             }
             if (result.data?.indended_user?.partner_name != null) {
                 intendedParentsViewModel.motherFullName =
                     result.data.indended_user.partner_name
-            } else {
-                intendedParentsViewModel.motherFullName = "Not inserted"
             }
             if (result.data?.indended_user?.date_of_birth != null) {
                 intendedParentsViewModel.parentDateOfBirth =
                     result.data.indended_user.date_of_birth
-            } else {
-                intendedParentsViewModel.parentDateOfBirth = "Not inserted"
             }
             if (result.data?.indended_user?.partner_date_of_birth != null) {
                 intendedParentsViewModel.motherDateOfBirth =
                     result.data.indended_user.partner_date_of_birth
-            } else {
-                intendedParentsViewModel.motherDateOfBirth = "Not inserted"
             }
             if (result.data?.indended_user?.address != null) {
                 intendedParentsViewModel.parentHomeAddress =
                     result.data.indended_user.address
-            } else {
-                intendedParentsViewModel.parentHomeAddress = "Not inserted"
             }
             if (result.data?.indended_user?.partner_address != null) {
                 intendedParentsViewModel.motherHomeAddress =
                     result.data.indended_user.address
-            } else {
-                intendedParentsViewModel.motherHomeAddress = "Not inserted"
             }
             if (result.data?.indended_user?.number != null) {
                 intendedParentsViewModel.parentPhoneNumber =
                     result.data.indended_user.number
-            } else {
-                intendedParentsViewModel.parentPhoneNumber = "Not inserted"
             }
             if (result.data?.indended_user?.partner_number != null) {
                 intendedParentsViewModel.motherPhoneNumber =
                     result.data.indended_user.number
-            } else {
-                intendedParentsViewModel.motherPhoneNumber = "Not inserted"
             }
             if (result.data?.indended_user?.email != null) {
                 intendedParentsViewModel.parentEmail =
                     result.data.indended_user.email
-            } else {
-                intendedParentsViewModel.parentEmail = "Not inserted"
             }
             if (result.data?.indended_user?.partner_email != null) {
                 intendedParentsViewModel.motherEmail =
                     result.data.indended_user.email
-            } else {
-                intendedParentsViewModel.motherEmail = "Not inserted"
             }
             if (result.data?.indended_user?.image1 != null) {
                 intendedParentsViewModel.imageFather = result.data.indended_user.image1

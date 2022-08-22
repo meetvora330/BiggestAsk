@@ -22,6 +22,7 @@ import com.biggestAsk.ui.homeScreen.drawerScreens.notification.*
 import com.biggestAsk.ui.homeScreen.drawerScreens.settingScreens.*
 import com.biggestAsk.ui.homeScreen.drawerScreens.yourAccount.YourAccountScreen
 import com.biggestAsk.ui.homeScreen.drawerScreens.yourSurrogateMother.AddSurrogateMother
+import com.biggestAsk.ui.homeScreen.drawerScreens.yourSurrogateMother.NoSurrogateAssigned
 import com.biggestAsk.ui.homeScreen.drawerScreens.yourSurrogateMother.SurrogateParentNotAssignScreen
 import com.biggestAsk.ui.homeScreen.drawerScreens.yourSurrogateMother.YourSurrogateMother
 import com.biggestAsk.ui.main.viewmodel.*
@@ -90,9 +91,6 @@ fun BottomNavigationDrawerGraph(
                         bottomHomeViewModel = bottomHomeViewModel
                     )
                 }
-                else -> {
-
-                }
             }
         }
         composable(
@@ -127,12 +125,25 @@ fun BottomNavigationDrawerGraph(
             )
         }
         composable(route = NavDrawerItem.YourSurrogateMother.route) {
-//            NoSurrogateAssigned()
-            YourSurrogateMother(
-                homeActivity = homeActivity,
-                yourSurrogateMotherViewModel = yourSurrogateMotherViewModel,
-                context = context
-            )
+            val provider = PreferenceProvider(context)
+            when (provider.getValue(Constants.LOGIN_STATUS, "")) {
+                LoginStatus.PARTNER_NOT_ASSIGN.name.lowercase(Locale.getDefault()) -> {
+                    AddSurrogateMother(
+                        surrogateViewModel = surrogateViewModel,
+                        context = context,
+                        homeActivity = homeActivity,
+                        navHostController
+                    )
+                }
+                else-> {
+                    YourSurrogateMother(
+                        homeActivity = homeActivity,
+                        yourSurrogateMotherViewModel = yourSurrogateMotherViewModel,
+                        context = context
+                    )
+                }
+            }
+
         }
         composable(route = NavDrawerItem.Community.route) {
             Community(
