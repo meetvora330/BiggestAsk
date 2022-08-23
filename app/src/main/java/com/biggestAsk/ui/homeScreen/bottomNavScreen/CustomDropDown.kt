@@ -30,9 +30,11 @@ fun simpleDropDown(
     hint: String,
     modifier: Modifier,
     style: TextStyle,
+    color: Color=ET_Bg,
+    text:String = ""
 ): String {
     var expanded by remember { mutableStateOf(false) }
-    var selectedText by remember { mutableStateOf("") }
+    var selectedText by remember { mutableStateOf(text) }
 
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
@@ -65,7 +67,7 @@ fun simpleDropDown(
                 Icon(painter = painterResource(id = icon), "",
                     Modifier.clickable { expanded = !expanded })
             }, shape = RoundedCornerShape(10.dp), colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = ET_Bg,
+                backgroundColor = color,
                 cursorColor = Custom_Blue,
                 focusedIndicatorColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent,

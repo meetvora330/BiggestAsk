@@ -468,8 +468,6 @@ fun CreateContactDialog(
                     )
                 }
             }
-
-
             Button(
                 onClick = {
                     when {
@@ -498,8 +496,7 @@ fun CreateContactDialog(
                         TextUtils.isEmpty(tf_text_fourth.value) -> {
                             tfTextFourthEmpty.value = true
                         }
-
-                        !Patterns.EMAIL_ADDRESS.matcher(tf_text_third.value).matches() -> {
+                        !Patterns.EMAIL_ADDRESS.matcher(tf_text_third.value.trim()).matches() -> {
                             contactYourProviderViewModel.isLoginEmailValid = true
                         }
                         !contactYourProviderViewModel.isImagePresent.value -> {

@@ -7,12 +7,12 @@
         <deviceKey>
           <Key>
             <type value="SERIAL_NUMBER" />
-            <value value="adb-RZ8R406BWSX-Pbw15x._adb-tls-connect._tcp" />
+            <value value="192.168.1.4:5555" />
           </Key>
         </deviceKey>
       </Target>
     </runningDeviceTargetSelectedWithDropDown>
-    <timeTargetWasSelectedWithDropDown value="2022-08-20T13:49:48.334060300Z" />
+    <timeTargetWasSelectedWithDropDown value="2022-08-22T12:20:18.473471400Z" />
     <runningDeviceTargetsSelectedWithDialog>
       <Target>
         <type value="RUNNING_DEVICE_TARGET" />

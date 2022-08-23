@@ -1,6 +1,7 @@
 package com.biggestAsk.ui.homeScreen.drawerScreens.yourAccount
 
 import android.Manifest
+import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -9,6 +10,7 @@ import android.os.Build
 import android.provider.Settings
 import android.text.TextUtils
 import android.util.Log
+import android.widget.DatePicker
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -32,22 +34,20 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.biggestAsk.data.model.request.GetUserDetailsParentRequest
@@ -57,24 +57,22 @@ import com.biggestAsk.data.model.response.GetUserDetailsSurrogateResponse
 import com.biggestAsk.data.model.response.UpdateUserProfileResponse
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.ui.HomeActivity
+import com.biggestAsk.ui.homeScreen.bottomNavScreen.simpleDropDown
 import com.biggestAsk.ui.main.viewmodel.YourAccountViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.ET_Bg
 import com.biggestAsk.ui.ui.theme.Text_Accept_Terms
-import com.biggestAsk.ui.ui.theme.light_gray
 import com.biggestAsk.util.Constants.PARENT
 import com.biggestAsk.util.Constants.SURROGATE
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
-import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.placeholder
-import com.google.accompanist.placeholder.shimmer
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.time.LocalDate
 import java.time.Period
+import java.util.*
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -86,6 +84,13 @@ fun YourAccountScreen(
 ) {
     val type = PreferenceProvider(context).getValue("type", "")
     val userId = PreferenceProvider(context).getIntValue("user_id", 0)
+    val focusManager = LocalFocusManager.current
+    val c = Calendar.getInstance()
+    val year = c.get(Calendar.YEAR)
+    val month = c.get(Calendar.MONTH)
+    val day = c.get(Calendar.DAY_OF_MONTH)
+    val suggestions =
+        listOf("Male", "Female", "Other")
     LaunchedEffect(Unit) {
         yourAccountViewModel.isEditable.value = false
         when (type) {
@@ -122,6 +127,9 @@ fun YourAccountScreen(
             }
         }
     }
+    Log.d("TAG", "YourAccountScreen: surrogate gender ${yourAccountViewModel.surrogateGender}")
+    Log.d("TAG", "YourAccountScreen: parent gender ${yourAccountViewModel.parentGender}")
+    Log.d("TAG", "YourAccountScreen: parent partner gender ${yourAccountViewModel.parentPartnerGender}")
     val openLogoutDialog = remember { mutableStateOf(false) }
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -132,533 +140,631 @@ fun YourAccountScreen(
     }
     when (type) {
         SURROGATE -> {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(top = 24.dp, bottom = 50.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(
-                        32.dp,
-                        Alignment.CenterHorizontally
-                    )
+            if (yourAccountViewModel.isSurrogateDataLoading) {
+                YourAccountSurrogateShimmerAnimation()
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(top = 24.dp, bottom = 50.dp)
                 ) {
-                    ConstraintLayout(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 28.dp)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(
+                            32.dp,
+                            Alignment.CenterHorizontally
+                        )
                     ) {
-                        val (img_camera, img_user) = createRefs()
-                        if (yourAccountViewModel.bitmapImage1.value == null) {
-                            val painter = rememberImagePainter(
-                                yourAccountViewModel.surrogateImg,
-                                builder = { placeholder(R.drawable.ic_placeholder_your_account) }
-                            )
-                            Image(
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .width(88.dp)
-                                    .height(88.dp)
-                                    .constrainAs(img_user) {
-                                        start.linkTo(parent.start)
-                                        end.linkTo(parent.end)
-                                        top.linkTo(parent.top)
-                                    }
-                                    .placeholder(
-                                        visible = yourAccountViewModel.isSurrogateDataLoading,
-                                        color = Color.LightGray,
-                                        shape = RoundedCornerShape(4.dp),
-                                        highlight = PlaceholderHighlight.shimmer(
-                                            highlightColor = Color.White,
-                                        )
-                                    ),
-                                painter = if (yourAccountViewModel.surrogateImg != "") painter else painterResource(
-                                    id = R.drawable.ic_placeholder_your_account
+                        ConstraintLayout(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 28.dp)
+                        ) {
+                            val (img_camera, img_user) = createRefs()
+                            if (yourAccountViewModel.bitmapImage1.value == null) {
+                                val painter = rememberImagePainter(
+                                    yourAccountViewModel.surrogateImg,
+                                    builder = { placeholder(R.drawable.ic_placeholder_your_account) }
                                 )
-                            )
-                        } else {
-                            yourAccountViewModel.bitmapImage1.value?.let {
-                                Row(
+                                Image(
+                                    contentDescription = null,
                                     modifier = Modifier
-                                        .fillMaxWidth()
+                                        .width(88.dp)
+                                        .height(88.dp)
                                         .constrainAs(img_user) {
                                             start.linkTo(parent.start)
                                             end.linkTo(parent.end)
                                             top.linkTo(parent.top)
                                         },
-                                    horizontalArrangement = Arrangement.Center,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Card(
+                                    painter = if (yourAccountViewModel.surrogateImg != "") painter else painterResource(
+                                        id = R.drawable.ic_placeholder_your_account
+                                    )
+                                )
+                            } else {
+                                yourAccountViewModel.bitmapImage1.value?.let {
+                                    Row(
                                         modifier = Modifier
-                                            .width(88.dp)
-                                            .height(88.dp), shape = RoundedCornerShape(10.dp)
+                                            .fillMaxWidth()
+                                            .constrainAs(img_user) {
+                                                start.linkTo(parent.start)
+                                                end.linkTo(parent.end)
+                                                top.linkTo(parent.top)
+                                            },
+                                        horizontalArrangement = Arrangement.Center,
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Image(
+                                        Card(
                                             modifier = Modifier
-                                                .clickable(
-                                                    indication = null,
-                                                    interactionSource = MutableInteractionSource()
-                                                ) {
-                                                },
-                                            bitmap = it.asImageBitmap(),
-                                            contentDescription = "",
-                                            contentScale = ContentScale.FillBounds
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                        Image(
-                            modifier = Modifier
-                                .constrainAs(img_camera) {
-                                    start.linkTo(img_user.start)
-                                    end.linkTo(img_user.end)
-                                    top.linkTo(img_user.top)
-                                    bottom.linkTo(img_user.bottom)
-                                }
-                                .alpha(if (yourAccountViewModel.isEditable.value) 1f else 0f)
-                                .clickable(
-                                    indication = null,
-                                    interactionSource = MutableInteractionSource()
-                                ) {
-                                    if (yourAccountViewModel.isEditable.value) {
-                                        if (ActivityCompat.checkSelfPermission(
-                                                homeActivity,
-                                                Manifest.permission.READ_EXTERNAL_STORAGE
-                                            ) != PackageManager.PERMISSION_GRANTED
+                                                .width(88.dp)
+                                                .height(88.dp), shape = RoundedCornerShape(10.dp)
                                         ) {
-                                            homeActivity.callPermissionRequestLauncher(launcher)
-                                            yourAccountViewModel.isPermissionAllowed =
-                                                false
-                                        } else {
-                                            launcher.launch("image/*")
-                                            yourAccountViewModel.isPermissionAllowed =
-                                                false
+                                            Image(
+                                                modifier = Modifier
+                                                    .clickable(
+                                                        indication = null,
+                                                        interactionSource = MutableInteractionSource()
+                                                    ) {
+                                                    },
+                                                bitmap = it.asImageBitmap(),
+                                                contentDescription = "",
+                                                contentScale = ContentScale.FillBounds
+                                            )
                                         }
                                     }
-                                },
-                            painter = painterResource(id = R.drawable.ic_icon_camera_edit_img_your_account),
-                            contentDescription = ""
-                        )
-                    }
-                }
-                if (yourAccountViewModel.isEditable.value) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 35.dp)
-                    ) {
-                        Text(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 24.dp),
-                            text = stringResource(id = R.string.register_tv_name),
-                            style = MaterialTheme.typography.body1,
-                            fontWeight = FontWeight.W400,
-                            fontSize = 14.sp,
-                            color = Text_Accept_Terms
-                        )
-                        TextField(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 12.dp, start = 24.dp, end = 24.dp),
-                            value = yourAccountViewModel.surrogateFullName,
-                            onValueChange = {
-                                yourAccountViewModel.surrogateFullName = it
-                                yourAccountViewModel.yourAccountFullNameEmpty = false
-                            },
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Email,
-                                imeAction = ImeAction.Next
-                            ),
-                            shape = RoundedCornerShape(8.dp),
-                            colors = TextFieldDefaults.textFieldColors(
-                                backgroundColor = if (!yourAccountViewModel.isEditable.value) ET_Bg
-                                else Color(0xFFD0E1FA),
-                                cursorColor = Custom_Blue,
-                                focusedIndicatorColor = Color.Transparent,
-                                disabledIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                textColor = Color.Black
-                            ), readOnly = !yourAccountViewModel.isEditable.value,
-                            maxLines = 1,
-                            textStyle = MaterialTheme.typography.body2,
-                            trailingIcon = {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_icon_et_name_your_account),
-                                    "error",
-                                )
+                                }
                             }
-                        )
-                        if (yourAccountViewModel.yourAccountFullNameEmpty) {
+                            Icon(
+                                modifier = Modifier
+                                    .constrainAs(img_camera) {
+                                        start.linkTo(img_user.start)
+                                        end.linkTo(img_user.end)
+                                        top.linkTo(img_user.top)
+                                        bottom.linkTo(img_user.bottom)
+                                    }
+                                    .alpha(if (yourAccountViewModel.isEditable.value) 1f else 0f)
+                                    .clickable(
+                                        indication = null,
+                                        interactionSource = MutableInteractionSource()
+                                    ) {
+                                        if (yourAccountViewModel.isEditable.value) {
+                                            if (ActivityCompat.checkSelfPermission(
+                                                    homeActivity,
+                                                    Manifest.permission.READ_EXTERNAL_STORAGE
+                                                ) != PackageManager.PERMISSION_GRANTED
+                                            ) {
+                                                homeActivity.callPermissionRequestLauncher(launcher)
+                                                yourAccountViewModel.isPermissionAllowed =
+                                                    false
+                                            } else {
+                                                launcher.launch("image/*")
+                                                yourAccountViewModel.isPermissionAllowed =
+                                                    false
+                                            }
+                                        }
+                                    },
+                                painter = painterResource(id = R.drawable.ic_icon_camera_edit_img_your_account),
+                                contentDescription = "",
+                                tint = Color.Black
+                            )
+                        }
+                    }
+                    if (yourAccountViewModel.isEditable.value) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 35.dp)
+                        ) {
                             Text(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(start = 24.dp),
-                                text = "Enter your name",
-                                style = MaterialTheme.typography.caption,
-                                color = MaterialTheme.colors.error,
-                                fontSize = 12.sp
+                                text = stringResource(id = R.string.register_tv_name),
+                                style = MaterialTheme.typography.body1,
+                                fontWeight = FontWeight.W400,
+                                fontSize = 14.sp,
+                                color = Text_Accept_Terms
                             )
-                        }
-                        Text(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 16.dp, start = 24.dp),
-                            text = "Phone number",
-                            style = MaterialTheme.typography.body1,
-                            fontWeight = FontWeight.W400,
-                            fontSize = 14.sp,
-                            color = Text_Accept_Terms
-                        )
-                        TextField(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 12.dp, start = 24.dp, end = 24.dp),
-                            value = yourAccountViewModel.surrogatePhoneNumber,
-                            onValueChange = {
-                                yourAccountViewModel.surrogatePhoneNumber = it
-                                yourAccountViewModel.yourAccountPhoneNumberEmpty = false
-                            },
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Phone,
-                                imeAction = ImeAction.Next
-                            ),
-                            shape = RoundedCornerShape(8.dp),
-                            colors = TextFieldDefaults.textFieldColors(
-                                backgroundColor = if (!yourAccountViewModel.isEditable.value) ET_Bg
-                                else Color(0xFFD0E1FA),
-                                cursorColor = Custom_Blue,
-                                focusedIndicatorColor = Color.Transparent,
-                                disabledIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                textColor = Color.Black
-                            ),
-                            readOnly = !yourAccountViewModel.isEditable.value,
-                            maxLines = 1,
-                            textStyle = MaterialTheme.typography.body2,
-                            trailingIcon = {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_icon_et_phone_your_account),
-                                    "error",
+                            TextField(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 12.dp, start = 24.dp, end = 24.dp),
+                                value = yourAccountViewModel.surrogateFullName,
+                                onValueChange = {
+                                    yourAccountViewModel.surrogateFullName = it
+                                    yourAccountViewModel.yourAccountFullNameEmpty = false
+                                },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Email,
+                                    imeAction = ImeAction.Next
+                                ),
+                                shape = RoundedCornerShape(8.dp),
+                                colors = TextFieldDefaults.textFieldColors(
+                                    backgroundColor = if (!yourAccountViewModel.isEditable.value) ET_Bg
+                                    else Color(0xFFD0E1FA),
+                                    cursorColor = Custom_Blue,
+                                    focusedIndicatorColor = Color.Transparent,
+                                    disabledIndicatorColor = Color.Transparent,
+                                    unfocusedIndicatorColor = Color.Transparent,
+                                    textColor = Color.Black
+                                ), readOnly = !yourAccountViewModel.isEditable.value,
+                                maxLines = 1,
+                                textStyle = MaterialTheme.typography.body2,
+                                trailingIcon = {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_icon_et_name_your_account),
+                                        "error",
+                                    )
+                                }
+                            )
+                            if (yourAccountViewModel.yourAccountFullNameEmpty) {
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 24.dp),
+                                    text = "Enter your name",
+                                    style = MaterialTheme.typography.caption,
+                                    color = MaterialTheme.colors.error,
+                                    fontSize = 12.sp
                                 )
                             }
-                        )
-                        Text(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 16.dp, start = 24.dp),
-                            text = stringResource(id = R.string.register_tv_email_text),
-                            style = MaterialTheme.typography.body1,
-                            fontWeight = FontWeight.W400,
-                            fontSize = 14.sp,
-                            color = Text_Accept_Terms
-                        )
-                        TextField(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 12.dp, start = 24.dp, end = 24.dp),
-                            value = yourAccountViewModel.surrogateEmail,
-                            onValueChange = {
-                                yourAccountViewModel.surrogateEmail = it
-                                yourAccountViewModel.yourAccountEmailEmpty = false
-                                yourAccountViewModel.yourAccountEmailIsValid = false
-                            },
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Email,
-                                imeAction = ImeAction.Next
-                            ),
-                            shape = RoundedCornerShape(8.dp),
-                            colors = TextFieldDefaults.textFieldColors(
-                                backgroundColor = if (!yourAccountViewModel.isEditable.value) ET_Bg
-                                else Color(0xFFD0E1FA),
-                                cursorColor = Custom_Blue,
-                                focusedIndicatorColor = Color.Transparent,
-                                disabledIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                textColor = Color.Black
-                            ), readOnly = true,
-                            maxLines = 1,
-                            textStyle = MaterialTheme.typography.body2,
-                            trailingIcon = {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_icon_et_email_your_account),
-                                    "error",
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 16.dp, start = 24.dp),
+                                text = stringResource(id = R.string.select_gender),
+                                style = MaterialTheme.typography.body1,
+                                fontWeight = FontWeight.W400,
+                                fontSize = 14.sp,
+                                color = Text_Accept_Terms
+                            )
+                            yourAccountViewModel.surrogateGender = simpleDropDown(
+                                suggestions = suggestions,
+                                hint = stringResource(id = R.string.select_gender),
+                                modifier = Modifier
+                                    .padding(top = 12.dp, start = 24.dp, end = 24.dp),
+                                style = MaterialTheme.typography.body2.copy(
+                                    fontWeight = FontWeight.W600,
+                                    fontSize = 16.sp,
+                                    color = Color.Black
+                                ),
+                                color = Color(0xFFD0E1FA),
+                                text = yourAccountViewModel.surrogateGender
+                            )
+                            if (yourAccountViewModel.surrogateGender == "" && yourAccountViewModel.isGenderSelected) {
+                                Text(
+                                    text = stringResource(id = R.string.select_gender),
+                                    color = MaterialTheme.colors.error,
+                                    style = MaterialTheme.typography.caption,
+                                    modifier = Modifier
+                                        .padding(start = 26.dp),
+                                    fontSize = 12.sp
                                 )
                             }
-                        )
-                        Text(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 16.dp, start = 24.dp),
-                            text = "Home address",
-                            style = MaterialTheme.typography.body1,
-                            fontWeight = FontWeight.W400,
-                            fontSize = 14.sp,
-                            color = Text_Accept_Terms
-                        )
-                        TextField(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 12.dp, start = 24.dp, end = 24.dp),
-                            value = yourAccountViewModel.surrogateHomeAddress,
-                            onValueChange = {
-                                yourAccountViewModel.surrogateHomeAddress = it
-                                yourAccountViewModel.yourAccountHomeAddressEmpty = false
-                            },
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Text,
-                                imeAction = ImeAction.Next
-                            ),
-                            shape = RoundedCornerShape(8.dp),
-                            colors = TextFieldDefaults.textFieldColors(
-                                backgroundColor = if (!yourAccountViewModel.isEditable.value) ET_Bg
-                                else Color(0xFFD0E1FA),
-                                cursorColor = Custom_Blue,
-                                focusedIndicatorColor = Color.Transparent,
-                                disabledIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                textColor = Color.Black
-                            ), readOnly = !yourAccountViewModel.isEditable.value,
-                            maxLines = 1,
-                            textStyle = MaterialTheme.typography.body2,
-                            trailingIcon = {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_icon_et_location_your_account),
-                                    "error",
-                                )
-                            }
-                        )
-                        Text(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 16.dp, start = 24.dp),
-                            text = "Your date of birth",
-                            style = MaterialTheme.typography.body1,
-                            fontWeight = FontWeight.W400,
-                            fontSize = 14.sp,
-                            color = Text_Accept_Terms
-                        )
-                        TextField(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 12.dp, start = 24.dp, end = 24.dp),
-                            value = yourAccountViewModel.surrogateDateOfBirth,
-                            onValueChange = {
-                                yourAccountViewModel.surrogateDateOfBirth = it
-                                yourAccountViewModel.yourAccountDateOfBirthEmpty = false
-                            },
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Text,
-                                imeAction = ImeAction.Next
-                            ), readOnly = !yourAccountViewModel.isEditable.value,
-                            shape = RoundedCornerShape(8.dp),
-                            colors = TextFieldDefaults.textFieldColors(
-                                backgroundColor = if (!yourAccountViewModel.isEditable.value) ET_Bg
-                                else Color(0xFFD0E1FA),
-                                cursorColor = Custom_Blue,
-                                focusedIndicatorColor = Color.Transparent,
-                                disabledIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                textColor = Color.Black
-                            ),
-                            maxLines = 1,
-                            textStyle = MaterialTheme.typography.body2,
-                            trailingIcon = {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_icon_et_calendar_your_account),
-                                    "error",
-                                )
-                            }
-                        )
-                        Button(
-                            onClick = {
-                                when {
-                                    TextUtils.isEmpty(yourAccountViewModel.surrogateFullName) -> {
-                                        yourAccountViewModel.yourAccountFullNameEmpty = true
-                                        Log.i("TAG", "Full Name Empty")
-                                    }
-                                    else -> {
-                                        yourAccountViewModel.isEditable.value = false
-                                        val image = yourAccountViewModel.uriPathParent?.let {
-                                            convertImageMultiPart(it)
-                                        }
-                                        yourAccountViewModel.updateUserProfile(
-                                            userId,
-                                            MultipartBody.Part.createFormData(
-                                                "name",
-                                                yourAccountViewModel.surrogateFullName
-                                            ),
-                                            MultipartBody.Part.createFormData(
-                                                "email",
-                                                yourAccountViewModel.surrogateEmail
-                                            ),
-                                            MultipartBody.Part.createFormData(
-                                                "number",
-                                                yourAccountViewModel.surrogatePhoneNumber
-                                            ),
-                                            MultipartBody.Part.createFormData(
-                                                "address",
-                                                yourAccountViewModel.surrogateHomeAddress
-                                            ),
-                                            MultipartBody.Part.createFormData(
-                                                "date_of_birth",
-                                                yourAccountViewModel.surrogateDateOfBirth
-                                            ),
-                                            image,
-                                            null,
-                                            MultipartBody.Part.createFormData(
-                                                "type",
-                                                type
-                                            ),
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 16.dp, start = 24.dp),
+                                text = "Phone number",
+                                style = MaterialTheme.typography.body1,
+                                fontWeight = FontWeight.W400,
+                                fontSize = 14.sp,
+                                color = Text_Accept_Terms
+                            )
+                            TextField(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 12.dp, start = 24.dp, end = 24.dp),
+                                value = yourAccountViewModel.surrogatePhoneNumber,
+                                onValueChange = {
+                                    yourAccountViewModel.surrogatePhoneNumber = it
+                                    yourAccountViewModel.yourAccountPhoneNumberEmpty = false
+                                },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Phone,
+                                    imeAction = ImeAction.Next
+                                ),
+                                shape = RoundedCornerShape(8.dp),
+                                colors = TextFieldDefaults.textFieldColors(
+                                    backgroundColor = if (!yourAccountViewModel.isEditable.value) ET_Bg
+                                    else Color(0xFFD0E1FA),
+                                    cursorColor = Custom_Blue,
+                                    focusedIndicatorColor = Color.Transparent,
+                                    disabledIndicatorColor = Color.Transparent,
+                                    unfocusedIndicatorColor = Color.Transparent,
+                                    textColor = Color.Black
+                                ),
+                                readOnly = !yourAccountViewModel.isEditable.value,
+                                maxLines = 1,
+                                textStyle = MaterialTheme.typography.body2,
+                                trailingIcon = {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_icon_et_phone_your_account),
+                                        "error",
+                                    )
+                                }
+                            )
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 16.dp, start = 24.dp),
+                                text = stringResource(id = R.string.register_tv_email_text),
+                                style = MaterialTheme.typography.body1,
+                                fontWeight = FontWeight.W400,
+                                fontSize = 14.sp,
+                                color = Text_Accept_Terms
+                            )
+                            TextField(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 12.dp, start = 24.dp, end = 24.dp),
+                                value = yourAccountViewModel.surrogateEmail,
+                                onValueChange = {
+                                    yourAccountViewModel.surrogateEmail = it
+                                    yourAccountViewModel.yourAccountEmailEmpty = false
+                                    yourAccountViewModel.yourAccountEmailIsValid = false
+                                },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Email,
+                                    imeAction = ImeAction.Next
+                                ),
+                                shape = RoundedCornerShape(8.dp),
+                                colors = TextFieldDefaults.textFieldColors(
+                                    backgroundColor = if (!yourAccountViewModel.isEditable.value) ET_Bg
+                                    else Color(0xFFD0E1FA),
+                                    cursorColor = Custom_Blue,
+                                    focusedIndicatorColor = Color.Transparent,
+                                    disabledIndicatorColor = Color.Transparent,
+                                    unfocusedIndicatorColor = Color.Transparent,
+                                    textColor = Color.Black
+                                ), readOnly = true,
+                                maxLines = 1,
+                                textStyle = MaterialTheme.typography.body2,
+                                trailingIcon = {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_icon_et_email_your_account),
+                                        "error",
+                                    )
+                                }
+                            )
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 16.dp, start = 24.dp),
+                                text = "Home address",
+                                style = MaterialTheme.typography.body1,
+                                fontWeight = FontWeight.W400,
+                                fontSize = 14.sp,
+                                color = Text_Accept_Terms
+                            )
+                            TextField(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 12.dp, start = 24.dp, end = 24.dp),
+                                value = yourAccountViewModel.surrogateHomeAddress,
+                                onValueChange = {
+                                    yourAccountViewModel.surrogateHomeAddress = it
+                                    yourAccountViewModel.yourAccountHomeAddressEmpty = false
+                                },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Text,
+                                    imeAction = ImeAction.Done
+                                ),
+                                shape = RoundedCornerShape(8.dp),
+                                colors = TextFieldDefaults.textFieldColors(
+                                    backgroundColor = if (!yourAccountViewModel.isEditable.value) ET_Bg
+                                    else Color(0xFFD0E1FA),
+                                    cursorColor = Custom_Blue,
+                                    focusedIndicatorColor = Color.Transparent,
+                                    disabledIndicatorColor = Color.Transparent,
+                                    unfocusedIndicatorColor = Color.Transparent,
+                                    textColor = Color.Black
+                                ), readOnly = !yourAccountViewModel.isEditable.value,
+                                maxLines = 3,
+                                textStyle = MaterialTheme.typography.body2,
+                                trailingIcon = {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_icon_et_location_your_account),
+                                        "error",
+                                    )
+                                }
+                            )
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 16.dp, start = 24.dp),
+                                text = "Your date of birth",
+                                style = MaterialTheme.typography.body1,
+                                fontWeight = FontWeight.W400,
+                                fontSize = 14.sp,
+                                color = Text_Accept_Terms
+                            )
+                            TextField(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 24.dp, end = 24.dp, top = 12.dp)
+                                    .clickable(
+                                        indication = null,
+                                        interactionSource = MutableInteractionSource()
+                                    ) {
+                                        val datePickerDialog = DatePickerDialog(
+                                            context,
+                                            R.style.CalenderViewCustom,
+                                            { _: DatePicker, year: Int, month: Int, day: Int ->
+                                                yourAccountViewModel.surrogateDateOfBirth =
+                                                    "$year/" + "%02d".format(month + 1) + "/" + "%02d".format(
+                                                        day
+                                                    )
+                                            }, year, month, day
                                         )
-                                        yourAccountViewModel.updateUserProfileResponse.observe(
-                                            homeActivity
-                                        ) {
-                                            if (it != null) {
-                                                handleUserUpdateData(
-                                                    result = it,
-                                                    yourAccountViewModel = yourAccountViewModel,
-                                                    context = context,
-                                                    type = type,
-                                                    userId = userId,
-                                                    homeActivity = homeActivity
+                                        datePickerDialog.datePicker.maxDate = Date().time - 86400000
+                                        datePickerDialog.show()
+                                        datePickerDialog
+                                            .getButton(DatePickerDialog.BUTTON_NEGATIVE)
+                                            .setTextColor(
+                                                ContextCompat.getColor(context, R.color.custom_blue)
+                                            )
+                                        datePickerDialog
+                                            .getButton(DatePickerDialog.BUTTON_POSITIVE)
+                                            .setTextColor(
+                                                ContextCompat.getColor(context, R.color.custom_blue)
+                                            )
+                                        datePickerDialog
+                                            .getButton(DatePickerDialog.BUTTON_NEGATIVE)
+                                            .setOnClickListener {
+                                                datePickerDialog.dismiss()
+                                            }
+                                        focusManager.clearFocus()
+                                        yourAccountViewModel.yourAccountDateOfBirthEmpty = false
+                                    },
+                                value = yourAccountViewModel.surrogateDateOfBirth,
+                                onValueChange = {
+                                    yourAccountViewModel.yourAccountDateOfBirthEmpty = false
+                                },
+                                shape = RoundedCornerShape(8.dp),
+                                colors = TextFieldDefaults.textFieldColors(
+                                    backgroundColor = if (!yourAccountViewModel.isEditable.value) ET_Bg
+                                    else Color(0xFFD0E1FA),
+                                    cursorColor = Custom_Blue,
+                                    focusedIndicatorColor = Color.Transparent,
+                                    disabledIndicatorColor = Color.Transparent,
+                                    unfocusedIndicatorColor = Color.Transparent
+                                ), readOnly = true, enabled = false, placeholder = {
+                                    Text(
+                                        text = "Date of birth",
+                                        style = MaterialTheme.typography.body2.copy(Color(0xFF7F7D7C))
+                                    )
+                                },
+                                textStyle = MaterialTheme.typography.body2.copy(
+                                    color = Color.Black
+                                )
+                            )
+                            Button(
+                                onClick = {
+                                    when {
+                                        TextUtils.isEmpty(yourAccountViewModel.surrogateFullName) -> {
+                                            yourAccountViewModel.yourAccountFullNameEmpty = true
+                                            Log.i("TAG", "Full Name Empty")
+                                        }
+                                        TextUtils.isEmpty(yourAccountViewModel.surrogateGender) -> {
+                                            yourAccountViewModel.isGenderSelected = true
+                                        }
+                                        else -> {
+                                            yourAccountViewModel.isEditable.value = false
+                                            val image = yourAccountViewModel.uriPathParent?.let {
+                                                convertImageMultiPart(it)
+                                            }
+                                            yourAccountViewModel.updateUserProfile(
+                                                userId = userId,
+                                                name = MultipartBody.Part.createFormData(
+                                                    "name",
+                                                    yourAccountViewModel.surrogateFullName
+                                                ),
+                                                email = MultipartBody.Part.createFormData(
+                                                    "email",
+                                                    yourAccountViewModel.surrogateEmail
+                                                ),
+                                                number = MultipartBody.Part.createFormData(
+                                                    "number",
+                                                    yourAccountViewModel.surrogatePhoneNumber
+                                                ),
+                                                address = MultipartBody.Part.createFormData(
+                                                    "address",
+                                                    yourAccountViewModel.surrogateHomeAddress
+                                                ),
+                                                dateOfBirth = MultipartBody.Part.createFormData(
+                                                    "date_of_birth",
+                                                    yourAccountViewModel.surrogateDateOfBirth
+                                                ),
+                                                imgFileName1 = image,
+                                                imgFileName2 = null,
+                                                type = MultipartBody.Part.createFormData(
+                                                    "type",
+                                                    type
+                                                ),
+                                                gender = MultipartBody.Part.createFormData(
+                                                    "gender",
+                                                    yourAccountViewModel.surrogateGender
                                                 )
+                                            )
+                                            yourAccountViewModel.updateUserProfileResponse.observe(
+                                                homeActivity
+                                            ) {
+                                                if (it != null) {
+                                                    handleUserUpdateData(
+                                                        result = it,
+                                                        yourAccountViewModel = yourAccountViewModel,
+                                                        context = context,
+                                                        type = type,
+                                                        userId = userId,
+                                                        homeActivity = homeActivity
+                                                    )
+                                                }
                                             }
                                         }
                                     }
-                                }
-                            },
-                            modifier = Modifier
-                                .padding(top = 25.dp, start = 24.dp, end = 24.dp, bottom = 32.dp)
-                                .fillMaxWidth()
-                                .height(56.dp),
-                            elevation = ButtonDefaults.elevation(
-                                defaultElevation = 0.dp,
-                                pressedElevation = 0.dp,
-                                disabledElevation = 0.dp,
-                                hoveredElevation = 0.dp,
-                                focusedElevation = 0.dp
-                            ),
-                            shape = RoundedCornerShape(30),
-                            colors = ButtonDefaults.buttonColors(
-                                backgroundColor = Custom_Blue,
-                            )
-                        ) {
-                            Text(
-                                text = "Save Editing",
-                                color = Color.White,
-                                style = MaterialTheme.typography.body1,
-                                lineHeight = 28.sp,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.W900
-                            )
-                        }
-                        if (openLogoutDialog.value) {
-                            Dialog(
-                                onDismissRequest = { openLogoutDialog.value = false },
-                                properties = DialogProperties(
-                                    dismissOnBackPress = true,
-                                    dismissOnClickOutside = false,
-                                    usePlatformDefaultWidth = true,
+                                },
+                                modifier = Modifier
+                                    .padding(
+                                        top = 25.dp,
+                                        start = 24.dp,
+                                        end = 24.dp,
+                                        bottom = 32.dp
+                                    )
+                                    .fillMaxWidth()
+                                    .height(56.dp),
+                                elevation = ButtonDefaults.elevation(
+                                    defaultElevation = 0.dp,
+                                    pressedElevation = 0.dp,
+                                    disabledElevation = 0.dp,
+                                    hoveredElevation = 0.dp,
+                                    focusedElevation = 0.dp
+                                ),
+                                shape = RoundedCornerShape(30),
+                                colors = ButtonDefaults.buttonColors(
+                                    backgroundColor = Custom_Blue,
                                 )
                             ) {
-                                Surface(
+                                Text(
+                                    text = "Save Editing",
+                                    color = Color.White,
+                                    style = MaterialTheme.typography.body1,
+                                    lineHeight = 28.sp,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.W900
+                                )
+                            }
+                            if (openLogoutDialog.value) {
+                                Dialog(
+                                    onDismissRequest = { openLogoutDialog.value = false },
+                                    properties = DialogProperties(
+                                        dismissOnBackPress = true,
+                                        dismissOnClickOutside = false,
+                                        usePlatformDefaultWidth = true,
+                                    )
+                                ) {
+                                    Surface(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(150.dp),
+                                        shape = RoundedCornerShape(10.dp)
+                                    ) {
+                                        LogoutDialog(
+                                            openLogoutDialog = openLogoutDialog,
+                                            context = context,
+                                            homeActivity = homeActivity
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 15.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                if (yourAccountViewModel.surrogateFullName != "") {
+                                    Text(
+                                        modifier = Modifier
+                                            .wrapContentWidth(),
+                                        text =
+                                        yourAccountViewModel.surrogateFullName,
+                                        style = MaterialTheme.typography.h2.copy(
+                                            color = Color.Black,
+                                            fontSize = 24.sp,
+                                            fontWeight = FontWeight.W600,
+                                            lineHeight = 32.sp
+                                        )
+                                    )
+                                }
+                                Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .height(150.dp),
-                                    shape = RoundedCornerShape(10.dp)
+                                        .padding(top = 8.dp),
+                                    horizontalArrangement = Arrangement.Center,
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    LogoutDialog(
-                                        openLogoutDialog = openLogoutDialog,
-                                        context = context,
-                                        homeActivity = homeActivity
-                                    )
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 15.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            if (yourAccountViewModel.surrogateFullName != "") {
-                                Text(
-                                    modifier = Modifier
-                                        .wrapContentWidth()
-                                        .placeholder(
-                                            visible = yourAccountViewModel.isSurrogateDataLoading,
-                                            color = Color.LightGray,
-                                            shape = RoundedCornerShape(4.dp),
-                                            highlight = PlaceholderHighlight.shimmer(
-                                                highlightColor = Color.White,
+                                    if (yourAccountViewModel.surrogateDateOfBirth != "") {
+                                        val dateOfBirth =
+                                            yourAccountViewModel.surrogateDateOfBirth.replace(
+                                                "/",
+                                                ""
                                             )
-                                        ),
-                                    text =
-                                    yourAccountViewModel.surrogateFullName,
-                                    style = MaterialTheme.typography.h2.copy(
-                                        color = Color.Black,
-                                        fontSize = 24.sp,
-                                        fontWeight = FontWeight.W600,
-                                        lineHeight = 32.sp
-                                    )
+                                        Log.d("TAG", "YourAccountScreen: $dateOfBirth")
+                                        Text(
+                                            modifier = Modifier
+                                                .wrapContentWidth()
+                                                .padding(end = 2.dp),
+                                            text = yourAccountViewModel.surrogateDateOfBirth,
+                                            style = MaterialTheme.typography.body2.copy(
+                                                color = Color(0xFF7F7D7C),
+                                                fontSize = 14.sp,
+                                                fontWeight = FontWeight.W500,
+                                                lineHeight = 22.sp
+                                            )
+                                        )
+                                        Text(
+                                            modifier = Modifier
+                                                .wrapContentWidth(),
+                                            text = "(37 Year)",
+                                            style = MaterialTheme.typography.body2.copy(
+                                                color = Color.Black,
+                                                fontSize = 14.sp,
+                                                fontWeight = FontWeight.W500,
+                                                lineHeight = 22.sp
+                                            )
+                                        )
+                                    }
+                                }
+                                Image(
+                                    modifier = Modifier.padding(top = 10.dp),
+                                    painter = painterResource(id = R.drawable.ic_img_intended_parents_liner),
+                                    contentDescription = ""
                                 )
-                            }
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 8.dp),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                if (yourAccountViewModel.surrogateDateOfBirth != "") {
-                                    val dateOfBirth =
-                                        yourAccountViewModel.surrogateDateOfBirth.replace("/", "")
-                                    Log.d("TAG", "YourAccountScreen: $dateOfBirth")
+                                if (yourAccountViewModel.surrogateHomeAddress != "") {
                                     Text(
                                         modifier = Modifier
                                             .wrapContentWidth()
-                                            .padding(end = 2.dp)
-                                            .placeholder(
-                                                visible = yourAccountViewModel.isSurrogateDataLoading,
-                                                color = Color.LightGray,
-                                                shape = RoundedCornerShape(4.dp),
-                                                highlight = PlaceholderHighlight.shimmer(
-                                                    highlightColor = Color.White,
-                                                )
-                                            ),
-                                        text = yourAccountViewModel.surrogateDateOfBirth,
+                                            .padding(top = 18.dp, start = 12.dp, end = 12.dp),
+                                        text = yourAccountViewModel.surrogateHomeAddress,
                                         style = MaterialTheme.typography.body2.copy(
-                                            color = Color(0xFF7F7D7C),
+                                            color = Color.Black,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.W500,
+                                            lineHeight = 22.sp,
+                                            textAlign = TextAlign.Center
+                                        )
+                                    )
+                                }
+                                if (yourAccountViewModel.surrogatePhoneNumber != "") {
+                                    Text(
+                                        modifier = Modifier
+                                            .wrapContentWidth()
+                                            .padding(top = 11.dp),
+                                        text =
+                                        yourAccountViewModel.surrogatePhoneNumber,
+                                        style = MaterialTheme.typography.body2.copy(
+                                            color = Custom_Blue,
                                             fontSize = 14.sp,
                                             fontWeight = FontWeight.W500,
                                             lineHeight = 22.sp
                                         )
                                     )
+                                }
+                                if (yourAccountViewModel.surrogateEmail != "") {
                                     Text(
                                         modifier = Modifier
                                             .wrapContentWidth()
-                                            .placeholder(
-                                                visible = yourAccountViewModel.isSurrogateDataLoading,
-                                                color = Color.LightGray,
-                                                shape = RoundedCornerShape(4.dp),
-                                                highlight = PlaceholderHighlight.shimmer(
-                                                    highlightColor = Color.White,
-                                                )
-                                            ),
-                                        text = "(37 Year)",
+                                            .padding(top = 16.dp),
+                                        text = yourAccountViewModel.surrogateEmail,
                                         style = MaterialTheme.typography.body2.copy(
                                             color = Color.Black,
                                             fontSize = 14.sp,
@@ -668,215 +774,128 @@ fun YourAccountScreen(
                                     )
                                 }
                             }
-                            Image(
-                                modifier = Modifier.padding(top = 10.dp),
-                                painter = painterResource(id = R.drawable.ic_img_intended_parents_liner),
-                                contentDescription = ""
-                            )
-                            if (yourAccountViewModel.surrogateHomeAddress != "") {
-                                Text(
-                                    modifier = Modifier
-                                        .wrapContentWidth()
-                                        .padding(top = 18.dp)
-                                        .placeholder(
-                                            visible = yourAccountViewModel.isSurrogateDataLoading,
-                                            color = Color.LightGray,
-                                            shape = RoundedCornerShape(4.dp),
-                                            highlight = PlaceholderHighlight.shimmer(
-                                                highlightColor = Color.White,
-                                            )
-                                        ),
-                                    text = yourAccountViewModel.surrogateHomeAddress,
-                                    style = MaterialTheme.typography.body2.copy(
-                                        color = Color.Black,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.W500,
-                                        lineHeight = 22.sp
-                                    )
-                                )
-                            }
-                            if (yourAccountViewModel.surrogatePhoneNumber != "") {
-                                Text(
-                                    modifier = Modifier
-                                        .wrapContentWidth()
-                                        .padding(top = 11.dp)
-                                        .placeholder(
-                                            visible = yourAccountViewModel.isSurrogateDataLoading,
-                                            color = Color.LightGray,
-                                            shape = RoundedCornerShape(4.dp),
-                                            highlight = PlaceholderHighlight.shimmer(
-                                                highlightColor = Color.White,
-                                            )
-                                        ),
-                                    text =
-                                    yourAccountViewModel.surrogatePhoneNumber,
-                                    style = MaterialTheme.typography.body2.copy(
-                                        color = Custom_Blue,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.W500,
-                                        lineHeight = 22.sp
-                                    )
-                                )
-                            }
-                            if (yourAccountViewModel.surrogateEmail != "") {
-                                Text(
-                                    modifier = Modifier
-                                        .wrapContentWidth()
-                                        .padding(top = 16.dp)
-                                        .placeholder(
-                                            visible = yourAccountViewModel.isSurrogateDataLoading,
-                                            color = Color.LightGray,
-                                            shape = RoundedCornerShape(4.dp),
-                                            highlight = PlaceholderHighlight.shimmer(
-                                                highlightColor = Color.White,
-                                            )
-                                        ),
-                                    text = yourAccountViewModel.surrogateEmail,
-                                    style = MaterialTheme.typography.body2.copy(
-                                        color = Color.Black,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.W500,
-                                        lineHeight = 22.sp
-                                    )
-                                )
-                            }
                         }
-                    }
-                    Surface(
-                        shape = RoundedCornerShape(12.dp),
-                        color = Color.White,
-                        elevation = 2.dp,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 25.dp, end = 23.dp, top = 34.dp)
-                            .placeholder(
-                                visible = yourAccountViewModel.isSurrogateDataLoading,
-                                color = Color.LightGray,
-                                shape = RoundedCornerShape(12.dp),
-                                highlight = PlaceholderHighlight.shimmer(
-                                    highlightColor = Color.White,
-                                )
-                            )
-                    ) {
-                        Column {
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 24.dp, top = 24.dp, end = 56.dp),
-                                text = "What is your favorite snack?",
-                                color = Color.Black,
-                                style = MaterialTheme.typography.body2.copy(
-                                    color = Color.Black,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.W600,
-                                    lineHeight = 24.sp
-                                ),
-                            )
-                            Row {
-                                Text(
-                                    modifier = Modifier.padding(start = 24.dp, top = 10.dp),
-                                    text = "Martha Smith",
-                                    style = MaterialTheme.typography.body2.copy(
-                                        color = Custom_Blue,
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.W600,
-                                        lineHeight = 22.sp
-                                    )
-                                )
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = Color.White,
+                            elevation = 2.dp,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 25.dp, end = 23.dp, top = 34.dp)
+                        ) {
+                            Column {
                                 Text(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(top = 10.dp, end = 24.dp),
-                                    text = "1 Day ago",
-                                    color = Color(0xFF9F9D9B),
-                                    style = MaterialTheme.typography.body1,
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Normal,
-                                    textAlign = TextAlign.End
-                                )
-                            }
-                            Text(
-                                modifier = Modifier.padding(
-                                    start = 24.dp,
-                                    top = 4.dp,
-                                    bottom = 22.dp
-                                ),
-                                text = "Chocolate all the way!!",
-                                style = MaterialTheme.typography.body2.copy(
+                                        .padding(start = 24.dp, top = 24.dp, end = 56.dp),
+                                    text = "What is your favorite snack?",
                                     color = Color.Black,
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.W600,
-                                    lineHeight = 22.sp
-                                ),
-                            )
-                        }
-                    }
-                    Surface(
-                        shape = RoundedCornerShape(12.dp),
-                        color = Color.White,
-                        elevation = 2.dp,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 25.dp, end = 23.dp, top = 16.dp, bottom = 18.dp)
-                            .placeholder(
-                                visible = yourAccountViewModel.isSurrogateDataLoading,
-                                color = Color.LightGray,
-                                shape = RoundedCornerShape(12.dp),
-                                highlight = PlaceholderHighlight.shimmer(
-                                    highlightColor = Color.White,
-                                )
-                            )
-                    ) {
-                        Column {
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 24.dp, top = 24.dp, end = 56.dp),
-                                text = "What is your favorite snack?",
-                                style = MaterialTheme.typography.body2.copy(
-                                    color = Color.Black,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.W600,
-                                    lineHeight = 24.sp
-                                ),
-                            )
-                            Row {
-                                Text(
-                                    modifier = Modifier.padding(start = 24.dp, top = 10.dp),
-                                    text = "Samantha  Jones",
                                     style = MaterialTheme.typography.body2.copy(
-                                        color = Custom_Blue,
+                                        color = Color.Black,
                                         fontSize = 16.sp,
+                                        fontWeight = FontWeight.W600,
+                                        lineHeight = 24.sp
+                                    ),
+                                )
+                                Row {
+                                    Text(
+                                        modifier = Modifier.padding(start = 24.dp, top = 10.dp),
+                                        text = "Martha Smith",
+                                        style = MaterialTheme.typography.body2.copy(
+                                            color = Custom_Blue,
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.W600,
+                                            lineHeight = 22.sp
+                                        )
+                                    )
+                                    Text(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(top = 10.dp, end = 24.dp),
+                                        text = "1 Day ago",
+                                        color = Color(0xFF9F9D9B),
+                                        style = MaterialTheme.typography.body1,
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Normal,
+                                        textAlign = TextAlign.End
+                                    )
+                                }
+                                Text(
+                                    modifier = Modifier.padding(
+                                        start = 24.dp,
+                                        top = 4.dp,
+                                        bottom = 22.dp
+                                    ),
+                                    text = "Chocolate all the way!!",
+                                    style = MaterialTheme.typography.body2.copy(
+                                        color = Color.Black,
+                                        fontSize = 14.sp,
                                         fontWeight = FontWeight.W600,
                                         lineHeight = 22.sp
                                     ),
                                 )
+                            }
+                        }
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = Color.White,
+                            elevation = 2.dp,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 25.dp, end = 23.dp, top = 16.dp, bottom = 18.dp)
+
+                        ) {
+                            Column {
                                 Text(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(top = 10.dp, end = 24.dp),
-                                    text = "1 Day ago",
-                                    color = Color(0xFF9F9D9B),
-                                    style = MaterialTheme.typography.body1,
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Normal,
-                                    textAlign = TextAlign.End
+                                        .padding(start = 24.dp, top = 24.dp, end = 56.dp),
+                                    text = "What is your favorite snack?",
+                                    style = MaterialTheme.typography.body2.copy(
+                                        color = Color.Black,
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.W600,
+                                        lineHeight = 24.sp
+                                    ),
+                                )
+                                Row {
+                                    Text(
+                                        modifier = Modifier.padding(start = 24.dp, top = 10.dp),
+                                        text = "Samantha  Jones",
+                                        style = MaterialTheme.typography.body2.copy(
+                                            color = Custom_Blue,
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.W600,
+                                            lineHeight = 22.sp
+                                        ),
+                                    )
+                                    Text(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(top = 10.dp, end = 24.dp),
+                                        text = "1 Day ago",
+                                        color = Color(0xFF9F9D9B),
+                                        style = MaterialTheme.typography.body1,
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Normal,
+                                        textAlign = TextAlign.End
+                                    )
+                                }
+                                Text(
+                                    modifier = Modifier.padding(
+                                        start = 24.dp,
+                                        top = 4.dp,
+                                        bottom = 22.dp
+                                    ),
+                                    text = "Basketball and Miami Heat",
+                                    style = MaterialTheme.typography.body2.copy(
+                                        color = Color.Black,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.W600,
+                                        lineHeight = 22.sp
+                                    ),
                                 )
                             }
-                            Text(
-                                modifier = Modifier.padding(
-                                    start = 24.dp,
-                                    top = 4.dp,
-                                    bottom = 22.dp
-                                ),
-                                text = "Basketball and Miami Heat",
-                                style = MaterialTheme.typography.body2.copy(
-                                    color = Color.Black,
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.W600,
-                                    lineHeight = 22.sp
-                                ),
-                            )
                         }
                     }
                 }
@@ -908,50 +927,27 @@ fun YourAccountScreen(
             }
         }
         PARENT -> {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(top = 34.dp, bottom = 50.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(
-                        32.dp,
-                        Alignment.CenterHorizontally
-                    )
+            if (yourAccountViewModel.isParentDataLoading) {
+                YourAccountParentShimmerAnimation()
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(top = 34.dp, bottom = 50.dp)
                 ) {
-                    Box {
-                        if (yourAccountViewModel.bitmapImage1.value == null) {
-                            val painter1 = rememberImagePainter(yourAccountViewModel.parentImg1,
-                                builder = { placeholder(R.drawable.ic_placeholder_your_account) })
-                            Image(
-                                modifier = Modifier
-                                    .width(88.dp)
-                                    .height(88.dp)
-                                    .clickable(
-                                        indication = null,
-                                        interactionSource = MutableInteractionSource()
-                                    ) {
-                                        yourAccountViewModel.isParentClicked = true
-                                        yourAccountViewModel.isMotherClicked = false
-                                    }
-                                    .placeholder(
-                                        visible = yourAccountViewModel.isParentDataLoading,
-                                        color = light_gray,
-                                        shape = RoundedCornerShape(4.dp),
-                                        highlight = PlaceholderHighlight.shimmer(
-                                            highlightColor = Color.White,
-                                        )
-                                    ),
-                                painter = if (yourAccountViewModel.parentImg1 != "") painter1 else painterResource(
-                                    id = R.drawable.ic_placeholder_your_account
-                                ),
-                                contentDescription = "",
-                            )
-                        } else {
-                            yourAccountViewModel.bitmapImage1.value?.let {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(
+                            32.dp,
+                            Alignment.CenterHorizontally
+                        )
+                    ) {
+                        Box {
+                            if (yourAccountViewModel.bitmapImage1.value == null) {
+                                val painter1 = rememberImagePainter(yourAccountViewModel.parentImg1,
+                                    builder = { placeholder(R.drawable.ic_placeholder_your_account) })
                                 Image(
                                     modifier = Modifier
                                         .width(88.dp)
@@ -962,82 +958,68 @@ fun YourAccountScreen(
                                         ) {
                                             yourAccountViewModel.isParentClicked = true
                                             yourAccountViewModel.isMotherClicked = false
-                                        }
-                                        .placeholder(
-                                            visible = yourAccountViewModel.isParentDataLoading,
-                                            color = light_gray,
-                                            shape = RoundedCornerShape(4.dp),
-                                            highlight = PlaceholderHighlight.shimmer(
-                                                highlightColor = Color.White,
-                                            )
-                                        ),
-                                    bitmap = it.asImageBitmap(),
+                                        },
+                                    painter = if (yourAccountViewModel.parentImg1 != "") painter1 else painterResource(
+                                        id = R.drawable.ic_placeholder_your_account
+                                    ),
                                     contentDescription = "",
+                                )
+                            } else {
+                                yourAccountViewModel.bitmapImage1.value?.let {
+                                    Image(
+                                        modifier = Modifier
+                                            .width(88.dp)
+                                            .height(88.dp)
+                                            .clickable(
+                                                indication = null,
+                                                interactionSource = MutableInteractionSource()
+                                            ) {
+                                                yourAccountViewModel.isParentClicked = true
+                                                yourAccountViewModel.isMotherClicked = false
+                                            },
+                                        bitmap = it.asImageBitmap(),
+                                        contentDescription = "",
+                                    )
+                                }
+                            }
+                            if (yourAccountViewModel.isEditable.value && yourAccountViewModel.isParentClicked) {
+                                Icon(
+                                    modifier = Modifier
+                                        .align(Alignment.Center)
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = MutableInteractionSource()
+                                        ) {
+                                            if (yourAccountViewModel.isEditable.value && yourAccountViewModel.isParentClicked) {
+                                                if (ActivityCompat.checkSelfPermission(
+                                                        homeActivity,
+                                                        Manifest.permission.READ_EXTERNAL_STORAGE
+                                                    ) != PackageManager.PERMISSION_GRANTED
+                                                ) {
+                                                    homeActivity.callPermissionRequestLauncher(
+                                                        launcher
+                                                    )
+                                                    yourAccountViewModel.isPermissionAllowed =
+                                                        false
+                                                } else {
+                                                    launcher.launch("image/*")
+                                                    yourAccountViewModel.isPermissionAllowed =
+                                                        false
+                                                }
+                                            }
+                                        },
+                                    painter = painterResource(id = R.drawable.ic_icon_camera_edit_img_your_account),
+                                    contentDescription = "",
+                                    tint = Color.Black
                                 )
                             }
                         }
-                        if (yourAccountViewModel.isEditable.value && yourAccountViewModel.isParentClicked) {
-                            Icon(
-                                modifier = Modifier
-                                    .align(Alignment.Center)
-                                    .clickable(
-                                        indication = null,
-                                        interactionSource = MutableInteractionSource()
-                                    ) {
-                                        if (yourAccountViewModel.isEditable.value && yourAccountViewModel.isParentClicked) {
-                                            if (ActivityCompat.checkSelfPermission(
-                                                    homeActivity,
-                                                    Manifest.permission.READ_EXTERNAL_STORAGE
-                                                ) != PackageManager.PERMISSION_GRANTED
-                                            ) {
-                                                homeActivity.callPermissionRequestLauncher(launcher)
-                                                yourAccountViewModel.isPermissionAllowed =
-                                                    false
-                                            } else {
-                                                launcher.launch("image/*")
-                                                yourAccountViewModel.isPermissionAllowed =
-                                                    false
-                                            }
-                                        }
-                                    },
-                                painter = painterResource(id = R.drawable.ic_icon_camera_edit_img_your_account),
-                                contentDescription = "",
-                                tint = if (yourAccountViewModel.parentImg1 == "") Color.Black else Color.White
-                            )
-                        }
-                    }
-                    Box {
-                        if (yourAccountViewModel.bitmapImage2.value == null) {
-                            val painter2 = rememberImagePainter(
-                                yourAccountViewModel.parentImg2,
-                                builder = { placeholder(R.drawable.ic_placeholder_your_account) }
-                            )
-                            Image(
-                                modifier = Modifier
-                                    .width(88.dp)
-                                    .height(88.dp)
-                                    .clickable(
-                                        indication = null,
-                                        interactionSource = MutableInteractionSource()
-                                    ) {
-                                        yourAccountViewModel.isParentClicked = false
-                                        yourAccountViewModel.isMotherClicked = true
-                                    }
-                                    .placeholder(
-                                        visible = yourAccountViewModel.isParentDataLoading,
-                                        color = light_gray,
-                                        shape = RoundedCornerShape(4.dp),
-                                        highlight = PlaceholderHighlight.shimmer(
-                                            highlightColor = Color.White,
-                                        )
-                                    ),
-                                painter = if (yourAccountViewModel.parentImg2 != "") painter2 else painterResource(
-                                    id = R.drawable.ic_placeholder_your_account
-                                ),
-                                contentDescription = "",
-                            )
-                        } else {
-                            yourAccountViewModel.bitmapImage2.value?.let {
+                        Box {
+                            if (yourAccountViewModel.bitmapImage2.value == null) {
+                                val painter2 = rememberImagePainter(
+                                    yourAccountViewModel.parentImg2,
+                                    builder = { placeholder(R.drawable.ic_placeholder_your_account) }
+                                )
                                 Image(
                                     modifier = Modifier
                                         .width(88.dp)
@@ -1048,969 +1030,211 @@ fun YourAccountScreen(
                                         ) {
                                             yourAccountViewModel.isParentClicked = false
                                             yourAccountViewModel.isMotherClicked = true
-                                        }
-                                        .placeholder(
-                                            visible = yourAccountViewModel.isParentDataLoading,
-                                            color = light_gray,
-                                            shape = RoundedCornerShape(4.dp),
-                                            highlight = PlaceholderHighlight.shimmer(
-                                                highlightColor = Color.White,
-                                            )
-                                        ),
-                                    bitmap = it.asImageBitmap(),
+                                        },
+                                    painter = if (yourAccountViewModel.parentImg2 != "") painter2 else painterResource(
+                                        id = R.drawable.ic_placeholder_your_account
+                                    ),
                                     contentDescription = "",
                                 )
-                            }
-                        }
-                        if (yourAccountViewModel.isEditable.value && yourAccountViewModel.isMotherClicked) {
-                            Icon(
-                                modifier = Modifier
-                                    .align(Alignment.Center)
-                                    .clickable(
-                                        indication = null,
-                                        interactionSource = MutableInteractionSource()
-                                    ) {
-                                        if (yourAccountViewModel.isEditable.value && yourAccountViewModel.isMotherClicked) {
-                                            if (ActivityCompat.checkSelfPermission(
-                                                    homeActivity,
-                                                    Manifest.permission.READ_EXTERNAL_STORAGE
-                                                ) != PackageManager.PERMISSION_GRANTED
+                            } else {
+                                yourAccountViewModel.bitmapImage2.value?.let {
+                                    Image(
+                                        modifier = Modifier
+                                            .width(88.dp)
+                                            .height(88.dp)
+                                            .clickable(
+                                                indication = null,
+                                                interactionSource = MutableInteractionSource()
                                             ) {
-                                                homeActivity.callPermissionRequestLauncher(launcher)
-                                                yourAccountViewModel.isPermissionAllowed =
-                                                    false
-                                            } else {
-                                                launcher.launch("image/*")
-                                                yourAccountViewModel.isPermissionAllowed =
-                                                    false
-                                            }
-                                        }
-                                    },
-                                painter = painterResource(id = R.drawable.ic_icon_camera_edit_img_your_account),
-                                contentDescription = "",
-                            )
-                        }
-                    }
-                }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(
-                        92.dp,
-                        Alignment.CenterHorizontally
-                    )
-                ) {
-                    Image(
-                        modifier = Modifier,
-                        painter = painterResource(
-                            id = R.drawable.ic_baseline_arrow_drop_up_24
-                        ),
-                        contentDescription = "",
-                        alpha = if (!yourAccountViewModel.isParentClicked) 0f else 1f
-                    )
-                    Image(
-                        modifier = Modifier,
-                        painter = painterResource(
-                            id = R.drawable.ic_baseline_arrow_drop_up_24
-                        ),
-                        contentDescription = "",
-                        alpha = if (yourAccountViewModel.isMotherClicked) 1f else 0f
-                    )
-                }
-                if (!yourAccountViewModel.isEditable.value) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 15.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            if (yourAccountViewModel.parentFullName != "") {
-                                Text(
-                                    modifier = Modifier
-                                        .wrapContentWidth()
-                                        .placeholder(
-                                            visible = yourAccountViewModel.isParentDataLoading,
-                                            color = light_gray,
-                                            shape = RoundedCornerShape(4.dp),
-                                            highlight = PlaceholderHighlight.shimmer(
-                                                highlightColor = Color.White,
-                                            )
-                                        ),
-                                    text = if (yourAccountViewModel.isParentClicked) yourAccountViewModel.parentFullName else yourAccountViewModel.parentPartnerName,
-                                    style = MaterialTheme.typography.h2.copy(
-                                        color = Color.Black,
-                                        fontSize = 24.sp,
-                                        fontWeight = FontWeight.W600,
-                                        lineHeight = 32.sp
-                                    )
-                                )
-                            }
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 8.dp),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                if (yourAccountViewModel.parentDateOfBirth != "") {
-                                    Text(
-                                        modifier = Modifier
-                                            .wrapContentWidth()
-                                            .padding(end = 2.dp)
-                                            .placeholder(
-                                                visible = yourAccountViewModel.isParentDataLoading,
-                                                color = light_gray,
-                                                shape = RoundedCornerShape(4.dp),
-                                                highlight = PlaceholderHighlight.shimmer(
-                                                    highlightColor = Color.White,
-                                                )
-                                            ),
-                                        text = if (yourAccountViewModel.isParentClicked) yourAccountViewModel.parentDateOfBirth else yourAccountViewModel.parentPartnerDateOfBirth,
-                                        style = MaterialTheme.typography.body2.copy(
-                                            color = Color(0xFF7F7D7C),
-                                            fontSize = 14.sp,
-                                            fontWeight = FontWeight.W500,
-                                            lineHeight = 22.sp
-                                        )
+                                                yourAccountViewModel.isParentClicked = false
+                                                yourAccountViewModel.isMotherClicked = true
+                                            },
+                                        bitmap = it.asImageBitmap(),
+                                        contentDescription = "",
                                     )
                                 }
-                                Text(
-                                    modifier = Modifier
-                                        .wrapContentWidth()
-                                        .placeholder(
-                                            visible = yourAccountViewModel.isParentDataLoading,
-                                            color = light_gray,
-                                            shape = RoundedCornerShape(4.dp),
-                                            highlight = PlaceholderHighlight.shimmer(
-                                                highlightColor = Color.White,
-                                            )
-                                        ),
-                                    text = if (yourAccountViewModel.isParentClicked) "(37 Year)" else "(30 Year)",
-                                    style = MaterialTheme.typography.body2.copy(
-                                        color = Color.Black,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.W500,
-                                        lineHeight = 22.sp
-                                    )
-                                )
                             }
-                            Image(
-                                modifier = Modifier.padding(top = 10.dp),
-                                painter = painterResource(id = R.drawable.ic_img_intended_parents_liner),
-                                contentDescription = ""
-                            )
-                            if (yourAccountViewModel.parentHomeAddress != "" && yourAccountViewModel.isParentClicked) {
-                                Text(
+                            if (yourAccountViewModel.isEditable.value && yourAccountViewModel.isMotherClicked) {
+                                Icon(
                                     modifier = Modifier
-                                        .wrapContentWidth()
-                                        .padding(top = 18.dp)
-                                        .placeholder(
-                                            visible = yourAccountViewModel.isParentDataLoading,
-                                            color = light_gray,
-                                            shape = RoundedCornerShape(4.dp),
-                                            highlight = PlaceholderHighlight.shimmer(
-                                                highlightColor = Color.White,
-                                            )
-                                        ),
-                                    text = yourAccountViewModel.parentHomeAddress,
-                                    style = MaterialTheme.typography.body2.copy(
-                                        color = Color.Black,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.W500,
-                                        lineHeight = 22.sp
-                                    )
-                                )
-                            } else if (yourAccountViewModel.parentPartnerHomeAddress != "" && yourAccountViewModel.isMotherClicked) {
-                                Text(
-                                    modifier = Modifier
-                                        .wrapContentWidth()
-                                        .padding(top = 18.dp)
-                                        .placeholder(
-                                            visible = yourAccountViewModel.isParentDataLoading,
-                                            color = light_gray,
-                                            shape = RoundedCornerShape(4.dp),
-                                            highlight = PlaceholderHighlight.shimmer(
-                                                highlightColor = Color.White,
-                                            )
-                                        ),
-                                    text = yourAccountViewModel.parentPartnerHomeAddress,
-                                    style = MaterialTheme.typography.body2.copy(
-                                        color = Color.Black,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.W500,
-                                        lineHeight = 22.sp
-                                    )
-                                )
-                            }
-                            if (yourAccountViewModel.parentPhoneNumber != "" && yourAccountViewModel.isParentClicked) {
-                                Text(
-                                    modifier = Modifier
-                                        .wrapContentWidth()
-                                        .padding(top = 11.dp)
-                                        .placeholder(
-                                            visible = yourAccountViewModel.isParentDataLoading,
-                                            color = light_gray,
-                                            shape = RoundedCornerShape(4.dp),
-                                            highlight = PlaceholderHighlight.shimmer(
-                                                highlightColor = Color.White,
-                                            )
-                                        ),
-                                    text = yourAccountViewModel.parentPhoneNumber,
-                                    style = MaterialTheme.typography.body2.copy(
-                                        color = Custom_Blue,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.W500,
-                                        lineHeight = 22.sp
-                                    )
-                                )
-                            } else if (yourAccountViewModel.parentPhoneNumber != "" && yourAccountViewModel.isMotherClicked) {
-                                Text(
-                                    modifier = Modifier
-                                        .wrapContentWidth()
-                                        .padding(top = 11.dp)
-                                        .placeholder(
-                                            visible = yourAccountViewModel.isParentDataLoading,
-                                            color = light_gray,
-                                            shape = RoundedCornerShape(4.dp),
-                                            highlight = PlaceholderHighlight.shimmer(
-                                                highlightColor = Color.White,
-                                            )
-                                        ),
-                                    text = yourAccountViewModel.parentPartnerPhoneNumber,
-                                    style = MaterialTheme.typography.body2.copy(
-                                        color = Custom_Blue,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.W500,
-                                        lineHeight = 22.sp
-                                    )
-                                )
-                            }
-                            if (yourAccountViewModel.parentEmail != "") {
-                                Text(
-                                    modifier = Modifier
-                                        .wrapContentWidth()
-                                        .padding(top = 16.dp)
-                                        .placeholder(
-                                            visible = yourAccountViewModel.isParentDataLoading,
-                                            color = light_gray,
-                                            shape = RoundedCornerShape(4.dp),
-                                            highlight = PlaceholderHighlight.shimmer(
-                                                highlightColor = Color.White,
-                                            )
-                                        ),
-                                    text = yourAccountViewModel.parentEmail,
-                                    style = MaterialTheme.typography.body2.copy(
-                                        color = Color.Black,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.W500,
-                                        lineHeight = 22.sp
-                                    )
-                                )
-                            }
-                        }
-                    }
-                }
-                if (yourAccountViewModel.isEditable.value) {
-                    if (yourAccountViewModel.isParentClicked) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 35.dp)
-                        ) {
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 24.dp),
-                                text = stringResource(id = R.string.register_tv_name),
-                                style = MaterialTheme.typography.body1,
-                                fontWeight = FontWeight.W400,
-                                fontSize = 14.sp,
-                                color = Text_Accept_Terms
-                            )
-                            TextField(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 12.dp, start = 24.dp, end = 24.dp),
-                                value = yourAccountViewModel.parentFullName,
-                                onValueChange = {
-                                    yourAccountViewModel.parentFullName = it
-                                    yourAccountViewModel.yourAccountFullNameEmpty = false
-                                },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Email,
-                                    imeAction = ImeAction.Next
-                                ),
-                                shape = RoundedCornerShape(8.dp),
-                                colors = TextFieldDefaults.textFieldColors(
-                                    backgroundColor = if (!yourAccountViewModel.isEditable.value) ET_Bg
-                                    else Color(0xFFD0E1FA),
-                                    cursorColor = Custom_Blue,
-                                    focusedIndicatorColor = Color.Transparent,
-                                    disabledIndicatorColor = Color.Transparent,
-                                    unfocusedIndicatorColor = Color.Transparent,
-                                    textColor = Color.Black
-                                ), readOnly = false,
-                                maxLines = 1,
-                                textStyle = MaterialTheme.typography.body2,
-                                trailingIcon = {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_icon_et_name_your_account),
-                                        "error",
-                                    )
-                                }
-                            )
-                            if (yourAccountViewModel.yourAccountFullNameEmpty) {
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 24.dp),
-                                    text = "Enter your name",
-                                    style = MaterialTheme.typography.caption,
-                                    color = MaterialTheme.colors.error,
-                                    fontSize = 12.sp
-                                )
-                            }
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 16.dp, start = 24.dp),
-                                text = "Phone number",
-                                style = MaterialTheme.typography.body1,
-                                fontWeight = FontWeight.W400,
-                                fontSize = 14.sp,
-                                color = Text_Accept_Terms
-                            )
-                            TextField(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 12.dp, start = 24.dp, end = 24.dp),
-                                value = yourAccountViewModel.parentPhoneNumber,
-                                onValueChange = {
-                                    yourAccountViewModel.parentPhoneNumber = it
-                                    yourAccountViewModel.yourAccountPhoneNumberEmpty = false
-                                },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Phone,
-                                    imeAction = ImeAction.Next
-                                ),
-                                shape = RoundedCornerShape(8.dp),
-                                colors = TextFieldDefaults.textFieldColors(
-                                    backgroundColor = if (!yourAccountViewModel.isEditable.value) ET_Bg
-                                    else Color(0xFFD0E1FA),
-                                    cursorColor = Custom_Blue,
-                                    focusedIndicatorColor = Color.Transparent,
-                                    disabledIndicatorColor = Color.Transparent,
-                                    unfocusedIndicatorColor = Color.Transparent,
-                                    textColor = Color.Black
-                                ),
-                                readOnly = !yourAccountViewModel.isEditable.value,
-                                maxLines = 1,
-                                textStyle = MaterialTheme.typography.body2,
-                                trailingIcon = {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_icon_et_phone_your_account),
-                                        "error",
-                                    )
-                                }
-                            )
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 16.dp, start = 24.dp),
-                                text = stringResource(id = R.string.register_tv_email_text),
-                                style = MaterialTheme.typography.body1,
-                                fontWeight = FontWeight.W400,
-                                fontSize = 14.sp,
-                                color = Text_Accept_Terms
-                            )
-                            TextField(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 12.dp, start = 24.dp, end = 24.dp),
-                                value = yourAccountViewModel.parentEmail,
-                                onValueChange = {
-                                    yourAccountViewModel.parentEmail = it
-                                    yourAccountViewModel.yourAccountEmailEmpty = false
-                                    yourAccountViewModel.yourAccountEmailIsValid = false
-                                },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Email,
-                                    imeAction = ImeAction.Next
-                                ),
-                                shape = RoundedCornerShape(8.dp),
-                                colors = TextFieldDefaults.textFieldColors(
-                                    backgroundColor = if (!yourAccountViewModel.isEditable.value) ET_Bg
-                                    else Color(0xFFD0E1FA),
-                                    cursorColor = Custom_Blue,
-                                    focusedIndicatorColor = Color.Transparent,
-                                    disabledIndicatorColor = Color.Transparent,
-                                    unfocusedIndicatorColor = Color.Transparent,
-                                    textColor = Color.Black
-                                ), readOnly = true,
-                                maxLines = 1,
-                                textStyle = MaterialTheme.typography.body2,
-                                trailingIcon = {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_icon_et_email_your_account),
-                                        "error",
-                                    )
-                                }
-                            )
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 16.dp, start = 24.dp),
-                                text = "Home address",
-                                style = MaterialTheme.typography.body1,
-                                fontWeight = FontWeight.W400,
-                                fontSize = 14.sp,
-                                color = Text_Accept_Terms
-                            )
-                            TextField(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 12.dp, start = 24.dp, end = 24.dp),
-                                value = yourAccountViewModel.parentHomeAddress,
-                                onValueChange = {
-                                    yourAccountViewModel.parentHomeAddress = it
-                                    yourAccountViewModel.yourAccountHomeAddressEmpty = false
-                                },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Text,
-                                    imeAction = ImeAction.Next
-                                ),
-                                shape = RoundedCornerShape(8.dp),
-                                colors = TextFieldDefaults.textFieldColors(
-                                    backgroundColor = if (!yourAccountViewModel.isEditable.value) ET_Bg
-                                    else Color(0xFFD0E1FA),
-                                    cursorColor = Custom_Blue,
-                                    focusedIndicatorColor = Color.Transparent,
-                                    disabledIndicatorColor = Color.Transparent,
-                                    unfocusedIndicatorColor = Color.Transparent,
-                                    textColor = Color.Black
-                                ), readOnly = !yourAccountViewModel.isEditable.value,
-                                maxLines = 1,
-                                textStyle = MaterialTheme.typography.body2,
-                                trailingIcon = {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_icon_et_location_your_account),
-                                        "error",
-                                    )
-                                }
-                            )
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 16.dp, start = 24.dp),
-                                text = "Your date of birth",
-                                style = MaterialTheme.typography.body1,
-                                fontWeight = FontWeight.W400,
-                                fontSize = 14.sp,
-                                color = Text_Accept_Terms
-                            )
-                            TextField(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 12.dp, start = 24.dp, end = 24.dp),
-                                value = yourAccountViewModel.parentDateOfBirth,
-                                onValueChange = {
-                                    yourAccountViewModel.parentDateOfBirth = it
-                                    yourAccountViewModel.yourAccountDateOfBirthEmpty = false
-                                },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Text,
-                                    imeAction = ImeAction.Next
-                                ), readOnly = !yourAccountViewModel.isEditable.value,
-                                shape = RoundedCornerShape(8.dp),
-                                colors = TextFieldDefaults.textFieldColors(
-                                    backgroundColor = if (!yourAccountViewModel.isEditable.value) ET_Bg
-                                    else Color(0xFFD0E1FA),
-                                    cursorColor = Custom_Blue,
-                                    focusedIndicatorColor = Color.Transparent,
-                                    disabledIndicatorColor = Color.Transparent,
-                                    unfocusedIndicatorColor = Color.Transparent,
-                                    textColor = Color.Black
-                                ),
-                                maxLines = 1,
-                                textStyle = MaterialTheme.typography.body2,
-                                trailingIcon = {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_icon_et_calendar_your_account),
-                                        "error",
-                                    )
-                                }
-                            )
-                            if (yourAccountViewModel.isEditable.value) {
-                                Button(
-                                    onClick = {
-                                        when {
-                                            TextUtils.isEmpty(yourAccountViewModel.parentFullName) -> {
-                                                yourAccountViewModel.yourAccountFullNameEmpty = true
-                                                Log.i("TAG", "Full Name Empty")
-                                            }
-                                            else -> {
-                                                val image =
-                                                    yourAccountViewModel.uriPathParent?.let {
-                                                        convertImageMultiPart(it)
-                                                    }
-                                                yourAccountViewModel.updateUserProfile(
-                                                    userId,
-                                                    MultipartBody.Part.createFormData(
-                                                        "name",
-                                                        yourAccountViewModel.parentFullName
-                                                    ),
-                                                    MultipartBody.Part.createFormData(
-                                                        "email",
-                                                        yourAccountViewModel.parentEmail
-                                                    ),
-                                                    MultipartBody.Part.createFormData(
-                                                        "number",
-                                                        yourAccountViewModel.parentPhoneNumber
-                                                    ),
-                                                    MultipartBody.Part.createFormData(
-                                                        "address",
-                                                        yourAccountViewModel.parentHomeAddress
-                                                    ),
-                                                    MultipartBody.Part.createFormData(
-                                                        "date_of_birth",
-                                                        yourAccountViewModel.parentDateOfBirth
-                                                    ),
-                                                    image,
-                                                    null,
-                                                    MultipartBody.Part.createFormData(
-                                                        "type",
-                                                        type
-                                                    ),
-                                                    null,
-                                                    null,
-                                                    null
-                                                )
-                                                yourAccountViewModel.updateUserProfileResponse.observe(
-                                                    homeActivity
+                                        .align(Alignment.Center)
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = MutableInteractionSource()
+                                        ) {
+                                            if (yourAccountViewModel.isEditable.value && yourAccountViewModel.isMotherClicked) {
+                                                if (ActivityCompat.checkSelfPermission(
+                                                        homeActivity,
+                                                        Manifest.permission.READ_EXTERNAL_STORAGE
+                                                    ) != PackageManager.PERMISSION_GRANTED
                                                 ) {
-                                                    if (it != null) {
-                                                        handleUserUpdateData(
-                                                            result = it,
-                                                            yourAccountViewModel = yourAccountViewModel,
-                                                            context = context,
-                                                            type = type,
-                                                            userId = userId,
-                                                            homeActivity = homeActivity
-                                                        )
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    },
-                                    modifier = Modifier
-                                        .padding(top = 25.dp, start = 24.dp, end = 24.dp, bottom = 32.dp)
-                                        .fillMaxWidth()
-                                        .height(56.dp),
-                                    elevation = ButtonDefaults.elevation(
-                                        defaultElevation = 0.dp,
-                                        pressedElevation = 0.dp,
-                                        disabledElevation = 0.dp,
-                                        hoveredElevation = 0.dp,
-                                        focusedElevation = 0.dp
-                                    ),
-                                    shape = RoundedCornerShape(30),
-                                    colors = ButtonDefaults.buttonColors(
-                                        backgroundColor = Custom_Blue,
-                                    )
-                                ) {
-                                    Text(
-                                        text = "Save Editing",
-                                        color = Color.White,
-                                        style = MaterialTheme.typography.body1,
-                                        lineHeight = 28.sp,
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.W900
-                                    )
-                                }
-                            }
-                        }
-                    } else if (yourAccountViewModel.isMotherClicked) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 35.dp)
-                        ) {
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 24.dp),
-                                text = stringResource(id = R.string.register_tv_name),
-                                style = MaterialTheme.typography.body1,
-                                fontWeight = FontWeight.W400,
-                                fontSize = 14.sp,
-                                color = Text_Accept_Terms
-                            )
-                            TextField(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 12.dp, start = 24.dp, end = 24.dp),
-                                value = yourAccountViewModel.parentPartnerName,
-                                onValueChange = {
-                                    yourAccountViewModel.parentPartnerName = it
-                                    yourAccountViewModel.yourAccountFullNameEmpty = false
-                                },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Email,
-                                    imeAction = ImeAction.Next
-                                ),
-                                shape = RoundedCornerShape(8.dp),
-                                colors = TextFieldDefaults.textFieldColors(
-                                    backgroundColor = if (!yourAccountViewModel.isEditable.value) ET_Bg
-                                    else Color(0xFFD0E1FA),
-                                    cursorColor = Custom_Blue,
-                                    focusedIndicatorColor = Color.Transparent,
-                                    disabledIndicatorColor = Color.Transparent,
-                                    unfocusedIndicatorColor = Color.Transparent,
-                                    textColor = Color.Black
-                                ), readOnly = false,
-                                maxLines = 1,
-                                textStyle = MaterialTheme.typography.body2,
-                                trailingIcon = {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_icon_et_name_your_account),
-                                        "error",
-                                    )
-                                }
-                            )
-                            if (yourAccountViewModel.yourAccountFullNameEmpty) {
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 24.dp),
-                                    text = "Enter your name",
-                                    style = MaterialTheme.typography.caption,
-                                    color = MaterialTheme.colors.error,
-                                    fontSize = 12.sp
-                                )
-                            }
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 16.dp, start = 24.dp),
-                                text = "Phone number",
-                                style = MaterialTheme.typography.body1,
-                                fontWeight = FontWeight.W400,
-                                fontSize = 14.sp,
-                                color = Text_Accept_Terms
-                            )
-                            TextField(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 12.dp, start = 24.dp, end = 24.dp),
-                                value = yourAccountViewModel.parentPartnerPhoneNumber,
-                                onValueChange = {
-                                    yourAccountViewModel.parentPartnerPhoneNumber = it
-                                    yourAccountViewModel.yourAccountPhoneNumberEmpty = false
-                                },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Phone,
-                                    imeAction = ImeAction.Next
-                                ),
-                                shape = RoundedCornerShape(8.dp),
-                                colors = TextFieldDefaults.textFieldColors(
-                                    backgroundColor = if (!yourAccountViewModel.isEditable.value) ET_Bg
-                                    else Color(0xFFD0E1FA),
-                                    cursorColor = Custom_Blue,
-                                    focusedIndicatorColor = Color.Transparent,
-                                    disabledIndicatorColor = Color.Transparent,
-                                    unfocusedIndicatorColor = Color.Transparent,
-                                    textColor = Color.Black
-                                ),
-                                readOnly = !yourAccountViewModel.isEditable.value,
-                                maxLines = 1,
-                                textStyle = MaterialTheme.typography.body2,
-                                trailingIcon = {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_icon_et_phone_your_account),
-                                        "error",
-                                    )
-                                }
-                            )
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 16.dp, start = 24.dp),
-                                text = stringResource(id = R.string.register_tv_email_text),
-                                style = MaterialTheme.typography.body1,
-                                fontWeight = FontWeight.W400,
-                                fontSize = 14.sp,
-                                color = Text_Accept_Terms
-                            )
-                            TextField(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 12.dp, start = 24.dp, end = 24.dp),
-                                value = yourAccountViewModel.parentEmail,
-                                onValueChange = {
-                                    yourAccountViewModel.parentEmail = it
-                                    yourAccountViewModel.yourAccountEmailEmpty = false
-                                    yourAccountViewModel.yourAccountEmailIsValid = false
-                                },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Email,
-                                    imeAction = ImeAction.Next
-                                ),
-                                shape = RoundedCornerShape(8.dp),
-                                colors = TextFieldDefaults.textFieldColors(
-                                    backgroundColor = if (!yourAccountViewModel.isEditable.value) ET_Bg
-                                    else Color(0xFFD0E1FA),
-                                    cursorColor = Custom_Blue,
-                                    focusedIndicatorColor = Color.Transparent,
-                                    disabledIndicatorColor = Color.Transparent,
-                                    unfocusedIndicatorColor = Color.Transparent,
-                                    textColor = Color.Black
-                                ), readOnly = true,
-                                maxLines = 1,
-                                textStyle = MaterialTheme.typography.body2,
-                                trailingIcon = {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_icon_et_email_your_account),
-                                        "error",
-                                    )
-                                }
-                            )
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 16.dp, start = 24.dp),
-                                text = "Home address",
-                                style = MaterialTheme.typography.body1,
-                                fontWeight = FontWeight.W400,
-                                fontSize = 14.sp,
-                                color = Text_Accept_Terms
-                            )
-                            TextField(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 12.dp, start = 24.dp, end = 24.dp),
-                                value = yourAccountViewModel.parentPartnerHomeAddress,
-                                onValueChange = {
-                                    yourAccountViewModel.parentPartnerHomeAddress = it
-                                    yourAccountViewModel.yourAccountHomeAddressEmpty = false
-                                },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Text,
-                                    imeAction = ImeAction.Next
-                                ),
-                                shape = RoundedCornerShape(8.dp),
-                                colors = TextFieldDefaults.textFieldColors(
-                                    backgroundColor = if (!yourAccountViewModel.isEditable.value) ET_Bg
-                                    else Color(0xFFD0E1FA),
-                                    cursorColor = Custom_Blue,
-                                    focusedIndicatorColor = Color.Transparent,
-                                    disabledIndicatorColor = Color.Transparent,
-                                    unfocusedIndicatorColor = Color.Transparent,
-                                    textColor = Color.Black
-                                ), readOnly = !yourAccountViewModel.isEditable.value,
-                                maxLines = 1,
-                                textStyle = MaterialTheme.typography.body2,
-                                trailingIcon = {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_icon_et_location_your_account),
-                                        "error",
-                                    )
-                                }
-                            )
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 16.dp, start = 24.dp),
-                                text = "Your date of birth",
-                                style = MaterialTheme.typography.body1,
-                                fontWeight = FontWeight.W400,
-                                fontSize = 14.sp,
-                                color = Text_Accept_Terms
-                            )
-                            TextField(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 12.dp, start = 24.dp, end = 24.dp),
-                                value = yourAccountViewModel.parentPartnerDateOfBirth,
-                                onValueChange = {
-                                    yourAccountViewModel.parentPartnerDateOfBirth = it
-                                    yourAccountViewModel.yourAccountDateOfBirthEmpty = false
-                                },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Text,
-                                    imeAction = ImeAction.Done
-                                ), readOnly = !yourAccountViewModel.isEditable.value,
-                                shape = RoundedCornerShape(8.dp),
-                                colors = TextFieldDefaults.textFieldColors(
-                                    backgroundColor = if (!yourAccountViewModel.isEditable.value) ET_Bg
-                                    else Color(0xFFD0E1FA),
-                                    cursorColor = Custom_Blue,
-                                    focusedIndicatorColor = Color.Transparent,
-                                    disabledIndicatorColor = Color.Transparent,
-                                    unfocusedIndicatorColor = Color.Transparent,
-                                    textColor = Color.Black
-                                ),
-                                maxLines = 1,
-                                textStyle = MaterialTheme.typography.body2,
-                                trailingIcon = {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_icon_et_calendar_your_account),
-                                        "error",
-                                    )
-                                }
-                            )
-                            if (yourAccountViewModel.isEditable.value) {
-                                Button(
-                                    onClick = {
-                                        when {
-                                            TextUtils.isEmpty(yourAccountViewModel.parentPartnerName) -> {
-                                                yourAccountViewModel.yourAccountFullNameEmpty = true
-                                                Log.i("TAG", "Full Name Empty")
-                                            }
-                                            else -> {
-                                                val image =
-                                                    yourAccountViewModel.uriPathMother?.let {
-                                                        convertImageMultiPart(it)
-                                                    }
-                                                yourAccountViewModel.updateUserProfile(
-                                                    userId,
-                                                    MultipartBody.Part.createFormData(
-                                                        "name",
-                                                        yourAccountViewModel.parentFullName
-                                                    ),
-                                                    MultipartBody.Part.createFormData(
-                                                        "email",
-                                                        yourAccountViewModel.parentEmail
-                                                    ),
-                                                    MultipartBody.Part.createFormData(
-                                                        "number",
-                                                        yourAccountViewModel.parentPartnerPhoneNumber
-                                                    ),
-                                                    MultipartBody.Part.createFormData(
-                                                        "address",
-                                                        yourAccountViewModel.parentPartnerHomeAddress
-                                                    ),
-                                                    MultipartBody.Part.createFormData(
-                                                        "date_of_birth",
-                                                        yourAccountViewModel.parentPartnerDateOfBirth
-                                                    ),
-                                                    null,
-                                                    image,
-                                                    MultipartBody.Part.createFormData(
-                                                        "type",
-                                                        type
-                                                    ),
-                                                    MultipartBody.Part.createFormData(
-                                                        "partner_phone",
-                                                        yourAccountViewModel.parentPartnerPhoneNumber
-                                                    ),
-                                                    MultipartBody.Part.createFormData(
-                                                        "partner_dob",
-                                                        yourAccountViewModel.parentPartnerDateOfBirth
-                                                    ),
-                                                    MultipartBody.Part.createFormData(
-                                                        "parent_address",
-                                                        yourAccountViewModel.parentPartnerHomeAddress
+                                                    homeActivity.callPermissionRequestLauncher(
+                                                        launcher
                                                     )
-                                                )
-                                                yourAccountViewModel.updateUserProfileResponse.observe(
-                                                    homeActivity
-                                                ) {
-                                                    if (it != null) {
-                                                        handleUserUpdateData(
-                                                            result = it,
-                                                            yourAccountViewModel = yourAccountViewModel,
-                                                            context = context,
-                                                            type = type,
-                                                            userId = userId,
-                                                            homeActivity = homeActivity
-                                                        )
-                                                    }
+                                                    yourAccountViewModel.isPermissionAllowed =
+                                                        false
+                                                } else {
+                                                    launcher.launch("image/*")
+                                                    yourAccountViewModel.isPermissionAllowed =
+                                                        false
                                                 }
                                             }
-                                        }
-                                    },
-                                    modifier = Modifier
-                                        .padding(top = 25.dp, start = 24.dp, end = 24.dp, bottom = 32.dp)
-                                        .fillMaxWidth()
-                                        .height(56.dp),
-                                    elevation = ButtonDefaults.elevation(
-                                        defaultElevation = 0.dp,
-                                        pressedElevation = 0.dp,
-                                        disabledElevation = 0.dp,
-                                        hoveredElevation = 0.dp,
-                                        focusedElevation = 0.dp
-                                    ),
-                                    shape = RoundedCornerShape(30),
-                                    colors = ButtonDefaults.buttonColors(
-                                        backgroundColor = Custom_Blue,
-                                    )
-                                ) {
-                                    Text(
-                                        text = "Save Editing",
-                                        color = Color.White,
-                                        style = MaterialTheme.typography.body1,
-                                        lineHeight = 28.sp,
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.W900
-                                    )
-                                }
+                                        },
+                                    painter = painterResource(id = R.drawable.ic_icon_camera_edit_img_your_account),
+                                    contentDescription = "",
+                                    tint = Color.Black
+                                )
                             }
                         }
                     }
-                } else {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 15.dp)
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(
+                            92.dp,
+                            Alignment.CenterHorizontally
+                        )
                     ) {
-                        Column(
+                        Image(
+                            modifier = Modifier,
+                            painter = painterResource(
+                                id = R.drawable.ic_baseline_arrow_drop_up_24
+                            ),
+                            contentDescription = "",
+                            alpha = if (!yourAccountViewModel.isParentClicked) 0f else 1f
+                        )
+                        Image(
+                            modifier = Modifier,
+                            painter = painterResource(
+                                id = R.drawable.ic_baseline_arrow_drop_up_24
+                            ),
+                            contentDescription = "",
+                            alpha = if (yourAccountViewModel.isMotherClicked) 1f else 0f
+                        )
+                    }
+                    if (!yourAccountViewModel.isEditable.value) {
+                        Row(
                             modifier = Modifier
-                                .fillMaxWidth(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
+                                .fillMaxWidth()
+                                .padding(top = 15.dp)
                         ) {
-                            if (yourAccountViewModel.surrogateFullName != "") {
-                                Text(
-                                    modifier = Modifier.wrapContentWidth(),
-                                    text =
-                                    yourAccountViewModel.surrogateFullName,
-                                    style = MaterialTheme.typography.h2.copy(
-                                        color = Color.Black,
-                                        fontSize = 24.sp,
-                                        fontWeight = FontWeight.W600,
-                                        lineHeight = 32.sp
-                                    )
-                                )
-                            }
-                            Row(
+                            Column(
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 8.dp),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically
+                                    .fillMaxWidth(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                if (yourAccountViewModel.surrogateDateOfBirth != "") {
+                                if (yourAccountViewModel.parentFullName != "" || yourAccountViewModel.parentPartnerFullName != "") {
+                                    Text(
+                                        modifier = Modifier
+                                            .wrapContentWidth(),
+                                        text = if (yourAccountViewModel.isParentClicked) yourAccountViewModel.parentFullName else yourAccountViewModel.parentPartnerName,
+                                        style = MaterialTheme.typography.h2.copy(
+                                            color = Color.Black,
+                                            fontSize = 24.sp,
+                                            fontWeight = FontWeight.W600,
+                                            lineHeight = 32.sp
+                                        )
+                                    )
+                                }
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 8.dp),
+                                    horizontalArrangement = Arrangement.Center,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    if (yourAccountViewModel.parentDateOfBirth != "") {
+                                        Text(
+                                            modifier = Modifier
+                                                .wrapContentWidth()
+                                                .padding(end = 2.dp),
+                                            text = if (yourAccountViewModel.isParentClicked) yourAccountViewModel.parentDateOfBirth else yourAccountViewModel.parentPartnerDateOfBirth,
+                                            style = MaterialTheme.typography.body2.copy(
+                                                color = Color(0xFF7F7D7C),
+                                                fontSize = 14.sp,
+                                                fontWeight = FontWeight.W500,
+                                                lineHeight = 22.sp
+                                            )
+                                        )
+                                        Text(
+                                            modifier = Modifier
+                                                .wrapContentWidth(),
+                                            text = if (yourAccountViewModel.isParentClicked) "(37 Year)" else "(30 Year)",
+                                            style = MaterialTheme.typography.body2.copy(
+                                                color = Color.Black,
+                                                fontSize = 14.sp,
+                                                fontWeight = FontWeight.W500,
+                                                lineHeight = 22.sp
+                                            )
+                                        )
+                                    }
+                                }
+                                Image(
+                                    modifier = Modifier.padding(top = 10.dp),
+                                    painter = painterResource(id = R.drawable.ic_img_intended_parents_liner),
+                                    contentDescription = ""
+                                )
+                                if (yourAccountViewModel.parentHomeAddress != "" && yourAccountViewModel.isParentClicked) {
                                     Text(
                                         modifier = Modifier
                                             .wrapContentWidth()
-                                            .padding(end = 2.dp),
-                                        text =
-                                        yourAccountViewModel.surrogateDateOfBirth,
+                                            .padding(top = 18.dp),
+                                        text = yourAccountViewModel.parentHomeAddress,
                                         style = MaterialTheme.typography.body2.copy(
-                                            color = Color(0xFF7F7D7C),
+                                            color = Color.Black,
                                             fontSize = 14.sp,
                                             fontWeight = FontWeight.W500,
                                             lineHeight = 22.sp
                                         )
                                     )
+                                } else if (yourAccountViewModel.parentPartnerHomeAddress != "" && yourAccountViewModel.isMotherClicked) {
                                     Text(
-                                        modifier = Modifier.wrapContentWidth(),
-                                        text = "(37 Year)",
+                                        modifier = Modifier
+                                            .wrapContentWidth()
+                                            .padding(top = 18.dp),
+                                        text = yourAccountViewModel.parentPartnerHomeAddress,
+                                        style = MaterialTheme.typography.body2.copy(
+                                            color = Color.Black,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.W500,
+                                            lineHeight = 22.sp
+                                        )
+                                    )
+                                }
+                                if (yourAccountViewModel.parentPhoneNumber != "" && yourAccountViewModel.isParentClicked) {
+                                    Text(
+                                        modifier = Modifier
+                                            .wrapContentWidth()
+                                            .padding(top = 11.dp),
+                                        text = yourAccountViewModel.parentPhoneNumber,
+                                        style = MaterialTheme.typography.body2.copy(
+                                            color = Custom_Blue,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.W500,
+                                            lineHeight = 22.sp
+                                        )
+                                    )
+                                } else if (yourAccountViewModel.parentPhoneNumber != "" && yourAccountViewModel.isMotherClicked) {
+                                    Text(
+                                        modifier = Modifier
+                                            .wrapContentWidth()
+                                            .padding(top = 11.dp),
+                                        text = yourAccountViewModel.parentPartnerPhoneNumber,
+                                        style = MaterialTheme.typography.body2.copy(
+                                            color = Custom_Blue,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.W500,
+                                            lineHeight = 22.sp
+                                        )
+                                    )
+                                }
+                                if (yourAccountViewModel.parentEmail != "") {
+                                    Text(
+                                        modifier = Modifier
+                                            .wrapContentWidth()
+                                            .padding(top = 16.dp),
+                                        text = yourAccountViewModel.parentEmail,
                                         style = MaterialTheme.typography.body2.copy(
                                             color = Color.Black,
                                             fontSize = 14.sp,
@@ -2020,171 +1244,1047 @@ fun YourAccountScreen(
                                     )
                                 }
                             }
-                            if (yourAccountViewModel.surrogateHomeAddress != "") {
-                                Text(
-                                    modifier = Modifier
-                                        .wrapContentWidth()
-                                        .padding(top = 18.dp),
-                                    text =
-                                    yourAccountViewModel.surrogateHomeAddress,
-                                    style = MaterialTheme.typography.body2.copy(
-                                        color = Color.Black,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.W500,
-                                        lineHeight = 22.sp
-                                    )
-                                )
-                            }
-                            if (yourAccountViewModel.surrogatePhoneNumber != "") {
-                                Text(
-                                    modifier = Modifier
-                                        .wrapContentWidth()
-                                        .padding(top = 11.dp),
-                                    text =
-                                    yourAccountViewModel.surrogatePhoneNumber,
-                                    style = MaterialTheme.typography.body2.copy(
-                                        color = Custom_Blue,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.W500,
-                                        lineHeight = 22.sp
-                                    )
-                                )
-                            }
-                            if (yourAccountViewModel.surrogateEmail != "") {
-                                Text(
-                                    modifier = Modifier
-                                        .wrapContentWidth()
-                                        .padding(top = 16.dp),
-                                    text = yourAccountViewModel.surrogateEmail,
-                                    style = MaterialTheme.typography.body2.copy(
-                                        color = Color.Black,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.W500,
-                                        lineHeight = 22.sp
-                                    )
-                                )
-                            }
                         }
                     }
-                    Surface(
-                        shape = RoundedCornerShape(12.dp),
-                        color = Color.White,
-                        elevation = 2.dp,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 25.dp, end = 23.dp, top = 24.dp)
-                    ) {
-                        Column {
-                            Text(
+                    if (yourAccountViewModel.isEditable.value) {
+                        if (yourAccountViewModel.isParentClicked) {
+                            Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(start = 24.dp, top = 24.dp, end = 56.dp),
-                                text = "What is your favorite snack?",
-                                color = Color.Black,
-                                style = MaterialTheme.typography.body2.copy(
-                                    color = Color.Black,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.W600,
-                                    lineHeight = 24.sp
-                                ),
-                            )
-                            Row {
+                                    .padding(top = 35.dp)
+                            ) {
                                 Text(
-                                    modifier = Modifier.padding(start = 24.dp, top = 10.dp),
-                                    text = "Martha Smith",
-                                    style = MaterialTheme.typography.body2.copy(
-                                        color = Custom_Blue,
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.W600,
-                                        lineHeight = 22.sp
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 24.dp),
+                                    text = stringResource(id = R.string.register_tv_name),
+                                    style = MaterialTheme.typography.body1,
+                                    fontWeight = FontWeight.W400,
+                                    fontSize = 14.sp,
+                                    color = Text_Accept_Terms
+                                )
+                                TextField(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 12.dp, start = 24.dp, end = 24.dp),
+                                    value = yourAccountViewModel.parentFullName,
+                                    onValueChange = {
+                                        yourAccountViewModel.parentFullName = it
+                                        yourAccountViewModel.yourAccountFullNameEmpty = false
+                                    },
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Email,
+                                        imeAction = ImeAction.Next
+                                    ),
+                                    shape = RoundedCornerShape(8.dp),
+                                    colors = TextFieldDefaults.textFieldColors(
+                                        backgroundColor = if (!yourAccountViewModel.isEditable.value) ET_Bg
+                                        else Color(0xFFD0E1FA),
+                                        cursorColor = Custom_Blue,
+                                        focusedIndicatorColor = Color.Transparent,
+                                        disabledIndicatorColor = Color.Transparent,
+                                        unfocusedIndicatorColor = Color.Transparent,
+                                        textColor = Color.Black
+                                    ), readOnly = false,
+                                    maxLines = 1,
+                                    textStyle = MaterialTheme.typography.body2,
+                                    trailingIcon = {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_icon_et_name_your_account),
+                                            "error",
+                                        )
+                                    }
+                                )
+                                if (yourAccountViewModel.yourAccountFullNameEmpty) {
+                                    Text(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(start = 24.dp),
+                                        text = "Enter your name",
+                                        style = MaterialTheme.typography.caption,
+                                        color = MaterialTheme.colors.error,
+                                        fontSize = 12.sp
                                     )
+                                }
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 16.dp, start = 24.dp),
+                                    text = stringResource(id = R.string.select_gender),
+                                    style = MaterialTheme.typography.body1,
+                                    fontWeight = FontWeight.W400,
+                                    fontSize = 14.sp,
+                                    color = Text_Accept_Terms
+                                )
+                                yourAccountViewModel.parentGender = simpleDropDown(
+                                    suggestions = suggestions,
+                                    hint = stringResource(id = R.string.select_gender),
+                                    modifier = Modifier
+                                        .padding(top = 12.dp, start = 24.dp, end = 24.dp),
+                                    style = MaterialTheme.typography.body2.copy(
+                                        fontWeight = FontWeight.W600,
+                                        fontSize = 16.sp,
+                                        color = Color.Black
+                                    ),
+                                    color = Color(0xFFD0E1FA),
+                                    text = yourAccountViewModel.parentGender
+                                )
+                                if (yourAccountViewModel.parentGender == "" && yourAccountViewModel.isGenderSelected) {
+                                    Text(
+                                        text = stringResource(id = R.string.select_gender),
+                                        color = MaterialTheme.colors.error,
+                                        style = MaterialTheme.typography.caption,
+                                        modifier = Modifier
+                                            .padding(start = 26.dp),
+                                        fontSize = 12.sp
+                                    )
+                                }
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 16.dp, start = 24.dp),
+                                    text = "Phone number",
+                                    style = MaterialTheme.typography.body1,
+                                    fontWeight = FontWeight.W400,
+                                    fontSize = 14.sp,
+                                    color = Text_Accept_Terms
+                                )
+                                TextField(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 12.dp, start = 24.dp, end = 24.dp),
+                                    value = yourAccountViewModel.parentPhoneNumber,
+                                    onValueChange = {
+                                        yourAccountViewModel.parentPhoneNumber = it
+                                        yourAccountViewModel.yourAccountPhoneNumberEmpty = false
+                                    },
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Phone,
+                                        imeAction = ImeAction.Next
+                                    ),
+                                    shape = RoundedCornerShape(8.dp),
+                                    colors = TextFieldDefaults.textFieldColors(
+                                        backgroundColor = if (!yourAccountViewModel.isEditable.value) ET_Bg
+                                        else Color(0xFFD0E1FA),
+                                        cursorColor = Custom_Blue,
+                                        focusedIndicatorColor = Color.Transparent,
+                                        disabledIndicatorColor = Color.Transparent,
+                                        unfocusedIndicatorColor = Color.Transparent,
+                                        textColor = Color.Black
+                                    ),
+                                    readOnly = !yourAccountViewModel.isEditable.value,
+                                    maxLines = 1,
+                                    textStyle = MaterialTheme.typography.body2,
+                                    trailingIcon = {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_icon_et_phone_your_account),
+                                            "error",
+                                        )
+                                    }
                                 )
                                 Text(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(top = 10.dp, end = 24.dp),
-                                    text = "1 Day ago",
-                                    color = Color(0xFF9F9D9B),
+                                        .padding(top = 16.dp, start = 24.dp),
+                                    text = stringResource(id = R.string.register_tv_email_text),
                                     style = MaterialTheme.typography.body1,
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Normal,
-                                    textAlign = TextAlign.End
-                                )
-                            }
-                            Text(
-                                modifier = Modifier.padding(
-                                    start = 24.dp,
-                                    top = 4.dp,
-                                    bottom = 22.dp
-                                ),
-                                text = "Chocolate all the way!!",
-                                style = MaterialTheme.typography.body2.copy(
-                                    color = Color.Black,
+                                    fontWeight = FontWeight.W400,
                                     fontSize = 14.sp,
-                                    fontWeight = FontWeight.W600,
-                                    lineHeight = 22.sp
-                                ),
-                            )
-                        }
-                    }
-                    Surface(
-                        shape = RoundedCornerShape(12.dp),
-                        color = Color.White,
-                        elevation = 2.dp,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 25.dp, end = 23.dp, top = 16.dp, bottom = 18.dp)
-                    ) {
-                        Column {
-                            Text(
+                                    color = Text_Accept_Terms
+                                )
+                                TextField(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 12.dp, start = 24.dp, end = 24.dp),
+                                    value = yourAccountViewModel.parentEmail,
+                                    onValueChange = {
+                                        yourAccountViewModel.parentEmail = it
+                                        yourAccountViewModel.yourAccountEmailEmpty = false
+                                        yourAccountViewModel.yourAccountEmailIsValid = false
+                                    },
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Email,
+                                        imeAction = ImeAction.Next
+                                    ),
+                                    shape = RoundedCornerShape(8.dp),
+                                    colors = TextFieldDefaults.textFieldColors(
+                                        backgroundColor = if (!yourAccountViewModel.isEditable.value) ET_Bg
+                                        else Color(0xFFD0E1FA),
+                                        cursorColor = Custom_Blue,
+                                        focusedIndicatorColor = Color.Transparent,
+                                        disabledIndicatorColor = Color.Transparent,
+                                        unfocusedIndicatorColor = Color.Transparent,
+                                        textColor = Color.Black
+                                    ), readOnly = true,
+                                    maxLines = 1,
+                                    textStyle = MaterialTheme.typography.body2,
+                                    trailingIcon = {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_icon_et_email_your_account),
+                                            "error",
+                                        )
+                                    }
+                                )
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 16.dp, start = 24.dp),
+                                    text = "Home address",
+                                    style = MaterialTheme.typography.body1,
+                                    fontWeight = FontWeight.W400,
+                                    fontSize = 14.sp,
+                                    color = Text_Accept_Terms
+                                )
+                                TextField(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 12.dp, start = 24.dp, end = 24.dp),
+                                    value = yourAccountViewModel.parentHomeAddress,
+                                    onValueChange = {
+                                        yourAccountViewModel.parentHomeAddress = it
+                                        yourAccountViewModel.yourAccountHomeAddressEmpty = false
+                                    },
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Text,
+                                        imeAction = ImeAction.Done
+                                    ),
+                                    shape = RoundedCornerShape(8.dp),
+                                    colors = TextFieldDefaults.textFieldColors(
+                                        backgroundColor = if (!yourAccountViewModel.isEditable.value) ET_Bg
+                                        else Color(0xFFD0E1FA),
+                                        cursorColor = Custom_Blue,
+                                        focusedIndicatorColor = Color.Transparent,
+                                        disabledIndicatorColor = Color.Transparent,
+                                        unfocusedIndicatorColor = Color.Transparent,
+                                        textColor = Color.Black
+                                    ), readOnly = !yourAccountViewModel.isEditable.value,
+                                    maxLines = 1,
+                                    textStyle = MaterialTheme.typography.body2,
+                                    trailingIcon = {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_icon_et_location_your_account),
+                                            "error",
+                                        )
+                                    }
+                                )
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 16.dp, start = 24.dp),
+                                    text = "Your date of birth",
+                                    style = MaterialTheme.typography.body1,
+                                    fontWeight = FontWeight.W400,
+                                    fontSize = 14.sp,
+                                    color = Text_Accept_Terms
+                                )
+                                TextField(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 24.dp, end = 24.dp, top = 12.dp)
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = MutableInteractionSource()
+                                        ) {
+                                            val datePickerDialog = DatePickerDialog(
+                                                context,
+                                                R.style.CalenderViewCustom,
+                                                { _: DatePicker, year: Int, month: Int, day: Int ->
+                                                    yourAccountViewModel.parentDateOfBirth =
+                                                        "$year/" + "%02d".format(month + 1) + "/" + "%02d".format(
+                                                            day
+                                                        )
+                                                }, year, month, day
+                                            )
+                                            datePickerDialog.datePicker.maxDate =
+                                                Date().time - 86400000
+                                            datePickerDialog.show()
+                                            datePickerDialog
+                                                .getButton(DatePickerDialog.BUTTON_NEGATIVE)
+                                                .setTextColor(
+                                                    ContextCompat.getColor(
+                                                        context,
+                                                        R.color.custom_blue
+                                                    )
+                                                )
+                                            datePickerDialog
+                                                .getButton(DatePickerDialog.BUTTON_POSITIVE)
+                                                .setTextColor(
+                                                    ContextCompat.getColor(
+                                                        context,
+                                                        R.color.custom_blue
+                                                    )
+                                                )
+                                            datePickerDialog
+                                                .getButton(DatePickerDialog.BUTTON_NEGATIVE)
+                                                .setOnClickListener {
+                                                    datePickerDialog.dismiss()
+                                                }
+                                            focusManager.clearFocus()
+                                            yourAccountViewModel.yourAccountDateOfBirthEmpty = false
+                                        },
+                                    value = yourAccountViewModel.parentDateOfBirth,
+                                    onValueChange = {
+                                        yourAccountViewModel.yourAccountDateOfBirthEmpty = false
+                                    },
+                                    shape = RoundedCornerShape(8.dp),
+                                    colors = TextFieldDefaults.textFieldColors(
+                                        backgroundColor = if (!yourAccountViewModel.isEditable.value) ET_Bg
+                                        else Color(0xFFD0E1FA),
+                                        cursorColor = Custom_Blue,
+                                        focusedIndicatorColor = Color.Transparent,
+                                        disabledIndicatorColor = Color.Transparent,
+                                        unfocusedIndicatorColor = Color.Transparent
+                                    ), readOnly = true, enabled = false, placeholder = {
+                                        Text(
+                                            text = "Date of birth",
+                                            style = MaterialTheme.typography.body2.copy(
+                                                Color(
+                                                    0xFF7F7D7C
+                                                )
+                                            )
+                                        )
+                                    },
+                                    textStyle = MaterialTheme.typography.body2.copy(
+                                        color = Color.Black
+                                    )
+                                )
+                                if (yourAccountViewModel.isEditable.value) {
+                                    Button(
+                                        onClick = {
+                                            when {
+                                                TextUtils.isEmpty(yourAccountViewModel.parentFullName) -> {
+                                                    yourAccountViewModel.yourAccountFullNameEmpty =
+                                                        true
+                                                    Log.i("TAG", "Full Name Empty")
+                                                }
+                                                TextUtils.isEmpty(yourAccountViewModel.parentGender) -> {
+                                                    yourAccountViewModel.isGenderSelected = true
+                                                }
+                                                else -> {
+                                                    val image =
+                                                        yourAccountViewModel.uriPathParent?.let {
+                                                            convertImageMultiPart(it)
+                                                        }
+                                                    yourAccountViewModel.updateUserProfile(
+                                                       userId =  userId,
+                                                        name = MultipartBody.Part.createFormData(
+                                                            "name",
+                                                            yourAccountViewModel.parentFullName
+                                                        ),
+                                                        email = MultipartBody.Part.createFormData(
+                                                            "email",
+                                                            yourAccountViewModel.parentEmail
+                                                        ),
+                                                        number = MultipartBody.Part.createFormData(
+                                                            "number",
+                                                            yourAccountViewModel.parentPhoneNumber
+                                                        ),
+                                                        address = MultipartBody.Part.createFormData(
+                                                            "address",
+                                                            yourAccountViewModel.parentHomeAddress
+                                                        ),
+                                                        dateOfBirth = MultipartBody.Part.createFormData(
+                                                            "date_of_birth",
+                                                            yourAccountViewModel.parentDateOfBirth
+                                                        ),
+                                                        imgFileName1 = image,
+                                                        imgFileName2=null,
+                                                        type = MultipartBody.Part.createFormData(
+                                                            "type",
+                                                            type
+                                                        ),
+                                                        gender = MultipartBody.Part.createFormData(
+                                                            "gender",
+                                                            yourAccountViewModel.parentGender
+                                                        ),
+                                                    )
+                                                    yourAccountViewModel.updateUserProfileResponse.observe(
+                                                        homeActivity
+                                                    ) {
+                                                        if (it != null) {
+                                                            handleUserUpdateData(
+                                                                result = it,
+                                                                yourAccountViewModel = yourAccountViewModel,
+                                                                context = context,
+                                                                type = type,
+                                                                userId = userId,
+                                                                homeActivity = homeActivity
+                                                            )
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        modifier = Modifier
+                                            .padding(
+                                                top = 25.dp,
+                                                start = 24.dp,
+                                                end = 24.dp,
+                                                bottom = 32.dp
+                                            )
+                                            .fillMaxWidth()
+                                            .height(56.dp),
+                                        elevation = ButtonDefaults.elevation(
+                                            defaultElevation = 0.dp,
+                                            pressedElevation = 0.dp,
+                                            disabledElevation = 0.dp,
+                                            hoveredElevation = 0.dp,
+                                            focusedElevation = 0.dp
+                                        ),
+                                        shape = RoundedCornerShape(30),
+                                        colors = ButtonDefaults.buttonColors(
+                                            backgroundColor = Custom_Blue,
+                                        )
+                                    ) {
+                                        Text(
+                                            text = "Save Editing",
+                                            color = Color.White,
+                                            style = MaterialTheme.typography.body1,
+                                            lineHeight = 28.sp,
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.W900
+                                        )
+                                    }
+                                }
+                            }
+                        } else if (yourAccountViewModel.isMotherClicked) {
+                            Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(start = 24.dp, top = 24.dp, end = 56.dp),
-                                text = "What is your favorite snack?",
-                                style = MaterialTheme.typography.body2.copy(
-                                    color = Color.Black,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.W600,
-                                    lineHeight = 24.sp
-                                ),
-                            )
-                            Row {
+                                    .padding(top = 35.dp)
+                            ) {
                                 Text(
-                                    modifier = Modifier.padding(start = 24.dp, top = 10.dp),
-                                    text = "Samantha  Jones",
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 24.dp),
+                                    text = stringResource(id = R.string.register_tv_name),
+                                    style = MaterialTheme.typography.body1,
+                                    fontWeight = FontWeight.W400,
+                                    fontSize = 14.sp,
+                                    color = Text_Accept_Terms
+                                )
+                                TextField(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 12.dp, start = 24.dp, end = 24.dp),
+                                    value = yourAccountViewModel.parentPartnerName,
+                                    onValueChange = {
+                                        yourAccountViewModel.parentPartnerName = it
+                                        yourAccountViewModel.yourAccountFullNameEmpty = false
+                                    },
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Email,
+                                        imeAction = ImeAction.Next
+                                    ),
+                                    shape = RoundedCornerShape(8.dp),
+                                    colors = TextFieldDefaults.textFieldColors(
+                                        backgroundColor = if (!yourAccountViewModel.isEditable.value) ET_Bg
+                                        else Color(0xFFD0E1FA),
+                                        cursorColor = Custom_Blue,
+                                        focusedIndicatorColor = Color.Transparent,
+                                        disabledIndicatorColor = Color.Transparent,
+                                        unfocusedIndicatorColor = Color.Transparent,
+                                        textColor = Color.Black
+                                    ), readOnly = false,
+                                    maxLines = 1,
+                                    textStyle = MaterialTheme.typography.body2,
+                                    trailingIcon = {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_icon_et_name_your_account),
+                                            "error",
+                                        )
+                                    }
+                                )
+                                if (yourAccountViewModel.yourAccountFullNameEmpty) {
+                                    Text(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(start = 24.dp),
+                                        text = "Enter your name",
+                                        style = MaterialTheme.typography.caption,
+                                        color = MaterialTheme.colors.error,
+                                        fontSize = 12.sp
+                                    )
+                                }
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 16.dp, start = 24.dp),
+                                    text = stringResource(id = R.string.select_gender),
+                                    style = MaterialTheme.typography.body1,
+                                    fontWeight = FontWeight.W400,
+                                    fontSize = 14.sp,
+                                    color = Text_Accept_Terms
+                                )
+                                yourAccountViewModel.parentPartnerGender = simpleDropDown(
+                                    suggestions = suggestions,
+                                    hint = stringResource(id = R.string.select_gender),
+                                    modifier = Modifier
+                                        .padding(top = 12.dp, start = 24.dp, end = 24.dp),
                                     style = MaterialTheme.typography.body2.copy(
-                                        color = Custom_Blue,
+                                        fontWeight = FontWeight.W600,
                                         fontSize = 16.sp,
+                                        color = Color.Black
+                                    ),
+                                    color = Color(0xFFD0E1FA),
+                                    text = yourAccountViewModel.parentPartnerGender
+                                )
+                                if (yourAccountViewModel.parentPartnerGender == "" && yourAccountViewModel.isGenderSelected) {
+                                    Text(
+                                        text = stringResource(id = R.string.select_gender),
+                                        color = MaterialTheme.colors.error,
+                                        style = MaterialTheme.typography.caption,
+                                        modifier = Modifier
+                                            .padding(start = 26.dp),
+                                        fontSize = 12.sp
+                                    )
+                                }
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 16.dp, start = 24.dp),
+                                    text = "Phone number",
+                                    style = MaterialTheme.typography.body1,
+                                    fontWeight = FontWeight.W400,
+                                    fontSize = 14.sp,
+                                    color = Text_Accept_Terms
+                                )
+                                TextField(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 12.dp, start = 24.dp, end = 24.dp),
+                                    value = yourAccountViewModel.parentPartnerPhoneNumber,
+                                    onValueChange = {
+                                        yourAccountViewModel.parentPartnerPhoneNumber = it
+                                        yourAccountViewModel.yourAccountPhoneNumberEmpty = false
+                                    },
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Phone,
+                                        imeAction = ImeAction.Next
+                                    ),
+                                    shape = RoundedCornerShape(8.dp),
+                                    colors = TextFieldDefaults.textFieldColors(
+                                        backgroundColor = if (!yourAccountViewModel.isEditable.value) ET_Bg
+                                        else Color(0xFFD0E1FA),
+                                        cursorColor = Custom_Blue,
+                                        focusedIndicatorColor = Color.Transparent,
+                                        disabledIndicatorColor = Color.Transparent,
+                                        unfocusedIndicatorColor = Color.Transparent,
+                                        textColor = Color.Black
+                                    ),
+                                    readOnly = !yourAccountViewModel.isEditable.value,
+                                    maxLines = 1,
+                                    textStyle = MaterialTheme.typography.body2,
+                                    trailingIcon = {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_icon_et_phone_your_account),
+                                            "error",
+                                        )
+                                    }
+                                )
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 16.dp, start = 24.dp),
+                                    text = stringResource(id = R.string.register_tv_email_text),
+                                    style = MaterialTheme.typography.body1,
+                                    fontWeight = FontWeight.W400,
+                                    fontSize = 14.sp,
+                                    color = Text_Accept_Terms
+                                )
+                                TextField(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 12.dp, start = 24.dp, end = 24.dp),
+                                    value = yourAccountViewModel.parentEmail,
+                                    onValueChange = {
+                                        yourAccountViewModel.parentEmail = it
+                                        yourAccountViewModel.yourAccountEmailEmpty = false
+                                        yourAccountViewModel.yourAccountEmailIsValid = false
+                                    },
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Email,
+                                        imeAction = ImeAction.Next
+                                    ),
+                                    shape = RoundedCornerShape(8.dp),
+                                    colors = TextFieldDefaults.textFieldColors(
+                                        backgroundColor = if (!yourAccountViewModel.isEditable.value) ET_Bg
+                                        else Color(0xFFD0E1FA),
+                                        cursorColor = Custom_Blue,
+                                        focusedIndicatorColor = Color.Transparent,
+                                        disabledIndicatorColor = Color.Transparent,
+                                        unfocusedIndicatorColor = Color.Transparent,
+                                        textColor = Color.Black
+                                    ), readOnly = true,
+                                    maxLines = 1,
+                                    textStyle = MaterialTheme.typography.body2,
+                                    trailingIcon = {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_icon_et_email_your_account),
+                                            "error",
+                                        )
+                                    }
+                                )
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 16.dp, start = 24.dp),
+                                    text = "Home address",
+                                    style = MaterialTheme.typography.body1,
+                                    fontWeight = FontWeight.W400,
+                                    fontSize = 14.sp,
+                                    color = Text_Accept_Terms
+                                )
+                                TextField(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 12.dp, start = 24.dp, end = 24.dp),
+                                    value = yourAccountViewModel.parentPartnerHomeAddress,
+                                    onValueChange = {
+                                        yourAccountViewModel.parentPartnerHomeAddress = it
+                                        yourAccountViewModel.yourAccountHomeAddressEmpty = false
+                                    },
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Text,
+                                        imeAction = ImeAction.Done
+                                    ),
+                                    shape = RoundedCornerShape(8.dp),
+                                    colors = TextFieldDefaults.textFieldColors(
+                                        backgroundColor = if (!yourAccountViewModel.isEditable.value) ET_Bg
+                                        else Color(0xFFD0E1FA),
+                                        cursorColor = Custom_Blue,
+                                        focusedIndicatorColor = Color.Transparent,
+                                        disabledIndicatorColor = Color.Transparent,
+                                        unfocusedIndicatorColor = Color.Transparent,
+                                        textColor = Color.Black
+                                    ), readOnly = !yourAccountViewModel.isEditable.value,
+                                    maxLines = 1,
+                                    textStyle = MaterialTheme.typography.body2,
+                                    trailingIcon = {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_icon_et_location_your_account),
+                                            "error",
+                                        )
+                                    }
+                                )
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 16.dp, start = 24.dp),
+                                    text = "Your date of birth",
+                                    style = MaterialTheme.typography.body1,
+                                    fontWeight = FontWeight.W400,
+                                    fontSize = 14.sp,
+                                    color = Text_Accept_Terms
+                                )
+                                TextField(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 24.dp, end = 24.dp, top = 12.dp)
+                                        .clickable(
+                                            indication = null,
+                                            interactionSource = MutableInteractionSource()
+                                        ) {
+                                            val datePickerDialog = DatePickerDialog(
+                                                context,
+                                                R.style.CalenderViewCustom,
+                                                { _: DatePicker, year: Int, month: Int, day: Int ->
+                                                    yourAccountViewModel.parentPartnerDateOfBirth =
+                                                        "$year/" + "%02d".format(month + 1) + "/" + "%02d".format(
+                                                            day
+                                                        )
+                                                }, year, month, day
+                                            )
+                                            datePickerDialog.datePicker.setMaxDate(Date().time - 86400000)
+                                            datePickerDialog.show()
+                                            datePickerDialog
+                                                .getButton(DatePickerDialog.BUTTON_NEGATIVE)
+                                                .setTextColor(
+                                                    ContextCompat.getColor(
+                                                        context,
+                                                        R.color.custom_blue
+                                                    )
+                                                )
+                                            datePickerDialog
+                                                .getButton(DatePickerDialog.BUTTON_POSITIVE)
+                                                .setTextColor(
+                                                    ContextCompat.getColor(
+                                                        context,
+                                                        R.color.custom_blue
+                                                    )
+                                                )
+                                            datePickerDialog
+                                                .getButton(DatePickerDialog.BUTTON_NEGATIVE)
+                                                .setOnClickListener {
+                                                    datePickerDialog.dismiss()
+                                                }
+                                            focusManager.clearFocus()
+                                            yourAccountViewModel.yourAccountDateOfBirthEmpty = false
+                                        },
+                                    value = yourAccountViewModel.parentPartnerDateOfBirth,
+                                    onValueChange = {
+                                        yourAccountViewModel.yourAccountDateOfBirthEmpty = false
+                                    },
+                                    shape = RoundedCornerShape(8.dp),
+                                    colors = TextFieldDefaults.textFieldColors(
+                                        backgroundColor = if (!yourAccountViewModel.isEditable.value) ET_Bg
+                                        else Color(0xFFD0E1FA),
+                                        cursorColor = Custom_Blue,
+                                        focusedIndicatorColor = Color.Transparent,
+                                        disabledIndicatorColor = Color.Transparent,
+                                        unfocusedIndicatorColor = Color.Transparent
+                                    ), readOnly = true, enabled = false, placeholder = {
+                                        Text(
+                                            text = "Date of birth",
+                                            style = MaterialTheme.typography.body2.copy(
+                                                Color(
+                                                    0xFF7F7D7C
+                                                )
+                                            )
+                                        )
+                                    },
+                                    textStyle = MaterialTheme.typography.body2.copy(
+                                        color = Color.Black
+                                    )
+                                )
+                                if (yourAccountViewModel.isEditable.value) {
+                                    Button(
+                                        onClick = {
+                                            when {
+                                                TextUtils.isEmpty(yourAccountViewModel.parentPartnerName) -> {
+                                                    yourAccountViewModel.yourAccountFullNameEmpty =
+                                                        true
+                                                    Log.i("TAG", "Full Name Empty")
+                                                }
+                                                TextUtils.isEmpty(yourAccountViewModel.parentPartnerGender) -> {
+                                                    yourAccountViewModel.isGenderSelected =
+                                                        true
+                                                    Log.i("TAG", "Full Name Empty")
+                                                }
+                                                else -> {
+                                                    val image =
+                                                        yourAccountViewModel.uriPathMother?.let {
+                                                            convertImageMultiPart(it)
+                                                        }
+                                                    yourAccountViewModel.updateUserProfile(
+                                                        userId = userId,
+                                                        name = MultipartBody.Part.createFormData(
+                                                            "name",
+                                                            yourAccountViewModel.parentPartnerName
+                                                        ),
+                                                        email = MultipartBody.Part.createFormData(
+                                                            "email",
+                                                            yourAccountViewModel.parentEmail
+                                                        ),
+                                                        number = MultipartBody.Part.createFormData(
+                                                            "number",
+                                                            yourAccountViewModel.parentPartnerPhoneNumber
+                                                        ),
+                                                        address = MultipartBody.Part.createFormData(
+                                                            "address",
+                                                            yourAccountViewModel.parentPartnerHomeAddress
+                                                        ),
+                                                        dateOfBirth = MultipartBody.Part.createFormData(
+                                                            "date_of_birth",
+                                                            yourAccountViewModel.parentPartnerDateOfBirth
+                                                        ),
+                                                        imgFileName1 = null,
+                                                        imgFileName2 = image,
+                                                        type = MultipartBody.Part.createFormData(
+                                                            "type",
+                                                            type
+                                                        ),
+                                                        partner_phone = MultipartBody.Part.createFormData(
+                                                            "partner_phone",
+                                                            yourAccountViewModel.parentPartnerPhoneNumber
+                                                        ),
+                                                        partner_dob = MultipartBody.Part.createFormData(
+                                                            "partner_dob",
+                                                            yourAccountViewModel.parentPartnerDateOfBirth
+                                                        ),
+                                                        partner_address = MultipartBody.Part.createFormData(
+                                                            "parent_address",
+                                                            yourAccountViewModel.parentPartnerHomeAddress
+                                                        ),
+                                                        partner_gender = MultipartBody.Part.createFormData(
+                                                            "partner_gender",
+                                                            yourAccountViewModel.parentPartnerGender
+                                                        ),
+                                                    )
+                                                    yourAccountViewModel.updateUserProfileResponse.observe(
+                                                        homeActivity
+                                                    ) {
+                                                        if (it != null) {
+                                                            handleUserUpdateData(
+                                                                result = it,
+                                                                yourAccountViewModel = yourAccountViewModel,
+                                                                context = context,
+                                                                type = type,
+                                                                userId = userId,
+                                                                homeActivity = homeActivity
+                                                            )
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        modifier = Modifier
+                                            .padding(
+                                                top = 25.dp,
+                                                start = 24.dp,
+                                                end = 24.dp,
+                                                bottom = 32.dp
+                                            )
+                                            .fillMaxWidth()
+                                            .height(56.dp),
+                                        elevation = ButtonDefaults.elevation(
+                                            defaultElevation = 0.dp,
+                                            pressedElevation = 0.dp,
+                                            disabledElevation = 0.dp,
+                                            hoveredElevation = 0.dp,
+                                            focusedElevation = 0.dp
+                                        ),
+                                        shape = RoundedCornerShape(30),
+                                        colors = ButtonDefaults.buttonColors(
+                                            backgroundColor = Custom_Blue,
+                                        )
+                                    ) {
+                                        Text(
+                                            text = "Save Editing",
+                                            color = Color.White,
+                                            style = MaterialTheme.typography.body1,
+                                            lineHeight = 28.sp,
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.W900
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 15.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                if (yourAccountViewModel.surrogateFullName != "") {
+                                    Text(
+                                        modifier = Modifier.wrapContentWidth(),
+                                        text =
+                                        yourAccountViewModel.surrogateFullName,
+                                        style = MaterialTheme.typography.h2.copy(
+                                            color = Color.Black,
+                                            fontSize = 24.sp,
+                                            fontWeight = FontWeight.W600,
+                                            lineHeight = 32.sp
+                                        )
+                                    )
+                                }
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 8.dp),
+                                    horizontalArrangement = Arrangement.Center,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    if (yourAccountViewModel.surrogateDateOfBirth != "") {
+                                        Text(
+                                            modifier = Modifier
+                                                .wrapContentWidth()
+                                                .padding(end = 2.dp),
+                                            text =
+                                            yourAccountViewModel.surrogateDateOfBirth,
+                                            style = MaterialTheme.typography.body2.copy(
+                                                color = Color(0xFF7F7D7C),
+                                                fontSize = 14.sp,
+                                                fontWeight = FontWeight.W500,
+                                                lineHeight = 22.sp
+                                            )
+                                        )
+                                        Text(
+                                            modifier = Modifier.wrapContentWidth(),
+                                            text = "(37 Year)",
+                                            style = MaterialTheme.typography.body2.copy(
+                                                color = Color.Black,
+                                                fontSize = 14.sp,
+                                                fontWeight = FontWeight.W500,
+                                                lineHeight = 22.sp
+                                            )
+                                        )
+                                    }
+                                }
+                                if (yourAccountViewModel.surrogateHomeAddress != "") {
+                                    Text(
+                                        modifier = Modifier
+                                            .wrapContentWidth()
+                                            .padding(top = 18.dp),
+                                        text =
+                                        yourAccountViewModel.surrogateHomeAddress,
+                                        style = MaterialTheme.typography.body2.copy(
+                                            color = Color.Black,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.W500,
+                                            lineHeight = 22.sp
+                                        )
+                                    )
+                                }
+                                if (yourAccountViewModel.surrogatePhoneNumber != "") {
+                                    Text(
+                                        modifier = Modifier
+                                            .wrapContentWidth()
+                                            .padding(top = 11.dp),
+                                        text =
+                                        yourAccountViewModel.surrogatePhoneNumber,
+                                        style = MaterialTheme.typography.body2.copy(
+                                            color = Custom_Blue,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.W500,
+                                            lineHeight = 22.sp
+                                        )
+                                    )
+                                }
+                                if (yourAccountViewModel.surrogateEmail != "") {
+                                    Text(
+                                        modifier = Modifier
+                                            .wrapContentWidth()
+                                            .padding(top = 16.dp),
+                                        text = yourAccountViewModel.surrogateEmail,
+                                        style = MaterialTheme.typography.body2.copy(
+                                            color = Color.Black,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.W500,
+                                            lineHeight = 22.sp
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = Color.White,
+                            elevation = 2.dp,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 25.dp, end = 23.dp, top = 24.dp)
+                        ) {
+                            Column {
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 24.dp, top = 24.dp, end = 56.dp),
+                                    text = "What is your favorite snack?",
+                                    color = Color.Black,
+                                    style = MaterialTheme.typography.body2.copy(
+                                        color = Color.Black,
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.W600,
+                                        lineHeight = 24.sp
+                                    ),
+                                )
+                                Row {
+                                    Text(
+                                        modifier = Modifier.padding(start = 24.dp, top = 10.dp),
+                                        text = "Martha Smith",
+                                        style = MaterialTheme.typography.body2.copy(
+                                            color = Custom_Blue,
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.W600,
+                                            lineHeight = 22.sp
+                                        )
+                                    )
+                                    Text(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(top = 10.dp, end = 24.dp),
+                                        text = "1 Day ago",
+                                        color = Color(0xFF9F9D9B),
+                                        style = MaterialTheme.typography.body1,
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Normal,
+                                        textAlign = TextAlign.End
+                                    )
+                                }
+                                Text(
+                                    modifier = Modifier.padding(
+                                        start = 24.dp,
+                                        top = 4.dp,
+                                        bottom = 22.dp
+                                    ),
+                                    text = "Chocolate all the way!!",
+                                    style = MaterialTheme.typography.body2.copy(
+                                        color = Color.Black,
+                                        fontSize = 14.sp,
                                         fontWeight = FontWeight.W600,
                                         lineHeight = 22.sp
                                     ),
                                 )
+                            }
+                        }
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = Color.White,
+                            elevation = 2.dp,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 25.dp, end = 23.dp, top = 16.dp, bottom = 18.dp)
+                        ) {
+                            Column {
                                 Text(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(top = 10.dp, end = 24.dp),
-                                    text = "1 Day ago",
-                                    color = Color(0xFF9F9D9B),
-                                    style = MaterialTheme.typography.body1,
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Normal,
-                                    textAlign = TextAlign.End
+                                        .padding(start = 24.dp, top = 24.dp, end = 56.dp),
+                                    text = "What is your favorite snack?",
+                                    style = MaterialTheme.typography.body2.copy(
+                                        color = Color.Black,
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.W600,
+                                        lineHeight = 24.sp
+                                    ),
+                                )
+                                Row {
+                                    Text(
+                                        modifier = Modifier.padding(start = 24.dp, top = 10.dp),
+                                        text = "Samantha  Jones",
+                                        style = MaterialTheme.typography.body2.copy(
+                                            color = Custom_Blue,
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.W600,
+                                            lineHeight = 22.sp
+                                        ),
+                                    )
+                                    Text(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(top = 10.dp, end = 24.dp),
+                                        text = "1 Day ago",
+                                        color = Color(0xFF9F9D9B),
+                                        style = MaterialTheme.typography.body1,
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Normal,
+                                        textAlign = TextAlign.End
+                                    )
+                                }
+                                Text(
+                                    modifier = Modifier.padding(
+                                        start = 24.dp,
+                                        top = 4.dp,
+                                        bottom = 22.dp
+                                    ),
+                                    text = "Basketball and Miami Heat",
+                                    style = MaterialTheme.typography.body2.copy(
+                                        color = Color.Black,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.W600,
+                                        lineHeight = 22.sp
+                                    ),
                                 )
                             }
-                            Text(
-                                modifier = Modifier.padding(
-                                    start = 24.dp,
-                                    top = 4.dp,
-                                    bottom = 22.dp
-                                ),
-                                text = "Basketball and Miami Heat",
-                                style = MaterialTheme.typography.body2.copy(
-                                    color = Color.Black,
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.W600,
-                                    lineHeight = 22.sp
-                                ),
-                            )
                         }
                     }
                 }
@@ -2294,8 +2394,14 @@ private fun handleUserDataSurrogate(
             if (result.data?.partner_name != null) {
                 yourAccountViewModel.surrogatePartnerName = result.data.partner_name
             }
+            if (result.data?.partner_name != null) {
+                yourAccountViewModel.surrogatePartnerName = result.data.partner_name
+            }
             if (result.data?.image1 != null) {
                 yourAccountViewModel.surrogateImg = result.data.image1
+            }
+            if (result.data?.gender!=null){
+                yourAccountViewModel.surrogateGender = result.data.gender
             }
         }
         is NetworkResult.Error -> {
@@ -2324,7 +2430,7 @@ private fun handleUserDataParent(
                 yourAccountViewModel.parentFullName = result.data.parent_name
             }
             if (result.data?.parent_number != null) {
-                yourAccountViewModel.parentPhoneNumber = result.data.parent_number
+                yourAccountViewModel.parentPhoneNumber = result.data.parent_number.toString()
             }
             if (result.data?.parent_email != null) {
                 yourAccountViewModel.parentEmail = result.data.parent_email
@@ -2346,6 +2452,18 @@ private fun handleUserDataParent(
             }
             if (result.data?.parent_partner_dob != null) {
                 yourAccountViewModel.parentPartnerDateOfBirth = result.data.parent_partner_dob
+            } else {
+                yourAccountViewModel.parentPartnerDateOfBirth = ""
+            }
+            if (result.data?.parent_gender != null) {
+                yourAccountViewModel.parentGender = result.data.parent_gender
+            }else{
+                yourAccountViewModel.parentGender = ""
+            }
+            if (result.data?.parent_partner_gender != null) {
+                yourAccountViewModel.parentPartnerGender = result.data.parent_partner_gender
+            }else{
+                yourAccountViewModel.parentPartnerGender = ""
             }
             if (result.data?.parent_partner_phone != null) {
                 yourAccountViewModel.parentPartnerPhoneNumber =
@@ -2381,6 +2499,7 @@ private fun handleUserUpdateData(
         is NetworkResult.Success -> {
             // bind data to the view
             Log.e("TAG", "handleUserData() --> Success  $result")
+            yourAccountViewModel.isEditable.value = false
             yourAccountViewModel.isSurrogateDataLoading = false
             yourAccountViewModel.isParentDataLoading = false
             when (type) {
@@ -2403,7 +2522,7 @@ private fun handleUserUpdateData(
                     )
                 }
             }
-            Toast.makeText(context, result.data?.message, Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "User updated successfully", Toast.LENGTH_SHORT).show()
         }
         is NetworkResult.Error -> {
             // show error message

@@ -117,13 +117,15 @@ interface ApiService {
         @Part email: MultipartBody.Part?,
         @Part number: MultipartBody.Part?,
         @Part address: MultipartBody.Part?,
+        @Part gender:MultipartBody.Part?,
         @Part date_of_birth: MultipartBody.Part?,
         @Part imgFileName1: MultipartBody.Part?,
         @Part imgFileName2: MultipartBody.Part?,
         @Part type: MultipartBody.Part?,
         @Part partner_phone:MultipartBody.Part?,
         @Part partner_dob:MultipartBody.Part?,
-        @Part partner_address:MultipartBody.Part?
+        @Part partner_address:MultipartBody.Part?,
+        @Part partner_gender:MultipartBody.Part?
     ): Response<UpdateUserProfileResponse>
 
     @Multipart

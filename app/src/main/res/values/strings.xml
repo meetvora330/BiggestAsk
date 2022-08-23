@@ -112,6 +112,8 @@
     <string name="martha_smith">Martha Smith</string>
     <string name="one_day_ago">1 Day ago</string>
     <string name="log_out">Log out</string>
+    <string name="no_community_found">No Community Found</string>
+    <string name="no_contact_found">No Contact Found</string>
 
 
     <!-- Intro Screen   -->
@@ -206,6 +208,7 @@
     <string name="bottom_ques_screen_desc"> The intended parents and the surrogate will answer the same questions so they would know each other better.Come back often- more interesting questions will be unlocked as your journey moves forward!</string>
     <string name="bottom_ques_new_ques_pro">New questions in the profile</string>
     <string name="bottom_ques_freq_ques_pro">Frequency of the questions:</string>
+    <string name="select_gender">Select gender</string>
     <string name="bottom_ques_exist_ques">Existing questions in the profile</string>
     <string name="bottom_ques_drop_down_hint_day">Days</string>
     <string name="frequency_drop_down_hint_day">Select frequency</string>

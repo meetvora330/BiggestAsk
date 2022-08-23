@@ -27,6 +27,7 @@ class RegisterViewModel @Inject constructor(
     var isNameEmpty: Boolean by mutableStateOf(false)
     var isEmailEmpty: Boolean by mutableStateOf(false)
     var isPassEmpty: Boolean by mutableStateOf(false)
+    var isGenderSelected: Boolean by mutableStateOf(false)
     var isRePassEmpty: Boolean by mutableStateOf(false)
     val selectedValueIntendParentRb = mutableStateOf(true)
     val selectedValueSurrogateMotherRb = mutableStateOf(false)

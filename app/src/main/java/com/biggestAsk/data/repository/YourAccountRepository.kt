@@ -42,13 +42,15 @@ class YourAccountRepository @Inject constructor(
         email: MultipartBody.Part,
         number: MultipartBody.Part,
         address: MultipartBody.Part,
+        gender:MultipartBody.Part?=null,
         dateOfBirth: MultipartBody.Part,
         imgFileName1: MultipartBody.Part? = null,
         imgFileName2: MultipartBody.Part? = null,
         type: MultipartBody.Part,
         partner_phone: MultipartBody.Part? = null,
         partner_dob: MultipartBody.Part? = null,
-        partner_address: MultipartBody.Part? = null
+        partner_address: MultipartBody.Part? = null,
+        partner_gender: MultipartBody.Part? = null
     ): Flow<NetworkResult<UpdateUserProfileResponse>> {
         return flow {
             emit(safeApiCall {
@@ -64,7 +66,9 @@ class YourAccountRepository @Inject constructor(
                     type = type,
                     partner_phone = partner_phone,
                     partner_dob = partner_dob,
-                    partner_address = partner_address
+                    partner_address = partner_address,
+                    gender = gender,
+                    partner_gender = partner_gender
                 )
             })
         }.flowOn(Dispatchers.IO)

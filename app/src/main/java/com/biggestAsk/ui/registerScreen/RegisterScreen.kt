@@ -16,9 +16,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Error
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -32,6 +30,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,12 +43,14 @@ import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.navigation.Screen
 import com.biggestAsk.ui.MainActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
+import com.biggestAsk.ui.homeScreen.bottomNavScreen.simpleDropDown
 import com.biggestAsk.ui.main.viewmodel.EmailVerificationViewModel
 import com.biggestAsk.ui.main.viewmodel.RegisterViewModel
 import com.biggestAsk.ui.ui.theme.*
 import com.biggestAsk.util.Constants
 import com.example.biggestAsk.R
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import java.util.*
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -65,6 +66,15 @@ fun RegisterScreen(
     val useDarkIcons = MaterialTheme.colors.isLight
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
+    val suggestions =
+        listOf("Male", "Female", "Other")
+    var selectedText by remember { mutableStateOf("") }
+    LaunchedEffect(Unit) {
+        registerViewModel.textFullName = ""
+        registerViewModel.textPass = ""
+        registerViewModel.textReEnterPass = ""
+        registerViewModel.termCheckedState = false
+    }
 
     SideEffect {
         systemUiController.setSystemBarsColor(
@@ -148,7 +158,7 @@ fun RegisterScreen(
             )
         }
         ConstraintLayout {
-            val (tvFullName, et_fullName, nameError, tv_email, et_email, emailError, tv_password, et_password, passError, tv_re_enter_pass, et_re_enter_pass, re_enter_pass_error, row_cb_term, btn_signUp) = createRefs()
+            val (tvFullName, et_fullName, tv_gender, drop_down_gender, nameError, tv_email, et_email, genderError, tv_password, et_password, passError, tv_re_enter_pass, et_re_enter_pass, re_enter_pass_error, row_cb_term, btn_signUp) = createRefs()
             Text(
                 text = stringResource(id = R.string.register_tv_name),
                 modifier = Modifier
@@ -218,11 +228,49 @@ fun RegisterScreen(
                 )
             }
             Text(
+                text = stringResource(id = R.string.select_gender),
+                modifier = Modifier
+                    .padding(top = 20.dp, start = 24.dp)
+                    .constrainAs(tv_gender) {
+                        top.linkTo(et_fullName.bottom)
+                        start.linkTo(parent.start)
+                    }, color = Color.Black
+            )
+            selectedText = simpleDropDown(
+                suggestions = suggestions,
+                hint = stringResource(id = R.string.select_gender),
+                modifier = Modifier
+                    .padding(top = 12.dp, start = 24.dp, end = 24.dp)
+                    .constrainAs(drop_down_gender) {
+                        top.linkTo(tv_gender.bottom)
+                        start.linkTo(parent.start)
+                    },
+                style = MaterialTheme.typography.body2.copy(
+                    fontWeight = FontWeight.W600,
+                    fontSize = 16.sp,
+                    color = Color.Black
+                )
+            )
+            if (selectedText == "" && registerViewModel.isGenderSelected) {
+                Text(
+                    text = stringResource(id = R.string.select_gender),
+                    color = MaterialTheme.colors.error,
+                    style = MaterialTheme.typography.caption,
+                    modifier = Modifier
+                        .padding(start = 26.dp)
+                        .constrainAs(genderError) {
+                            start.linkTo(drop_down_gender.start)
+                            top.linkTo(drop_down_gender.bottom)
+                        },
+                    fontSize = 12.sp
+                )
+            }
+            Text(
                 text = stringResource(id = R.string.register_tv_email_text),
                 modifier = Modifier
                     .padding(top = 20.dp, start = 24.dp)
                     .constrainAs(tv_email) {
-                        top.linkTo(et_fullName.bottom)
+                        top.linkTo(drop_down_gender.bottom)
                         start.linkTo(parent.start)
                     }, color = Color.Black
             )
@@ -426,6 +474,8 @@ fun RegisterScreen(
             Button(onClick = {
                 when {
                     TextUtils.isEmpty(registerViewModel.textFullName) && TextUtils.isEmpty(
+                        selectedText
+                    ) && TextUtils.isEmpty(
                         registerViewModel.textPass
                     ) && TextUtils.isEmpty(
                         registerViewModel.textReEnterPass
@@ -433,9 +483,13 @@ fun RegisterScreen(
                         registerViewModel.isNameEmpty = true
                         registerViewModel.isPassEmpty = true
                         registerViewModel.isRePassEmpty = true
+                        registerViewModel.isGenderSelected = true
                     }
                     TextUtils.isEmpty(registerViewModel.textFullName) -> {
                         registerViewModel.isNameEmpty = true
+                    }
+                    TextUtils.isEmpty(selectedText) -> {
+                        registerViewModel.isGenderSelected = true
                     }
                     TextUtils.isEmpty(registerViewModel.textPass) -> {
                         registerViewModel.isPassEmpty = true
@@ -456,7 +510,8 @@ fun RegisterScreen(
                                 type = value,
                                 name = registerViewModel.textFullName,
                                 email = email,
-                                password = registerViewModel.textPass
+                                password = registerViewModel.textPass,
+                                gender = selectedText.lowercase(Locale.ROOT)
                             )
                             registerViewModel.registration(registrationBodyRequest = registrationBodyRequest)
                             registerViewModel.registerScreen.observe(mainActivity) {
@@ -470,7 +525,6 @@ fun RegisterScreen(
                                     )
                                 }
                             }
-
                         } else {
                             Toast.makeText(
                                 context,

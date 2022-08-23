@@ -12,7 +12,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.Path
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -70,6 +69,7 @@ class YourAccountViewModel @Inject constructor(
     var surrogateDateOfBirth: String by mutableStateOf("")
     var yourAccountDateOfBirthEmpty: Boolean by mutableStateOf(false)
     var surrogatePartnerName: String by mutableStateOf("")
+    var surrogateGender: String by mutableStateOf("male")
     var yourAccountPartnerNameEmpty: Boolean by mutableStateOf(false)
     var yourAccountPassword: String by mutableStateOf("................")
     var yourAccountPasswordEmpty: Boolean by mutableStateOf(false)
@@ -95,7 +95,10 @@ class YourAccountViewModel @Inject constructor(
     var parentEmail: String by mutableStateOf("")
     var getUserDetailResponseParent: MutableLiveData<NetworkResult<GetUserDetailsParentResponse>> =
         MutableLiveData()
+    var parentGender: String by mutableStateOf("")
+    var parentPartnerGender: String by mutableStateOf("")
     var isParentClicked: Boolean by mutableStateOf(true)
+    var isGenderSelected: Boolean by mutableStateOf(false)
     var isMotherClicked: Boolean by mutableStateOf(false)
     var isParentApiCalled: Boolean by mutableStateOf(false)
 
@@ -125,10 +128,10 @@ class YourAccountViewModel @Inject constructor(
                 Log.e("uri", "AddCommunityDialog: $uri")
                 if (PreferenceProvider(context).getValue("type", "") == "parent") {
                     if (isParentClicked) {
-                        uriPathParent = uri?.let { it1-> PathUtil.getPath(context,it1) }
+                        uriPathParent = uri?.let { it1 -> PathUtil.getPath(context, it1) }
                     }
                     if (isMotherClicked) {
-                        uriPathMother = uri?.let { it1-> PathUtil.getPath(context,it1) }
+                        uriPathMother = uri?.let { it1 -> PathUtil.getPath(context, it1) }
                     }
                 } else {
                     uriPathParent = uri?.let { it1 -> PathUtil.getPath(context, it1) }
@@ -169,9 +172,11 @@ class YourAccountViewModel @Inject constructor(
         imgFileName1: MultipartBody.Part? = null,
         imgFileName2: MultipartBody.Part? = null,
         type: MultipartBody.Part,
+        gender: MultipartBody.Part? = null,
         partner_phone: MultipartBody.Part? = null,
         partner_dob: MultipartBody.Part? = null,
-        partner_address: MultipartBody.Part? = null
+        partner_address: MultipartBody.Part? = null,
+        partner_gender: MultipartBody.Part? = null
     ) {
         updateUserProfileResponse.value = NetworkResult.Loading()
         viewModelScope.launch {
@@ -181,13 +186,15 @@ class YourAccountViewModel @Inject constructor(
                 email,
                 number,
                 address,
+                gender,
                 dateOfBirth,
                 imgFileName1,
                 imgFileName2,
                 type,
                 partner_phone,
                 partner_dob,
-                partner_address
+                partner_address,
+                partner_gender
             ).collect {
                 updateUserProfileResponse.value = it
             }
