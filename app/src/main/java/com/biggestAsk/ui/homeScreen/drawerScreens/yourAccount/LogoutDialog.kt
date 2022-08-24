@@ -26,13 +26,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.biggestAsk.ui.HomeActivity
 import com.biggestAsk.ui.MainActivity
-import com.biggestAsk.ui.homeScreen.bottomNavScreen.resetMilestoneApiCall
 import com.biggestAsk.ui.introScreen.findActivity
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 
 @Composable
-fun LogoutDialog(openLogoutDialog: MutableState<Boolean>,context: Context,homeActivity: HomeActivity) {
+fun LogoutDialog(
+    openLogoutDialog: MutableState<Boolean>,
+    context: Context,
+    homeActivity: HomeActivity
+) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -70,12 +73,11 @@ fun LogoutDialog(openLogoutDialog: MutableState<Boolean>,context: Context,homeAc
         }
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                ,Arrangement.SpaceEvenly
+                .fillMaxWidth(), Arrangement.SpaceEvenly
         ) {
             Text(
                 modifier = Modifier
-                    .padding(start = 25.dp,top = 13.dp)
+                    .padding(start = 25.dp, top = 13.dp)
                     .clickable(indication = null, interactionSource = MutableInteractionSource()) {
                         openLogoutDialog.value = false
                     },

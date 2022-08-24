@@ -52,6 +52,7 @@ import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.biggestAsk.data.model.request.GetUserDetailsParentRequest
 import com.biggestAsk.data.model.request.GetUserDetailsSurrogateRequest
+import com.biggestAsk.data.model.response.GetAnsweredQuestionListResponse
 import com.biggestAsk.data.model.response.GetUserDetailsParentResponse
 import com.biggestAsk.data.model.response.GetUserDetailsSurrogateResponse
 import com.biggestAsk.data.model.response.UpdateUserProfileResponse
@@ -93,6 +94,7 @@ fun YourAccountScreen(
         listOf("Male", "Female", "Other")
     LaunchedEffect(Unit) {
         yourAccountViewModel.isEditable.value = false
+        getAnsweredQuestionList(userId, type, yourAccountViewModel, homeActivity)
         when (type) {
             SURROGATE -> {
                 yourAccountViewModel.isSurrogateApiCalled = true
@@ -129,7 +131,10 @@ fun YourAccountScreen(
     }
     Log.d("TAG", "YourAccountScreen: surrogate gender ${yourAccountViewModel.surrogateGender}")
     Log.d("TAG", "YourAccountScreen: parent gender ${yourAccountViewModel.parentGender}")
-    Log.d("TAG", "YourAccountScreen: parent partner gender ${yourAccountViewModel.parentPartnerGender}")
+    Log.d(
+        "TAG",
+        "YourAccountScreen: parent partner gender ${yourAccountViewModel.parentPartnerGender}"
+    )
     val openLogoutDialog = remember { mutableStateOf(false) }
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -140,7 +145,7 @@ fun YourAccountScreen(
     }
     when (type) {
         SURROGATE -> {
-            if (yourAccountViewModel.isSurrogateDataLoading) {
+            if (yourAccountViewModel.isSurrogateDataLoading || yourAccountViewModel.isAnsweredQuestionLoading) {
                 YourAccountSurrogateShimmerAnimation()
             } else {
                 Column(
@@ -775,126 +780,76 @@ fun YourAccountScreen(
                                 }
                             }
                         }
-                        Surface(
-                            shape = RoundedCornerShape(12.dp),
-                            color = Color.White,
-                            elevation = 2.dp,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 25.dp, end = 23.dp, top = 34.dp)
-                        ) {
-                            Column {
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 24.dp, top = 24.dp, end = 56.dp),
-                                    text = "What is your favorite snack?",
-                                    color = Color.Black,
-                                    style = MaterialTheme.typography.body2.copy(
-                                        color = Color.Black,
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.W600,
-                                        lineHeight = 24.sp
-                                    ),
-                                )
-                                Row {
-                                    Text(
-                                        modifier = Modifier.padding(start = 24.dp, top = 10.dp),
-                                        text = "Martha Smith",
-                                        style = MaterialTheme.typography.body2.copy(
-                                            color = Custom_Blue,
-                                            fontSize = 16.sp,
-                                            fontWeight = FontWeight.W600,
-                                            lineHeight = 22.sp
+                        yourAccountViewModel.questionAnsweredList.forEachIndexed { index, item ->
+                            Surface(
+                                shape = RoundedCornerShape(12.dp),
+                                color = Color.White,
+                                elevation = 2.dp,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 25.dp, end = 23.dp, top = 34.dp)
+                            ) {
+                                Column {
+                                    item.question?.let {
+                                        Text(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(start = 24.dp, top = 24.dp, end = 56.dp),
+                                            text = it,
+                                            color = Color.Black,
+                                            style = MaterialTheme.typography.body2.copy(
+                                                color = Color.Black,
+                                                fontSize = 16.sp,
+                                                fontWeight = FontWeight.W600,
+                                                lineHeight = 24.sp
+                                            ),
                                         )
-                                    )
-                                    Text(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(top = 10.dp, end = 24.dp),
-                                        text = "1 Day ago",
-                                        color = Color(0xFF9F9D9B),
-                                        style = MaterialTheme.typography.body1,
-                                        fontSize = 12.sp,
-                                        fontWeight = FontWeight.Normal,
-                                        textAlign = TextAlign.End
-                                    )
+                                    }
+                                    Row {
+                                        item.user_name?.let {
+                                            Text(
+                                                modifier = Modifier.padding(
+                                                    start = 24.dp,
+                                                    top = 10.dp,
+                                                ),
+                                                text = it,
+                                                style = MaterialTheme.typography.body2.copy(
+                                                    color = Custom_Blue,
+                                                    fontSize = 16.sp,
+                                                    fontWeight = FontWeight.W600,
+                                                    lineHeight = 22.sp
+                                                )
+                                            )
+                                        }
+                                        Text(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(top = 10.dp, end = 24.dp),
+                                            text = if (yourAccountViewModel.questionAnsweredDaysList[index]==0) "Today" else "${yourAccountViewModel.questionAnsweredDaysList[index]} Day ago",
+                                            color = Color(0xFF9F9D9B),
+                                            style = MaterialTheme.typography.body1,
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.Normal,
+                                            textAlign = TextAlign.End
+                                        )
+                                    }
+                                    item.answer?.let {
+                                        Text(
+                                            modifier = Modifier.padding(
+                                                start = 24.dp,
+                                                top = 4.dp,
+                                                bottom = 22.dp
+                                            ),
+                                            text = it,
+                                            style = MaterialTheme.typography.body2.copy(
+                                                color = Color.Black,
+                                                fontSize = 14.sp,
+                                                fontWeight = FontWeight.W600,
+                                                lineHeight = 22.sp
+                                            ),
+                                        )
+                                    }
                                 }
-                                Text(
-                                    modifier = Modifier.padding(
-                                        start = 24.dp,
-                                        top = 4.dp,
-                                        bottom = 22.dp
-                                    ),
-                                    text = "Chocolate all the way!!",
-                                    style = MaterialTheme.typography.body2.copy(
-                                        color = Color.Black,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.W600,
-                                        lineHeight = 22.sp
-                                    ),
-                                )
-                            }
-                        }
-                        Surface(
-                            shape = RoundedCornerShape(12.dp),
-                            color = Color.White,
-                            elevation = 2.dp,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 25.dp, end = 23.dp, top = 16.dp, bottom = 18.dp)
-
-                        ) {
-                            Column {
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 24.dp, top = 24.dp, end = 56.dp),
-                                    text = "What is your favorite snack?",
-                                    style = MaterialTheme.typography.body2.copy(
-                                        color = Color.Black,
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.W600,
-                                        lineHeight = 24.sp
-                                    ),
-                                )
-                                Row {
-                                    Text(
-                                        modifier = Modifier.padding(start = 24.dp, top = 10.dp),
-                                        text = "Samantha  Jones",
-                                        style = MaterialTheme.typography.body2.copy(
-                                            color = Custom_Blue,
-                                            fontSize = 16.sp,
-                                            fontWeight = FontWeight.W600,
-                                            lineHeight = 22.sp
-                                        ),
-                                    )
-                                    Text(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(top = 10.dp, end = 24.dp),
-                                        text = "1 Day ago",
-                                        color = Color(0xFF9F9D9B),
-                                        style = MaterialTheme.typography.body1,
-                                        fontSize = 12.sp,
-                                        fontWeight = FontWeight.Normal,
-                                        textAlign = TextAlign.End
-                                    )
-                                }
-                                Text(
-                                    modifier = Modifier.padding(
-                                        start = 24.dp,
-                                        top = 4.dp,
-                                        bottom = 22.dp
-                                    ),
-                                    text = "Basketball and Miami Heat",
-                                    style = MaterialTheme.typography.body2.copy(
-                                        color = Color.Black,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.W600,
-                                        lineHeight = 22.sp
-                                    ),
-                                )
                             }
                         }
                     }
@@ -927,7 +882,7 @@ fun YourAccountScreen(
             }
         }
         PARENT -> {
-            if (yourAccountViewModel.isParentDataLoading) {
+            if (yourAccountViewModel.isParentDataLoading || yourAccountViewModel.isAnsweredQuestionLoading) {
                 YourAccountParentShimmerAnimation()
             } else {
                 Column(
@@ -1566,7 +1521,7 @@ fun YourAccountScreen(
                                                             convertImageMultiPart(it)
                                                         }
                                                     yourAccountViewModel.updateUserProfile(
-                                                       userId =  userId,
+                                                        userId = userId,
                                                         name = MultipartBody.Part.createFormData(
                                                             "name",
                                                             yourAccountViewModel.parentFullName
@@ -1588,7 +1543,7 @@ fun YourAccountScreen(
                                                             yourAccountViewModel.parentDateOfBirth
                                                         ),
                                                         imgFileName1 = image,
-                                                        imgFileName2=null,
+                                                        imgFileName2 = null,
                                                         type = MultipartBody.Part.createFormData(
                                                             "type",
                                                             type
@@ -2165,125 +2120,76 @@ fun YourAccountScreen(
                                 }
                             }
                         }
-                        Surface(
-                            shape = RoundedCornerShape(12.dp),
-                            color = Color.White,
-                            elevation = 2.dp,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 25.dp, end = 23.dp, top = 24.dp)
-                        ) {
-                            Column {
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 24.dp, top = 24.dp, end = 56.dp),
-                                    text = "What is your favorite snack?",
-                                    color = Color.Black,
-                                    style = MaterialTheme.typography.body2.copy(
-                                        color = Color.Black,
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.W600,
-                                        lineHeight = 24.sp
-                                    ),
-                                )
-                                Row {
-                                    Text(
-                                        modifier = Modifier.padding(start = 24.dp, top = 10.dp),
-                                        text = "Martha Smith",
-                                        style = MaterialTheme.typography.body2.copy(
-                                            color = Custom_Blue,
-                                            fontSize = 16.sp,
-                                            fontWeight = FontWeight.W600,
-                                            lineHeight = 22.sp
+                        yourAccountViewModel.questionAnsweredList.forEachIndexed { index, item ->
+                            Surface(
+                                shape = RoundedCornerShape(12.dp),
+                                color = Color.White,
+                                elevation = 2.dp,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 25.dp, end = 23.dp, top = 34.dp)
+                            ) {
+                                Column {
+                                    item.question?.let {
+                                        Text(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(start = 24.dp, top = 24.dp, end = 56.dp),
+                                            text = it,
+                                            color = Color.Black,
+                                            style = MaterialTheme.typography.body2.copy(
+                                                color = Color.Black,
+                                                fontSize = 16.sp,
+                                                fontWeight = FontWeight.W600,
+                                                lineHeight = 24.sp
+                                            ),
                                         )
-                                    )
-                                    Text(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(top = 10.dp, end = 24.dp),
-                                        text = "1 Day ago",
-                                        color = Color(0xFF9F9D9B),
-                                        style = MaterialTheme.typography.body1,
-                                        fontSize = 12.sp,
-                                        fontWeight = FontWeight.Normal,
-                                        textAlign = TextAlign.End
-                                    )
+                                    }
+                                    Row {
+                                        item.user_name?.let {
+                                            Text(
+                                                modifier = Modifier.padding(
+                                                    start = 24.dp,
+                                                    top = 10.dp,
+                                                ),
+                                                text = it,
+                                                style = MaterialTheme.typography.body2.copy(
+                                                    color = Custom_Blue,
+                                                    fontSize = 16.sp,
+                                                    fontWeight = FontWeight.W600,
+                                                    lineHeight = 22.sp
+                                                )
+                                            )
+                                        }
+                                        Text(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(top = 10.dp, end = 24.dp),
+                                            text = if (yourAccountViewModel.questionAnsweredDaysList[index]==0) "Today" else "${yourAccountViewModel.questionAnsweredDaysList[index]} Day ago",
+                                            color = Color(0xFF9F9D9B),
+                                            style = MaterialTheme.typography.body1,
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.Normal,
+                                            textAlign = TextAlign.End
+                                        )
+                                    }
+                                    item.answer?.let {
+                                        Text(
+                                            modifier = Modifier.padding(
+                                                start = 24.dp,
+                                                top = 4.dp,
+                                                bottom = 22.dp
+                                            ),
+                                            text = it,
+                                            style = MaterialTheme.typography.body2.copy(
+                                                color = Color.Black,
+                                                fontSize = 14.sp,
+                                                fontWeight = FontWeight.W600,
+                                                lineHeight = 22.sp
+                                            ),
+                                        )
+                                    }
                                 }
-                                Text(
-                                    modifier = Modifier.padding(
-                                        start = 24.dp,
-                                        top = 4.dp,
-                                        bottom = 22.dp
-                                    ),
-                                    text = "Chocolate all the way!!",
-                                    style = MaterialTheme.typography.body2.copy(
-                                        color = Color.Black,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.W600,
-                                        lineHeight = 22.sp
-                                    ),
-                                )
-                            }
-                        }
-                        Surface(
-                            shape = RoundedCornerShape(12.dp),
-                            color = Color.White,
-                            elevation = 2.dp,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 25.dp, end = 23.dp, top = 16.dp, bottom = 18.dp)
-                        ) {
-                            Column {
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 24.dp, top = 24.dp, end = 56.dp),
-                                    text = "What is your favorite snack?",
-                                    style = MaterialTheme.typography.body2.copy(
-                                        color = Color.Black,
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.W600,
-                                        lineHeight = 24.sp
-                                    ),
-                                )
-                                Row {
-                                    Text(
-                                        modifier = Modifier.padding(start = 24.dp, top = 10.dp),
-                                        text = "Samantha  Jones",
-                                        style = MaterialTheme.typography.body2.copy(
-                                            color = Custom_Blue,
-                                            fontSize = 16.sp,
-                                            fontWeight = FontWeight.W600,
-                                            lineHeight = 22.sp
-                                        ),
-                                    )
-                                    Text(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(top = 10.dp, end = 24.dp),
-                                        text = "1 Day ago",
-                                        color = Color(0xFF9F9D9B),
-                                        style = MaterialTheme.typography.body1,
-                                        fontSize = 12.sp,
-                                        fontWeight = FontWeight.Normal,
-                                        textAlign = TextAlign.End
-                                    )
-                                }
-                                Text(
-                                    modifier = Modifier.padding(
-                                        start = 24.dp,
-                                        top = 4.dp,
-                                        bottom = 22.dp
-                                    ),
-                                    text = "Basketball and Miami Heat",
-                                    style = MaterialTheme.typography.body2.copy(
-                                        color = Color.Black,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.W600,
-                                        lineHeight = 22.sp
-                                    ),
-                                )
                             }
                         }
                     }
@@ -2314,6 +2220,65 @@ fun YourAccountScreen(
                     text = { Text(text = "Permission is denied, Please allow permission from App Settings") }
                 )
             }
+        }
+    }
+}
+
+fun getAnsweredQuestionList(
+    userId: Int,
+    type: String?,
+    yourAccountViewModel: YourAccountViewModel,
+    homeActivity: HomeActivity,
+) {
+    if (type != null) {
+        yourAccountViewModel.getYourAccountAnsweredQuestionList(userId = userId, type = type)
+    }
+    yourAccountViewModel.getAnsweredQuestionListResponse.observe(homeActivity) {
+        if (it != null) {
+            if (type != null) {
+                handleQuestionAnsweredList(
+                    result = it,
+                    yourAccountViewModel = yourAccountViewModel,
+                    type = type,
+                    userId = userId,
+                    homeActivity = homeActivity
+                )
+            }
+        }
+    }
+}
+
+private fun handleQuestionAnsweredList(
+    result: NetworkResult<GetAnsweredQuestionListResponse>,
+    yourAccountViewModel: YourAccountViewModel,
+    type: String,
+    userId: Int,
+    homeActivity: HomeActivity
+) {
+    when (result) {
+        is NetworkResult.Loading -> {
+            // show a progress bar
+            Log.e("TAG", "handleUserData() --> Loading  $result")
+            yourAccountViewModel.isAnsweredQuestionLoading = true
+        }
+        is NetworkResult.Success -> {
+            // bind data to the view
+            Log.e("TAG", "handleUserData() --> Success  $result")
+            yourAccountViewModel.isAnsweredQuestionLoading = false
+            yourAccountViewModel.questionAnsweredList.clear()
+            yourAccountViewModel.questionAnsweredDaysList.clear()
+            if (result.data?.data?.isNotEmpty() == true) {
+                result.data.data.let { yourAccountViewModel.questionAnsweredList.addAll(it) }
+            }
+            if (result.data?.days?.isNotEmpty() == true) {
+                result.data.days.let { yourAccountViewModel.questionAnsweredDaysList.addAll(it) }
+            }
+
+        }
+        is NetworkResult.Error -> {
+            // show error message
+            Log.e("TAG", "handleUserData() --> Error ${result.message}")
+            yourAccountViewModel.isAnsweredQuestionLoading = false
         }
     }
 }
@@ -2400,7 +2365,7 @@ private fun handleUserDataSurrogate(
             if (result.data?.image1 != null) {
                 yourAccountViewModel.surrogateImg = result.data.image1
             }
-            if (result.data?.gender!=null){
+            if (result.data?.gender != null) {
                 yourAccountViewModel.surrogateGender = result.data.gender
             }
         }
@@ -2457,12 +2422,12 @@ private fun handleUserDataParent(
             }
             if (result.data?.parent_gender != null) {
                 yourAccountViewModel.parentGender = result.data.parent_gender
-            }else{
+            } else {
                 yourAccountViewModel.parentGender = ""
             }
             if (result.data?.parent_partner_gender != null) {
                 yourAccountViewModel.parentPartnerGender = result.data.parent_partner_gender
-            }else{
+            } else {
                 yourAccountViewModel.parentPartnerGender = ""
             }
             if (result.data?.parent_partner_phone != null) {
@@ -2522,6 +2487,12 @@ private fun handleUserUpdateData(
                     )
                 }
             }
+            getAnsweredQuestionList(
+                userId = userId,
+                yourAccountViewModel = yourAccountViewModel,
+                type = type,
+                homeActivity = homeActivity
+            )
             Toast.makeText(context, "User updated successfully", Toast.LENGTH_SHORT).show()
         }
         is NetworkResult.Error -> {

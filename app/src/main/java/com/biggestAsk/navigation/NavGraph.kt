@@ -21,12 +21,12 @@ import androidx.navigation.navArgument
 import com.biggestAsk.data.model.LoginStatus
 import com.biggestAsk.ui.MainActivity
 import com.biggestAsk.ui.emailVerification.EmailVerification
+import com.biggestAsk.ui.frequencyScreen.SelectFrequencyScreen
 import com.biggestAsk.ui.introScreen.IntroScreen
 import com.biggestAsk.ui.introScreen.onBoardItem
 import com.biggestAsk.ui.loginScreen.LoginScreen
 import com.biggestAsk.ui.main.viewmodel.*
 import com.biggestAsk.ui.paymentScreen.PaymentScreen
-import com.biggestAsk.ui.frequencyScreen.SelectFrequencyScreen
 import com.biggestAsk.ui.registerScreen.RegisterScreen
 import com.biggestAsk.ui.verifyOtpScreen.VerifyOtpScreen
 import com.biggestAsk.util.Constants

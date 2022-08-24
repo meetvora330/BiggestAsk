@@ -105,9 +105,9 @@ interface ApiService {
 
     @GET(Constants.GET_INTENDED_PROFILE)
     suspend fun getIntendedParentProfile(
-        @Query("type") type:String,
+        @Query("type") type: String,
         @Query("user_id") user_id: Int
-    ):Response<GetIntendedProfileResponse>
+    ): Response<GetIntendedProfileResponse>
 
     @Multipart
     @POST(Constants.USER_PROFILE_UPDATE + "{id}")
@@ -117,15 +117,15 @@ interface ApiService {
         @Part email: MultipartBody.Part?,
         @Part number: MultipartBody.Part?,
         @Part address: MultipartBody.Part?,
-        @Part gender:MultipartBody.Part?,
+        @Part gender: MultipartBody.Part?,
         @Part date_of_birth: MultipartBody.Part?,
         @Part imgFileName1: MultipartBody.Part?,
         @Part imgFileName2: MultipartBody.Part?,
         @Part type: MultipartBody.Part?,
-        @Part partner_phone:MultipartBody.Part?,
-        @Part partner_dob:MultipartBody.Part?,
-        @Part partner_address:MultipartBody.Part?,
-        @Part partner_gender:MultipartBody.Part?
+        @Part partner_phone: MultipartBody.Part?,
+        @Part partner_dob: MultipartBody.Part?,
+        @Part partner_address: MultipartBody.Part?,
+        @Part partner_gender: MultipartBody.Part?
     ): Response<UpdateUserProfileResponse>
 
     @Multipart
@@ -197,6 +197,12 @@ interface ApiService {
 
     @POST(Constants.STORE_ANS_IMPORTANT_QUESTION)
     suspend fun storeAnsImportantQuestion(@Body storeBaseScreenQuestionAnsRequest: StoreAnsImportantQuestionRequest): Response<CommonResponse>
+
+    @GET(Constants.GET_QUESTION_SCREEN_QUESTION)
+    suspend fun getYourAccountAnsweredQuestionList(
+        @Query("type") type: String,
+        @Query("user_id") user_id: Int
+    ):Response<GetAnsweredQuestionListResponse>
 
     @GET(Constants.GET_ABOUT_APP)
     suspend fun getAboutApp(): Response<AboutAppResponse>

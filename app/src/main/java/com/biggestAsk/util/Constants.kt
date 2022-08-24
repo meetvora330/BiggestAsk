@@ -39,7 +39,7 @@ object Constants {
     const val RESET_MILESTONE = "reset_milsestone"
     const val GET_MILESTONE = "get_milestone"
     const val EDIT_MILESTONE = "edit_milestone"
-    const val UPDATE_MILESTONE_ANS_INFO="update_milestone_ans_info"
+    const val UPDATE_MILESTONE_ANS_INFO = "update_milestone_ans_info"
     const val SAVE_NOTE = "save_note"
     const val INVITE_SURROGATE = "invite_surrogate/"
     const val GET_USER_DETAIL = "get_user_detail"
@@ -58,6 +58,7 @@ object Constants {
     const val STORE_BASE_SCREEN_QUESTION_ANS = "store_question_ans"
     const val STORE_ANS_IMPORTANT_QUESTION = "store_ans_important_question"
     const val GET_INTENDED_PROFILE = "get_intended_profile"
+    const val GET_QUESTION_SCREEN_QUESTION = "get_qestion_screen_question"
 
     //preference data
     const val LOGIN_STATUS = "login_status"

@@ -26,7 +26,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.ImagePainter.State.Empty.painter
 import coil.compose.rememberImagePainter
 import com.biggestAsk.data.model.request.*
 import com.biggestAsk.data.model.request.Answer
@@ -481,7 +480,7 @@ fun BottomHomeScreen(
                                         horizontalArrangement = Arrangement.Center,
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        if (bottomHomeViewModel.nearestMilestoneImage.isEmpty()){
+                                        if (bottomHomeViewModel.nearestMilestoneImage.isEmpty()) {
                                             Image(
                                                 modifier = Modifier
                                                     .width(180.dp)
@@ -496,7 +495,7 @@ fun BottomHomeScreen(
                                                 contentDescription = "",
                                                 contentScale = ContentScale.FillBounds
                                             )
-                                        }else{
+                                        } else {
                                             val painter = rememberImagePainter(
                                                 bottomHomeViewModel.nearestMilestoneImage,
                                                 builder = {
@@ -922,7 +921,7 @@ private fun handleGetImportantQuestionData(
                 bottomHomeViewModel.pregnancyImageUrl =
                     result.data?.pregnancy_milestone?.image.toString()
             } else {
-                bottomHomeViewModel.homeScreenImportantQuestionId = result.data.question.question_id
+                bottomHomeViewModel.homeScreenImportantQuestionId = result.data.question.id
                 bottomHomeViewModel.homeScreenImportantQuestion = result.data.question.question
                 bottomHomeViewModel.isQuestionDataEmpty = false
                 bottomHomeViewModel.parentList.clear()

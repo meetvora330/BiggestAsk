@@ -219,10 +219,12 @@ fun getUpdatedCommunity(
     communityViewModel: CommunityViewModel,
     homeActivity: HomeActivity,
 ) {
-    communityViewModel.getCommunity(getCommunityRequest = GetCommunityRequest(
-        type = type,
-        user_id = user_id
-    ))
+    communityViewModel.getCommunity(
+        getCommunityRequest = GetCommunityRequest(
+            type = type,
+            user_id = user_id
+        )
+    )
 
     communityViewModel.getCommunityResponse.observe(homeActivity) {
         if (it != null) {

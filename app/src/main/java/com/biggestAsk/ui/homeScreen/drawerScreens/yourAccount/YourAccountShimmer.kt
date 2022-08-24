@@ -306,7 +306,7 @@ fun YourAccountParentShimmerItem(brush: Brush) {
             Text(
                 modifier = Modifier
                     .width(150.dp)
-                    .padding(top = 20.dp,end = 2.dp)
+                    .padding(top = 20.dp, end = 2.dp)
                     .background(brush, RoundedCornerShape(10.dp)),
                 text = "",
                 style = MaterialTheme.typography.body2.copy(

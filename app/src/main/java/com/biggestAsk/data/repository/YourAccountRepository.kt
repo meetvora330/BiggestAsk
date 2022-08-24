@@ -3,6 +3,7 @@ package com.biggestAsk.data.repository
 import android.content.Context
 import com.biggestAsk.data.model.request.GetUserDetailsParentRequest
 import com.biggestAsk.data.model.request.GetUserDetailsSurrogateRequest
+import com.biggestAsk.data.model.response.GetAnsweredQuestionListResponse
 import com.biggestAsk.data.model.response.GetUserDetailsParentResponse
 import com.biggestAsk.data.model.response.GetUserDetailsSurrogateResponse
 import com.biggestAsk.data.model.response.UpdateUserProfileResponse
@@ -42,7 +43,7 @@ class YourAccountRepository @Inject constructor(
         email: MultipartBody.Part,
         number: MultipartBody.Part,
         address: MultipartBody.Part,
-        gender:MultipartBody.Part?=null,
+        gender: MultipartBody.Part? = null,
         dateOfBirth: MultipartBody.Part,
         imgFileName1: MultipartBody.Part? = null,
         imgFileName2: MultipartBody.Part? = null,
@@ -74,5 +75,14 @@ class YourAccountRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-
+    suspend fun getYourAccountAnsweredQuestionList(
+        userId: Int,
+        type:String
+    ):Flow<NetworkResult<GetAnsweredQuestionListResponse>>{
+        return flow {
+            emit(safeApiCall {
+                apiService.getYourAccountAnsweredQuestionList(type = type, user_id = userId)
+            })
+        }
+    }
 }

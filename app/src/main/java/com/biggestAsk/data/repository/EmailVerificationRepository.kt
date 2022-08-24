@@ -15,9 +15,9 @@ import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 @ActivityRetainedScoped
-class EmailVerificationRepository  @Inject constructor(
+class EmailVerificationRepository @Inject constructor(
     private val apiService: ApiService, @ApplicationContext context: Context
-) : BaseApiResponse(context){
+) : BaseApiResponse(context) {
     suspend fun sendOtp(sendOtpRequest: SendOtpRequest): Flow<NetworkResult<CommonResponse>> {
         return flow {
             emit(safeApiCall { apiService.sendOtp(sendOtpRequest) })

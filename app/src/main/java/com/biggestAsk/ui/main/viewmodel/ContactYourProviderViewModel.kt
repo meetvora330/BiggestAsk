@@ -64,7 +64,8 @@ class ContactYourProviderViewModel @Inject constructor(
         createContactResponse.value = NetworkResult.Loading()
         viewModelScope.launch {
             contactYourProviderRepository.createContact(
-                title, agency_name, agency_email, agency_number, image, user_id, type).collect {
+                title, agency_name, agency_email, agency_number, image, user_id, type
+            ).collect {
                 createContactResponse.value = it
             }
         }

@@ -63,7 +63,8 @@ class CommunityViewModel @Inject constructor(
         createCommunityResponse.value = NetworkResult.Loading()
         viewModelScope.launch {
             communityRepository.createCommunity(
-                title, description, forum_link, insta_link, image, user_id, type).collect {
+                title, description, forum_link, insta_link, image, user_id, type
+            ).collect {
                 createCommunityResponse.value = it
             }
         }

@@ -166,9 +166,36 @@ fun IntendParentsScreen(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Text(
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .placeholder(
+                            visible = intendedParentsViewModel.isIntendedParentsDataLoading,
+                            color = Color.LightGray,
+                            shape = RoundedCornerShape(10.dp),
+                            highlight = PlaceholderHighlight.shimmer(
+                                highlightColor = Color.White,
+                            )
+                        ),
+                    text = if (intendedParentsViewModel.isFatherClicked) intendedParentsViewModel.parentFullName else intendedParentsViewModel.motherFullName,
+                    style = MaterialTheme.typography.h2.copy(
+                        color = Color.Black,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.W600,
+                        lineHeight = 32.sp
+                    )
+                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
                         modifier = Modifier
                             .wrapContentWidth()
+                            .padding(end = 2.dp)
                             .placeholder(
                                 visible = intendedParentsViewModel.isIntendedParentsDataLoading,
                                 color = Color.LightGray,
@@ -177,41 +204,14 @@ fun IntendParentsScreen(
                                     highlightColor = Color.White,
                                 )
                             ),
-                        text = if (intendedParentsViewModel.isFatherClicked) intendedParentsViewModel.parentFullName else intendedParentsViewModel.motherFullName,
-                        style = MaterialTheme.typography.h2.copy(
-                            color = Color.Black,
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.W600,
-                            lineHeight = 32.sp
+                        text = if (intendedParentsViewModel.isFatherClicked) intendedParentsViewModel.parentDateOfBirth else intendedParentsViewModel.motherDateOfBirth,
+                        style = MaterialTheme.typography.body2.copy(
+                            color = Color(0xFF7F7D7C),
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.W500,
+                            lineHeight = 22.sp
                         )
                     )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                        Text(
-                            modifier = Modifier
-                                .wrapContentWidth()
-                                .padding(end = 2.dp)
-                                .placeholder(
-                                    visible = intendedParentsViewModel.isIntendedParentsDataLoading,
-                                    color = Color.LightGray,
-                                    shape = RoundedCornerShape(10.dp),
-                                    highlight = PlaceholderHighlight.shimmer(
-                                        highlightColor = Color.White,
-                                    )
-                                ),
-                            text = if (intendedParentsViewModel.isFatherClicked) intendedParentsViewModel.parentDateOfBirth else intendedParentsViewModel.motherDateOfBirth,
-                            style = MaterialTheme.typography.body2.copy(
-                                color = Color(0xFF7F7D7C),
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.W500,
-                                lineHeight = 22.sp
-                            )
-                        )
                     Text(
                         modifier = Modifier
                             .wrapContentWidth()
@@ -246,77 +246,10 @@ fun IntendParentsScreen(
                     painter = painterResource(id = R.drawable.ic_img_intended_parents_liner),
                     contentDescription = ""
                 )
-                    Text(
-                        modifier = Modifier
-                            .wrapContentWidth()
-                            .padding(top = 18.dp)
-                            .placeholder(
-                                visible = intendedParentsViewModel.isIntendedParentsDataLoading,
-                                color = Color.LightGray,
-                                shape = RoundedCornerShape(10.dp),
-                                highlight = PlaceholderHighlight.shimmer(
-                                    highlightColor = Color.White,
-                                )
-                            ),
-                        text = if (intendedParentsViewModel.isFatherClicked) intendedParentsViewModel.parentHomeAddress else intendedParentsViewModel.motherHomeAddress,
-                        style = MaterialTheme.typography.body2.copy(
-                            color = Color.Black,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.W500,
-                            lineHeight = 22.sp
-                        )
-                    )
-                    Text(
-                        modifier = Modifier
-                            .wrapContentWidth()
-                            .padding(top = 11.dp)
-                            .placeholder(
-                                visible = intendedParentsViewModel.isIntendedParentsDataLoading,
-                                color = Color.LightGray,
-                                shape = RoundedCornerShape(10.dp),
-                                highlight = PlaceholderHighlight.shimmer(
-                                    highlightColor = Color.White,
-                                )
-                            ),
-                        text = if (intendedParentsViewModel.isFatherClicked) intendedParentsViewModel.parentPhoneNumber else intendedParentsViewModel.motherPhoneNumber,
-                        style = MaterialTheme.typography.body2.copy(
-                            color = Custom_Blue,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.W500,
-                            lineHeight = 22.sp
-                        )
-                    )
-                    Text(
-                        modifier = Modifier
-                            .wrapContentWidth()
-                            .padding(top = 16.dp)
-                            .placeholder(
-                                visible = intendedParentsViewModel.isIntendedParentsDataLoading,
-                                color = Color.LightGray,
-                                shape = RoundedCornerShape(10.dp),
-                                highlight = PlaceholderHighlight.shimmer(
-                                    highlightColor = Color.White,
-                                )
-                            ),
-                        text = if (intendedParentsViewModel.isFatherClicked) intendedParentsViewModel.parentEmail else intendedParentsViewModel.motherEmail,
-                        style = MaterialTheme.typography.body2.copy(
-                            color = Color.Black,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.W500,
-                            lineHeight = 22.sp
-                        )
-                    )
-            }
-        }
-//        if (intendedParentsViewModel.intendedProfileResponseQuestionList.isNotEmpty()){
-            intendedParentsViewModel.intendedProfileResponseQuestionList.forEachIndexed { index, questionAn ->
-                Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = Color.White,
-                    elevation = 2.dp,
+                Text(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 25.dp, end = 23.dp, top = 34.dp)
+                        .wrapContentWidth()
+                        .padding(top = 18.dp)
                         .placeholder(
                             visible = intendedParentsViewModel.isIntendedParentsDataLoading,
                             color = Color.LightGray,
@@ -324,68 +257,139 @@ fun IntendParentsScreen(
                             highlight = PlaceholderHighlight.shimmer(
                                 highlightColor = Color.White,
                             )
-                        )
-                ) {
-                    Column {
-                        questionAn.question?.let {
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 24.dp, top = 24.dp, end = 56.dp),
-                                text = it,
-                                color = Color.Black,
-                                style = MaterialTheme.typography.body2.copy(
-                                    color = Color.Black,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.W600,
-                                    lineHeight = 24.sp
-                                ),
-
-                                )
-                        }
-                        Row {
-                            if (questionAn.user_name!=""){
-                                questionAn.user_name?.let {
-                                    Text(
-                                        modifier = Modifier.padding(start = 24.dp, top = 10.dp),
-                                        text = it,
-                                        style = MaterialTheme.typography.body2.copy(
-                                            color = Custom_Blue,
-                                            fontSize = 16.sp,
-                                            fontWeight = FontWeight.W600,
-                                            lineHeight = 22.sp
-                                        )
-                                    )
-                                }
-                            }
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 10.dp, end = 24.dp),
-                                text = "${intendedParentsViewModel.intendedProfileResponseDaysList[index]} Day ago",
-                                color = Color(0xFF9F9D9B),
-                                style = MaterialTheme.typography.body1,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Normal,
-                                textAlign = TextAlign.End
+                        ),
+                    text = if (intendedParentsViewModel.isFatherClicked) intendedParentsViewModel.parentHomeAddress else intendedParentsViewModel.motherHomeAddress,
+                    style = MaterialTheme.typography.body2.copy(
+                        color = Color.Black,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W500,
+                        lineHeight = 22.sp
+                    )
+                )
+                Text(
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .padding(top = 11.dp)
+                        .placeholder(
+                            visible = intendedParentsViewModel.isIntendedParentsDataLoading,
+                            color = Color.LightGray,
+                            shape = RoundedCornerShape(10.dp),
+                            highlight = PlaceholderHighlight.shimmer(
+                                highlightColor = Color.White,
                             )
-                        }
-                        if (questionAn.answer!=""){
-                            questionAn.answer?.let {
+                        ),
+                    text = if (intendedParentsViewModel.isFatherClicked) intendedParentsViewModel.parentPhoneNumber else intendedParentsViewModel.motherPhoneNumber,
+                    style = MaterialTheme.typography.body2.copy(
+                        color = Custom_Blue,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W500,
+                        lineHeight = 22.sp
+                    )
+                )
+                Text(
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .padding(top = 16.dp)
+                        .placeholder(
+                            visible = intendedParentsViewModel.isIntendedParentsDataLoading,
+                            color = Color.LightGray,
+                            shape = RoundedCornerShape(10.dp),
+                            highlight = PlaceholderHighlight.shimmer(
+                                highlightColor = Color.White,
+                            )
+                        ),
+                    text = if (intendedParentsViewModel.isFatherClicked) intendedParentsViewModel.parentEmail else intendedParentsViewModel.motherEmail,
+                    style = MaterialTheme.typography.body2.copy(
+                        color = Color.Black,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W500,
+                        lineHeight = 22.sp
+                    )
+                )
+            }
+        }
+//        if (intendedParentsViewModel.intendedProfileResponseQuestionList.isNotEmpty()){
+        intendedParentsViewModel.intendedProfileResponseQuestionList.forEachIndexed { index, questionAn ->
+            Surface(
+                shape = RoundedCornerShape(12.dp),
+                color = Color.White,
+                elevation = 2.dp,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 25.dp, end = 23.dp, top = 34.dp)
+                    .placeholder(
+                        visible = intendedParentsViewModel.isIntendedParentsDataLoading,
+                        color = Color.LightGray,
+                        shape = RoundedCornerShape(10.dp),
+                        highlight = PlaceholderHighlight.shimmer(
+                            highlightColor = Color.White,
+                        )
+                    )
+            ) {
+                Column {
+                    questionAn.question?.let {
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 24.dp, top = 24.dp, end = 56.dp),
+                            text = it,
+                            color = Color.Black,
+                            style = MaterialTheme.typography.body2.copy(
+                                color = Color.Black,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.W600,
+                                lineHeight = 24.sp
+                            ),
+
+                            )
+                    }
+                    Row {
+                        if (questionAn.user_name != "") {
+                            questionAn.user_name?.let {
                                 Text(
-                                    modifier = Modifier.padding(start = 24.dp, top = 4.dp, bottom = 22.dp),
+                                    modifier = Modifier.padding(start = 24.dp, top = 10.dp),
                                     text = it,
                                     style = MaterialTheme.typography.body2.copy(
-                                        color = Color.Black,
-                                        fontSize = 14.sp,
+                                        color = Custom_Blue,
+                                        fontSize = 16.sp,
                                         fontWeight = FontWeight.W600,
                                         lineHeight = 22.sp
-                                    ),
+                                    )
                                 )
                             }
+                        }
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 10.dp, end = 24.dp),
+                            text = "${intendedParentsViewModel.intendedProfileResponseDaysList[index]} Day ago",
+                            color = Color(0xFF9F9D9B),
+                            style = MaterialTheme.typography.body1,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Normal,
+                            textAlign = TextAlign.End
+                        )
+                    }
+                    if (questionAn.answer != "") {
+                        questionAn.answer?.let {
+                            Text(
+                                modifier = Modifier.padding(
+                                    start = 24.dp,
+                                    top = 4.dp,
+                                    bottom = 22.dp
+                                ),
+                                text = it,
+                                style = MaterialTheme.typography.body2.copy(
+                                    color = Color.Black,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.W600,
+                                    lineHeight = 22.sp
+                                ),
+                            )
                         }
                     }
                 }
+            }
 //            }
         }
     }

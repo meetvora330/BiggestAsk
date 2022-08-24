@@ -451,36 +451,36 @@ private fun handleGetIntendedProfileData(
             if (result.data?.indended_user?.name != null) {
                 yourSurrogateMotherViewModel.surrogateMotherFullName =
                     result.data.indended_user.name
-            }else{
+            } else {
                 yourSurrogateMotherViewModel.surrogateMotherFullName = ""
             }
             if (result.data?.indended_user?.date_of_birth != null) {
                 yourSurrogateMotherViewModel.surrogateMotherDateOfBirth =
                     result.data.indended_user.date_of_birth
-            }else{
+            } else {
                 yourSurrogateMotherViewModel.surrogateMotherDateOfBirth = ""
             }
             if (result.data?.indended_user?.address != null) {
                 yourSurrogateMotherViewModel.surrogateMotherHomeAddress =
                     result.data.indended_user.address
-            }else{
+            } else {
                 yourSurrogateMotherViewModel.surrogateMotherHomeAddress = ""
             }
             if (result.data?.indended_user?.number != null) {
                 yourSurrogateMotherViewModel.surrogateMotherPhoneNumber =
                     result.data.indended_user.number
-            }else{
+            } else {
                 yourSurrogateMotherViewModel.surrogateMotherPhoneNumber = ""
             }
             if (result.data?.indended_user?.email != null) {
                 yourSurrogateMotherViewModel.surrogateMotherEmail =
                     result.data.indended_user.email
-            }else{
+            } else {
                 yourSurrogateMotherViewModel.surrogateMotherEmail = ""
             }
             if (result.data?.indended_user?.image != null) {
                 yourSurrogateMotherViewModel.surrogateMotherImg = result.data.indended_user.image
-            }else{
+            } else {
                 yourSurrogateMotherViewModel.surrogateMotherImg = ""
             }
             yourSurrogateMotherViewModel.intendedProfileResponseQuestionList.clear()

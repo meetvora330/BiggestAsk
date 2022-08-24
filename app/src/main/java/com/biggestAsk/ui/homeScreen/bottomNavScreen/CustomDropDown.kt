@@ -30,8 +30,8 @@ fun simpleDropDown(
     hint: String,
     modifier: Modifier,
     style: TextStyle,
-    color: Color=ET_Bg,
-    text:String = ""
+    color: Color = ET_Bg,
+    text: String = ""
 ): String {
     var expanded by remember { mutableStateOf(false) }
     var selectedText by remember { mutableStateOf(text) }

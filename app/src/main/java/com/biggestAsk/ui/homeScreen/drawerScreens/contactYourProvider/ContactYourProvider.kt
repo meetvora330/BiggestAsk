@@ -233,10 +233,12 @@ fun getUpdatedContact(
     context: Context,
     homeActivity: HomeActivity,
 ) {
-    contactYourProviderViewModel.getContact(getContactRequest = GetContactRequest(
-        type = type,
-        user_id = user_id
-    ))
+    contactYourProviderViewModel.getContact(
+        getContactRequest = GetContactRequest(
+            type = type,
+            user_id = user_id
+        )
+    )
 
     contactYourProviderViewModel.getContactResponse.observe(homeActivity) {
         if (it != null) {

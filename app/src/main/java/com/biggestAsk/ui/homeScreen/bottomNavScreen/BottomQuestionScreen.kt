@@ -1,6 +1,8 @@
 package com.biggestAsk.ui.homeScreen.bottomNavScreen
 
+import android.content.Context
 import android.text.TextUtils
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -11,11 +13,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -23,29 +25,51 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.biggestAsk.data.model.request.GetPregnancyMilestoneRequest
+import com.biggestAsk.data.model.response.GetAnsweredQuestionListResponse
+import com.biggestAsk.data.source.network.NetworkResult
+import com.biggestAsk.ui.HomeActivity
+import com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer.QuestionScreenAnsweredQuestionShimmerAnimation
+import com.biggestAsk.ui.main.viewmodel.BottomQuestionViewModel
 import com.biggestAsk.ui.main.viewmodel.MainViewModel
+import com.biggestAsk.ui.main.viewmodel.YourAccountViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.ET_Bg
 import com.biggestAsk.ui.ui.theme.Text_Color
+import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun BottomQuestionScreen() {
+fun BottomQuestionScreen(
+    questionViewModel: BottomQuestionViewModel, context: Context,
+    homeActivity: HomeActivity,
+    yourAccountViewModel: YourAccountViewModel
+) {
     val suggestions =
-        listOf("Once every 1 days", "Once every 2 days", "Once every 3 days", "Once every 4 days")
-    val context = LocalContext.current
+        listOf("Every day", "Every 3 days", "Every week")
     val questionBottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
     )
     val coroutineScope = rememberCoroutineScope()
     val viewModel = MainViewModel()
     val focusManager = LocalFocusManager.current
+    val provider = PreferenceProvider(context)
+    val userId = provider.getIntValue("user_id", 0)
+    val type = provider.getValue("type", "")
+    LaunchedEffect(Unit) {
+        getAnswerQuestionList(
+            userId = userId,
+            type = type,
+            yourAccountViewModel = yourAccountViewModel,
+            questionViewModel = questionViewModel,
+            homeActivity = homeActivity
+        )
+
+    }
     BottomSheetScaffold(scaffoldState = questionBottomSheetScaffoldState, sheetContent = {
         Column(
             modifier = Modifier
@@ -141,7 +165,7 @@ fun BottomQuestionScreen() {
             )
             simpleDropDown(
                 suggestions = suggestions,
-                hint = stringResource(id = R.string.parents_hint),
+                hint = "Parents",
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 12.dp, end = 13.dp, top = 10.dp),
@@ -309,129 +333,176 @@ fun BottomQuestionScreen() {
                     }
                 }
             }
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 24.dp, end = 24.dp, top = 32.dp),
-                text = stringResource(id = R.string.bottom_ques_exist_ques),
-                style = MaterialTheme.typography.body2,
-                fontWeight = FontWeight.W900,
-                fontSize = 22.sp,
-                color = Color.Black
-            )
-            Surface(
-                shape = RoundedCornerShape(12.dp),
-                color = Color.White,
-                elevation = 2.dp,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 25.dp, end = 23.dp, top = 16.dp)
-            ) {
-                Column {
-                    Text(
+            if (questionViewModel.isAnsweredQuestionLoading) {
+                QuestionScreenAnsweredQuestionShimmerAnimation()
+            } else {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 24.dp, end = 24.dp, top = 32.dp),
+                    text = stringResource(id = R.string.bottom_ques_exist_ques),
+                    style = MaterialTheme.typography.body2,
+                    fontWeight = FontWeight.W900,
+                    fontSize = 22.sp,
+                    color = Color.Black
+                )
+                questionViewModel.questionAnsweredList.forEachIndexed { index, item ->
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = Color.White,
+                        elevation = 2.dp,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 24.dp, top = 24.dp, end = 56.dp),
-                        text = stringResource(id = R.string.what_is_your_favourite_snack),
-                        color = Color.Black,
-                        style = MaterialTheme.typography.body2,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Normal,
-                    )
-                    Row {
-                        Text(
-                            modifier = Modifier.padding(start = 24.dp, top = 10.dp),
-                            text = stringResource(id = R.string.emily_cooper),
-                            color = Custom_Blue,
-                            style = MaterialTheme.typography.body2,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Normal,
-                        )
-                        Text(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 10.dp, end = 24.dp),
-                            text = stringResource(id = R.string.two_hr_ago),
-                            color = Color(0xFF9F9D9B),
-                            style = MaterialTheme.typography.body2,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Normal,
-                            textAlign = TextAlign.End
-                        )
+                            .padding(start = 25.dp, end = 23.dp, top = 16.dp, bottom = 20.dp)
+                    ) {
+                        Column {
+                            item.question?.let { it1 ->
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 24.dp, top = 24.dp, end = 56.dp),
+                                    text = it1,
+                                    color = Color.Black,
+                                    style = MaterialTheme.typography.body2,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Normal,
+                                )
+                            }
+                            Row {
+                                item.user_name?.let { it1 ->
+                                    Text(
+                                        modifier = Modifier.padding(start = 24.dp, top = 10.dp),
+                                        text = it1,
+                                        color = Custom_Blue,
+                                        style = MaterialTheme.typography.body2,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.Normal,
+                                    )
+                                }
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 10.dp, end = 24.dp),
+                                    text = if (questionViewModel.questionAnsweredDaysList[index] == 0) "Today" else "${questionViewModel.questionAnsweredDaysList[index]} Day ago",
+                                    color = Color(0xFF9F9D9B),
+                                    style = MaterialTheme.typography.body2,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Normal,
+                                    textAlign = TextAlign.End
+                                )
+                            }
+                            item.answer?.let { it1 ->
+                                Text(
+                                    modifier = Modifier.padding(
+                                        start = 24.dp,
+                                        top = 4.dp,
+                                        bottom = 22.dp
+                                    ),
+                                    text = it1,
+                                    color = Color.Black,
+                                    style = MaterialTheme.typography.body2,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Normal,
+                                )
+                            }
+                        }
                     }
-                    Text(
-                        modifier = Modifier.padding(start = 24.dp, top = 4.dp, bottom = 22.dp),
-                        text = stringResource(id = R.string.basketball_and_miami_heat),
-                        color = Color.Black,
-                        style = MaterialTheme.typography.body2,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Normal,
-                    )
-                }
-            }
-            Surface(
-                shape = RoundedCornerShape(12.dp),
-                color = Color.White,
-                elevation = 2.dp,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 24.dp, end = 24.dp, top = 16.dp, bottom = 20.dp)
-            ) {
-                Column {
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 24.dp, top = 24.dp, end = 56.dp),
-                        text = stringResource(id = R.string.what_is_your_favourite_snack),
-                        color = Color.Black,
-                        style = MaterialTheme.typography.body2,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Normal,
-                    )
-                    Row {
-                        Text(
-                            modifier = Modifier.padding(start = 24.dp, top = 10.dp),
-                            text = stringResource(id = R.string.emily_cooper),
-                            color = Custom_Blue,
-                            style = MaterialTheme.typography.body2,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Normal,
-                        )
-                        Text(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 10.dp, end = 24.dp),
-                            text = stringResource(id = R.string.three_hr_ago),
-                            color = Color(0xFF9F9D9B),
-                            style = MaterialTheme.typography.body2,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Normal,
-                            textAlign = TextAlign.End
-                        )
-                    }
-                    Text(
-                        modifier = Modifier.padding(start = 24.dp, top = 4.dp, bottom = 22.dp),
-                        text = stringResource(id = R.string.chocolate_all_the_way),
-                        color = Color.Black,
-                        style = MaterialTheme.typography.body2,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Normal,
-                    )
                 }
             }
         }
     }, sheetShape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp))
 }
 
+fun handleQuestionAnswerList(
+    result: NetworkResult<GetAnsweredQuestionListResponse>,
+    questionViewModel: BottomQuestionViewModel,
+) {
+    when (result) {
+        is NetworkResult.Loading -> {
+            // show a progress bar
+            Log.e("TAG", "handleUserData() --> Loading  $result")
+            questionViewModel.isAnsweredQuestionLoading = true
+        }
+        is NetworkResult.Success -> {
+            // bind data to the view
+            Log.e("TAG", "handleUserData() --> Success  $result")
+            questionViewModel.isAnsweredQuestionLoading = false
+            Log.d("TAG", "BottomQuestionScreen: ${questionViewModel.questionAnsweredList.size}")
+            questionViewModel.questionAnsweredList.clear()
+            questionViewModel.questionAnsweredDaysList.clear()
+            result.data?.data?.let { questionViewModel.questionAnsweredList.addAll(it) }
+            Log.d("TAG", "BottomQuestionScreen: ${result.data?.data?.size}")
+            Log.d("TAG", "BottomQuestionScreen: ${questionViewModel.questionAnsweredList.size}")
+            result.data?.days?.let { questionViewModel.questionAnsweredDaysList.addAll(it) }
+        }
+        is NetworkResult.Error -> {
+            // show error message
+            Log.e("TAG", "handleUserData() --> Error ${result.message}")
+            questionViewModel.isAnsweredQuestionLoading = false
+        }
+    }
+}
 
-@Preview(
-    showSystemUi = true,
-    showBackground = true,
-    heightDp = 2000,
-    name = "NEXUS_7",
-    device = Devices.PIXEL_2_XL
-)
-@Composable
-fun BottomQuestionScreenPreview() {
-    BottomQuestionScreen()
+private fun getAnswerQuestionList(
+    userId: Int,
+    type: String?,
+    yourAccountViewModel: YourAccountViewModel,
+    questionViewModel: BottomQuestionViewModel,
+    homeActivity: HomeActivity
+) {
+    yourAccountViewModel.getYourAccountAnsweredQuestionList(userId = userId, type = type!!)
+    questionViewModel.getHomeScreenQuestion(
+        GetPregnancyMilestoneRequest(
+            user_id = userId,
+            type = type
+        )
+    )
+    yourAccountViewModel.getAnsweredQuestionListResponse.observe(homeActivity) {
+        if (it != null) {
+            handleQuestionAnswerList(
+                result = it,
+                questionViewModel = questionViewModel
+            )
+        }
+    }
+    questionViewModel.getHomeScreenQuestionResponse.observe(homeActivity) {
+        if (it != null) {
+
+        }
+    }
+}
+
+private fun handleQuestionAnsweredList(
+    result: NetworkResult<GetAnsweredQuestionListResponse>,
+    questionViewModel: BottomQuestionViewModel,
+    type: String,
+    userId: Int,
+    homeActivity: HomeActivity
+) {
+    when (result) {
+        is NetworkResult.Loading -> {
+            // show a progress bar
+            Log.e("TAG", "handleUserData() --> Loading  $result")
+            questionViewModel.isAnsweredQuestionLoading = true
+        }
+        is NetworkResult.Success -> {
+            // bind data to the view
+            Log.e("TAG", "handleUserData() --> Success  $result")
+            questionViewModel.isAnsweredQuestionLoading = false
+            questionViewModel.questionAnsweredList.clear()
+            questionViewModel.questionAnsweredDaysList.clear()
+            if (result.data?.data?.isNotEmpty() == true) {
+                result.data.data.let { questionViewModel.questionAnsweredList.addAll(it) }
+            }
+            if (result.data?.days?.isNotEmpty() == true) {
+                result.data.days.let { questionViewModel.questionAnsweredDaysList.addAll(it) }
+            }
+
+        }
+        is NetworkResult.Error -> {
+            // show error message
+            Log.e("TAG", "handleUserData() --> Error ${result.message}")
+            questionViewModel.isAnsweredQuestionLoading = false
+        }
+    }
 }

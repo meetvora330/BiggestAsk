@@ -8,18 +8,13 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.biggestAsk.data.model.request.GetUserDetailsParentRequest
 import com.biggestAsk.data.model.request.GetUserDetailsSurrogateRequest
-import com.biggestAsk.data.model.response.GetUserDetailsParentResponse
-import com.biggestAsk.data.model.response.GetUserDetailsSurrogateResponse
-import com.biggestAsk.data.model.response.UpdateUserProfileResponse
+import com.biggestAsk.data.model.response.*
 import com.biggestAsk.data.repository.YourAccountRepository
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.util.PathUtil
@@ -39,6 +34,7 @@ class YourAccountViewModel @Inject constructor(
     var isLoading: Boolean by mutableStateOf(false)
     var isSurrogateDataLoading: Boolean by mutableStateOf(false)
     var isParentDataLoading: Boolean by mutableStateOf(false)
+    var isAnsweredQuestionLoading: Boolean by mutableStateOf(false)
     var isIntendedProfileDataLoading: Boolean by mutableStateOf(false)
     var isPermissionAllowed: Boolean by mutableStateOf(false)
     var isRational: Boolean by mutableStateOf(false)
@@ -49,13 +45,14 @@ class YourAccountViewModel @Inject constructor(
     var imageData: Uri? = (null)
     var uriPathParent: String? = null
     var uriPathMother: String? = null
-    var parentUriPath1: String? = null
-    var parentUriPath2: String? = null
     val isImagePresent = mutableStateOf(false)
+    var getAnsweredQuestionListResponse: MutableLiveData<NetworkResult<GetAnsweredQuestionListResponse>> =
+        MutableLiveData()
+    var questionAnsweredList = mutableStateListOf<DataXXX>()
+    var questionAnsweredDaysList = mutableStateListOf<Int>()
 
 
     //  surrogate
-    var textEmailVerify: String by mutableStateOf("")
     var surrogateFullName: String by mutableStateOf("")
     var surrogateImg: String by mutableStateOf("")
     var yourAccountFullNameEmpty: Boolean by mutableStateOf(false)
@@ -70,9 +67,6 @@ class YourAccountViewModel @Inject constructor(
     var yourAccountDateOfBirthEmpty: Boolean by mutableStateOf(false)
     var surrogatePartnerName: String by mutableStateOf("")
     var surrogateGender: String by mutableStateOf("male")
-    var yourAccountPartnerNameEmpty: Boolean by mutableStateOf(false)
-    var yourAccountPassword: String by mutableStateOf("................")
-    var yourAccountPasswordEmpty: Boolean by mutableStateOf(false)
     var getUserDetailResponseSurrogate: MutableLiveData<NetworkResult<GetUserDetailsSurrogateResponse>> =
         MutableLiveData()
     var updateUserProfileResponse: MutableLiveData<NetworkResult<UpdateUserProfileResponse>> =
@@ -86,7 +80,6 @@ class YourAccountViewModel @Inject constructor(
     var parentImg2: String by mutableStateOf("")
     var parentPhoneNumber: String by mutableStateOf("")
     var parentPartnerPhoneNumber: String by mutableStateOf("")
-    var parentName: String by mutableStateOf("")
     var parentPartnerName: String by mutableStateOf("")
     var parentDateOfBirth: String by mutableStateOf("")
     var parentPartnerDateOfBirth: String by mutableStateOf("")
@@ -201,5 +194,18 @@ class YourAccountViewModel @Inject constructor(
         }
     }
 
-
+    fun getYourAccountAnsweredQuestionList(
+        userId: Int,
+        type: String
+    ) {
+        viewModelScope.launch {
+            getAnsweredQuestionListResponse.value = NetworkResult.Loading()
+            yourAccountRepository.getYourAccountAnsweredQuestionList(
+                userId = userId,
+                type = type
+            ).collect {
+                getAnsweredQuestionListResponse.value = it
+            }
+        }
+    }
 }

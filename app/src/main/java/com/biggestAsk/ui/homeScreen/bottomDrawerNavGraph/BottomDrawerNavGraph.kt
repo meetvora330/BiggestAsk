@@ -22,7 +22,6 @@ import com.biggestAsk.ui.homeScreen.drawerScreens.notification.*
 import com.biggestAsk.ui.homeScreen.drawerScreens.settingScreens.*
 import com.biggestAsk.ui.homeScreen.drawerScreens.yourAccount.YourAccountScreen
 import com.biggestAsk.ui.homeScreen.drawerScreens.yourSurrogateMother.AddSurrogateMother
-import com.biggestAsk.ui.homeScreen.drawerScreens.yourSurrogateMother.NoSurrogateAssigned
 import com.biggestAsk.ui.homeScreen.drawerScreens.yourSurrogateMother.SurrogateParentNotAssignScreen
 import com.biggestAsk.ui.homeScreen.drawerScreens.yourSurrogateMother.YourSurrogateMother
 import com.biggestAsk.ui.main.viewmodel.*
@@ -48,6 +47,7 @@ fun BottomNavigationDrawerGraph(
     aboutAppViewModel: AboutAppViewModel,
     yourSurrogateMotherViewModel: YourSurrogateMotherViewModel,
     intendedParentsViewModel: IntendedParentsViewModel,
+    questionViewModel: BottomQuestionViewModel,
     scaffoldState: ScaffoldState
 ) {
     NavHost(
@@ -96,7 +96,12 @@ fun BottomNavigationDrawerGraph(
         composable(
             route = BottomNavScreen.Question.route
         ) {
-            BottomQuestionScreen()
+            BottomQuestionScreen(
+                questionViewModel = questionViewModel,
+                context = context,
+                homeActivity = homeActivity,
+                yourAccountViewModel = yourAccountViewModel
+            )
         }
         composable(
             route = BottomNavScreen.SurrogateParentNotAssignScreen.route
@@ -135,7 +140,7 @@ fun BottomNavigationDrawerGraph(
                         navHostController
                     )
                 }
-                else-> {
+                else -> {
                     YourSurrogateMother(
                         homeActivity = homeActivity,
                         yourSurrogateMotherViewModel = yourSurrogateMotherViewModel,

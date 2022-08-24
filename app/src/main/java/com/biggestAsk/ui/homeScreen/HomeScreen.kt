@@ -4,7 +4,6 @@ package com.biggestAsk.ui.homeScreen
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.util.Log
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
@@ -44,7 +43,6 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.biggestAsk.ui.HomeActivity
-import com.biggestAsk.ui.MainActivity
 import com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph.*
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.BackHandler
 import com.biggestAsk.ui.homeScreen.drawerScreens.community.AddCommunityDialog
@@ -52,7 +50,6 @@ import com.biggestAsk.ui.homeScreen.drawerScreens.contactYourProvider.CreateCont
 import com.biggestAsk.ui.homeScreen.drawerScreens.notification.NotificationDetailScreenRoute
 import com.biggestAsk.ui.homeScreen.drawerScreens.settingScreens.SettingSubScreen
 import com.biggestAsk.ui.homeScreen.drawerScreens.yourAccount.LogoutDialog
-import com.biggestAsk.ui.introScreen.findActivity
 import com.biggestAsk.ui.main.viewmodel.*
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.util.Constants
@@ -79,7 +76,8 @@ fun HomeScreen(
     notificationViewModel: NotificationViewModel,
     aboutAppViewModel: AboutAppViewModel,
     yourSurrogateMotherViewModel: YourSurrogateMotherViewModel,
-    intendedParentsViewModel: IntendedParentsViewModel
+    intendedParentsViewModel: IntendedParentsViewModel,
+    questionViewModel: BottomQuestionViewModel
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val requester = FocusRequester()
@@ -461,6 +459,7 @@ fun HomeScreen(
                 aboutAppViewModel = aboutAppViewModel,
                 yourSurrogateMotherViewModel = yourSurrogateMotherViewModel,
                 intendedParentsViewModel = intendedParentsViewModel,
+                questionViewModel = questionViewModel,
                 scaffoldState = scaffoldState
             )
             BackHandler(scaffoldState.drawerState.isOpen) {
