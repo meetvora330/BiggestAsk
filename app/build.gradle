@@ -155,4 +155,6 @@ dependencies {
 
     implementation platform('com.google.firebase:firebase-bom:30.3.1')
     implementation 'com.google.firebase:firebase-analytics-ktx'
+    //Place holder
+    implementation "com.google.accompanist:accompanist-placeholder:0.19.0"
 }

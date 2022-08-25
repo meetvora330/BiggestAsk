@@ -3,11 +3,13 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Development/TheBiggestAsk/app/src/main/res/drawable/ic_baseline_search_24.xml" value="0.159" />
         <entry key="..\:/Development/TheBiggestAsk/app/src/main/res/drawable/ic_icon_community_star.xml" value="0.224" />
         <entry key="..\:/Development/TheBiggestAsk/app/src/main/res/drawable/ic_icon_toolbar_add.xml" value="0.205" />
         <entry key="..\:/Development/TheBiggestAsk/app/src/main/res/drawable/ic_icon_your_account_edit_disable.xml" value="0.159" />
         <entry key="..\:/Development/TheBiggestAsk/app/src/main/res/drawable/ic_icon_your_account_edit_enabled.xml" value="0.1" />
         <entry key="..\:/Development/TheBiggestAsk/app/src/main/res/drawable/ic_img_bottom_sheet_opener.xml" value="0.204" />
+        <entry key="..\:/Development/TheBiggestAsk/app/src/main/res/drawable/ic_img_clear_searched.xml" value="0.1" />
         <entry key="..\:/Development/TheBiggestAsk/app/src/main/res/drawable/ic_img_intended_parents_liner.xml" value="0.204" />
         <entry key="..\:/Development/TheBiggestAsk/app/src/main/res/drawable/ic_img_intro_2.xml" value="0.204" />
         <entry key="..\:/Users/Admin/AndroidStudioProjects/Biggest Ask/app/src/main/java/com/biggestAsk/ui/homeScreen/HomeScreen.kt" value="0.1443384487764413" />

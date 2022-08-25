@@ -1,7 +1,5 @@
 package com.biggestAsk.ui.homeScreen.drawerScreens.notification
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -14,9 +12,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -25,7 +21,6 @@ import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -33,17 +28,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.core.app.ActivityCompat
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
-import com.biggestAsk.data.model.request.GetContactRequest
 import com.biggestAsk.data.model.request.GetNotificationRequest
-import com.biggestAsk.data.model.response.GetContactResponse
 import com.biggestAsk.data.model.response.GetNotificationResponse
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.ui.HomeActivity
-import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
 import com.biggestAsk.ui.main.viewmodel.NotificationViewModel
 import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
@@ -51,7 +40,6 @@ import com.example.biggestAsk.R
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.placeholder
 import com.google.accompanist.placeholder.shimmer
-import kotlin.time.Duration.Companion.days
 
 @Composable
 fun Notification(
@@ -71,13 +59,14 @@ fun Notification(
         val userId = PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
         LaunchedEffect(Unit) {
             getUpdatedNotification("parent", 191, notificationViewModel, homeActivity)
+            //type?.let { getUpdatedNotification(it, userId, notificationViewModel, homeActivity) }
         }
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 24.dp, bottom = 55.dp)
         ) {
-            notificationViewModel.notificationList.forEachIndexed { index,item ->
+            notificationViewModel.updatedList.forEachIndexed { index, item ->
                 Card(
                     shape = RoundedCornerShape(14.dp),
                     elevation = 8.dp,
@@ -104,7 +93,8 @@ fun Notification(
                             shadowBlurRadius = 0.2.dp,
                             offsetX = 0.dp,
                             offsetY = 4.dp
-                        ).placeholder(
+                        )
+                        .placeholder(
                             visible = notificationViewModel.isLoading,
                             color = Color.LightGray,
                             // optional, defaults to RectangleShape
@@ -253,6 +243,8 @@ private fun handleGetNotificationApi(
             notificationViewModel.isLoading = false
             notificationViewModel.notificationList.clear()
             result.data?.data?.let { notificationViewModel.notificationList.addAll(it) }
+            notificationViewModel.updatedList.clear()
+            notificationViewModel.updatedList.addAll(notificationViewModel.notificationList)
             notificationViewModel.notificationDaysList.clear()
             result.data?.let { notificationViewModel.notificationDaysList.addAll(it.days) }
             notificationViewModel.isDataNull = notificationViewModel.notificationList.isEmpty()

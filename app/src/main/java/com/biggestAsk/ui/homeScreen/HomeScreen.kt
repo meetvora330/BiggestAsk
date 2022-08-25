@@ -5,14 +5,17 @@ package com.biggestAsk.ui.homeScreen
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.util.Log
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.material.ripple.RippleAlpha
 import androidx.compose.material.ripple.RippleTheme
@@ -21,7 +24,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
@@ -51,7 +58,7 @@ import com.example.biggestAsk.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalAnimationApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(
@@ -68,6 +75,8 @@ fun HomeScreen(
     communityViewModel: CommunityViewModel,
     notificationViewModel: NotificationViewModel,
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val requester = FocusRequester()
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
     val openDialogCustomCommunity = remember { mutableStateOf(false) }
@@ -114,7 +123,7 @@ fun HomeScreen(
                     .padding(top = 10.dp)
                     .background(Color.White)
             ) {
-                val (icon_open_drawer, tv_tittle_toolbar, icon_add) = createRefs()
+                val (icon_open_drawer, tv_tittle_toolbar, icon_add, text_field_search) = createRefs()
                 Image(
                     modifier = Modifier
                         .padding(start = 24.dp)
@@ -219,18 +228,78 @@ fun HomeScreen(
                     contentDescription = ""
                 )
                 Text(
-                    modifier = Modifier.constrainAs(tv_tittle_toolbar) {
-                        top.linkTo(parent.top)
-                        start.linkTo(icon_open_drawer.end)
-                        end.linkTo(icon_add.start)
-                        bottom.linkTo(parent.bottom)
-                    },
+                    modifier = Modifier
+                        .constrainAs(tv_tittle_toolbar) {
+                            top.linkTo(parent.top)
+                            start.linkTo(icon_open_drawer.end)
+                            end.linkTo(icon_add.start)
+                            bottom.linkTo(parent.bottom)
+                        }
+                        .alpha(if (notificationViewModel.isNotificationScreen.value == true &&
+                            notificationViewModel.isSearchClicked.value
+                        ) 0f else 1f),
                     text = mainViewModel.toolbarTittle,
                     style = MaterialTheme.typography.body2,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.W900,
                     lineHeight = 24.sp
                 )
+                if (notificationViewModel.isNotificationScreen.value == true && notificationViewModel.isSearchClicked.value) {
+                    Row(modifier = Modifier
+                        .fillMaxWidth()
+                        .constrainAs(text_field_search) {
+                            top.linkTo(parent.top)
+                            start.linkTo(icon_open_drawer.end)
+                            end.linkTo(icon_add.start)
+                            bottom.linkTo(parent.bottom)
+                        },
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(145.dp)) {
+                        BasicTextField(
+                            modifier = Modifier
+                                .padding(start = 55.dp)
+                                .focusRequester(requester)
+                                .onFocusChanged {
+                                    if (!it.isFocused) {
+                                        requester.requestFocus()
+                                        keyboardController?.show()
+                                    }
+                                }
+                                .background(Color.White),
+                            value = notificationViewModel.searchText,
+                            onValueChange = { it1 ->
+                                notificationViewModel.updatedList.clear()
+                                notificationViewModel.searchText = it1
+                                notificationViewModel.getFilteredList(notificationViewModel.searchText)
+                            },
+                            singleLine = true,
+                            decorationBox = { innerText ->
+                                if (notificationViewModel.searchText == "") {
+                                    Text(text = "Search ", modifier = Modifier.fillMaxWidth())
+                                } else {
+                                    innerText()
+                                }
+                            },
+                        )
+                        IconButton(
+                            onClick = {
+                                notificationViewModel.searchText =
+                                    "" // Remove text from TextField when you press the 'X' icon
+                                notificationViewModel.isNotificationScreen.value = true
+                                notificationViewModel.isSearchClicked.value = false
+                                notificationViewModel.updatedList.clear()
+                                notificationViewModel.updatedList.addAll(notificationViewModel.notificationList)
+                            }
+                        ) {
+                            Icon(
+                                Icons.Default.Close,
+                                contentDescription = "",
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    }
+
+                }
                 Icon(
                     modifier = Modifier
                         .padding(end = 24.dp)
@@ -240,7 +309,7 @@ fun HomeScreen(
                             if (communityViewModel.isCommunityScreen.value == true ||
                                 contactYourProviderViewModel.isContactProvidersScreen.value == true ||
                                 yourAccountViewModel.isYourAccountScreen.value == true ||
-                                notificationViewModel.isNotificationScreen.value == true
+                                (notificationViewModel.isNotificationScreen.value == true && !notificationViewModel.isSearchClicked.value)
                             ) 1f else 0f
                         )
                         .constrainAs(icon_add)
@@ -264,8 +333,14 @@ fun HomeScreen(
                                     yourAccountViewModel.isEditable.value != true
                             }
                             if (notificationViewModel.isNotificationScreen.value == true) {
-                                notificationViewModel.isSearchClicked.value =
-                                    notificationViewModel.isSearchClicked.value != true
+//                                if (notificationViewModel.searchText != ""){
+//                                    notificationViewModel.searchText = ""
+//                                }
+                                if (!notificationViewModel.isSearchClicked.value) {
+//                                    notificationViewModel.searchText = ""
+                                    notificationViewModel.isSearchClicked.value =
+                                        notificationViewModel.isSearchClicked.value != true
+                                }
                             }
                         },
                     painter = painterResource(
@@ -526,6 +601,7 @@ fun currentRoute(
             viewModel.toolbarTittle = stringResource(id = R.string.notifications)
             //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false
+            notificationViewModel.isSearchClicked.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             viewModel.isEditable.value = false
@@ -536,6 +612,7 @@ fun currentRoute(
             viewModel.isSettingSubDetailedSettingScreen.value = false
             viewModel.isSettingSubTermsOfServiceScreen.value = false
             viewModel.isSettingSubPrivacyPolicyScreen.value = false
+            notificationViewModel.searchText = ""
             notificationViewModel.isNotificationScreen.value = true
         }
         NavDrawerItem.Settings.route -> {
@@ -913,4 +990,3 @@ fun BottomNavigation(navController: NavController, viewModel: MainViewModel) {
         }
     }
 }
-
