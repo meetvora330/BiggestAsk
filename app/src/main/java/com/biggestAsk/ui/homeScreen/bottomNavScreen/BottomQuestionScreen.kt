@@ -3,7 +3,6 @@ package com.biggestAsk.ui.homeScreen.bottomNavScreen
 import android.content.Context
 import android.text.TextUtils
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -12,9 +11,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,19 +24,25 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.biggestAsk.data.model.request.Answer
 import com.biggestAsk.data.model.request.GetPregnancyMilestoneRequest
+import com.biggestAsk.data.model.request.StoreBaseScreenQuestionAnsRequest
+import com.biggestAsk.data.model.response.CommonResponse
 import com.biggestAsk.data.model.response.GetAnsweredQuestionListResponse
+import com.biggestAsk.data.model.response.GetFrequencyResponse
+import com.biggestAsk.data.model.response.GetHomeScreenQuestionResponse
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.ui.HomeActivity
+import com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer.HomeScreenQuestionShimmerAnimation
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer.QuestionScreenAnsweredQuestionShimmerAnimation
 import com.biggestAsk.ui.main.viewmodel.BottomQuestionViewModel
-import com.biggestAsk.ui.main.viewmodel.MainViewModel
 import com.biggestAsk.ui.main.viewmodel.YourAccountViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.ET_Bg
 import com.biggestAsk.ui.ui.theme.Text_Color
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -55,26 +58,26 @@ fun BottomQuestionScreen(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
     )
     val coroutineScope = rememberCoroutineScope()
-    val viewModel = MainViewModel()
     val focusManager = LocalFocusManager.current
     val provider = PreferenceProvider(context)
     val userId = provider.getIntValue("user_id", 0)
     val type = provider.getValue("type", "")
+    val selectedText = remember { mutableStateOf("") }
+    val partnerId = provider.getIntValue("partner_id", 0)
     LaunchedEffect(Unit) {
-        getAnswerQuestionList(
+        updateQuestionScreen(
             userId = userId,
             type = type,
             yourAccountViewModel = yourAccountViewModel,
             questionViewModel = questionViewModel,
             homeActivity = homeActivity
         )
-
     }
     BottomSheetScaffold(scaffoldState = questionBottomSheetScaffoldState, sheetContent = {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(600.dp)
+                .wrapContentHeight()
                 .padding(bottom = 10.dp),
         ) {
             Image(
@@ -99,7 +102,7 @@ fun BottomQuestionScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 24.dp, end = 24.dp, top = 8.dp),
-                text = stringResource(id = R.string.bottom_ques_bottom_sheet_new_question_desc),
+                text = questionViewModel.questionScreenLatestQuestion,
                 style = MaterialTheme.typography.body2,
                 color = Color(0xFF7F7D7C),
                 fontSize = 14.sp,
@@ -117,10 +120,10 @@ fun BottomQuestionScreen(
                 color = Color.Black
             )
             TextField(
-                value = viewModel.bottomQuesHome,
+                value = questionViewModel.questionScreenQuestionAnswer,
                 onValueChange = {
-                    viewModel.bottomQuesHome = it
-                    viewModel.isNameEmpty = false
+                    questionViewModel.questionScreenQuestionAnswer = it
+                    questionViewModel.isAnswerEmpty = false
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text, imeAction = ImeAction.Done
@@ -153,43 +156,75 @@ fun BottomQuestionScreen(
                     unfocusedIndicatorColor = Color.Transparent,
                 ),
             )
-            Text(
-                modifier = Modifier
-                    .wrapContentWidth()
-                    .padding(start = 12.dp, top = 16.dp),
-                text = stringResource(id = R.string.text_home_bottom_sheet_parent),
-                style = MaterialTheme.typography.body2,
-                fontSize = 12.sp,
-                color = Color.Black,
-                fontWeight = FontWeight.W800
-            )
-            simpleDropDown(
-                suggestions = suggestions,
-                hint = "Parents",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 12.dp, end = 13.dp, top = 10.dp),
-                style = MaterialTheme.typography.body2.copy()
-            )
+            if (questionViewModel.isAnswerEmpty) {
+                Text(
+                    text = stringResource(id = R.string.bottom_home_screen_question_ans_empty_text),
+                    color = MaterialTheme.colors.error,
+                    style = MaterialTheme.typography.caption,
+                    modifier = Modifier
+                        .padding(start = 13.dp),
+                    fontSize = 12.sp
+                )
+            }
+            if (type == "parent") {
+                Text(
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .padding(start = 12.dp, top = 16.dp),
+                    text = stringResource(id = R.string.text_home_bottom_sheet_parent),
+                    style = MaterialTheme.typography.body2,
+                    fontSize = 12.sp,
+                    color = Color.Black,
+                    fontWeight = FontWeight.W800
+                )
+                selectedText.value = simpleDropDown(
+                    suggestions = questionViewModel.dropDownItemParentsName,
+                    hint = "Parents",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 12.dp, end = 13.dp, top = 10.dp),
+                    style = MaterialTheme.typography.body2.copy()
+                )
+            }
             Row(
                 modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom
             ) {
                 Button(
                     onClick = {
                         coroutineScope.launch {
-                            if (TextUtils.isEmpty(viewModel.bottomQuesHome)) {
-                                Toast.makeText(
-                                    context,
-                                    R.string.all_field_compulsory,
-                                    Toast.LENGTH_SHORT
-                                )
-                                    .show()
+                            if (TextUtils.isEmpty(questionViewModel.questionScreenQuestionAnswer)) {
+                                questionViewModel.isAnswerEmpty = true
                             } else {
-                                viewModel.bottomQuesHome = ""
-                                if (questionBottomSheetScaffoldState.bottomSheetState.isExpanded) {
-                                    questionBottomSheetScaffoldState.bottomSheetState.collapse()
-                                } else {
-                                    questionBottomSheetScaffoldState.bottomSheetState.expand()
+                                questionViewModel.answerList.add(
+                                    Answer(
+                                        answer = questionViewModel.questionScreenQuestionAnswer,
+                                        question_id = questionViewModel.questionScreenQuestionId
+                                    )
+                                )
+                                questionViewModel.storeQuestionScreenAnswer(
+                                    storeBaseScreenQuestionAnsRequest = StoreBaseScreenQuestionAnsRequest(
+                                        answer = questionViewModel.answerList,
+                                        category_id = questionViewModel.questionScreenQuestionCategeryId,
+                                        partner_id = partnerId.toString(),
+                                        type = type!!,
+                                        user_id = userId
+                                    )
+                                )
+                                questionViewModel.storeAnsImportantQuestionResponse.observe(
+                                    homeActivity
+                                ) {
+                                    if (it != null) {
+                                        handleStoreAnsImportantQuestion(
+                                            result = it,
+                                            questionViewModel = questionViewModel,
+                                            coroutineScope = coroutineScope,
+                                            bottomSheetScaffoldState = questionBottomSheetScaffoldState,
+                                            userId = userId,
+                                            type = type,
+                                            yourAccountViewModel = yourAccountViewModel,
+                                            homeActivity = homeActivity
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -235,101 +270,114 @@ fun BottomQuestionScreen(
                 fontSize = 16.sp,
                 lineHeight = 27.sp
             )
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 24.dp, end = 24.dp, top = 24.dp),
-                text = stringResource(id = R.string.bottom_ques_new_ques_pro),
-                style = MaterialTheme.typography.body2,
-                fontWeight = FontWeight.W900,
-                fontSize = 22.sp,
-                color = Color.Black
-            )
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 24.dp, end = 24.dp, top = 16.dp),
-                text = stringResource(id = R.string.bottom_ques_freq_ques_pro),
-                style = MaterialTheme.typography.body2,
-                fontSize = 12.sp,
-                color = Color.Black,
-                fontWeight = FontWeight.W800
-            )
-            simpleDropDown(
-                suggestions = suggestions,
-                hint = stringResource(id = R.string.bottom_ques_drop_down_hint_day),
-                modifier = Modifier.padding(top = 12.dp, start = 24.dp, end = 24.dp),
-                style = MaterialTheme.typography.body2.copy(
-                    fontWeight = FontWeight.W600,
-                    fontSize = 16.sp,
+            if (!questionViewModel.isFrequencyDataLoading) {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 24.dp, end = 24.dp, top = 24.dp),
+                    text = stringResource(id = R.string.bottom_ques_new_ques_pro),
+                    style = MaterialTheme.typography.body2,
+                    fontWeight = FontWeight.W900,
+                    fontSize = 22.sp,
                     color = Color.Black
                 )
-            )
-            Surface(
-                shape = RoundedCornerShape(15.dp),
-                color = Color(0xFF4479CC),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 24.dp, end = 24.dp, top = 40.dp)
-            ) {
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 24.dp, end = 24.dp, top = 16.dp),
+                    text = stringResource(id = R.string.bottom_ques_freq_ques_pro),
+                    style = MaterialTheme.typography.body2,
+                    fontSize = 12.sp,
+                    color = Color.Black,
+                    fontWeight = FontWeight.W800
+                )
+                simpleDropDown(
+                    suggestions = suggestions,
+                    hint = stringResource(id = R.string.bottom_ques_drop_down_hint_day),
+                    modifier = Modifier.padding(top = 12.dp, start = 24.dp, end = 24.dp),
+                    style = MaterialTheme.typography.body2.copy(
+                        fontWeight = FontWeight.W600,
+                        fontSize = 16.sp,
+                        color = Color.Black
+                    ),
+                    text = questionViewModel.frequency
+                )
+            }
+            if (questionViewModel.isAnsweredQuestionLoading || questionViewModel.isFrequencyDataLoading) {
+                HomeScreenQuestionShimmerAnimation(isTittleAvailable = false)
+            } else {
+                if (!questionViewModel.isErrorOccurredInQuestionLoading) {
+                    Surface(
+                        shape = RoundedCornerShape(15.dp),
+                        color = Color(0xFF4479CC),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 37.dp, top = 24.dp, end = 36.dp),
-                        text = stringResource(id = R.string.new_question),
-                        color = Color.White,
-                        style = MaterialTheme.typography.body2,
-                        fontSize = 25.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center
-                    )
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 24.dp, top = 6.dp),
-                        text = stringResource(id = R.string.bottom_ques_bottom_sheet_new_question_desc),
-                        color = Color.White,
-                        style = MaterialTheme.typography.body2,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Normal,
-                        textAlign = TextAlign.Center
-                    )
-                    Button(
-                        onClick = {
-                            coroutineScope.launch {
-                                if (questionBottomSheetScaffoldState.bottomSheetState.isExpanded) {
-                                    questionBottomSheetScaffoldState.bottomSheetState.collapse()
-                                } else {
-                                    questionBottomSheetScaffoldState.bottomSheetState.expand()
-                                }
-                            }
-                        }, modifier = Modifier
-                            .padding(
-                                start = 24.dp, end = 24.dp, top = 16.dp, bottom = 24.dp
-                            )
-                            .fillMaxWidth()
-                            .height(48.dp), elevation = ButtonDefaults.elevation(
-                            defaultElevation = 0.dp,
-                            pressedElevation = 0.dp,
-                            disabledElevation = 0.dp,
-                            hoveredElevation = 0.dp,
-                            focusedElevation = 0.dp
-                        ), shape = RoundedCornerShape(30), colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.White,
-                        )
+                            .padding(start = 24.dp, end = 24.dp, top = 40.dp)
                     ) {
-                        Text(
-                            text = stringResource(id = R.string.answer_the_question),
-                            color = Color(0xFF3870C9),
-                            style = MaterialTheme.typography.body2,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.W600,
-                            lineHeight = 22.sp
-                        )
+                        Column(
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 37.dp, top = 24.dp, end = 36.dp),
+                                text = stringResource(id = R.string.new_question),
+                                color = Color.White,
+                                style = MaterialTheme.typography.body2,
+                                fontSize = 25.sp,
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center
+                            )
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 24.dp, top = 6.dp),
+                                text = questionViewModel.questionScreenLatestQuestion,
+                                color = Color.White,
+                                style = MaterialTheme.typography.body2,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Normal,
+                                textAlign = TextAlign.Center
+                            )
+                            Button(
+                                onClick = {
+                                    coroutineScope.launch {
+                                        if (questionBottomSheetScaffoldState.bottomSheetState.isExpanded) {
+                                            questionBottomSheetScaffoldState.bottomSheetState.collapse()
+                                        } else {
+                                            questionBottomSheetScaffoldState.bottomSheetState.expand()
+                                        }
+                                    }
+                                },
+                                modifier = Modifier
+                                    .padding(
+                                        start = 24.dp, end = 24.dp, top = 16.dp, bottom = 24.dp
+                                    )
+                                    .fillMaxWidth()
+                                    .height(48.dp),
+                                elevation = ButtonDefaults.elevation(
+                                    defaultElevation = 0.dp,
+                                    pressedElevation = 0.dp,
+                                    disabledElevation = 0.dp,
+                                    hoveredElevation = 0.dp,
+                                    focusedElevation = 0.dp
+                                ),
+                                shape = RoundedCornerShape(30),
+                                colors = ButtonDefaults.buttonColors(
+                                    backgroundColor = Color.White,
+                                )
+                            ) {
+                                Text(
+                                    text = stringResource(id = R.string.answer_the_question),
+                                    color = Color(0xFF3870C9),
+                                    style = MaterialTheme.typography.body2,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.W600,
+                                    lineHeight = 22.sp
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -343,6 +391,7 @@ fun BottomQuestionScreen(
                     text = stringResource(id = R.string.bottom_ques_exist_ques),
                     style = MaterialTheme.typography.body2,
                     fontWeight = FontWeight.W900,
+                    textAlign = TextAlign.Center,
                     fontSize = 22.sp,
                     color = Color.Black
                 )
@@ -413,37 +462,8 @@ fun BottomQuestionScreen(
     }, sheetShape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp))
 }
 
-fun handleQuestionAnswerList(
-    result: NetworkResult<GetAnsweredQuestionListResponse>,
-    questionViewModel: BottomQuestionViewModel,
-) {
-    when (result) {
-        is NetworkResult.Loading -> {
-            // show a progress bar
-            Log.e("TAG", "handleUserData() --> Loading  $result")
-            questionViewModel.isAnsweredQuestionLoading = true
-        }
-        is NetworkResult.Success -> {
-            // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
-            questionViewModel.isAnsweredQuestionLoading = false
-            Log.d("TAG", "BottomQuestionScreen: ${questionViewModel.questionAnsweredList.size}")
-            questionViewModel.questionAnsweredList.clear()
-            questionViewModel.questionAnsweredDaysList.clear()
-            result.data?.data?.let { questionViewModel.questionAnsweredList.addAll(it) }
-            Log.d("TAG", "BottomQuestionScreen: ${result.data?.data?.size}")
-            Log.d("TAG", "BottomQuestionScreen: ${questionViewModel.questionAnsweredList.size}")
-            result.data?.days?.let { questionViewModel.questionAnsweredDaysList.addAll(it) }
-        }
-        is NetworkResult.Error -> {
-            // show error message
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
-            questionViewModel.isAnsweredQuestionLoading = false
-        }
-    }
-}
 
-private fun getAnswerQuestionList(
+private fun updateQuestionScreen(
     userId: Int,
     type: String?,
     yourAccountViewModel: YourAccountViewModel,
@@ -457,6 +477,7 @@ private fun getAnswerQuestionList(
             type = type
         )
     )
+    questionViewModel.getFrequency(user_id = userId, type = type)
     yourAccountViewModel.getAnsweredQuestionListResponse.observe(homeActivity) {
         if (it != null) {
             handleQuestionAnswerList(
@@ -467,42 +488,161 @@ private fun getAnswerQuestionList(
     }
     questionViewModel.getHomeScreenQuestionResponse.observe(homeActivity) {
         if (it != null) {
-
+            handleQuestionData(result = it, questionViewModel = questionViewModel)
+        }
+    }
+    questionViewModel.getFrequencyResponse.observe(homeActivity) {
+        if (it != null) {
+            handleFrequencyData(result = it, questionViewModel = questionViewModel)
         }
     }
 }
 
-private fun handleQuestionAnsweredList(
-    result: NetworkResult<GetAnsweredQuestionListResponse>,
+@OptIn(ExperimentalMaterialApi::class)
+private fun handleStoreAnsImportantQuestion(
+    result: NetworkResult<CommonResponse>,
     questionViewModel: BottomQuestionViewModel,
-    type: String,
+    coroutineScope: CoroutineScope,
+    bottomSheetScaffoldState: BottomSheetScaffoldState,
     userId: Int,
+    type: String,
+    yourAccountViewModel: YourAccountViewModel,
     homeActivity: HomeActivity
 ) {
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
             Log.e("TAG", "handleUserData() --> Loading  $result")
+            questionViewModel.isQuestionScreenQuestionAnswered = true
+        }
+        is NetworkResult.Success -> {
+            // bind data to the view
+            Log.e("TAG", "handleUserData() --> Success  $result")
+            Log.i("TAG", result.message.toString())
+            updateQuestionScreen(
+                userId = userId,
+                yourAccountViewModel = yourAccountViewModel,
+                type = type,
+                questionViewModel = questionViewModel,
+                homeActivity = homeActivity
+            )
+            coroutineScope.launch {
+                bottomSheetScaffoldState.bottomSheetState.collapse()
+            }
+            questionViewModel.questionScreenQuestionAnswer = ""
+            questionViewModel.answerList.clear()
+            questionViewModel.isQuestionScreenQuestionAnswered = false
+        }
+        is NetworkResult.Error -> {
+            // show error message
+            coroutineScope.launch {
+                bottomSheetScaffoldState.bottomSheetState.expand()
+            }
+            questionViewModel.isQuestionScreenQuestionAnswered = false
+            Log.e("TAG", "handleUserData() --> Error ${result.message}")
+        }
+    }
+}
+
+fun handleQuestionAnswerList(
+    result: NetworkResult<GetAnsweredQuestionListResponse>,
+    questionViewModel: BottomQuestionViewModel,
+) {
+    when (result) {
+        is NetworkResult.Loading -> {
+            // show a progress bar
+            Log.e("TAG", "handleUserData() --> Loading  $result")
             questionViewModel.isAnsweredQuestionLoading = true
+            questionViewModel.isErrorOccurredInQuestionLoading = false
         }
         is NetworkResult.Success -> {
             // bind data to the view
             Log.e("TAG", "handleUserData() --> Success  $result")
             questionViewModel.isAnsweredQuestionLoading = false
+            questionViewModel.isErrorOccurredInQuestionLoading = false
+            Log.d("TAG", "BottomQuestionScreen: ${questionViewModel.questionAnsweredList.size}")
             questionViewModel.questionAnsweredList.clear()
             questionViewModel.questionAnsweredDaysList.clear()
-            if (result.data?.data?.isNotEmpty() == true) {
-                result.data.data.let { questionViewModel.questionAnsweredList.addAll(it) }
-            }
-            if (result.data?.days?.isNotEmpty() == true) {
-                result.data.days.let { questionViewModel.questionAnsweredDaysList.addAll(it) }
-            }
-
+            result.data?.data?.let { questionViewModel.questionAnsweredList.addAll(it) }
+            Log.d("TAG", "BottomQuestionScreen: ${result.data?.data?.size}")
+            Log.d("TAG", "BottomQuestionScreen: ${questionViewModel.questionAnsweredList.size}")
+            result.data?.days?.let { questionViewModel.questionAnsweredDaysList.addAll(it) }
         }
         is NetworkResult.Error -> {
             // show error message
             Log.e("TAG", "handleUserData() --> Error ${result.message}")
             questionViewModel.isAnsweredQuestionLoading = false
+            questionViewModel.isErrorOccurredInQuestionLoading = true
+        }
+    }
+}
+
+private fun handleQuestionData(
+    result: NetworkResult<GetHomeScreenQuestionResponse>,
+    questionViewModel: BottomQuestionViewModel
+) {
+    when (result) {
+        is NetworkResult.Loading -> {
+            // show a progress bar
+            Log.e("TAG", "handleUserData() --> Loading  $result")
+            questionViewModel.isQuestionScreenQuestionDataLoaded = false
+            questionViewModel.isErrorOccurredQuestionScreenQuestion = false
+        }
+        is NetworkResult.Success -> {
+            // bind data to the view
+            Log.e("TAG", "handleUserData() --> Success  $result")
+            Log.i("TAG", result.message.toString())
+            Log.d("TAG", "handleHomeQuestionData: ${result.data?.data?.question}")
+            if (result.data?.data?.category_id == null || result.data.data.question == "") {
+                questionViewModel.questionScreenQuestionCategeryId = 0
+                questionViewModel.questionScreenQuestionId = 0
+                questionViewModel.isQuestionScreenQuestionDataLoaded = false
+                questionViewModel.isErrorOccurredQuestionScreenQuestion = true
+            } else {
+                questionViewModel.isQuestionScreenQuestionDataLoaded = true
+                questionViewModel.questionScreenQuestionCategeryId = result.data.data.category_id
+                questionViewModel.questionScreenQuestionId = result.data.data.id
+                questionViewModel.questionScreenLatestQuestion = result.data.data.question
+                questionViewModel.dropDownItemParentsName.clear()
+                if (result.data.user_name.isNotEmpty()) {
+                    questionViewModel.dropDownItemParentsName.addAll(result.data.user_name)
+                }
+                questionViewModel.questionScreenQuestionAns = ""
+                questionViewModel.questionParentList.clear()
+                result.data.user_name.forEach {
+                    questionViewModel.questionParentList.add(it)
+                }
+            }
+        }
+        is NetworkResult.Error -> {
+            // show error message
+            Log.e("TAG", "handleUserData() --> Error ${result.message}")
+            questionViewModel.isQuestionScreenQuestionDataLoaded = false
+            questionViewModel.isErrorOccurredQuestionScreenQuestion = true
+        }
+    }
+}
+
+private fun handleFrequencyData(
+    result: NetworkResult<GetFrequencyResponse>,
+    questionViewModel: BottomQuestionViewModel,
+) {
+    when (result) {
+        is NetworkResult.Loading -> {
+            // show a progress bar
+            Log.e("TAG", "handleUserData() --> Loading  $result")
+            questionViewModel.isFrequencyDataLoading = true
+        }
+        is NetworkResult.Success -> {
+            // bind data to the view
+            Log.e("TAG", "handleUserData() --> Success  $result")
+            questionViewModel.isFrequencyDataLoading = false
+            questionViewModel.frequency = result.data?.data?.get(0)?.ques_type!!
+        }
+        is NetworkResult.Error -> {
+            // show error message
+            Log.e("TAG", "handleUserData() --> Error ${result.message}")
+            questionViewModel.isFrequencyDataLoading = false
         }
     }
 }

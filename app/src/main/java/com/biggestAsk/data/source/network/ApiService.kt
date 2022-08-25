@@ -202,7 +202,13 @@ interface ApiService {
     suspend fun getYourAccountAnsweredQuestionList(
         @Query("type") type: String,
         @Query("user_id") user_id: Int
-    ):Response<GetAnsweredQuestionListResponse>
+    ): Response<GetAnsweredQuestionListResponse>
+
+    @GET(Constants.GET_FREQUENCY)
+    suspend fun getFrequency(
+        @Query("user_id") user_id: Int,
+        @Query("type") type: String
+    ):Response<GetFrequencyResponse>
 
     @GET(Constants.GET_ABOUT_APP)
     suspend fun getAboutApp(): Response<AboutAppResponse>

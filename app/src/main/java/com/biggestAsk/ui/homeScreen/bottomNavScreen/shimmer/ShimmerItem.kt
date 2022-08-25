@@ -194,30 +194,69 @@ fun NearestMilestoneShimmerItem(brush: Brush) {
 }
 
 @Composable
-fun HomeScreenQuestionShimmerAnimation() {
+fun HomeScreenQuestionShimmerAnimation(isTittleAvailable: Boolean) {
     val brush = shimmerTheme()
-    HomeScreenQuestionShimmerItem(brush = brush)
+    HomeScreenQuestionShimmerItem(brush = brush, isTittleAvailable = isTittleAvailable)
 }
 
 @Composable
-fun HomeScreenQuestionShimmerItem(brush: Brush) {
-    Text(
-        modifier = Modifier
-            .width(180.dp)
-            .padding(start = 24.dp, top = 40.dp, bottom = 18.dp)
-            .background(brush, RoundedCornerShape(8.dp)),
-        text = "",
-        style = MaterialTheme.typography.body2,
-        fontSize = 16.sp,
-        fontWeight = FontWeight.W900,
-        lineHeight = 24.sp
-    )
+fun HomeScreenQuestionShimmerItem(brush: Brush, isTittleAvailable: Boolean) {
+    if (!isTittleAvailable) {
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 24.dp, end = 24.dp, top = 24.dp)
+                .background(brush, shape = RoundedCornerShape(8.dp)),
+            text = "",
+            style = MaterialTheme.typography.body2,
+            fontWeight = FontWeight.W900,
+            fontSize = 22.sp,
+            color = Color.Black
+        )
+        Text(
+            modifier = Modifier
+                .width(180.dp)
+                .padding(start = 24.dp, end = 24.dp, top = 16.dp)
+                .background(brush, shape = RoundedCornerShape(8.dp)),
+            text = "",
+            style = MaterialTheme.typography.body2,
+            fontSize = 12.sp,
+            color = Color.Black,
+            fontWeight = FontWeight.W800
+        )
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+                .padding(top = 12.dp, start = 24.dp, end = 24.dp)
+                .background(brush, shape = RoundedCornerShape(8.dp)),
+            text = "",
+            style = MaterialTheme.typography.body2,
+            fontSize = 12.sp,
+            color = Color.Black,
+            fontWeight = FontWeight.W800
+        )
+    }
+    if (isTittleAvailable) {
+        Text(
+            modifier = Modifier
+                .width(180.dp)
+                .padding(start = 24.dp, top = 40.dp, bottom = 18.dp)
+                .background(brush, RoundedCornerShape(8.dp)),
+            text = "",
+            style = MaterialTheme.typography.body2,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.W900,
+            lineHeight = 24.sp
+        )
+    }
     Surface(
         shape = RoundedCornerShape(12.dp),
         color = Color.White,
         modifier = Modifier
             .fillMaxWidth()
             .padding(
+                top = if (isTittleAvailable) 0.dp else 40.dp,
                 start = 24.dp,
                 end = 24.dp,
             )
@@ -463,13 +502,25 @@ fun QuestionScreenAnsweredQuestionShimmerAnimation() {
 
 @Composable
 fun QuestionScreenAnsweredQuestionShimmerItem(brush: Brush) {
+    Text(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 24.dp, end = 24.dp, top = 32.dp)
+            .background(brush, shape = RoundedCornerShape(8.dp)),
+        text = "",
+        style = MaterialTheme.typography.body2,
+        fontWeight = FontWeight.W900,
+        textAlign = TextAlign.Center,
+        fontSize = 22.sp,
+        color = Color.Black
+    )
     Surface(
         shape = RoundedCornerShape(12.dp),
         color = Color.White,
         elevation = 2.dp,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 25.dp, end = 23.dp, top = 34.dp)
+            .padding(start = 25.dp, end = 23.dp, top = 16.dp)
     ) {
         Column(modifier = Modifier.background(brush, RoundedCornerShape(8.dp))) {
             Text(

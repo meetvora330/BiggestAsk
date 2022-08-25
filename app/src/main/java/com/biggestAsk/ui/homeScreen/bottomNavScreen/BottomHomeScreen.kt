@@ -227,7 +227,6 @@ fun BottomHomeScreen(
                                                 bottomSheetScaffoldState = homeBottomSheetScaffoldState,
                                                 userId = userId,
                                                 type = type!!,
-                                                homeActivity = homeActivity
                                             )
                                         }
                                     }
@@ -247,6 +246,9 @@ fun BottomHomeScreen(
                                             user_id = userId
                                         )
                                     )
+                                    coroutineScope.launch {
+                                        homeBottomSheetScaffoldState.bottomSheetState.collapse()
+                                    }
                                     bottomHomeViewModel.storeBaseScreenQuestionAnsResponse.observe(
                                         homeActivity
                                     ) {
@@ -263,9 +265,7 @@ fun BottomHomeScreen(
                                         }
                                     }
                                 }
-
                             }
-
                         }, modifier = Modifier
                             .padding(
                                 start = 24.dp, end = 24.dp, bottom = 50.dp, top = 45.dp
@@ -645,7 +645,7 @@ fun BottomHomeScreen(
                                 }
                             }
                         } else {
-                            HomeScreenQuestionShimmerAnimation()
+                            HomeScreenQuestionShimmerAnimation(isTittleAvailable = true)
                         }
                     }
                     if (!bottomHomeViewModel.isErrorOccurredIntendedParentQuestion) {
@@ -833,19 +833,18 @@ private fun handleStoreQuestionAnsData(
             Log.e("TAG", "handleUserData() --> Success  $result")
             Log.i("TAG", result.message.toString())
             getHomeScreenQuestion(user_id, type, bottomHomeViewModel, homeActivity)
-            coroutineScope.launch {
-                if (bottomSheetScaffoldState.bottomSheetState.isExpanded) {
+                coroutineScope.launch {
                     bottomSheetScaffoldState.bottomSheetState.collapse()
-                } else {
-                    bottomSheetScaffoldState.bottomSheetState.expand()
                 }
-            }
             bottomHomeViewModel.isHomeScreenQuestionAnswered = false
             bottomHomeViewModel.answerList.clear()
         }
         is NetworkResult.Error -> {
             // show error message
             bottomHomeViewModel.isHomeScreenQuestionAnswered = false
+            coroutineScope.launch {
+                bottomSheetScaffoldState.bottomSheetState.expand()
+            }
             Log.e("TAG", "handleUserData() --> Error ${result.message}")
         }
     }
@@ -859,7 +858,6 @@ private fun handleStoreAnsImportantQuestion(
     bottomSheetScaffoldState: BottomSheetScaffoldState,
     userId: Int,
     type: String,
-    homeActivity: HomeActivity
 ) {
     when (result) {
         is NetworkResult.Loading -> {
@@ -877,6 +875,12 @@ private fun handleStoreAnsImportantQuestion(
                     type = type
                 )
             )
+            bottomHomeViewModel.homeScreenQuestionAns = ""
+            bottomHomeViewModel.isHomeScreenQuestionAnswered = false
+        }
+        is NetworkResult.Error -> {
+            // show error message
+            bottomHomeViewModel.isHomeScreenQuestionAnswered = false
             coroutineScope.launch {
                 if (bottomSheetScaffoldState.bottomSheetState.isExpanded) {
                     bottomSheetScaffoldState.bottomSheetState.collapse()
@@ -884,12 +888,6 @@ private fun handleStoreAnsImportantQuestion(
                     bottomSheetScaffoldState.bottomSheetState.expand()
                 }
             }
-            bottomHomeViewModel.homeScreenQuestionAns = ""
-            bottomHomeViewModel.isHomeScreenQuestionAnswered = false
-        }
-        is NetworkResult.Error -> {
-            // show error message
-            bottomHomeViewModel.isHomeScreenQuestionAnswered = false
             Log.e("TAG", "handleUserData() --> Error ${result.message}")
         }
     }

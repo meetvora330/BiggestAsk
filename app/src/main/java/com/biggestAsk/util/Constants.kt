@@ -59,6 +59,7 @@ object Constants {
     const val STORE_ANS_IMPORTANT_QUESTION = "store_ans_important_question"
     const val GET_INTENDED_PROFILE = "get_intended_profile"
     const val GET_QUESTION_SCREEN_QUESTION = "get_qestion_screen_question"
+    const val GET_FREQUENCY = "get_frequency"
 
     //preference data
     const val LOGIN_STATUS = "login_status"
