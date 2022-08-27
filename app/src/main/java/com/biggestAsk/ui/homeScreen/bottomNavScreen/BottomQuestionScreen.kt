@@ -27,13 +27,11 @@ import androidx.compose.ui.unit.sp
 import com.biggestAsk.data.model.request.Answer
 import com.biggestAsk.data.model.request.GetPregnancyMilestoneRequest
 import com.biggestAsk.data.model.request.StoreBaseScreenQuestionAnsRequest
-import com.biggestAsk.data.model.response.CommonResponse
-import com.biggestAsk.data.model.response.GetAnsweredQuestionListResponse
-import com.biggestAsk.data.model.response.GetFrequencyResponse
-import com.biggestAsk.data.model.response.GetHomeScreenQuestionResponse
+import com.biggestAsk.data.model.response.*
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.ui.HomeActivity
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer.HomeScreenQuestionShimmerAnimation
+import com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer.QuestionBankContentShimmerAnimation
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer.QuestionScreenAnsweredQuestionShimmerAnimation
 import com.biggestAsk.ui.main.viewmodel.BottomQuestionViewModel
 import com.biggestAsk.ui.main.viewmodel.YourAccountViewModel
@@ -260,16 +258,22 @@ fun BottomQuestionScreen(
                 .padding(bottom = 50.dp)
                 .verticalScroll(state = rememberScrollState())
         ) {
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 24.dp, end = 24.dp, top = 30.dp),
-                text = stringResource(id = R.string.bottom_ques_screen_desc),
-                style = MaterialTheme.typography.body2,
-                fontWeight = FontWeight.Normal,
-                fontSize = 16.sp,
-                lineHeight = 27.sp
-            )
+            if (questionViewModel.isQuestionBankContentLoaded) {
+                QuestionBankContentShimmerAnimation()
+            } else {
+                if (!questionViewModel.isErrorOccurredQuestionBankContent) {
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 24.dp, end = 24.dp, top = 30.dp),
+                        text = stringResource(id = R.string.bottom_ques_screen_desc),
+                        style = MaterialTheme.typography.body2,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 16.sp,
+                        lineHeight = 27.sp
+                    )
+                }
+            }
             if (!questionViewModel.isFrequencyDataLoading) {
                 Text(
                     modifier = Modifier
@@ -307,75 +311,77 @@ fun BottomQuestionScreen(
                 HomeScreenQuestionShimmerAnimation(isTittleAvailable = false)
             } else {
                 if (!questionViewModel.isErrorOccurredInQuestionLoading) {
-                    Surface(
-                        shape = RoundedCornerShape(15.dp),
-                        color = Color(0xFF4479CC),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 24.dp, end = 24.dp, top = 40.dp)
-                    ) {
-                        Column(
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
+                    if (questionViewModel.questionScreenLatestQuestion != "") {
+                        Surface(
+                            shape = RoundedCornerShape(15.dp),
+                            color = Color(0xFF4479CC),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 24.dp, end = 24.dp, top = 40.dp)
                         ) {
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 37.dp, top = 24.dp, end = 36.dp),
-                                text = stringResource(id = R.string.new_question),
-                                color = Color.White,
-                                style = MaterialTheme.typography.body2,
-                                fontSize = 25.sp,
-                                fontWeight = FontWeight.Bold,
-                                textAlign = TextAlign.Center
-                            )
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 24.dp, top = 6.dp),
-                                text = questionViewModel.questionScreenLatestQuestion,
-                                color = Color.White,
-                                style = MaterialTheme.typography.body2,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Normal,
-                                textAlign = TextAlign.Center
-                            )
-                            Button(
-                                onClick = {
-                                    coroutineScope.launch {
-                                        if (questionBottomSheetScaffoldState.bottomSheetState.isExpanded) {
-                                            questionBottomSheetScaffoldState.bottomSheetState.collapse()
-                                        } else {
-                                            questionBottomSheetScaffoldState.bottomSheetState.expand()
-                                        }
-                                    }
-                                },
-                                modifier = Modifier
-                                    .padding(
-                                        start = 24.dp, end = 24.dp, top = 16.dp, bottom = 24.dp
-                                    )
-                                    .fillMaxWidth()
-                                    .height(48.dp),
-                                elevation = ButtonDefaults.elevation(
-                                    defaultElevation = 0.dp,
-                                    pressedElevation = 0.dp,
-                                    disabledElevation = 0.dp,
-                                    hoveredElevation = 0.dp,
-                                    focusedElevation = 0.dp
-                                ),
-                                shape = RoundedCornerShape(30),
-                                colors = ButtonDefaults.buttonColors(
-                                    backgroundColor = Color.White,
-                                )
+                            Column(
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Text(
-                                    text = stringResource(id = R.string.answer_the_question),
-                                    color = Color(0xFF3870C9),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 37.dp, top = 24.dp, end = 36.dp),
+                                    text = stringResource(id = R.string.new_question),
+                                    color = Color.White,
                                     style = MaterialTheme.typography.body2,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.W600,
-                                    lineHeight = 22.sp
+                                    fontSize = 25.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    textAlign = TextAlign.Center
                                 )
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 24.dp, top = 6.dp),
+                                    text = questionViewModel.questionScreenLatestQuestion,
+                                    color = Color.White,
+                                    style = MaterialTheme.typography.body2,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Normal,
+                                    textAlign = TextAlign.Center
+                                )
+                                Button(
+                                    onClick = {
+                                        coroutineScope.launch {
+                                            if (questionBottomSheetScaffoldState.bottomSheetState.isExpanded) {
+                                                questionBottomSheetScaffoldState.bottomSheetState.collapse()
+                                            } else {
+                                                questionBottomSheetScaffoldState.bottomSheetState.expand()
+                                            }
+                                        }
+                                    },
+                                    modifier = Modifier
+                                        .padding(
+                                            start = 24.dp, end = 24.dp, top = 16.dp, bottom = 24.dp
+                                        )
+                                        .fillMaxWidth()
+                                        .height(48.dp),
+                                    elevation = ButtonDefaults.elevation(
+                                        defaultElevation = 0.dp,
+                                        pressedElevation = 0.dp,
+                                        disabledElevation = 0.dp,
+                                        hoveredElevation = 0.dp,
+                                        focusedElevation = 0.dp
+                                    ),
+                                    shape = RoundedCornerShape(30),
+                                    colors = ButtonDefaults.buttonColors(
+                                        backgroundColor = Color.White,
+                                    )
+                                ) {
+                                    Text(
+                                        text = stringResource(id = R.string.answer_the_question),
+                                        color = Color(0xFF3870C9),
+                                        style = MaterialTheme.typography.body2,
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.W600,
+                                        lineHeight = 22.sp
+                                    )
+                                }
                             }
                         }
                     }
@@ -384,75 +390,77 @@ fun BottomQuestionScreen(
             if (questionViewModel.isAnsweredQuestionLoading) {
                 QuestionScreenAnsweredQuestionShimmerAnimation()
             } else {
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 24.dp, end = 24.dp, top = 32.dp),
-                    text = stringResource(id = R.string.bottom_ques_exist_ques),
-                    style = MaterialTheme.typography.body2,
-                    fontWeight = FontWeight.W900,
-                    textAlign = TextAlign.Center,
-                    fontSize = 22.sp,
-                    color = Color.Black
-                )
-                questionViewModel.questionAnsweredList.forEachIndexed { index, item ->
-                    Surface(
-                        shape = RoundedCornerShape(12.dp),
-                        color = Color.White,
-                        elevation = 2.dp,
+                if (!questionViewModel.isErrorOccurredInQuestionLoading) {
+                    Text(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 25.dp, end = 23.dp, top = 16.dp, bottom = 20.dp)
-                    ) {
-                        Column {
-                            item.question?.let { it1 ->
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 24.dp, top = 24.dp, end = 56.dp),
-                                    text = it1,
-                                    color = Color.Black,
-                                    style = MaterialTheme.typography.body2,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Normal,
-                                )
-                            }
-                            Row {
-                                item.user_name?.let { it1 ->
+                            .padding(start = 24.dp, end = 24.dp, top = 32.dp, bottom = 10.dp),
+                        text = stringResource(id = R.string.bottom_ques_exist_ques),
+                        style = MaterialTheme.typography.body2,
+                        fontWeight = FontWeight.W900,
+                        textAlign = TextAlign.Center,
+                        fontSize = 22.sp,
+                        color = Color.Black
+                    )
+                    questionViewModel.questionAnsweredList.forEachIndexed { index, item ->
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = Color.White,
+                            elevation = 2.dp,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 25.dp, end = 23.dp, top = 6.dp, bottom = 15.dp)
+                        ) {
+                            Column {
+                                item.question?.let { it1 ->
                                     Text(
-                                        modifier = Modifier.padding(start = 24.dp, top = 10.dp),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(start = 24.dp, top = 24.dp, end = 56.dp),
                                         text = it1,
-                                        color = Custom_Blue,
+                                        color = Color.Black,
                                         style = MaterialTheme.typography.body2,
-                                        fontSize = 14.sp,
+                                        fontSize = 16.sp,
                                         fontWeight = FontWeight.Normal,
                                     )
                                 }
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(top = 10.dp, end = 24.dp),
-                                    text = if (questionViewModel.questionAnsweredDaysList[index] == 0) "Today" else "${questionViewModel.questionAnsweredDaysList[index]} Day ago",
-                                    color = Color(0xFF9F9D9B),
-                                    style = MaterialTheme.typography.body2,
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.Normal,
-                                    textAlign = TextAlign.End
-                                )
-                            }
-                            item.answer?.let { it1 ->
-                                Text(
-                                    modifier = Modifier.padding(
-                                        start = 24.dp,
-                                        top = 4.dp,
-                                        bottom = 22.dp
-                                    ),
-                                    text = it1,
-                                    color = Color.Black,
-                                    style = MaterialTheme.typography.body2,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Normal,
-                                )
+                                Row {
+                                    item.user_name?.let { it1 ->
+                                        Text(
+                                            modifier = Modifier.padding(start = 24.dp, top = 10.dp),
+                                            text = it1,
+                                            color = Custom_Blue,
+                                            style = MaterialTheme.typography.body2,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.Normal,
+                                        )
+                                    }
+                                    Text(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(top = 10.dp, end = 24.dp),
+                                        text = if (questionViewModel.questionAnsweredDaysList[index] == 0) "Today" else "${questionViewModel.questionAnsweredDaysList[index]} Day ago",
+                                        color = Color(0xFF9F9D9B),
+                                        style = MaterialTheme.typography.body2,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.Normal,
+                                        textAlign = TextAlign.End
+                                    )
+                                }
+                                item.answer?.let { it1 ->
+                                    Text(
+                                        modifier = Modifier.padding(
+                                            start = 24.dp,
+                                            top = 4.dp,
+                                            bottom = 22.dp
+                                        ),
+                                        text = it1,
+                                        color = Color.Black,
+                                        style = MaterialTheme.typography.body2,
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.Normal,
+                                    )
+                                }
                             }
                         }
                     }
@@ -496,7 +504,41 @@ private fun updateQuestionScreen(
             handleFrequencyData(result = it, questionViewModel = questionViewModel)
         }
     }
+    questionViewModel.getQuestionBankContent()
+    questionViewModel.questionBankContentResponse.observe(homeActivity) {
+        if (it != null) {
+            handleQuestionBankContentData(result = it, questionViewModel = questionViewModel)
+        }
+    }
 }
+
+fun handleQuestionBankContentData(
+    result: NetworkResult<QuestionBankContentResponse>,
+    questionViewModel: BottomQuestionViewModel,
+) {
+    when (result) {
+        is NetworkResult.Loading -> {
+            // show a progress bar
+            Log.e("TAG", "handleUserData() --> Loading  $result")
+            questionViewModel.isQuestionBankContentLoaded = true
+            questionViewModel.isErrorOccurredQuestionBankContent = false
+        }
+        is NetworkResult.Success -> {
+            // bind data to the view
+            Log.e("TAG", "handleUserData() --> Success  $result")
+            questionViewModel.isQuestionBankContentLoaded = false
+            questionViewModel.isErrorOccurredQuestionBankContent = false
+            questionViewModel.questionBankInfo = result.data?.question_bank?.get(0)?.info.toString()
+        }
+        is NetworkResult.Error -> {
+            // show error message
+            Log.e("TAG", "handleUserData() --> Error ${result.message}")
+            questionViewModel.isQuestionBankContentLoaded = false
+            questionViewModel.isErrorOccurredQuestionBankContent = true
+        }
+    }
+}
+
 
 @OptIn(ExperimentalMaterialApi::class)
 private fun handleStoreAnsImportantQuestion(

@@ -20,6 +20,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
@@ -106,10 +107,14 @@ fun YourAccountScreen(
                 yourAccountViewModel.surrogateHomeAddress = ""
                 yourAccountViewModel.surrogatePartnerName = ""
                 yourAccountViewModel.surrogateImg = ""
+                yourAccountViewModel.isParentClicked = true
+                yourAccountViewModel.isMotherClicked = false
+                yourAccountViewModel.isGenderSelected = false
                 getUserDetailsSurrogate(userId, type, homeActivity, yourAccountViewModel, context)
             }
             PARENT -> {
                 yourAccountViewModel.isParentApiCalled = true
+                yourAccountViewModel.isMotherClicked = false
                 yourAccountViewModel.parentFullName = ""
                 yourAccountViewModel.parentPhoneNumber = ""
                 yourAccountViewModel.parentEmail = ""
@@ -121,6 +126,8 @@ fun YourAccountScreen(
                 yourAccountViewModel.parentPartnerDateOfBirth = ""
                 yourAccountViewModel.parentPartnerPhoneNumber = ""
                 yourAccountViewModel.parentPartnerName = ""
+                yourAccountViewModel.isParentClicked = true
+                yourAccountViewModel.isGenderSelected = false
                 getUserDetailsParent(userId, type, homeActivity, yourAccountViewModel, context)
 
             }
@@ -363,8 +370,10 @@ fun YourAccountScreen(
                                     .padding(top = 12.dp, start = 24.dp, end = 24.dp),
                                 value = yourAccountViewModel.surrogatePhoneNumber,
                                 onValueChange = {
+
                                     yourAccountViewModel.surrogatePhoneNumber = it
-                                    yourAccountViewModel.yourAccountPhoneNumberEmpty = false
+                                    yourAccountViewModel.phoneNumberMinimumValidate = true
+
                                 },
                                 keyboardOptions = KeyboardOptions(
                                     keyboardType = KeyboardType.Phone,
@@ -390,6 +399,18 @@ fun YourAccountScreen(
                                     )
                                 }
                             )
+                            if (yourAccountViewModel.phoneNumberMinimumValidate) {
+                                Text(
+                                    text = if (yourAccountViewModel.phoneNumberMaximumValidate) stringResource(
+                                        id = R.string.phone_number_validate_maximum
+                                    ) else stringResource(id = R.string.phone_number_validate_minimum),
+                                    color = MaterialTheme.colors.error,
+                                    style = MaterialTheme.typography.caption,
+                                    modifier = Modifier
+                                        .padding(start = 26.dp),
+                                    fontSize = 12.sp
+                                )
+                            }
                             Text(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -456,6 +477,9 @@ fun YourAccountScreen(
                                     keyboardType = KeyboardType.Text,
                                     imeAction = ImeAction.Done
                                 ),
+                                keyboardActions = KeyboardActions(onDone = {
+                                    focusManager.clearFocus(true)
+                                }),
                                 shape = RoundedCornerShape(8.dp),
                                 colors = TextFieldDefaults.textFieldColors(
                                     backgroundColor = if (!yourAccountViewModel.isEditable.value) ET_Bg
@@ -498,7 +522,7 @@ fun YourAccountScreen(
                                             R.style.CalenderViewCustom,
                                             { _: DatePicker, year: Int, month: Int, day: Int ->
                                                 yourAccountViewModel.surrogateDateOfBirth =
-                                                    "$year/" + "%02d".format(month + 1) + "/" + "%02d".format(
+                                                    "$year-" + "%02d".format(month + 1) + "-" + "%02d".format(
                                                         day
                                                     )
                                             }, year, month, day
@@ -690,20 +714,24 @@ fun YourAccountScreen(
                                         )
                                     )
                                 }
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(top = 8.dp),
-                                    horizontalArrangement = Arrangement.Center,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    if (yourAccountViewModel.surrogateDateOfBirth != "") {
+                                if (yourAccountViewModel.surrogateDateOfBirth != "") {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(top = 8.dp),
+                                        horizontalArrangement = Arrangement.Center,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
                                         val dateOfBirth =
                                             yourAccountViewModel.surrogateDateOfBirth.replace(
-                                                "/",
+                                                "-",
                                                 ""
                                             )
-                                        Log.d("TAG", "YourAccountScreen: $dateOfBirth")
+                                        val age = getAge(
+                                            year = dateOfBirth.substring(0, 4).toInt(),
+                                            month = dateOfBirth.substring(4, 6).toInt(),
+                                            dayOfMonth = dateOfBirth.substring(6, 8).toInt()
+                                        )
                                         Text(
                                             modifier = Modifier
                                                 .wrapContentWidth()
@@ -719,7 +747,7 @@ fun YourAccountScreen(
                                         Text(
                                             modifier = Modifier
                                                 .wrapContentWidth(),
-                                            text = "(37 Year)",
+                                            text = "($age Year)",
                                             style = MaterialTheme.typography.body2.copy(
                                                 color = Color.Black,
                                                 fontSize = 14.sp,
@@ -787,7 +815,7 @@ fun YourAccountScreen(
                                 elevation = 2.dp,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(start = 25.dp, end = 23.dp, top = 34.dp)
+                                    .padding(start = 25.dp, end = 23.dp, top = 6.dp, bottom = 15.dp)
                             ) {
                                 Column {
                                     item.question?.let {
@@ -825,7 +853,7 @@ fun YourAccountScreen(
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .padding(top = 10.dp, end = 24.dp),
-                                            text = if (yourAccountViewModel.questionAnsweredDaysList[index]==0) "Today" else "${yourAccountViewModel.questionAnsweredDaysList[index]} Day ago",
+                                            text = if (yourAccountViewModel.questionAnsweredDaysList[index] == 0) "Today" else "${yourAccountViewModel.questionAnsweredDaysList[index]} Day ago",
                                             color = Color(0xFF9F9D9B),
                                             style = MaterialTheme.typography.body1,
                                             fontSize = 12.sp,
@@ -1079,7 +1107,7 @@ fun YourAccountScreen(
                                 verticalArrangement = Arrangement.Center,
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                if (yourAccountViewModel.parentFullName != "" || yourAccountViewModel.parentPartnerFullName != "") {
+                                if (yourAccountViewModel.parentFullName != "" || yourAccountViewModel.parentPartnerName != "") {
                                     Text(
                                         modifier = Modifier
                                             .wrapContentWidth(),
@@ -1092,14 +1120,53 @@ fun YourAccountScreen(
                                         )
                                     )
                                 }
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(top = 8.dp),
-                                    horizontalArrangement = Arrangement.Center,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    if (yourAccountViewModel.parentDateOfBirth != "") {
+                                if (yourAccountViewModel.parentDateOfBirth != "" || yourAccountViewModel.parentPartnerDateOfBirth != "") {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(top = 8.dp),
+                                        horizontalArrangement = Arrangement.Center,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        var parentDateOfBirth: String? = null
+                                        var parentPartnerDateOfBirth: String? = null
+                                        var parentAge: Int? = null
+                                        var parentPartnerAge: Int? = null
+                                        if (yourAccountViewModel.isParentClicked) {
+                                            if (yourAccountViewModel.parentDateOfBirth != "") {
+                                                parentDateOfBirth =
+                                                    yourAccountViewModel.parentDateOfBirth.replace(
+                                                        "-",
+                                                        ""
+                                                    )
+                                                parentAge = getAge(
+                                                    year = parentDateOfBirth.substring(0, 4)
+                                                        .toInt(),
+                                                    month = parentDateOfBirth.substring(4, 6)
+                                                        .toInt(),
+                                                    dayOfMonth = parentDateOfBirth.substring(6, 8)
+                                                        .toInt()
+                                                )
+                                            }
+                                        } else if (yourAccountViewModel.isMotherClicked) {
+                                            if (yourAccountViewModel.parentPartnerDateOfBirth != "") {
+                                                parentPartnerDateOfBirth =
+                                                    yourAccountViewModel.parentPartnerDateOfBirth.replace(
+                                                        "-",
+                                                        ""
+                                                    )
+                                                parentPartnerAge = getAge(
+                                                    year = parentPartnerDateOfBirth.substring(0, 4)
+                                                        .toInt(),
+                                                    month = parentPartnerDateOfBirth.substring(4, 6)
+                                                        .toInt(),
+                                                    dayOfMonth = parentPartnerDateOfBirth.substring(
+                                                        6,
+                                                        8
+                                                    ).toInt()
+                                                )
+                                            }
+                                        }
                                         Text(
                                             modifier = Modifier
                                                 .wrapContentWidth()
@@ -1115,7 +1182,7 @@ fun YourAccountScreen(
                                         Text(
                                             modifier = Modifier
                                                 .wrapContentWidth(),
-                                            text = if (yourAccountViewModel.isParentClicked) "(37 Year)" else "(30 Year)",
+                                            text = if (yourAccountViewModel.isParentClicked) "($parentAge Year)" else "($parentPartnerAge Year)",
                                             style = MaterialTheme.typography.body2.copy(
                                                 color = Color.Black,
                                                 fontSize = 14.sp,
@@ -1197,6 +1264,78 @@ fun YourAccountScreen(
                                             lineHeight = 22.sp
                                         )
                                     )
+                                }
+                            }
+                        }
+                        yourAccountViewModel.questionAnsweredList.forEachIndexed { index, item ->
+                            Surface(
+                                shape = RoundedCornerShape(12.dp),
+                                color = Color.White,
+                                elevation = 2.dp,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 25.dp, end = 23.dp, top = 34.dp)
+                            ) {
+                                Column {
+                                    item.question?.let {
+                                        Text(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(start = 24.dp, top = 24.dp, end = 56.dp),
+                                            text = it,
+                                            color = Color.Black,
+                                            style = MaterialTheme.typography.body2.copy(
+                                                color = Color.Black,
+                                                fontSize = 16.sp,
+                                                fontWeight = FontWeight.W600,
+                                                lineHeight = 24.sp
+                                            ),
+                                        )
+                                    }
+                                    Row {
+                                        item.user_name?.let {
+                                            Text(
+                                                modifier = Modifier.padding(
+                                                    start = 24.dp,
+                                                    top = 10.dp,
+                                                ),
+                                                text = it,
+                                                style = MaterialTheme.typography.body2.copy(
+                                                    color = Custom_Blue,
+                                                    fontSize = 16.sp,
+                                                    fontWeight = FontWeight.W600,
+                                                    lineHeight = 22.sp
+                                                )
+                                            )
+                                        }
+                                        Text(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(top = 10.dp, end = 24.dp),
+                                            text = if (yourAccountViewModel.questionAnsweredDaysList[index] == 0) "Today" else "${yourAccountViewModel.questionAnsweredDaysList[index]} Day ago",
+                                            color = Color(0xFF9F9D9B),
+                                            style = MaterialTheme.typography.body1,
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.Normal,
+                                            textAlign = TextAlign.End
+                                        )
+                                    }
+                                    item.answer?.let {
+                                        Text(
+                                            modifier = Modifier.padding(
+                                                start = 24.dp,
+                                                top = 4.dp,
+                                                bottom = 22.dp
+                                            ),
+                                            text = it,
+                                            style = MaterialTheme.typography.body2.copy(
+                                                color = Color.Black,
+                                                fontSize = 14.sp,
+                                                fontWeight = FontWeight.W600,
+                                                lineHeight = 22.sp
+                                            ),
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -1402,7 +1541,9 @@ fun YourAccountScreen(
                                     keyboardOptions = KeyboardOptions(
                                         keyboardType = KeyboardType.Text,
                                         imeAction = ImeAction.Done
-                                    ),
+                                    ), keyboardActions = KeyboardActions(onDone = {
+                                        focusManager.clearFocus(true)
+                                    }),
                                     shape = RoundedCornerShape(8.dp),
                                     colors = TextFieldDefaults.textFieldColors(
                                         backgroundColor = if (!yourAccountViewModel.isEditable.value) ET_Bg
@@ -1413,7 +1554,6 @@ fun YourAccountScreen(
                                         unfocusedIndicatorColor = Color.Transparent,
                                         textColor = Color.Black
                                     ), readOnly = !yourAccountViewModel.isEditable.value,
-                                    maxLines = 1,
                                     textStyle = MaterialTheme.typography.body2,
                                     trailingIcon = {
                                         Icon(
@@ -1445,7 +1585,7 @@ fun YourAccountScreen(
                                                 R.style.CalenderViewCustom,
                                                 { _: DatePicker, year: Int, month: Int, day: Int ->
                                                     yourAccountViewModel.parentDateOfBirth =
-                                                        "$year/" + "%02d".format(month + 1) + "/" + "%02d".format(
+                                                        "$year-" + "%02d".format(month + 1) + "-" + "%02d".format(
                                                             day
                                                         )
                                                 }, year, month, day
@@ -1802,7 +1942,9 @@ fun YourAccountScreen(
                                     keyboardOptions = KeyboardOptions(
                                         keyboardType = KeyboardType.Text,
                                         imeAction = ImeAction.Done
-                                    ),
+                                    ), keyboardActions = KeyboardActions(onDone = {
+                                        focusManager.clearFocus(true)
+                                    }),
                                     shape = RoundedCornerShape(8.dp),
                                     colors = TextFieldDefaults.textFieldColors(
                                         backgroundColor = if (!yourAccountViewModel.isEditable.value) ET_Bg
@@ -1813,7 +1955,6 @@ fun YourAccountScreen(
                                         unfocusedIndicatorColor = Color.Transparent,
                                         textColor = Color.Black
                                     ), readOnly = !yourAccountViewModel.isEditable.value,
-                                    maxLines = 1,
                                     textStyle = MaterialTheme.typography.body2,
                                     trailingIcon = {
                                         Icon(
@@ -1845,7 +1986,7 @@ fun YourAccountScreen(
                                                 R.style.CalenderViewCustom,
                                                 { _: DatePicker, year: Int, month: Int, day: Int ->
                                                     yourAccountViewModel.parentPartnerDateOfBirth =
-                                                        "$year/" + "%02d".format(month + 1) + "/" + "%02d".format(
+                                                        "$year-" + "%02d".format(month + 1) + "-" + "%02d".format(
                                                             day
                                                         )
                                                 }, year, month, day
@@ -1925,7 +2066,7 @@ fun YourAccountScreen(
                                                         userId = userId,
                                                         name = MultipartBody.Part.createFormData(
                                                             "name",
-                                                            yourAccountViewModel.parentPartnerName
+                                                            yourAccountViewModel.parentFullName
                                                         ),
                                                         email = MultipartBody.Part.createFormData(
                                                             "email",
@@ -1937,17 +2078,21 @@ fun YourAccountScreen(
                                                         ),
                                                         address = MultipartBody.Part.createFormData(
                                                             "address",
-                                                            yourAccountViewModel.parentPartnerHomeAddress
+                                                            yourAccountViewModel.parentHomeAddress
                                                         ),
                                                         dateOfBirth = MultipartBody.Part.createFormData(
                                                             "date_of_birth",
-                                                            yourAccountViewModel.parentPartnerDateOfBirth
+                                                            yourAccountViewModel.parentDateOfBirth
                                                         ),
                                                         imgFileName1 = null,
                                                         imgFileName2 = image,
                                                         type = MultipartBody.Part.createFormData(
                                                             "type",
                                                             type
+                                                        ),
+                                                        partner_name = MultipartBody.Part.createFormData(
+                                                            "partner_name",
+                                                            yourAccountViewModel.parentPartnerName
                                                         ),
                                                         partner_phone = MultipartBody.Part.createFormData(
                                                             "partner_phone",
@@ -2048,70 +2193,14 @@ fun YourAccountScreen(
                                     horizontalArrangement = Arrangement.Center,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    if (yourAccountViewModel.surrogateDateOfBirth != "") {
-                                        Text(
-                                            modifier = Modifier
-                                                .wrapContentWidth()
-                                                .padding(end = 2.dp),
-                                            text =
-                                            yourAccountViewModel.surrogateDateOfBirth,
-                                            style = MaterialTheme.typography.body2.copy(
-                                                color = Color(0xFF7F7D7C),
-                                                fontSize = 14.sp,
-                                                fontWeight = FontWeight.W500,
-                                                lineHeight = 22.sp
-                                            )
-                                        )
-                                        Text(
-                                            modifier = Modifier.wrapContentWidth(),
-                                            text = "(37 Year)",
-                                            style = MaterialTheme.typography.body2.copy(
-                                                color = Color.Black,
-                                                fontSize = 14.sp,
-                                                fontWeight = FontWeight.W500,
-                                                lineHeight = 22.sp
-                                            )
-                                        )
-                                    }
-                                }
-                                if (yourAccountViewModel.surrogateHomeAddress != "") {
                                     Text(
                                         modifier = Modifier
                                             .wrapContentWidth()
-                                            .padding(top = 18.dp),
+                                            .padding(end = 2.dp),
                                         text =
-                                        yourAccountViewModel.surrogateHomeAddress,
+                                        yourAccountViewModel.surrogateDateOfBirth,
                                         style = MaterialTheme.typography.body2.copy(
-                                            color = Color.Black,
-                                            fontSize = 14.sp,
-                                            fontWeight = FontWeight.W500,
-                                            lineHeight = 22.sp
-                                        )
-                                    )
-                                }
-                                if (yourAccountViewModel.surrogatePhoneNumber != "") {
-                                    Text(
-                                        modifier = Modifier
-                                            .wrapContentWidth()
-                                            .padding(top = 11.dp),
-                                        text =
-                                        yourAccountViewModel.surrogatePhoneNumber,
-                                        style = MaterialTheme.typography.body2.copy(
-                                            color = Custom_Blue,
-                                            fontSize = 14.sp,
-                                            fontWeight = FontWeight.W500,
-                                            lineHeight = 22.sp
-                                        )
-                                    )
-                                }
-                                if (yourAccountViewModel.surrogateEmail != "") {
-                                    Text(
-                                        modifier = Modifier
-                                            .wrapContentWidth()
-                                            .padding(top = 16.dp),
-                                        text = yourAccountViewModel.surrogateEmail,
-                                        style = MaterialTheme.typography.body2.copy(
-                                            color = Color.Black,
+                                            color = Color(0xFF7F7D7C),
                                             fontSize = 14.sp,
                                             fontWeight = FontWeight.W500,
                                             lineHeight = 22.sp
@@ -2119,77 +2208,49 @@ fun YourAccountScreen(
                                     )
                                 }
                             }
-                        }
-                        yourAccountViewModel.questionAnsweredList.forEachIndexed { index, item ->
-                            Surface(
-                                shape = RoundedCornerShape(12.dp),
-                                color = Color.White,
-                                elevation = 2.dp,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 25.dp, end = 23.dp, top = 34.dp)
-                            ) {
-                                Column {
-                                    item.question?.let {
-                                        Text(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(start = 24.dp, top = 24.dp, end = 56.dp),
-                                            text = it,
-                                            color = Color.Black,
-                                            style = MaterialTheme.typography.body2.copy(
-                                                color = Color.Black,
-                                                fontSize = 16.sp,
-                                                fontWeight = FontWeight.W600,
-                                                lineHeight = 24.sp
-                                            ),
-                                        )
-                                    }
-                                    Row {
-                                        item.user_name?.let {
-                                            Text(
-                                                modifier = Modifier.padding(
-                                                    start = 24.dp,
-                                                    top = 10.dp,
-                                                ),
-                                                text = it,
-                                                style = MaterialTheme.typography.body2.copy(
-                                                    color = Custom_Blue,
-                                                    fontSize = 16.sp,
-                                                    fontWeight = FontWeight.W600,
-                                                    lineHeight = 22.sp
-                                                )
-                                            )
-                                        }
-                                        Text(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(top = 10.dp, end = 24.dp),
-                                            text = if (yourAccountViewModel.questionAnsweredDaysList[index]==0) "Today" else "${yourAccountViewModel.questionAnsweredDaysList[index]} Day ago",
-                                            color = Color(0xFF9F9D9B),
-                                            style = MaterialTheme.typography.body1,
-                                            fontSize = 12.sp,
-                                            fontWeight = FontWeight.Normal,
-                                            textAlign = TextAlign.End
-                                        )
-                                    }
-                                    item.answer?.let {
-                                        Text(
-                                            modifier = Modifier.padding(
-                                                start = 24.dp,
-                                                top = 4.dp,
-                                                bottom = 22.dp
-                                            ),
-                                            text = it,
-                                            style = MaterialTheme.typography.body2.copy(
-                                                color = Color.Black,
-                                                fontSize = 14.sp,
-                                                fontWeight = FontWeight.W600,
-                                                lineHeight = 22.sp
-                                            ),
-                                        )
-                                    }
-                                }
+                            if (yourAccountViewModel.surrogateHomeAddress != "") {
+                                Text(
+                                    modifier = Modifier
+                                        .wrapContentWidth()
+                                        .padding(top = 18.dp),
+                                    text =
+                                    yourAccountViewModel.surrogateHomeAddress,
+                                    style = MaterialTheme.typography.body2.copy(
+                                        color = Color.Black,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.W500,
+                                        lineHeight = 22.sp
+                                    )
+                                )
+                            }
+                            if (yourAccountViewModel.surrogatePhoneNumber != "") {
+                                Text(
+                                    modifier = Modifier
+                                        .wrapContentWidth()
+                                        .padding(top = 11.dp),
+                                    text =
+                                    yourAccountViewModel.surrogatePhoneNumber,
+                                    style = MaterialTheme.typography.body2.copy(
+                                        color = Custom_Blue,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.W500,
+                                        lineHeight = 22.sp
+                                    )
+                                )
+                            }
+                            if (yourAccountViewModel.surrogateEmail != "") {
+                                Text(
+                                    modifier = Modifier
+                                        .wrapContentWidth()
+                                        .padding(top = 16.dp),
+                                    text = yourAccountViewModel.surrogateEmail,
+                                    style = MaterialTheme.typography.body2.copy(
+                                        color = Color.Black,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.W500,
+                                        lineHeight = 22.sp
+                                    )
+                                )
                             }
                         }
                     }

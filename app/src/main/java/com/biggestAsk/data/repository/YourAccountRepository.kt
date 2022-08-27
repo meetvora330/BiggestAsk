@@ -48,6 +48,7 @@ class YourAccountRepository @Inject constructor(
         imgFileName1: MultipartBody.Part? = null,
         imgFileName2: MultipartBody.Part? = null,
         type: MultipartBody.Part,
+        partner_name: MultipartBody.Part? = null,
         partner_phone: MultipartBody.Part? = null,
         partner_dob: MultipartBody.Part? = null,
         partner_address: MultipartBody.Part? = null,
@@ -65,11 +66,12 @@ class YourAccountRepository @Inject constructor(
                     imgFileName1 = imgFileName1,
                     imgFileName2 = imgFileName2,
                     type = type,
-                    partner_phone = partner_phone,
-                    partner_dob = partner_dob,
-                    partner_address = partner_address,
+                    parent_partner_name = partner_name,
+                    parent_partner_phone = partner_phone,
+                    parent_partner_dob = partner_dob,
+                    parent_partner_address = partner_address,
                     gender = gender,
-                    partner_gender = partner_gender
+                    parent_partner_gender = partner_gender,
                 )
             })
         }.flowOn(Dispatchers.IO)
@@ -77,8 +79,8 @@ class YourAccountRepository @Inject constructor(
 
     suspend fun getYourAccountAnsweredQuestionList(
         userId: Int,
-        type:String
-    ):Flow<NetworkResult<GetAnsweredQuestionListResponse>>{
+        type: String
+    ): Flow<NetworkResult<GetAnsweredQuestionListResponse>> {
         return flow {
             emit(safeApiCall {
                 apiService.getYourAccountAnsweredQuestionList(type = type, user_id = userId)

@@ -276,7 +276,7 @@ fun MilestonesScreen(
                                         R.style.CalenderViewCustom,
                                         { _: DatePicker, year: Int, month: Int, day: Int ->
                                             milestoneViewModel.addNewMilestoneDate.value =
-                                                "$year/" + "%02d".format(month + 1) + "/" + "%02d".format(
+                                                "$year-" + "%02d".format(month + 1) + "-" + "%02d".format(
                                                     day
                                                 )
                                         }, year, month, day

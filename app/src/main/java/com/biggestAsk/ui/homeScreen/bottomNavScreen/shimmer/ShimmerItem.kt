@@ -194,6 +194,79 @@ fun NearestMilestoneShimmerItem(brush: Brush) {
 }
 
 @Composable
+fun QuestionBankContentShimmerAnimation() {
+    val brush = shimmerTheme()
+    QuestionBankContentShimmerItem(brush)
+}
+
+@Composable
+fun QuestionBankContentShimmerItem(brush: Brush) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .padding(start = 24.dp, end = 24.dp, top = 20.dp)
+    ) {
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(20.dp)
+                .padding(end = 10.dp)
+                .background(brush, shape = RoundedCornerShape(5.dp)),
+            text = "",
+            style = MaterialTheme.typography.body2,
+            fontWeight = FontWeight.Normal,
+            fontSize = 16.sp,
+            lineHeight = 27.sp
+        )
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 10.dp, end = 15.dp)
+                .background(brush, shape = RoundedCornerShape(5.dp)),
+            text = "",
+            style = MaterialTheme.typography.body2,
+            fontWeight = FontWeight.Normal,
+            fontSize = 16.sp,
+            lineHeight = 27.sp
+        )
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 10.dp, end = 16.dp)
+                .background(brush, shape = RoundedCornerShape(5.dp)),
+            text = "",
+            style = MaterialTheme.typography.body2,
+            fontWeight = FontWeight.Normal,
+            fontSize = 16.sp,
+            lineHeight = 27.sp
+        )
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 10.dp)
+                .background(brush, shape = RoundedCornerShape(5.dp)),
+            text = "",
+            style = MaterialTheme.typography.body2,
+            fontWeight = FontWeight.Normal,
+            fontSize = 16.sp,
+            lineHeight = 27.sp
+        )
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 10.dp, end = 35.dp)
+                .background(brush, shape = RoundedCornerShape(5.dp)),
+            text = "",
+            style = MaterialTheme.typography.body2,
+            fontWeight = FontWeight.Normal,
+            fontSize = 16.sp,
+            lineHeight = 27.sp
+        )
+    }
+}
+
+@Composable
 fun HomeScreenQuestionShimmerAnimation(isTittleAvailable: Boolean) {
     val brush = shimmerTheme()
     HomeScreenQuestionShimmerItem(brush = brush, isTittleAvailable = isTittleAvailable)
@@ -227,7 +300,7 @@ fun HomeScreenQuestionShimmerItem(brush: Brush, isTittleAvailable: Boolean) {
         Text(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp)
+                .height(60.dp)
                 .padding(top = 12.dp, start = 24.dp, end = 24.dp)
                 .background(brush, shape = RoundedCornerShape(8.dp)),
             text = "",
@@ -491,7 +564,6 @@ fun MilestoneScreenShimmerItem(brush: Brush) {
 
         }
     }
-
 }
 
 @Composable

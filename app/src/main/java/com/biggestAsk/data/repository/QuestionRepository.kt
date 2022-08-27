@@ -2,11 +2,12 @@ package com.biggestAsk.data.repository
 
 import android.content.Context
 import com.biggestAsk.data.model.request.GetPregnancyMilestoneRequest
-import com.biggestAsk.data.model.request.StoreAnsImportantQuestionRequest
+import com.biggestAsk.data.model.request.ScreenQuestionStatusRequest
 import com.biggestAsk.data.model.request.StoreBaseScreenQuestionAnsRequest
 import com.biggestAsk.data.model.response.CommonResponse
 import com.biggestAsk.data.model.response.GetFrequencyResponse
 import com.biggestAsk.data.model.response.GetHomeScreenQuestionResponse
+import com.biggestAsk.data.model.response.QuestionBankContentResponse
 import com.biggestAsk.data.source.network.ApiService
 import com.biggestAsk.data.source.network.BaseApiResponse
 import com.biggestAsk.data.source.network.NetworkResult
@@ -48,7 +49,26 @@ class QuestionRepository @Inject constructor(
         storeBaseScreenQuestionAnsRequest: StoreBaseScreenQuestionAnsRequest
     ): Flow<NetworkResult<CommonResponse>> {
         return flow {
-            emit(safeApiCall { apiService.storeBaseScreenQuestionAns(storeBaseScreenQuestionAnsRequest) })
+            emit(safeApiCall {
+                apiService.storeBaseScreenQuestionAns(
+                    storeBaseScreenQuestionAnsRequest
+                )
+            })
         }.flowOn(Dispatchers.IO)
     }
+
+    suspend fun getQuestionBankContent(): Flow<NetworkResult<QuestionBankContentResponse>> {
+        return flow {
+            emit(safeApiCall {
+                apiService.getQuestionBankContent()
+            })
+        }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun screenQuestionStatus(screenQuestionStatusRequest: ScreenQuestionStatusRequest): Flow<NetworkResult<CommonResponse>> {
+        return flow {
+            emit(safeApiCall { apiService.screenQuestionStatus(screenQuestionStatusRequest) })
+        }.flowOn(Dispatchers.IO)
+    }
+
 }

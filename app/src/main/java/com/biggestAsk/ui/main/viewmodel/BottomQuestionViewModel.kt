@@ -10,12 +10,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.biggestAsk.data.model.request.Answer
 import com.biggestAsk.data.model.request.GetPregnancyMilestoneRequest
-import com.biggestAsk.data.model.request.StoreAnsImportantQuestionRequest
+import com.biggestAsk.data.model.request.ScreenQuestionStatusRequest
 import com.biggestAsk.data.model.request.StoreBaseScreenQuestionAnsRequest
-import com.biggestAsk.data.model.response.CommonResponse
-import com.biggestAsk.data.model.response.DataXXX
-import com.biggestAsk.data.model.response.GetFrequencyResponse
-import com.biggestAsk.data.model.response.GetHomeScreenQuestionResponse
+import com.biggestAsk.data.model.response.*
 import com.biggestAsk.data.repository.QuestionRepository
 import com.biggestAsk.data.source.network.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -36,6 +33,8 @@ class BottomQuestionViewModel @Inject constructor(
     var isQuestionScreenQuestionDataLoaded: Boolean by mutableStateOf(false)
     var dropDownItemParentsName = mutableStateListOf<String>()
     var isErrorOccurredQuestionScreenQuestion: Boolean by mutableStateOf(false)
+    var isQuestionBankContentLoaded: Boolean by mutableStateOf(false)
+    var isErrorOccurredQuestionBankContent: Boolean by mutableStateOf(false)
     var questionScreenQuestionCategeryId: Int by mutableStateOf(0)
     var questionScreenQuestionId: Int by mutableStateOf(0)
     var questionScreenLatestQuestion: String by mutableStateOf("")
@@ -46,11 +45,16 @@ class BottomQuestionViewModel @Inject constructor(
     var questionParentList = mutableStateListOf<String>()
     var frequency: String by mutableStateOf("")
     var answerList = mutableStateListOf<Answer>()
+    var questionBankInfo: String by mutableStateOf("")
     var getHomeScreenQuestionResponse: MutableLiveData<NetworkResult<GetHomeScreenQuestionResponse>> =
         MutableLiveData()
     var getFrequencyResponse: MutableLiveData<NetworkResult<GetFrequencyResponse>> =
         MutableLiveData()
     var storeAnsImportantQuestionResponse: MutableLiveData<NetworkResult<CommonResponse>> =
+        MutableLiveData()
+    var questionBankContentResponse: MutableLiveData<NetworkResult<QuestionBankContentResponse>> =
+        MutableLiveData()
+    var screenFrequencyStatus: MutableLiveData<NetworkResult<CommonResponse>> =
         MutableLiveData()
 
     fun getHomeScreenQuestion(getPregnancyMilestoneRequest: GetPregnancyMilestoneRequest) {
@@ -78,6 +82,25 @@ class BottomQuestionViewModel @Inject constructor(
                 .collect {
                     storeAnsImportantQuestionResponse.value = it
                 }
+        }
+    }
+
+    fun getQuestionBankContent() {
+        questionBankContentResponse.value = NetworkResult.Loading()
+        viewModelScope.launch {
+            questionRepository.getQuestionBankContent().collect {
+                questionBankContentResponse.value = it
+            }
+        }
+    }
+
+
+    fun screenQuestionStatus(screenQuestionStatusRequest: ScreenQuestionStatusRequest) {
+        screenFrequencyStatus.value = NetworkResult.Loading()
+        viewModelScope.launch {
+            questionRepository.screenQuestionStatus(screenQuestionStatusRequest).collect {
+                screenFrequencyStatus.value = it
+            }
         }
     }
 }

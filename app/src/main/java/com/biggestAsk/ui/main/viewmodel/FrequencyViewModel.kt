@@ -25,7 +25,6 @@ class FrequencyViewModel @Inject constructor(
     var isLoading: Boolean by mutableStateOf(false)
     val selectedValueEveryDayRb = mutableStateOf(true)
     val selectedValueEvery3DaysRb = mutableStateOf(false)
-    val selectedValueEveryWeekRb = mutableStateOf(false)
     var screenQuestionStatus: MutableLiveData<NetworkResult<CommonResponse>> = MutableLiveData()
 
     fun screenQuestionStatus(screenQuestionStatusRequest: ScreenQuestionStatusRequest) {

@@ -1,6 +1,7 @@
 package com.biggestAsk.ui.homeScreen.drawerScreens.yourSurrogateMother
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -28,15 +29,12 @@ import com.biggestAsk.data.model.response.GetIntendedProfileResponse
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.ui.HomeActivity
 import com.biggestAsk.ui.homeScreen.drawerScreens.notification.advancedShadow
+import com.biggestAsk.ui.homeScreen.drawerScreens.yourAccount.YourAccountSurrogateShimmerAnimation
 import com.biggestAsk.ui.main.viewmodel.YourSurrogateMotherViewModel
 import com.biggestAsk.ui.main.viewmodel.YourSurrogateViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
-import com.biggestAsk.ui.ui.theme.light_gray
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
-import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.placeholder
-import com.google.accompanist.placeholder.shimmer
 
 @Composable
 fun YourSurrogateMother(
@@ -56,120 +54,135 @@ fun YourSurrogateMother(
             )
         }
     }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(top = 24.dp, bottom = 80.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(
-                32.dp,
-                Alignment.CenterHorizontally
-            )
+    if (yourSurrogateMotherViewModel.isSurrogateDataLoading) {
+        YourAccountSurrogateShimmerAnimation()
+    } else {
+        Column(
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .padding(top = 24.dp, bottom = 80.dp)
         ) {
-            ConstraintLayout(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 28.dp)
-            ) {
-                val (img_user) = createRefs()
-                val painter = rememberImagePainter(
-                    yourSurrogateMotherViewModel.surrogateMotherImg,
-                    builder = { placeholder(R.drawable.ic_placeholder_your_account) }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(
+                    32.dp,
+                    Alignment.CenterHorizontally
                 )
-                Row(
+            ) {
+                ConstraintLayout(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .constrainAs(img_user) {
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                            top.linkTo(parent.top)
-                        },
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
+                        .padding(top = 28.dp)
                 ) {
-                    Card(
+                    val (img_user) = createRefs()
+                    val painter = rememberImagePainter(
+                        yourSurrogateMotherViewModel.surrogateMotherImg,
+                        builder = { placeholder(R.drawable.ic_placeholder_your_account) }
+                    )
+                    Row(
                         modifier = Modifier
-                            .width(88.dp)
-                            .height(88.dp)
-                            .placeholder(
-                                visible = yourSurrogateMotherViewModel.isSurrogateDataLoading,
-                                color = Color.LightGray,
-                                shape = RoundedCornerShape(10.dp),
-                                highlight = PlaceholderHighlight.shimmer(
-                                    highlightColor = Color.White,
-                                )
-                            ), shape = RoundedCornerShape(10.dp)
-
+                            .fillMaxWidth()
+                            .constrainAs(img_user) {
+                                start.linkTo(parent.start)
+                                end.linkTo(parent.end)
+                                top.linkTo(parent.top)
+                            },
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Image(
-                            contentDescription = null,
+                        Card(
                             modifier = Modifier
                                 .width(88.dp)
-                                .height(88.dp),
-                            painter = if (yourSurrogateMotherViewModel.surrogateMotherImg != "") painter else painterResource(
-                                id = R.drawable.ic_placeholder_your_account
+                                .height(88.dp), shape = RoundedCornerShape(10.dp)
+
+                        ) {
+                            Image(
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .width(88.dp)
+                                    .height(88.dp),
+                                painter = if (yourSurrogateMotherViewModel.surrogateMotherImg != "") painter else painterResource(
+                                    id = R.drawable.ic_placeholder_your_account
+                                )
                             )
-                        )
+                        }
                     }
                 }
             }
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 15.dp)
-        ) {
-            Column(
+            Row(
                 modifier = Modifier
-                    .fillMaxWidth(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .fillMaxWidth()
+                    .padding(top = 15.dp)
             ) {
-                Text(
+                Column(
                     modifier = Modifier
-                        .wrapContentWidth()
-                        .placeholder(
-                            visible = yourSurrogateMotherViewModel.isSurrogateDataLoading,
-                            color = Color.LightGray,
-                            shape = RoundedCornerShape(4.dp),
-                            highlight = PlaceholderHighlight.shimmer(
-                                highlightColor = Color.White,
-                            )
-                        ),
-                    text = yourSurrogateMotherViewModel.surrogateMotherFullName,
-                    style = MaterialTheme.typography.h2.copy(
-                        color = Color.Black,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.W600,
-                        lineHeight = 32.sp
-                    )
-                )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
                         modifier = Modifier
+                            .wrapContentWidth(),
+                        text = yourSurrogateMotherViewModel.surrogateMotherFullName,
+                        style = MaterialTheme.typography.h2.copy(
+                            color = Color.Black,
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.W600,
+                            lineHeight = 32.sp
+                        )
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            modifier = Modifier
+                                .wrapContentWidth()
+                                .padding(end = 2.dp),
+                            text = yourSurrogateMotherViewModel.surrogateMotherDateOfBirth,
+                            style = MaterialTheme.typography.body2.copy(
+                                color = Color(0xFF7F7D7C),
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.W500,
+                                lineHeight = 22.sp
+                            )
+                        )
+                        Text(
+                            modifier = Modifier
+                                .wrapContentWidth(),
+                            text = "(37 Year)",
+                            style = MaterialTheme.typography.body2.copy(
+                                color = Color.Black,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.W500,
+                                lineHeight = 22.sp
+                            )
+                        )
+                    }
+                    Text(
+                        modifier = Modifier
                             .wrapContentWidth()
-                            .padding(end = 2.dp)
-                            .placeholder(
-                                visible = yourSurrogateMotherViewModel.isSurrogateDataLoading,
-                                color = Color.LightGray,
-                                shape = RoundedCornerShape(4.dp),
-                                highlight = PlaceholderHighlight.shimmer(
-                                    highlightColor = Color.White,
-                                )
-                            ),
-                        text = yourSurrogateMotherViewModel.surrogateMotherDateOfBirth,
+                            .padding(top = 18.dp, start = 12.dp, end = 12.dp),
+                        text = yourSurrogateMotherViewModel.surrogateMotherHomeAddress,
                         style = MaterialTheme.typography.body2.copy(
-                            color = Color(0xFF7F7D7C),
+                            color = Color.Black,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.W500,
+                            lineHeight = 22.sp,
+                            textAlign = TextAlign.Center
+                        )
+                    )
+                    Text(
+                        modifier = Modifier
+                            .wrapContentWidth()
+                            .padding(top = 11.dp),
+                        text = yourSurrogateMotherViewModel.surrogateMotherPhoneNumber,
+                        style = MaterialTheme.typography.body2.copy(
+                            color = Custom_Blue,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.W500,
                             lineHeight = 22.sp
@@ -178,15 +191,8 @@ fun YourSurrogateMother(
                     Text(
                         modifier = Modifier
                             .wrapContentWidth()
-                            .placeholder(
-                                visible = yourSurrogateMotherViewModel.isSurrogateDataLoading,
-                                color = Color.LightGray,
-                                shape = RoundedCornerShape(4.dp),
-                                highlight = PlaceholderHighlight.shimmer(
-                                    highlightColor = Color.White,
-                                )
-                            ),
-                        text = "(37 Year)",
+                            .padding(top = 16.dp),
+                        text = yourSurrogateMotherViewModel.surrogateMotherEmail,
                         style = MaterialTheme.typography.body2.copy(
                             color = Color.Black,
                             fontSize = 14.sp,
@@ -195,172 +201,100 @@ fun YourSurrogateMother(
                         )
                     )
                 }
-                Text(
-                    modifier = Modifier
-                        .wrapContentWidth()
-                        .padding(top = 18.dp)
-                        .placeholder(
-                            visible = yourSurrogateMotherViewModel.isSurrogateDataLoading,
-                            color = Color.LightGray,
-                            shape = RoundedCornerShape(4.dp),
-                            highlight = PlaceholderHighlight.shimmer(
-                                highlightColor = Color.White,
-                            )
-                        ),
-                    text = yourSurrogateMotherViewModel.surrogateMotherHomeAddress,
-                    style = MaterialTheme.typography.body2.copy(
-                        color = Color.Black,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.W500,
-                        lineHeight = 22.sp
-                    )
-                )
-                Text(
-                    modifier = Modifier
-                        .wrapContentWidth()
-                        .padding(top = 11.dp)
-                        .placeholder(
-                            visible = yourSurrogateMotherViewModel.isSurrogateDataLoading,
-                            color = Color.LightGray,
-                            shape = RoundedCornerShape(4.dp),
-                            highlight = PlaceholderHighlight.shimmer(
-                                highlightColor = Color.White,
-                            )
-                        ),
-                    text = yourSurrogateMotherViewModel.surrogateMotherPhoneNumber,
-                    style = MaterialTheme.typography.body2.copy(
-                        color = Custom_Blue,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.W500,
-                        lineHeight = 22.sp
-                    )
-                )
-                Text(
-                    modifier = Modifier
-                        .wrapContentWidth()
-                        .padding(top = 16.dp)
-                        .placeholder(
-                            visible = yourSurrogateMotherViewModel.isSurrogateDataLoading,
-                            color = Color.LightGray,
-                            shape = RoundedCornerShape(4.dp),
-                            highlight = PlaceholderHighlight.shimmer(
-                                highlightColor = Color.White,
-                            )
-                        ),
-                    text = yourSurrogateMotherViewModel.surrogateMotherEmail,
-                    style = MaterialTheme.typography.body2.copy(
-                        color = Color.Black,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.W500,
-                        lineHeight = 22.sp
-                    )
-                )
             }
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 37.dp, start = 24.dp, end = 24.dp)
-                    .placeholder(
-                        visible = yourSurrogateMotherViewModel.isSurrogateDataLoading,
-                        color = light_gray,
-                        shape = RoundedCornerShape(8.dp),
-                        highlight = PlaceholderHighlight.shimmer(
-                            highlightColor = Color.White,
-                        )
-                    ),
-                text = stringResource(id = R.string.existing_question_profile),
-                style = MaterialTheme.typography.body2.copy(
-                    textAlign = TextAlign.Center,
-                    color = Color.Black,
-                    fontWeight = FontWeight.W900,
-                    fontSize = 22.sp,
-                    lineHeight = 28.sp
-                )
-            )
-            yourSurrogateMotherViewModel.intendedProfileResponseQuestionList.forEachIndexed { index, item ->
-                Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = Color.White,
-                    elevation = 2.dp,
+            if (yourSurrogateMotherViewModel.intendedProfileResponseQuestionList.isNotEmpty()) {
+                Text(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 25.dp, end = 23.dp, top = 16.dp)
-                        .placeholder(
-                            visible = yourSurrogateMotherViewModel.isSurrogateDataLoading,
-                            color = Color.LightGray,
-                            shape = RoundedCornerShape(12.dp),
-                            highlight = PlaceholderHighlight.shimmer(
-                                highlightColor = Color.White,
-                            )
-                        )
-                        .advancedShadow(
-                            color = Color(
-                                red = 27,
-                                green = 25,
-                                blue = 86,
-                                alpha = 0.1f.toInt()
-                            ),
-                            alpha = 0f,
-                            cornersRadius = 16.dp,
-                            shadowBlurRadius = 0.2.dp,
-                            offsetX = 0.dp,
-                            offsetY = 4.dp
-                        )
-                ) {
-                    Column {
-                        item.question?.let {
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 24.dp, top = 24.dp, end = 56.dp),
-                                text = it,
-                                color = Color.Black,
-                                style = MaterialTheme.typography.body2.copy(
-                                    color = Color.Black,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.W600,
-                                    lineHeight = 24.sp
+                        .padding(top = 20.dp, start = 24.dp, end = 24.dp),
+                    text = stringResource(id = R.string.existing_question_profile),
+                    style = MaterialTheme.typography.body2.copy(
+                        textAlign = TextAlign.Center,
+                        color = Color.Black,
+                        fontWeight = FontWeight.W900,
+                        fontSize = 22.sp,
+                        lineHeight = 28.sp
+                    )
+                )
+                yourSurrogateMotherViewModel.intendedProfileResponseQuestionList.forEachIndexed { index, item ->
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = Color.White,
+                        elevation = 2.dp,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 25.dp, end = 23.dp, top = 16.dp)
+                            .advancedShadow(
+                                color = Color(
+                                    red = 27,
+                                    green = 25,
+                                    blue = 86,
+                                    alpha = 0.1f.toInt()
                                 ),
+                                alpha = 0f,
+                                cornersRadius = 16.dp,
+                                shadowBlurRadius = 0.2.dp,
+                                offsetX = 0.dp,
+                                offsetY = 4.dp
                             )
-                        }
-                        Row {
-                            Text(
-                                modifier = Modifier.padding(start = 24.dp, top = 10.dp),
-                                text = yourSurrogateMotherViewModel.surrogateMotherFullName,
-                                style = MaterialTheme.typography.body2.copy(
-                                    color = Custom_Blue,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.W600,
-                                    lineHeight = 22.sp
+                    ) {
+                        Column {
+                            item.question?.let {
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 24.dp, top = 24.dp, end = 56.dp),
+                                    text = it,
+                                    color = Color.Black,
+                                    style = MaterialTheme.typography.body2.copy(
+                                        color = Color.Black,
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.W600,
+                                        lineHeight = 24.sp
+                                    ),
                                 )
-                            )
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 10.dp, end = 24.dp),
-                                text = "${yourSurrogateMotherViewModel.intendedProfileResponseDaysList[index]} Day ago",
-                                color = Color(0xFF9F9D9B),
-                                style = MaterialTheme.typography.body1,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Normal,
-                                textAlign = TextAlign.End
-                            )
-                        }
-                        item.answer?.let {
-                            Text(
-                                modifier = Modifier.padding(
-                                    start = 24.dp,
-                                    top = 4.dp,
-                                    bottom = 22.dp
-                                ),
-                                text = it,
-                                style = MaterialTheme.typography.body2.copy(
-                                    color = Color.Black,
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.W600,
-                                    lineHeight = 22.sp
-                                ),
-                            )
+                            }
+                            Row {
+                                item.user_name?.let {
+                                    Text(
+                                        modifier = Modifier.padding(start = 24.dp, top = 10.dp),
+                                        text = it,
+                                        style = MaterialTheme.typography.body2.copy(
+                                            color = Custom_Blue,
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.W600,
+                                            lineHeight = 22.sp
+                                        )
+                                    )
+                                }
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 10.dp, end = 24.dp),
+                                    text = "${yourSurrogateMotherViewModel.intendedProfileResponseDaysList[index]} Day ago",
+                                    color = Color(0xFF9F9D9B),
+                                    style = MaterialTheme.typography.body1,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Normal,
+                                    textAlign = TextAlign.End
+                                )
+                            }
+                            item.answer?.let {
+                                Text(
+                                    modifier = Modifier.padding(
+                                        start = 24.dp,
+                                        top = 4.dp,
+                                        bottom = 22.dp
+                                    ),
+                                    text = it,
+                                    style = MaterialTheme.typography.body2.copy(
+                                        color = Color.Black,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.W600,
+                                        lineHeight = 22.sp
+                                    ),
+                                )
+                            }
                         }
                     }
                 }
@@ -492,6 +426,14 @@ private fun handleGetIntendedProfileData(
                     )
                 }
             }
+            Log.d(
+                "TAG",
+                "handleGetIntendedProfileData: ${yourSurrogateMotherViewModel.intendedProfileResponseQuestionList.size}"
+            )
+            Log.d(
+                "TAG",
+                "handleGetIntendedProfileData: ${yourSurrogateMotherViewModel.intendedProfileResponseDaysList.size}"
+            )
             result.data?.days.let {
                 if (it != null) {
                     yourSurrogateMotherViewModel.intendedProfileResponseDaysList.addAll(it)

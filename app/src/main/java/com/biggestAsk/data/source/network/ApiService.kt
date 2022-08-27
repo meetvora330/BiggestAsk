@@ -122,10 +122,11 @@ interface ApiService {
         @Part imgFileName1: MultipartBody.Part?,
         @Part imgFileName2: MultipartBody.Part?,
         @Part type: MultipartBody.Part?,
-        @Part partner_phone: MultipartBody.Part?,
-        @Part partner_dob: MultipartBody.Part?,
-        @Part partner_address: MultipartBody.Part?,
-        @Part partner_gender: MultipartBody.Part?
+        @Part parent_partner_name: MultipartBody.Part? = null,
+        @Part parent_partner_phone: MultipartBody.Part?,
+        @Part parent_partner_dob: MultipartBody.Part?,
+        @Part parent_partner_address: MultipartBody.Part?,
+        @Part parent_partner_gender: MultipartBody.Part?
     ): Response<UpdateUserProfileResponse>
 
     @Multipart
@@ -208,7 +209,10 @@ interface ApiService {
     suspend fun getFrequency(
         @Query("user_id") user_id: Int,
         @Query("type") type: String
-    ):Response<GetFrequencyResponse>
+    ): Response<GetFrequencyResponse>
+
+    @GET(Constants.GET_QUESTION_BANK_CONTENT)
+    suspend fun getQuestionBankContent(): Response<QuestionBankContentResponse>
 
     @GET(Constants.GET_ABOUT_APP)
     suspend fun getAboutApp(): Response<AboutAppResponse>

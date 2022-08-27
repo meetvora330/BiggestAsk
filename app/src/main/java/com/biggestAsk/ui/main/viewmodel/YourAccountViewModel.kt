@@ -56,6 +56,8 @@ class YourAccountViewModel @Inject constructor(
     var surrogateFullName: String by mutableStateOf("")
     var surrogateImg: String by mutableStateOf("")
     var yourAccountFullNameEmpty: Boolean by mutableStateOf(false)
+    var phoneNumberMinimumValidate: Boolean by mutableStateOf(false)
+    var phoneNumberMaximumValidate: Boolean by mutableStateOf(false)
     var surrogatePhoneNumber: String by mutableStateOf("")
     var yourAccountPhoneNumberEmpty: Boolean by mutableStateOf(false)
     var surrogateEmail: String by mutableStateOf("")
@@ -75,7 +77,6 @@ class YourAccountViewModel @Inject constructor(
 
     //    parent
     var parentFullName: String by mutableStateOf("")
-    var parentPartnerFullName: String by mutableStateOf("")
     var parentImg1: String by mutableStateOf("")
     var parentImg2: String by mutableStateOf("")
     var parentPhoneNumber: String by mutableStateOf("")
@@ -166,6 +167,7 @@ class YourAccountViewModel @Inject constructor(
         imgFileName2: MultipartBody.Part? = null,
         type: MultipartBody.Part,
         gender: MultipartBody.Part? = null,
+        partner_name: MultipartBody.Part? = null,
         partner_phone: MultipartBody.Part? = null,
         partner_dob: MultipartBody.Part? = null,
         partner_address: MultipartBody.Part? = null,
@@ -174,20 +176,21 @@ class YourAccountViewModel @Inject constructor(
         updateUserProfileResponse.value = NetworkResult.Loading()
         viewModelScope.launch {
             yourAccountRepository.updateUserProfile(
-                userId,
-                name,
-                email,
-                number,
-                address,
-                gender,
-                dateOfBirth,
-                imgFileName1,
-                imgFileName2,
-                type,
-                partner_phone,
-                partner_dob,
-                partner_address,
-                partner_gender
+                userId = userId,
+                name = name,
+                email = email,
+                number = number,
+                address = address,
+                gender = gender,
+                dateOfBirth = dateOfBirth,
+                imgFileName1 = imgFileName1,
+                imgFileName2 = imgFileName2,
+                type = type,
+                partner_name = partner_name,
+                partner_phone = partner_phone,
+                partner_dob = partner_dob,
+                partner_address = partner_address,
+                partner_gender = partner_gender
             ).collect {
                 updateUserProfileResponse.value = it
             }

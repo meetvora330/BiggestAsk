@@ -833,9 +833,9 @@ private fun handleStoreQuestionAnsData(
             Log.e("TAG", "handleUserData() --> Success  $result")
             Log.i("TAG", result.message.toString())
             getHomeScreenQuestion(user_id, type, bottomHomeViewModel, homeActivity)
-                coroutineScope.launch {
-                    bottomSheetScaffoldState.bottomSheetState.collapse()
-                }
+            coroutineScope.launch {
+                bottomSheetScaffoldState.bottomSheetState.collapse()
+            }
             bottomHomeViewModel.isHomeScreenQuestionAnswered = false
             bottomHomeViewModel.answerList.clear()
         }
