@@ -37,6 +37,7 @@ class HomeActivity : BaseActivity() {
     private val yourSurrogateMotherViewModel: YourSurrogateMotherViewModel by viewModels()
     private val intendedParentsViewModel: IntendedParentsViewModel by viewModels()
     private val questionViewModel: BottomQuestionViewModel by viewModels()
+    private val frequencyViewModel: FrequencyViewModel by viewModels()
 
     private val permissionReqLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { it ->
@@ -46,6 +47,7 @@ class HomeActivity : BaseActivity() {
                     communityViewModel.isPermissionAllowed = false
                     yourAccountViewModel.isPermissionAllowed = false
                     contactYourProviderViewModel.isPermissionAllowed = false
+                    editMilestoneViewModel.isPermissionAllowed.value = false
                 }
                 ActivityCompat.shouldShowRequestPermissionRationale(
                     this,
@@ -54,11 +56,13 @@ class HomeActivity : BaseActivity() {
                     communityViewModel.isPermissionAllowed = false
                     yourAccountViewModel.isPermissionAllowed = false
                     contactYourProviderViewModel.isPermissionAllowed = false
+                    editMilestoneViewModel.isPermissionAllowed.value = false
                 }
                 else -> {
                     communityViewModel.isPermissionAllowed = true
                     yourAccountViewModel.isPermissionAllowed = true
                     contactYourProviderViewModel.isPermissionAllowed = true
+                    editMilestoneViewModel.isPermissionAllowed.value = true
                 }
             }
         }
@@ -69,7 +73,6 @@ class HomeActivity : BaseActivity() {
             Manifest.permission.READ_EXTERNAL_STORAGE
         )
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,7 +108,8 @@ class HomeActivity : BaseActivity() {
                     aboutAppViewModel = aboutAppViewModel,
                     yourSurrogateMotherViewModel = yourSurrogateMotherViewModel,
                     intendedParentsViewModel = intendedParentsViewModel,
-                    questionViewModel = questionViewModel
+                    questionViewModel = questionViewModel,
+                    frequencyViewModel = frequencyViewModel
                 )
             }
         }

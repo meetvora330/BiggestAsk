@@ -37,6 +37,7 @@ import com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer.IntendedParentsShimm
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer.NearestMilestoneShimmerAnimation
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer.PregnancyMilestoneShimmerAnimation
 import com.biggestAsk.ui.main.viewmodel.BottomHomeViewModel
+import com.biggestAsk.ui.main.viewmodel.FrequencyViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.ET_Bg
 import com.biggestAsk.ui.ui.theme.Text_Color
@@ -53,7 +54,8 @@ import kotlinx.coroutines.launch
 fun BottomHomeScreen(
     context: Context,
     homeActivity: HomeActivity,
-    bottomHomeViewModel: BottomHomeViewModel
+    bottomHomeViewModel: BottomHomeViewModel,
+    frequencyViewModel: FrequencyViewModel
 ) {
     val homeBottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
@@ -185,7 +187,7 @@ fun BottomHomeScreen(
                         fontWeight = FontWeight.W800
                     )
                     if (bottomHomeViewModel.parentList.isNotEmpty()) selectedText.value =
-                        simpleDropDown(
+                        SimpleDropDown(
                             suggestions = bottomHomeViewModel.parentList,
                             hint = stringResource(id = R.string.select_user_name_hint),
                             modifier = Modifier
@@ -195,7 +197,7 @@ fun BottomHomeScreen(
                                 fontWeight = FontWeight.W600,
                                 fontSize = 16.sp,
                                 color = Color.Black
-                            )
+                            ),
                         )
                 }
                 Row(

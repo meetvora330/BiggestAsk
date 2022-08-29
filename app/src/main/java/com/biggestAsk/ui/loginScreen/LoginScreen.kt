@@ -385,9 +385,14 @@ private fun handleUserData(
                     provider.setValue("type", result.data.type)
                     provider.setValue("partner_id", result.data.partner_id)
                     provider.setValue(Constants.LOGIN_STATUS, result.data.status)
+                    provider.setValue("user_name", result.data.user_name)
+                    if (result.data.type == "surrogate") {
+                        provider.setValue("surrogate_image", result.data.surrogate)
+                    } else if (result.data.type == "parent") {
+                        provider.setValue("parent_image", result.data.parent1)
+                    }
                 }
             }
-
             when (result.data?.status) {
                 LoginStatus.PAYMENT_NOT_DONE.name.lowercase(Locale.getDefault()) -> {
                     navHostController.popBackStack()
@@ -409,8 +414,6 @@ private fun handleUserData(
                     mainActivity.finish()
                 }
             }
-
-
         }
         is NetworkResult.Error -> {
             // show error message

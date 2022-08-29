@@ -7,5 +7,9 @@ data class LoginBodyResponse(
     val partner_id: Int,
     val status: String,
     val type: String,
-    val user_id: Int
+    val user_id: Int,
+    val user_name: String,
+    val surrogate: String,
+    val parent1: String,
+    val parent2: String
 )

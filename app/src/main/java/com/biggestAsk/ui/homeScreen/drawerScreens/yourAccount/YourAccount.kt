@@ -49,6 +49,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.text.isDigitsOnly
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.biggestAsk.data.model.request.GetUserDetailsParentRequest
@@ -59,7 +60,8 @@ import com.biggestAsk.data.model.response.GetUserDetailsSurrogateResponse
 import com.biggestAsk.data.model.response.UpdateUserProfileResponse
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.ui.HomeActivity
-import com.biggestAsk.ui.homeScreen.bottomNavScreen.simpleDropDown
+import com.biggestAsk.ui.homeScreen.bottomNavScreen.BackHandler
+import com.biggestAsk.ui.homeScreen.bottomNavScreen.SimpleDropDown
 import com.biggestAsk.ui.main.viewmodel.YourAccountViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.ET_Bg
@@ -149,6 +151,11 @@ fun YourAccountScreen(
         yourAccountViewModel.imageData = uri
         yourAccountViewModel.getImage(context)
         yourAccountViewModel.isImagePresent.value = uri != null
+    }
+    if (yourAccountViewModel.isEditable.value) {
+        BackHandler(true) {
+            yourAccountViewModel.isEditable.value = false
+        }
     }
     when (type) {
         SURROGATE -> {
@@ -331,7 +338,7 @@ fun YourAccountScreen(
                                 fontSize = 14.sp,
                                 color = Text_Accept_Terms
                             )
-                            yourAccountViewModel.surrogateGender = simpleDropDown(
+                            yourAccountViewModel.surrogateGender = SimpleDropDown(
                                 suggestions = suggestions,
                                 hint = stringResource(id = R.string.select_gender),
                                 modifier = Modifier
@@ -370,10 +377,17 @@ fun YourAccountScreen(
                                     .padding(top = 12.dp, start = 24.dp, end = 24.dp),
                                 value = yourAccountViewModel.surrogatePhoneNumber,
                                 onValueChange = {
-
-                                    yourAccountViewModel.surrogatePhoneNumber = it
-                                    yourAccountViewModel.phoneNumberMinimumValidate = true
-
+                                    val maxChar = 12
+                                    val minChar = 8
+                                    if (it.length <= maxChar) {
+                                        if (it.contains("+") || it.isDigitsOnly()) {
+                                            yourAccountViewModel.surrogatePhoneNumber = it
+                                            yourAccountViewModel.phoneNumberMinimumValidate =
+                                                minChar > it.length
+                                        } else {
+                                            yourAccountViewModel.phoneNumberMinimumValidate = true
+                                        }
+                                    }
                                 },
                                 keyboardOptions = KeyboardOptions(
                                     keyboardType = KeyboardType.Phone,
@@ -579,6 +593,9 @@ fun YourAccountScreen(
                                         TextUtils.isEmpty(yourAccountViewModel.surrogateGender) -> {
                                             yourAccountViewModel.isGenderSelected = true
                                         }
+                                        yourAccountViewModel.phoneNumberMinimumValidate -> {
+
+                                        }
                                         else -> {
                                             yourAccountViewModel.isEditable.value = false
                                             val image = yourAccountViewModel.uriPathParent?.let {
@@ -724,7 +741,7 @@ fun YourAccountScreen(
                                     ) {
                                         val dateOfBirth =
                                             yourAccountViewModel.surrogateDateOfBirth.replace(
-                                                "-",
+                                                "/",
                                                 ""
                                             )
                                         val age = getAge(
@@ -808,74 +825,84 @@ fun YourAccountScreen(
                                 }
                             }
                         }
-                        yourAccountViewModel.questionAnsweredList.forEachIndexed { index, item ->
-                            Surface(
-                                shape = RoundedCornerShape(12.dp),
-                                color = Color.White,
-                                elevation = 2.dp,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 25.dp, end = 23.dp, top = 6.dp, bottom = 15.dp)
-                            ) {
-                                Column {
-                                    item.question?.let {
-                                        Text(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(start = 24.dp, top = 24.dp, end = 56.dp),
-                                            text = it,
-                                            color = Color.Black,
-                                            style = MaterialTheme.typography.body2.copy(
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 16.dp, bottom = 20.dp)
+                        ) {
+                            yourAccountViewModel.questionAnsweredList.forEachIndexed { index, item ->
+                                Surface(
+                                    shape = RoundedCornerShape(12.dp),
+                                    color = Color.White,
+                                    elevation = 2.dp,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 25.dp, end = 23.dp, top = 16.dp)
+                                ) {
+                                    Column {
+                                        item.question?.let {
+                                            Text(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(
+                                                        start = 24.dp,
+                                                        top = 24.dp,
+                                                        end = 56.dp
+                                                    ),
+                                                text = it,
                                                 color = Color.Black,
-                                                fontSize = 16.sp,
-                                                fontWeight = FontWeight.W600,
-                                                lineHeight = 24.sp
-                                            ),
-                                        )
-                                    }
-                                    Row {
-                                        item.user_name?.let {
+                                                style = MaterialTheme.typography.body2.copy(
+                                                    color = Color.Black,
+                                                    fontSize = 16.sp,
+                                                    fontWeight = FontWeight.W600,
+                                                    lineHeight = 24.sp
+                                                ),
+                                            )
+                                        }
+                                        Row {
+                                            item.user_name?.let {
+                                                Text(
+                                                    modifier = Modifier.padding(
+                                                        start = 24.dp,
+                                                        top = 10.dp,
+                                                    ),
+                                                    text = it,
+                                                    style = MaterialTheme.typography.body2.copy(
+                                                        color = Custom_Blue,
+                                                        fontSize = 16.sp,
+                                                        fontWeight = FontWeight.W600,
+                                                        lineHeight = 22.sp
+                                                    )
+                                                )
+                                            }
+                                            Text(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(top = 10.dp, end = 24.dp),
+                                                text = if (yourAccountViewModel.questionAnsweredDaysList[index] == 0) "Today" else "${yourAccountViewModel.questionAnsweredDaysList[index]} Day ago",
+                                                color = Color(0xFF9F9D9B),
+                                                style = MaterialTheme.typography.body1,
+                                                fontSize = 12.sp,
+                                                fontWeight = FontWeight.Normal,
+                                                textAlign = TextAlign.End
+                                            )
+                                        }
+                                        item.answer?.let {
                                             Text(
                                                 modifier = Modifier.padding(
                                                     start = 24.dp,
-                                                    top = 10.dp,
+                                                    top = 4.dp,
+                                                    bottom = 22.dp
                                                 ),
                                                 text = it,
                                                 style = MaterialTheme.typography.body2.copy(
-                                                    color = Custom_Blue,
-                                                    fontSize = 16.sp,
+                                                    color = Color.Black,
+                                                    fontSize = 14.sp,
                                                     fontWeight = FontWeight.W600,
                                                     lineHeight = 22.sp
-                                                )
+                                                ),
                                             )
                                         }
-                                        Text(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(top = 10.dp, end = 24.dp),
-                                            text = if (yourAccountViewModel.questionAnsweredDaysList[index] == 0) "Today" else "${yourAccountViewModel.questionAnsweredDaysList[index]} Day ago",
-                                            color = Color(0xFF9F9D9B),
-                                            style = MaterialTheme.typography.body1,
-                                            fontSize = 12.sp,
-                                            fontWeight = FontWeight.Normal,
-                                            textAlign = TextAlign.End
-                                        )
-                                    }
-                                    item.answer?.let {
-                                        Text(
-                                            modifier = Modifier.padding(
-                                                start = 24.dp,
-                                                top = 4.dp,
-                                                bottom = 22.dp
-                                            ),
-                                            text = it,
-                                            style = MaterialTheme.typography.body2.copy(
-                                                color = Color.Black,
-                                                fontSize = 14.sp,
-                                                fontWeight = FontWeight.W600,
-                                                lineHeight = 22.sp
-                                            ),
-                                        )
                                     }
                                 }
                             }
@@ -1120,7 +1147,7 @@ fun YourAccountScreen(
                                         )
                                     )
                                 }
-                                if (yourAccountViewModel.parentDateOfBirth != "" || yourAccountViewModel.parentPartnerDateOfBirth != "") {
+                                if (yourAccountViewModel.parentDateOfBirth != "" && yourAccountViewModel.parentPartnerDateOfBirth != "") {
                                     Row(
                                         modifier = Modifier
                                             .fillMaxWidth()
@@ -1136,7 +1163,7 @@ fun YourAccountScreen(
                                             if (yourAccountViewModel.parentDateOfBirth != "") {
                                                 parentDateOfBirth =
                                                     yourAccountViewModel.parentDateOfBirth.replace(
-                                                        "-",
+                                                        "/",
                                                         ""
                                                     )
                                                 parentAge = getAge(
@@ -1152,7 +1179,7 @@ fun YourAccountScreen(
                                             if (yourAccountViewModel.parentPartnerDateOfBirth != "") {
                                                 parentPartnerDateOfBirth =
                                                     yourAccountViewModel.parentPartnerDateOfBirth.replace(
-                                                        "-",
+                                                        "/",
                                                         ""
                                                     )
                                                 parentPartnerAge = getAge(
@@ -1410,7 +1437,7 @@ fun YourAccountScreen(
                                     fontSize = 14.sp,
                                     color = Text_Accept_Terms
                                 )
-                                yourAccountViewModel.parentGender = simpleDropDown(
+                                yourAccountViewModel.parentGender = SimpleDropDown(
                                     suggestions = suggestions,
                                     hint = stringResource(id = R.string.select_gender),
                                     modifier = Modifier
@@ -1449,8 +1476,18 @@ fun YourAccountScreen(
                                         .padding(top = 12.dp, start = 24.dp, end = 24.dp),
                                     value = yourAccountViewModel.parentPhoneNumber,
                                     onValueChange = {
-                                        yourAccountViewModel.parentPhoneNumber = it
-                                        yourAccountViewModel.yourAccountPhoneNumberEmpty = false
+                                        val maxChar = 12
+                                        val minChar = 8
+                                        if (it.length <= maxChar) {
+                                            if (it.contains("+") || it.isDigitsOnly()) {
+                                                yourAccountViewModel.parentPhoneNumber = it
+                                                yourAccountViewModel.phoneNumberMinimumValidate =
+                                                    minChar > it.length
+                                            } else {
+                                                yourAccountViewModel.phoneNumberMinimumValidate =
+                                                    true
+                                            }
+                                        }
                                     },
                                     keyboardOptions = KeyboardOptions(
                                         keyboardType = KeyboardType.Phone,
@@ -1476,6 +1513,18 @@ fun YourAccountScreen(
                                         )
                                     }
                                 )
+                                if (yourAccountViewModel.phoneNumberMinimumValidate) {
+                                    Text(
+                                        text = if (yourAccountViewModel.phoneNumberMaximumValidate) stringResource(
+                                            id = R.string.phone_number_validate_maximum
+                                        ) else stringResource(id = R.string.phone_number_validate_minimum),
+                                        color = MaterialTheme.colors.error,
+                                        style = MaterialTheme.typography.caption,
+                                        modifier = Modifier
+                                            .padding(start = 26.dp),
+                                        fontSize = 12.sp
+                                    )
+                                }
                                 Text(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -1585,7 +1634,7 @@ fun YourAccountScreen(
                                                 R.style.CalenderViewCustom,
                                                 { _: DatePicker, year: Int, month: Int, day: Int ->
                                                     yourAccountViewModel.parentDateOfBirth =
-                                                        "$year-" + "%02d".format(month + 1) + "-" + "%02d".format(
+                                                        "$year/" + "%02d".format(month + 1) + "/" + "%02d".format(
                                                             day
                                                         )
                                                 }, year, month, day
@@ -1654,6 +1703,9 @@ fun YourAccountScreen(
                                                 }
                                                 TextUtils.isEmpty(yourAccountViewModel.parentGender) -> {
                                                     yourAccountViewModel.isGenderSelected = true
+                                                }
+                                                yourAccountViewModel.phoneNumberMinimumValidate -> {
+
                                                 }
                                                 else -> {
                                                     val image =
@@ -1811,7 +1863,7 @@ fun YourAccountScreen(
                                     fontSize = 14.sp,
                                     color = Text_Accept_Terms
                                 )
-                                yourAccountViewModel.parentPartnerGender = simpleDropDown(
+                                yourAccountViewModel.parentPartnerGender = SimpleDropDown(
                                     suggestions = suggestions,
                                     hint = stringResource(id = R.string.select_gender),
                                     modifier = Modifier
@@ -1850,8 +1902,18 @@ fun YourAccountScreen(
                                         .padding(top = 12.dp, start = 24.dp, end = 24.dp),
                                     value = yourAccountViewModel.parentPartnerPhoneNumber,
                                     onValueChange = {
-                                        yourAccountViewModel.parentPartnerPhoneNumber = it
-                                        yourAccountViewModel.yourAccountPhoneNumberEmpty = false
+                                        val maxChar = 12
+                                        val minChar = 8
+                                        if (it.length <= maxChar) {
+                                            if (it.contains("+") || it.isDigitsOnly()) {
+                                                yourAccountViewModel.parentPartnerPhoneNumber = it
+                                                yourAccountViewModel.parentPartnerPhoneNumberMinimumValidate =
+                                                    minChar > it.length
+                                            } else {
+                                                yourAccountViewModel.parentPartnerPhoneNumberMinimumValidate =
+                                                    true
+                                            }
+                                        }
                                     },
                                     keyboardOptions = KeyboardOptions(
                                         keyboardType = KeyboardType.Phone,
@@ -1877,6 +1939,18 @@ fun YourAccountScreen(
                                         )
                                     }
                                 )
+                                if (yourAccountViewModel.parentPartnerPhoneNumberMinimumValidate) {
+                                    Text(
+                                        text = if (yourAccountViewModel.parentPartnerPhoneNumberMinimumValidate) stringResource(
+                                            id = R.string.phone_number_validate_maximum
+                                        ) else stringResource(id = R.string.phone_number_validate_minimum),
+                                        color = MaterialTheme.colors.error,
+                                        style = MaterialTheme.typography.caption,
+                                        modifier = Modifier
+                                            .padding(start = 26.dp),
+                                        fontSize = 12.sp
+                                    )
+                                }
                                 Text(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -2057,6 +2131,9 @@ fun YourAccountScreen(
                                                         true
                                                     Log.i("TAG", "Full Name Empty")
                                                 }
+                                                yourAccountViewModel.parentPartnerPhoneNumberMinimumValidate -> {
+
+                                                }
                                                 else -> {
                                                     val image =
                                                         yourAccountViewModel.uriPathMother?.let {
@@ -2074,7 +2151,7 @@ fun YourAccountScreen(
                                                         ),
                                                         number = MultipartBody.Part.createFormData(
                                                             "number",
-                                                            yourAccountViewModel.parentPartnerPhoneNumber
+                                                            yourAccountViewModel.parentPhoneNumber
                                                         ),
                                                         address = MultipartBody.Part.createFormData(
                                                             "address",
@@ -2528,8 +2605,11 @@ private fun handleUserUpdateData(
             yourAccountViewModel.isEditable.value = false
             yourAccountViewModel.isSurrogateDataLoading = false
             yourAccountViewModel.isParentDataLoading = false
+            val provider = PreferenceProvider(context)
             when (type) {
                 SURROGATE -> {
+                    provider.setValue("user_name", yourAccountViewModel.surrogateFullName)
+                    provider.setValue("surrogate_image", yourAccountViewModel.surrogateImg)
                     getUserDetailsSurrogate(
                         userId = userId,
                         type = type,
@@ -2539,6 +2619,8 @@ private fun handleUserUpdateData(
                     )
                 }
                 PARENT -> {
+                    provider.setValue("user_name", yourAccountViewModel.parentFullName)
+                    provider.setValue("parent_image", yourAccountViewModel.parentImg1)
                     getUserDetailsParent(
                         userId = userId,
                         homeActivity = homeActivity,

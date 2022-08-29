@@ -42,7 +42,7 @@ import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.navigation.Screen
 import com.biggestAsk.ui.MainActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
-import com.biggestAsk.ui.homeScreen.bottomNavScreen.simpleDropDown
+import com.biggestAsk.ui.homeScreen.bottomNavScreen.SimpleDropDown
 import com.biggestAsk.ui.main.viewmodel.EmailVerificationViewModel
 import com.biggestAsk.ui.main.viewmodel.RegisterViewModel
 import com.biggestAsk.ui.ui.theme.*
@@ -235,7 +235,7 @@ fun RegisterScreen(
                         start.linkTo(parent.start)
                     }, color = Color.Black
             )
-            selectedText = simpleDropDown(
+            selectedText = SimpleDropDown(
                 suggestions = suggestions,
                 hint = stringResource(id = R.string.select_gender),
                 modifier = Modifier

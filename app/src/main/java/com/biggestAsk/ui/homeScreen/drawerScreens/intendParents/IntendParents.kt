@@ -279,10 +279,6 @@ fun IntendParentsScreen(
                                 var dateOfBirth: String? = null
                                 var age: Int? = null
                                 dateOfBirth =
-                                    intendedParentsViewModel.motherDateOfBirth.replace(
-                                        "-",
-                                        ""
-                                    )
                                 intendedParentsViewModel.motherDateOfBirth.replace(
                                     "/",
                                     ""

@@ -30,7 +30,7 @@ import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.ui.HomeActivity
 import com.biggestAsk.ui.MainActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
-import com.biggestAsk.ui.homeScreen.bottomNavScreen.simpleDropDown
+import com.biggestAsk.ui.homeScreen.bottomNavScreen.SimpleDropDown
 import com.biggestAsk.ui.introScreen.findActivity
 import com.biggestAsk.ui.main.viewmodel.FrequencyViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
@@ -98,7 +98,7 @@ fun SelectFrequencyScreen(
                             fontSize = 22.sp,
                             color = Color.Black
                         )
-                        selectedText = simpleDropDown(
+                        selectedText = SimpleDropDown(
                             suggestions = suggestions,
                             hint = stringResource(id = R.string.frequency_drop_down_hint_day),
                             modifier = Modifier.padding(top = 17.dp, start = 24.dp, end = 24.dp),

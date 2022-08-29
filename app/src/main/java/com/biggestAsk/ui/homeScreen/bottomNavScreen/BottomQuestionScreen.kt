@@ -30,10 +30,13 @@ import com.biggestAsk.data.model.request.StoreBaseScreenQuestionAnsRequest
 import com.biggestAsk.data.model.response.*
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.ui.HomeActivity
+import com.biggestAsk.ui.homeScreen.bottomNavScreen.dropDown.selectionChangeDropDown
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer.HomeScreenQuestionShimmerAnimation
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer.QuestionBankContentShimmerAnimation
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer.QuestionScreenAnsweredQuestionShimmerAnimation
+import com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer.SelectFrequencyShimmerAnimation
 import com.biggestAsk.ui.main.viewmodel.BottomQuestionViewModel
+import com.biggestAsk.ui.main.viewmodel.FrequencyViewModel
 import com.biggestAsk.ui.main.viewmodel.YourAccountViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.ET_Bg
@@ -48,7 +51,8 @@ import kotlinx.coroutines.launch
 fun BottomQuestionScreen(
     questionViewModel: BottomQuestionViewModel, context: Context,
     homeActivity: HomeActivity,
-    yourAccountViewModel: YourAccountViewModel
+    yourAccountViewModel: YourAccountViewModel,
+    frequencyViewModel: FrequencyViewModel
 ) {
     val suggestions =
         listOf("Every day", "Every 3 days", "Every week")
@@ -175,13 +179,16 @@ fun BottomQuestionScreen(
                     color = Color.Black,
                     fontWeight = FontWeight.W800
                 )
-                selectedText.value = simpleDropDown(
-                    suggestions = questionViewModel.dropDownItemParentsName,
+                selectedText.value = SimpleDropDown(
+                    suggestions = suggestions,
                     hint = "Parents",
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 12.dp, end = 13.dp, top = 10.dp),
-                    style = MaterialTheme.typography.body2.copy()
+                        .padding(top = 12.dp, start = 24.dp, end = 24.dp),
+                    style = MaterialTheme.typography.body2.copy(
+                        fontWeight = FontWeight.W600,
+                        fontSize = 16.sp,
+                        color = Color.Black
+                    )
                 )
             }
             Row(
@@ -274,7 +281,9 @@ fun BottomQuestionScreen(
                     )
                 }
             }
-            if (!questionViewModel.isFrequencyDataLoading) {
+            if (questionViewModel.isFrequencyDataLoading || frequencyViewModel.isLoading) {
+                SelectFrequencyShimmerAnimation()
+            } else {
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -295,20 +304,26 @@ fun BottomQuestionScreen(
                     color = Color.Black,
                     fontWeight = FontWeight.W800
                 )
-                simpleDropDown(
+                selectedText.value = selectionChangeDropDown(
                     suggestions = suggestions,
-                    hint = stringResource(id = R.string.bottom_ques_drop_down_hint_day),
-                    modifier = Modifier.padding(top = 12.dp, start = 24.dp, end = 24.dp),
+                    hint = "Frequency...",
+                    modifier = Modifier
+                        .padding(top = 12.dp, start = 24.dp, end = 24.dp),
                     style = MaterialTheme.typography.body2.copy(
                         fontWeight = FontWeight.W600,
                         fontSize = 16.sp,
                         color = Color.Black
                     ),
-                    text = questionViewModel.frequency
+                    frequencyViewModel = frequencyViewModel,
+                    context = context,
+                    homeActivity = homeActivity,
+                    isFrequencyChanged = selectedText.value != "",
+                    text = questionViewModel.frequency,
+                    questionViewModel = questionViewModel
                 )
             }
-            if (questionViewModel.isAnsweredQuestionLoading || questionViewModel.isFrequencyDataLoading) {
-                HomeScreenQuestionShimmerAnimation(isTittleAvailable = false)
+            if (questionViewModel.isAnsweredQuestionLoading) {
+                HomeScreenQuestionShimmerAnimation()
             } else {
                 if (!questionViewModel.isErrorOccurredInQuestionLoading) {
                     if (questionViewModel.questionScreenLatestQuestion != "") {
@@ -471,7 +486,7 @@ fun BottomQuestionScreen(
 }
 
 
-private fun updateQuestionScreen(
+fun updateQuestionScreen(
     userId: Int,
     type: String?,
     yourAccountViewModel: YourAccountViewModel,
@@ -485,7 +500,6 @@ private fun updateQuestionScreen(
             type = type
         )
     )
-    questionViewModel.getFrequency(user_id = userId, type = type)
     yourAccountViewModel.getAnsweredQuestionListResponse.observe(homeActivity) {
         if (it != null) {
             handleQuestionAnswerList(
@@ -499,15 +513,30 @@ private fun updateQuestionScreen(
             handleQuestionData(result = it, questionViewModel = questionViewModel)
         }
     }
-    questionViewModel.getFrequencyResponse.observe(homeActivity) {
-        if (it != null) {
-            handleFrequencyData(result = it, questionViewModel = questionViewModel)
-        }
-    }
+    updateFrequency(
+        userId = userId,
+        type = type,
+        questionViewModel = questionViewModel,
+        homeActivity = homeActivity
+    )
     questionViewModel.getQuestionBankContent()
     questionViewModel.questionBankContentResponse.observe(homeActivity) {
         if (it != null) {
             handleQuestionBankContentData(result = it, questionViewModel = questionViewModel)
+        }
+    }
+}
+
+fun updateFrequency(
+    userId: Int,
+    type: String,
+    questionViewModel: BottomQuestionViewModel,
+    homeActivity: HomeActivity
+) {
+    questionViewModel.getFrequency(user_id = userId, type = type)
+    questionViewModel.getFrequencyResponse.observe(homeActivity) {
+        if (it != null) {
+            handleFrequencyData(result = it, questionViewModel = questionViewModel)
         }
     }
 }

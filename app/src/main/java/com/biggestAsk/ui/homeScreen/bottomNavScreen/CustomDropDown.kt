@@ -25,13 +25,13 @@ import com.biggestAsk.ui.ui.theme.ET_Bg
 import com.example.biggestAsk.R
 
 @Composable
-fun simpleDropDown(
+fun SimpleDropDown(
     suggestions: List<String>,
     hint: String,
     modifier: Modifier,
     style: TextStyle,
     color: Color = ET_Bg,
-    text: String = "",
+    text:String = ""
 ): String {
     var expanded by remember { mutableStateOf(false) }
     var selectedText by remember { mutableStateOf(text) }
@@ -86,6 +86,8 @@ fun simpleDropDown(
                     expanded = false
                 }) {
                     Text(
+                        modifier = Modifier
+                            .fillMaxWidth(),
                         text = label,
                         style = MaterialTheme.typography.body2.copy(
                             fontWeight = FontWeight.W600,

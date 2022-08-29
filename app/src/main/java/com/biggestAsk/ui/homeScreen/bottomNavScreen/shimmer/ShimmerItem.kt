@@ -267,49 +267,13 @@ fun QuestionBankContentShimmerItem(brush: Brush) {
 }
 
 @Composable
-fun HomeScreenQuestionShimmerAnimation(isTittleAvailable: Boolean) {
+fun HomeScreenQuestionShimmerAnimation(isTittleAvailable: Boolean = false) {
     val brush = shimmerTheme()
     HomeScreenQuestionShimmerItem(brush = brush, isTittleAvailable = isTittleAvailable)
 }
 
 @Composable
 fun HomeScreenQuestionShimmerItem(brush: Brush, isTittleAvailable: Boolean) {
-    if (!isTittleAvailable) {
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 24.dp, end = 24.dp, top = 24.dp)
-                .background(brush, shape = RoundedCornerShape(8.dp)),
-            text = "",
-            style = MaterialTheme.typography.body2,
-            fontWeight = FontWeight.W900,
-            fontSize = 22.sp,
-            color = Color.Black
-        )
-        Text(
-            modifier = Modifier
-                .width(180.dp)
-                .padding(start = 24.dp, end = 24.dp, top = 16.dp)
-                .background(brush, shape = RoundedCornerShape(8.dp)),
-            text = "",
-            style = MaterialTheme.typography.body2,
-            fontSize = 12.sp,
-            color = Color.Black,
-            fontWeight = FontWeight.W800
-        )
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(60.dp)
-                .padding(top = 12.dp, start = 24.dp, end = 24.dp)
-                .background(brush, shape = RoundedCornerShape(8.dp)),
-            text = "",
-            style = MaterialTheme.typography.body2,
-            fontSize = 12.sp,
-            color = Color.Black,
-            fontWeight = FontWeight.W800
-        )
-    }
     if (isTittleAvailable) {
         Text(
             modifier = Modifier
@@ -401,6 +365,50 @@ fun HomeScreenQuestionShimmerItem(brush: Brush, isTittleAvailable: Boolean) {
             }
         }
     }
+}
+
+@Composable
+fun SelectFrequencyShimmerAnimation() {
+    val brush = shimmerTheme()
+    SelectFrequencyShimmerItem(brush = brush)
+}
+
+@Composable
+fun SelectFrequencyShimmerItem(brush: Brush) {
+    Text(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 24.dp, end = 24.dp, top = 24.dp)
+            .background(brush, shape = RoundedCornerShape(8.dp)),
+        text = "",
+        style = MaterialTheme.typography.body2,
+        fontWeight = FontWeight.W900,
+        fontSize = 22.sp,
+        color = Color.Black
+    )
+    Text(
+        modifier = Modifier
+            .width(180.dp)
+            .padding(start = 24.dp, end = 24.dp, top = 16.dp)
+            .background(brush, shape = RoundedCornerShape(8.dp)),
+        text = "",
+        style = MaterialTheme.typography.body2,
+        fontSize = 12.sp,
+        color = Color.Black,
+        fontWeight = FontWeight.W800
+    )
+    Text(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(60.dp)
+            .padding(top = 12.dp, start = 24.dp, end = 24.dp)
+            .background(brush, shape = RoundedCornerShape(8.dp)),
+        text = "",
+        style = MaterialTheme.typography.body2,
+        fontSize = 12.sp,
+        color = Color.Black,
+        fontWeight = FontWeight.W800
+    )
 }
 
 @Composable

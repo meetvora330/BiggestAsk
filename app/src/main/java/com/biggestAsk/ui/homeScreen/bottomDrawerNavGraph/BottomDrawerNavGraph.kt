@@ -48,7 +48,8 @@ fun BottomNavigationDrawerGraph(
     yourSurrogateMotherViewModel: YourSurrogateMotherViewModel,
     intendedParentsViewModel: IntendedParentsViewModel,
     questionViewModel: BottomQuestionViewModel,
-    scaffoldState: ScaffoldState
+    scaffoldState: ScaffoldState,
+    frequencyViewModel: FrequencyViewModel
 ) {
     NavHost(
         navController = navHostController, startDestination = BottomNavScreen.Home.route
@@ -88,7 +89,8 @@ fun BottomNavigationDrawerGraph(
                     BottomHomeScreen(
                         context = context,
                         homeActivity = homeActivity,
-                        bottomHomeViewModel = bottomHomeViewModel
+                        bottomHomeViewModel = bottomHomeViewModel,
+                        frequencyViewModel =frequencyViewModel
                     )
                 }
             }
@@ -100,7 +102,8 @@ fun BottomNavigationDrawerGraph(
                 questionViewModel = questionViewModel,
                 context = context,
                 homeActivity = homeActivity,
-                yourAccountViewModel = yourAccountViewModel
+                yourAccountViewModel = yourAccountViewModel,
+                frequencyViewModel = frequencyViewModel
             )
         }
         composable(

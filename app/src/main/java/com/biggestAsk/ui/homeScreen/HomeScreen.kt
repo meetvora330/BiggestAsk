@@ -42,6 +42,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import coil.compose.rememberImagePainter
 import com.biggestAsk.ui.HomeActivity
 import com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph.*
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.BackHandler
@@ -77,7 +78,8 @@ fun HomeScreen(
     aboutAppViewModel: AboutAppViewModel,
     yourSurrogateMotherViewModel: YourSurrogateMotherViewModel,
     intendedParentsViewModel: IntendedParentsViewModel,
-    questionViewModel: BottomQuestionViewModel
+    questionViewModel: BottomQuestionViewModel,
+    frequencyViewModel: FrequencyViewModel
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val requester = FocusRequester()
@@ -460,7 +462,8 @@ fun HomeScreen(
                 yourSurrogateMotherViewModel = yourSurrogateMotherViewModel,
                 intendedParentsViewModel = intendedParentsViewModel,
                 questionViewModel = questionViewModel,
-                scaffoldState = scaffoldState
+                scaffoldState = scaffoldState,
+                frequencyViewModel = frequencyViewModel
             )
             BackHandler(scaffoldState.drawerState.isOpen) {
                 scope.launch {
@@ -795,6 +798,17 @@ fun NavigationDrawerContent(
         NavDrawerItem.Notifications,
         NavDrawerItem.Settings
     )
+    val image = if (type == "parent") provider.getValue(
+        "parent_image",
+        ""
+    ) else provider.getValue("surrogate_image", "")
+    val userName = provider.getValue("user_name", "")
+    val painter = rememberImagePainter(
+        data = image,
+        builder = {
+            placeholder(R.drawable.ic_placeholder_your_account)
+        })
+    val userType = if (type == "parent") "Parents" else "Surrogate Mother"
     val openLogoutDialog = remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
@@ -821,23 +835,24 @@ fun NavigationDrawerContent(
                 modifier = Modifier
                     .width(56.dp)
                     .height(56.dp),
-                painter = painterResource(id = R.drawable.img_nav_drawer),
+                painter = painter,
                 contentDescription = ""
             )
             Column {
+                userName?.let {
+                    Text(
+                        text = it, modifier = Modifier
+                            .wrapContentWidth()
+                            .padding(start = 13.dp),
+                        style = MaterialTheme.typography.body2,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.W600,
+                        lineHeight = 32.sp,
+                        color = Color.Black
+                    )
+                }
                 Text(
-                    text = stringResource(id = R.string.mark_baggins), modifier = Modifier
-                        .wrapContentWidth()
-                        .padding(start = 13.dp),
-                    style = MaterialTheme.typography.body2,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.W600,
-                    lineHeight = 32.sp,
-                    color = Color.Black
-                )
-                Text(
-                    text = stringResource(id = R.string.text_home_bottom_sheet_parent),
-                    modifier = Modifier
+                    text = userType, modifier = Modifier
                         .wrapContentWidth()
                         .padding(start = 13.dp, top = 5.dp),
                     style = MaterialTheme.typography.body1,

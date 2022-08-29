@@ -57,6 +57,7 @@ class YourAccountViewModel @Inject constructor(
     var surrogateImg: String by mutableStateOf("")
     var yourAccountFullNameEmpty: Boolean by mutableStateOf(false)
     var phoneNumberMinimumValidate: Boolean by mutableStateOf(false)
+    var parentPartnerPhoneNumberMinimumValidate: Boolean by mutableStateOf(false)
     var phoneNumberMaximumValidate: Boolean by mutableStateOf(false)
     var surrogatePhoneNumber: String by mutableStateOf("")
     var yourAccountPhoneNumberEmpty: Boolean by mutableStateOf(false)

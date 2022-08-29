@@ -89,7 +89,6 @@ fun MilestonesScreen(
     val back = remember { mutableStateOf(true) }
 
     val focusManager = LocalFocusManager.current
-//    viewModel.list = viewModel.listData
     LaunchedEffect(Unit) {
         milestoneViewModel.isSelected = false
         getMilestones(
@@ -276,7 +275,7 @@ fun MilestonesScreen(
                                         R.style.CalenderViewCustom,
                                         { _: DatePicker, year: Int, month: Int, day: Int ->
                                             milestoneViewModel.addNewMilestoneDate.value =
-                                                "$year-" + "%02d".format(month + 1) + "-" + "%02d".format(
+                                                "$year/" + "%02d".format(month + 1) + "/" + "%02d".format(
                                                     day
                                                 )
                                         }, year, month, day
