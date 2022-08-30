@@ -90,7 +90,7 @@ fun BottomNavigationDrawerGraph(
                         context = context,
                         homeActivity = homeActivity,
                         bottomHomeViewModel = bottomHomeViewModel,
-                        frequencyViewModel =frequencyViewModel
+                        frequencyViewModel = frequencyViewModel
                     )
                 }
             }
