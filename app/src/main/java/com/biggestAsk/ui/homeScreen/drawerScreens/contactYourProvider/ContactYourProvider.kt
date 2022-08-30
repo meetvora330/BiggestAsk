@@ -2,6 +2,7 @@ package com.biggestAsk.ui.homeScreen.drawerScreens.contactYourProvider
 
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -14,10 +15,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -27,6 +26,7 @@ import coil.compose.rememberImagePainter
 import com.biggestAsk.data.model.request.GetContactRequest
 import com.biggestAsk.data.model.response.GetContactResponse
 import com.biggestAsk.data.source.network.NetworkResult
+import com.biggestAsk.data.source.network.isInternetAvailable
 import com.biggestAsk.ui.HomeActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
 import com.biggestAsk.ui.main.viewmodel.ContactYourProviderViewModel
@@ -40,11 +40,16 @@ fun ContactYourProvider(
     contactYourProviderViewModel: ContactYourProviderViewModel,
 ) {
     val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
     val type = PreferenceProvider(context).getValue("type", "")
     val userId = PreferenceProvider(context).getIntValue("user_id", 0)
     LaunchedEffect(Unit) {
-        getUpdatedContact(type!!, userId, contactYourProviderViewModel, context, homeActivity)
+        if (isInternetAvailable(context)) {
+            getUpdatedContact(type!!, userId, contactYourProviderViewModel, context, homeActivity)
+        } else {
+            contactYourProviderViewModel.isDataNull = false
+            contactYourProviderViewModel.contactList.clear()
+            Toast.makeText(context, R.string.no_internet_available, Toast.LENGTH_SHORT).show()
+        }
     }
     Column(
         modifier = Modifier

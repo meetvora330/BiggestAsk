@@ -8,6 +8,7 @@ import android.net.Uri
 import android.provider.Settings
 import android.text.TextUtils
 import android.util.Patterns
+import android.webkit.URLUtil
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -164,6 +165,12 @@ fun CreateContactDialog(
                     }
                     .clickable {
                         openDialogCustom.value = false
+                        tf_text_first.value = ""
+                        tf_text_second.value = ""
+                        tf_text_third.value = ""
+                        tf_text_fourth.value = ""
+                        contactYourProviderViewModel.bitmap.value = null
+                        contactYourProviderViewModel.phoneErrorVisible = false
                     },
                 imageVector = Icons.Default.Close,
                 contentDescription = ""
@@ -290,7 +297,7 @@ fun CreateContactDialog(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 12.dp),
-                value = tf_text_third.value,
+                value = tf_text_third.value.trim(),
                 onValueChange = {
                     tf_text_third.value = it
                     tfTextThirdEmpty.value = false
@@ -351,13 +358,14 @@ fun CreateContactDialog(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 12.dp),
-                value = tf_text_fourth.value,
+                value = tf_text_fourth.value.trim(),
                 onValueChange = {
-                    val maxChar = 8
+                    val maxChar = 12
+                    val minChar = 8
                     if (it.length <= maxChar) {
-                        if (it.isDigitsOnly()) {
+                        if (it.contains("+") || it.isDigitsOnly()) {
                             tf_text_fourth.value = it
-                            contactYourProviderViewModel.phoneErrorVisible = maxChar != it.length
+                            contactYourProviderViewModel.phoneErrorVisible = minChar > it.length
                         }
                     }
                     tfTextFourthEmpty.value = false
@@ -494,7 +502,6 @@ fun CreateContactDialog(
                         !Patterns.EMAIL_ADDRESS.matcher(tf_text_third.value).matches() -> {
                             contactYourProviderViewModel.isLoginEmailValid = true
                         }
-
                         !contactYourProviderViewModel.isImagePresent.value -> {
                             Toast.makeText(context, Constants.PLEASE_ADD_LOGO, Toast.LENGTH_SHORT)
                                 .show()

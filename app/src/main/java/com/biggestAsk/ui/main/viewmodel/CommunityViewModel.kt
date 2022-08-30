@@ -49,7 +49,7 @@ class CommunityViewModel @Inject constructor(
     var imageData: Uri? = (null)
     var uriPath: String? = ""
     val isImagePresent = mutableStateOf(false)
-
+    val isValidInstagramUrl = mutableStateOf(false)
 
     fun createCommunity(
         title: MultipartBody.Part,

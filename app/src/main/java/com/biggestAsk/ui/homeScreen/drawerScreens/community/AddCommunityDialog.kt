@@ -8,6 +8,7 @@ import android.net.Uri
 import android.provider.Settings
 import android.text.TextUtils
 import android.util.Log
+import android.webkit.URLUtil
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -57,6 +58,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
+import java.util.regex.Pattern
 
 @Composable
 fun AddCommunityDialog(
@@ -162,6 +164,12 @@ fun AddCommunityDialog(
                     }
                     .clickable {
                         openDialogCustom.value = false
+                        tf_text_first.value = ""
+                        tf_text_second.value = ""
+                        tf_text_third.value = ""
+                        tf_text_fourth.value = ""
+                        communityViewModel.isValidInstagramUrl.value = false
+                        communityViewModel.bitmap.value = null
                     },
                 imageVector = Icons.Default.Close,
                 contentDescription = ""
@@ -340,8 +348,13 @@ fun AddCommunityDialog(
                     .padding(top = 12.dp),
                 value = tf_text_fourth.value,
                 onValueChange = {
-                    tf_text_fourth.value = it
+                    tf_text_fourth.value = it.trim()
                     tfTextFourthEmpty.value = false
+                    if (tf_text_fourth.value.isNotEmpty() && !communityViewModel.isValidInstagramUrl.value){
+                        communityViewModel.isValidInstagramUrl.value = !isValidEmail(tf_text_fourth.value)!!
+                    }else{
+                        communityViewModel.isValidInstagramUrl.value = false
+                    }
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text, imeAction = ImeAction.Done
@@ -365,6 +378,16 @@ fun AddCommunityDialog(
                 },
                 maxLines = 1,
             )
+            if (communityViewModel.isValidInstagramUrl.value) {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    text = stringResource(id = R.string.invalid_instagram_url),
+                    color = MaterialTheme.colors.error,
+                    style = MaterialTheme.typography.caption,
+                    fontSize = 12.sp
+                )
+            }
             if (tfTextFourthEmpty.value) {
                 Text(
                     modifier = Modifier
@@ -469,7 +492,7 @@ fun AddCommunityDialog(
                         communityViewModel.isImagePresent.value && !TextUtils.isEmpty(tf_text_first.value) &&
                                 !TextUtils.isEmpty(tf_text_second.value) &&
                                 !TextUtils.isEmpty(tf_text_third.value) &&
-                                !TextUtils.isEmpty(tf_text_fourth.value) -> {
+                                !TextUtils.isEmpty(tf_text_fourth.value) && !communityViewModel.isValidInstagramUrl.value-> {
 
 
                             val image =
@@ -504,9 +527,6 @@ fun AddCommunityDialog(
                                     )
                                 }
                             }
-                        }
-                        else -> {
-                            openDialogCustom.value = false
                         }
                     }
 
@@ -604,6 +624,7 @@ private fun handleCreateCommunityApi(
             tf_text_second.value = ""
             tf_text_third.value = ""
             tf_text_fourth.value = ""
+            communityViewModel.isValidInstagramUrl.value = false
             communityViewModel.bitmap.value = null
             getUpdatedCommunity(type = type,
                 user_id = user_id,
@@ -617,3 +638,11 @@ private fun handleCreateCommunityApi(
         }
     }
 }
+fun isValidEmail(instagramUrl: String?) =
+    instagramUrl?.let {
+        Pattern
+        .compile(
+            Constants.INSTAGRAM_URL_PATTERN,
+            Pattern.CASE_INSENSITIVE
+        ).matcher(it).find()
+    }

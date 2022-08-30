@@ -74,6 +74,7 @@ fun HomeScreen(
     surrogateViewModel: YourSurrogateViewModel,
     communityViewModel: CommunityViewModel,
     notificationViewModel: NotificationViewModel,
+    aboutAppViewModel: AboutAppViewModel
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val requester = FocusRequester()
@@ -389,7 +390,7 @@ fun HomeScreen(
                             tv_text_third = stringResource(id = R.string.link_to_forum),
                             tf_hint_tv3 = stringResource(id = R.string.jane_doe),
                             tv_text_fourth = stringResource(id = R.string.link_to_instagram),
-                            tf_hint_tv4 = stringResource(id = R.string.dialog_phone),
+                            tf_hint_tv4 = stringResource(id = R.string.instagram_hint),
                             btn_text_add = stringResource(id = R.string.add_community),
                             tf_text_first = tfTextFirstCommunity,
                             tf_text_second = tfTextSecondCommunity,
@@ -447,7 +448,8 @@ fun HomeScreen(
                 surrogateViewModel = surrogateViewModel,
                 contactYourProviderViewModel = contactYourProviderViewModel,
                 communityViewModel = communityViewModel,
-                notificationViewModel = notificationViewModel
+                notificationViewModel = notificationViewModel,
+                aboutAppViewModel = aboutAppViewModel
             )
         },
         bottomBar = {

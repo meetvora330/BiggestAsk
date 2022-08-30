@@ -43,6 +43,7 @@ fun BottomNavigationDrawerGraph(
     surrogateViewModel: YourSurrogateViewModel,
     communityViewModel: CommunityViewModel,
     notificationViewModel: NotificationViewModel,
+    aboutAppViewModel: AboutAppViewModel
 ) {
     NavHost(
         navController = navHostController, startDestination = BottomNavScreen.Home.route
@@ -179,7 +180,7 @@ fun BottomNavigationDrawerGraph(
             Settings(navHostController = navHostController)
         }
         composable(route = SettingSubScreen.AboutApp.route) {
-            AboutApp()
+            AboutApp(homeActivity = homeActivity, aboutAppViewModel = aboutAppViewModel)
         }
         composable(route = SettingSubScreen.TermsOfService.route) {
             TermsOfService()

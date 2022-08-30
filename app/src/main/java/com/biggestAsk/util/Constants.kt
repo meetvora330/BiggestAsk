@@ -14,6 +14,10 @@ object Constants {
         "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@\$!%*#?&])[A-Za-z\\d@\$!%*#?&]{8,}\$"
 
     const val BASE_URL_BIGGEST_ASK = "https://biggestaskbackend.justcodenow.com/api/"
+//    const val INSTAGRAM_URL_PATTERN = "/^\\s*(http\\:\\/\\/)?instagram\\.com\\/[a-z\\d-_]{1,255}\\s*\$/i"
+//    const val INSTAGRAM_URL_PATTERN = "/(?:(?:http|https):\\/\\/)?(?:www\\.)?(?:instagram\\.com|instagram\\.am)\\/([A-Za-z0-9-_\\.]+)/im"
+//    const val INSTAGRAM_URL_PATTERN = "https?:\\/\\/www\\.?instagram\\.com\\/([A-Za-z0-9_](?:(?:[A-Za-z0-9_]|(?:\\.(?!\\.))){0,28}(?:[A-Za-z0-9_]))?\\S)\\?r="
+    const val INSTAGRAM_URL_PATTERN = "(?<=instagram.com\\/)[A-Za-z0-9_.]+"
 
     //API END POINTS
     const val INTRO_SCREEN = "get_intro_info"
@@ -45,6 +49,7 @@ object Constants {
     const val GET_CONTACT = "get_contact"
     const val GET_COMMUNITY = "get_community"
     const val GET_NOTIFICATION = "get_notification"
+    const val GET_ABOUT_APP = "about_app"
     const val GET_NOTIFICATION_DETAIL = "get_notification_detail"
     const val STORE_MILESTONE_ANS = "store_milestone_ans"
     const val UPDATE_MILESTONE_IMAGE = "update_milestone_image"

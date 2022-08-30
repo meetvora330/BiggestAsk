@@ -1,6 +1,7 @@
 package com.biggestAsk.ui.homeScreen.drawerScreens.notification
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -32,6 +33,7 @@ import androidx.navigation.NavHostController
 import com.biggestAsk.data.model.request.GetNotificationRequest
 import com.biggestAsk.data.model.response.GetNotificationResponse
 import com.biggestAsk.data.source.network.NetworkResult
+import com.biggestAsk.data.source.network.isInternetAvailable
 import com.biggestAsk.ui.HomeActivity
 import com.biggestAsk.ui.main.viewmodel.NotificationViewModel
 import com.biggestAsk.util.Constants
@@ -58,8 +60,19 @@ fun Notification(
         val type = PreferenceProvider(context).getValue(Constants.TYPE, "")
         val userId = PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
         LaunchedEffect(Unit) {
-            getUpdatedNotification("parent", 191, notificationViewModel, homeActivity)
-            //type?.let { getUpdatedNotification(it, userId, notificationViewModel, homeActivity) }
+            if (isInternetAvailable(context)) {
+                //getUpdatedNotification("parent", 191, notificationViewModel, homeActivity)
+                type?.let {
+                    getUpdatedNotification(it,
+                        userId,
+                        notificationViewModel,
+                        homeActivity)
+                }
+            } else {
+                notificationViewModel.isDataNull = false
+                notificationViewModel.updatedList.clear()
+                Toast.makeText(context, R.string.no_internet_available, Toast.LENGTH_SHORT).show()
+            }
         }
         Column(
             modifier = Modifier

@@ -188,4 +188,8 @@ interface ApiService {
 
     @POST(Constants.STORE_ANS_IMPORTANT_QUESTION)
     suspend fun storeAnsImportantQuestion(@Body storeBaseScreenQuestionAnsRequest: StoreAnsImportantQuestionRequest): Response<CommonResponse>
+
+    @GET(Constants.GET_ABOUT_APP)
+    suspend fun getAboutApp(): Response<AboutAppResponse>
+
 }

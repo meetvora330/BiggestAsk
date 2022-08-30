@@ -1,5 +1,9 @@
 package com.biggestAsk.ui.homeScreen.drawerScreens.community
 
+import android.content.Intent
+import android.net.Uri
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,6 +27,7 @@ import coil.compose.rememberImagePainter
 import com.biggestAsk.data.model.request.GetCommunityRequest
 import com.biggestAsk.data.model.response.GetCommunityResponse
 import com.biggestAsk.data.source.network.NetworkResult
+import com.biggestAsk.data.source.network.isInternetAvailable
 import com.biggestAsk.ui.HomeActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
 import com.biggestAsk.ui.main.viewmodel.CommunityViewModel
@@ -40,7 +45,17 @@ fun Community(
     val type = PreferenceProvider(context).getValue(Constants.TYPE, "")
     val userId = PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
     LaunchedEffect(Unit) {
-        getUpdatedCommunity(type!!, userId, communityViewModel = communityViewModel, homeActivity)
+        if (isInternetAvailable(context)) {
+            getUpdatedCommunity(type!!,
+                userId,
+                communityViewModel = communityViewModel,
+                homeActivity)
+            Log.e("communityScreen", "communityScreen() --> InternetAvailable")
+        } else {
+            communityViewModel.isDataNull = false
+            communityViewModel.communityList.clear()
+            Toast.makeText(context, R.string.no_internet_available, Toast.LENGTH_SHORT).show()
+        }
     }
     Column(
         modifier = Modifier
@@ -81,7 +96,8 @@ fun Community(
                                 modifier = Modifier
                                     .width(48.dp)
                                     .height(48.dp)
-                                    .padding(top = 16.dp, start = 16.dp).clip(RoundedCornerShape(10.dp)),
+                                    .padding(top = 16.dp, start = 16.dp)
+                                    .clip(RoundedCornerShape(10.dp)),
                                 contentScale = ContentScale.Crop,
                                 painter = painter,
                                 contentDescription = ""
@@ -124,7 +140,19 @@ fun Community(
                                     .width(140.dp)
                                     .height(36.dp), shape = RoundedCornerShape(12.dp),
                                 border = BorderStroke(1.dp, Color(0xFFF4F4F4)),
-                                onClick = { },
+                                onClick = {
+                                    try {
+                                        val instaLink = item.insta_link
+                                        val instagramIntent =
+                                            Intent(Intent.ACTION_VIEW, Uri.parse("$instaLink/"))
+                                        context.startActivity(instagramIntent)
+                                    } catch (e: RuntimeException) {
+                                        e.printStackTrace()
+                                        Toast.makeText(context,
+                                            "Invalid Url",
+                                            Toast.LENGTH_SHORT).show()
+                                    }
+                                },
                                 elevation = ButtonDefaults.elevation(
                                     defaultElevation = 0.dp,
                                     pressedElevation = 0.dp,
