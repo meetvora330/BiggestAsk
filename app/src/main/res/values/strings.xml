@@ -296,8 +296,6 @@
     <string name="agency_email">Agency email</string>
     <string name="agency_email_hint">agencyemail@gmail.ua</string>
     <string name="agency_phone_number">Agency phone number</string>
-    <string name="no_community_found">No Community Found</string>
-    <string name="no_contact_found">No Contact Found</string>
     <string name="minimum_8_character_required">minimum 8 character required</string>
     <string name="to_forum">To Forum</string>
     <string name="instagram">Instagram</string>

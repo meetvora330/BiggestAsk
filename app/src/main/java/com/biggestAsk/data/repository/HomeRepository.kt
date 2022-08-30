@@ -1,6 +1,7 @@
 package com.biggestAsk.data.repository
 
 import android.content.Context
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import com.biggestAsk.data.model.request.*
 import com.biggestAsk.data.model.response.*
 import com.biggestAsk.data.source.network.ApiService
@@ -16,39 +17,10 @@ import kotlinx.coroutines.flow.flowOn
 import okhttp3.MultipartBody
 import javax.inject.Inject
 
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = Constants.ON_BOARDING_PREF)
-
 @ActivityRetainedScoped
 class HomeRepository @Inject constructor(
     private val apiService: ApiService, @ApplicationContext context: Context
 ) : BaseApiResponse(context) {
-
-    companion object PreferencesKey {
-        val onBoardingKey = booleanPreferencesKey(name = Constants.ON_BOARDING_COMPLETED)
-    }
-
-    private val dataStore = context.dataStore
-
-    suspend fun saveOnBoardingState(completed: Boolean) {
-        dataStore.edit { preferences ->
-            preferences[onBoardingKey] = completed
-        }
-    }
-
-    fun readOnBoardingState(): Flow<Boolean> {
-        return dataStore.data
-            .catch { exception ->
-                if (exception is IOException) {
-                    emit(emptyPreferences())
-                } else {
-                    throw exception
-                }
-            }
-            .map { preferences ->
-                val onBoardingState = preferences[onBoardingKey] ?: false
-                onBoardingState
-            }
-    }
 
     suspend fun getIntroInfo(): Flow<NetworkResult<IntroInfoResponse>> {
         return flow {
