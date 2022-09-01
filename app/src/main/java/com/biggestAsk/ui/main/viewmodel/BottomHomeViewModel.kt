@@ -52,6 +52,7 @@ class BottomHomeViewModel @Inject constructor(
     var isIntendedParentQuestionDataLoaded: Boolean by mutableStateOf(false)
     var upperQuestion: Boolean by mutableStateOf(false)
     var isNearestMilestoneDataLoaded: Boolean by mutableStateOf(false)
+    var isPregnancyStatusLoaded: Boolean by mutableStateOf(false)
     var getPregnancyMilestoneResponse: MutableLiveData<NetworkResult<GetImportantQuestionResponse>> =
         MutableLiveData()
     var isHomeScreenQuestionAnsEmpty: Boolean by mutableStateOf(false)
@@ -69,6 +70,9 @@ class BottomHomeViewModel @Inject constructor(
         MutableLiveData()
     var answerList = mutableStateListOf<Answer>()
     var parentList = mutableStateListOf<String>()
+    val getPregnancyStatusResponse: MutableLiveData<NetworkResult<GetPregnancyStatusResponse>> =
+        MutableLiveData()
+    var getPregnancyStatus: Boolean by mutableStateOf(false)
 
     fun getPregnancyMilestone(getPregnancyMilestoneRequest: GetPregnancyMilestoneRequest) {
         getPregnancyMilestoneResponse.value = NetworkResult.Loading()
@@ -120,6 +124,16 @@ class BottomHomeViewModel @Inject constructor(
         viewModelScope.launch {
             homeRepository.storeAnsImportantQuestion(storeAnsImportantQuestionRequest).collect {
                 storeAnsImportantQuestionResponse.value = it
+            }
+        }
+    }
+
+
+    fun getPregnancyStatus(type: String, user_id: Int) {
+        getPregnancyStatusResponse.value = NetworkResult.Loading()
+        viewModelScope.launch {
+            homeRepository.getPregnancyStatus(type = type, userId = user_id).collect {
+                getPregnancyStatusResponse.value = it
             }
         }
     }

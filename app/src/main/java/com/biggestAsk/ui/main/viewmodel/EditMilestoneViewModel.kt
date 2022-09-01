@@ -45,6 +45,7 @@ class EditMilestoneViewModel @Inject constructor(
     var checkBoxShareWithParents: Boolean by mutableStateOf(false)
     var checkBoxShareWithBiggestAsk: Boolean by mutableStateOf(false)
     var isPermissionAllowed: MutableState<Boolean> = mutableStateOf(false)
+    var isBottomSheetOpen: MutableState<Boolean> = mutableStateOf(false)
     var imageList = mutableStateListOf<EditMilestoneImageResponse>()
     var imageListIndex = mutableStateOf(-1)
     var editMilestoneResponse: MutableLiveData<NetworkResult<EditMilestoneResponse>> =

@@ -174,29 +174,41 @@ fun IntendParentsScreen(
                                 horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text(
-                                    modifier = Modifier
-                                        .wrapContentWidth()
-                                        .padding(end = 2.dp),
-                                    text = intendedParentsViewModel.parentDateOfBirth,
-                                    style = MaterialTheme.typography.body2.copy(
-                                        color = Color(0xFF7F7D7C),
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.W500,
-                                        lineHeight = 22.sp
+                                val dateOfBirth =
+                                    intendedParentsViewModel.parentDateOfBirth.replace(
+                                        "/",
+                                        ""
                                     )
+                                val age = getAge(
+                                    year = dateOfBirth.substring(0, 4).toInt(),
+                                    month = dateOfBirth.substring(4, 6).toInt(),
+                                    dayOfMonth = dateOfBirth.substring(6, 8).toInt()
                                 )
-                                Text(
-                                    modifier = Modifier
-                                        .wrapContentWidth(),
-                                    text = "(37 Year)",
-                                    style = MaterialTheme.typography.body2.copy(
-                                        color = Color.Black,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.W500,
-                                        lineHeight = 22.sp
+                                if (age!=0){
+                                    Text(
+                                        modifier = Modifier
+                                            .wrapContentWidth()
+                                            .padding(end = 2.dp),
+                                        text = intendedParentsViewModel.parentDateOfBirth,
+                                        style = MaterialTheme.typography.body2.copy(
+                                            color = Color(0xFF7F7D7C),
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.W500,
+                                            lineHeight = 22.sp
+                                        )
                                     )
-                                )
+                                    Text(
+                                        modifier = Modifier
+                                            .wrapContentWidth(),
+                                        text = "($age Year)",
+                                        style = MaterialTheme.typography.body2.copy(
+                                            color = Color.Black,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.W500,
+                                            lineHeight = 22.sp
+                                        )
+                                    )
+                                }
                             }
                         }
                         Image(
@@ -276,41 +288,41 @@ fun IntendParentsScreen(
                                 horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                var dateOfBirth: String? = null
-                                var age: Int? = null
-                                dateOfBirth =
+                                val dateOfBirth =
                                     intendedParentsViewModel.motherDateOfBirth.replace(
                                         "/",
                                         ""
                                     )
-                                age = getAge(
+                                val age = getAge(
                                     year = dateOfBirth.substring(0, 4).toInt(),
                                     month = dateOfBirth.substring(4, 6).toInt(),
                                     dayOfMonth = dateOfBirth.substring(6, 8).toInt()
                                 )
-                                Text(
-                                    modifier = Modifier
-                                        .wrapContentWidth()
-                                        .padding(end = 2.dp),
-                                    text = intendedParentsViewModel.motherDateOfBirth,
-                                    style = MaterialTheme.typography.body2.copy(
-                                        color = Color(0xFF7F7D7C),
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.W500,
-                                        lineHeight = 22.sp
+                                if (age!=0){
+                                    Text(
+                                        modifier = Modifier
+                                            .wrapContentWidth()
+                                            .padding(end = 2.dp),
+                                        text = intendedParentsViewModel.motherDateOfBirth,
+                                        style = MaterialTheme.typography.body2.copy(
+                                            color = Color(0xFF7F7D7C),
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.W500,
+                                            lineHeight = 22.sp
+                                        )
                                     )
-                                )
-                                Text(
-                                    modifier = Modifier
-                                        .wrapContentWidth(),
-                                    text = "($age Year)",
-                                    style = MaterialTheme.typography.body2.copy(
-                                        color = Color.Black,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.W500,
-                                        lineHeight = 22.sp
+                                    Text(
+                                        modifier = Modifier
+                                            .wrapContentWidth(),
+                                        text = "($age Year)",
+                                        style = MaterialTheme.typography.body2.copy(
+                                            color = Color.Black,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.W500,
+                                            lineHeight = 22.sp
+                                        )
                                     )
-                                )
+                                }
                             }
                         }
                         Image(
@@ -347,12 +359,12 @@ fun IntendParentsScreen(
                                 )
                             )
                         }
-                        if (intendedParentsViewModel.motherEmail != "") {
+                        if (intendedParentsViewModel.parentEmail != "") {
                             Text(
                                 modifier = Modifier
                                     .wrapContentWidth()
                                     .padding(top = 16.dp),
-                                text = intendedParentsViewModel.motherEmail,
+                                text = intendedParentsViewModel.parentEmail,
                                 style = MaterialTheme.typography.body2.copy(
                                     color = Color.Black,
                                     fontSize = 14.sp,
@@ -489,62 +501,42 @@ fun handleGetIntendedProfileDataParent(
             if (result.data?.indended_user?.name != null) {
                 intendedParentsViewModel.parentFullName =
                     result.data.indended_user.name
-            } else {
-                intendedParentsViewModel.parentFullName = "Not inserted"
             }
             if (result.data?.indended_user?.partner_name != null) {
                 intendedParentsViewModel.motherFullName =
                     result.data.indended_user.partner_name
-            } else {
-                intendedParentsViewModel.motherFullName = "Not inserted"
             }
             if (result.data?.indended_user?.date_of_birth != null) {
                 intendedParentsViewModel.parentDateOfBirth =
                     result.data.indended_user.date_of_birth
-            } else {
-                intendedParentsViewModel.parentDateOfBirth = "Not inserted"
             }
             if (result.data?.indended_user?.partner_date_of_birth != null) {
                 intendedParentsViewModel.motherDateOfBirth =
                     result.data.indended_user.partner_date_of_birth
-            } else {
-                intendedParentsViewModel.motherDateOfBirth = "Not inserted"
             }
             if (result.data?.indended_user?.address != null) {
                 intendedParentsViewModel.parentHomeAddress =
                     result.data.indended_user.address
-            } else {
-                intendedParentsViewModel.parentHomeAddress = "Not inserted"
             }
             if (result.data?.indended_user?.partner_address != null) {
                 intendedParentsViewModel.motherHomeAddress =
                     result.data.indended_user.address
-            } else {
-                intendedParentsViewModel.motherHomeAddress = "Not inserted"
             }
             if (result.data?.indended_user?.number != null) {
                 intendedParentsViewModel.parentPhoneNumber =
                     result.data.indended_user.number
-            } else {
-                intendedParentsViewModel.parentPhoneNumber = "Not inserted"
             }
             if (result.data?.indended_user?.partner_number != null) {
                 intendedParentsViewModel.motherPhoneNumber =
                     result.data.indended_user.number
-            } else {
-                intendedParentsViewModel.motherPhoneNumber = "Not inserted"
             }
             if (result.data?.indended_user?.email != null) {
                 intendedParentsViewModel.parentEmail =
                     result.data.indended_user.email
-            } else {
-                intendedParentsViewModel.parentEmail = "Not inserted"
             }
             if (result.data?.indended_user?.partner_email != null) {
                 intendedParentsViewModel.motherEmail =
                     result.data.indended_user.email
-            } else {
-                intendedParentsViewModel.motherEmail = "Not inserted"
             }
             if (result.data?.indended_user?.image1 != null) {
                 intendedParentsViewModel.imageFather = result.data.indended_user.image1

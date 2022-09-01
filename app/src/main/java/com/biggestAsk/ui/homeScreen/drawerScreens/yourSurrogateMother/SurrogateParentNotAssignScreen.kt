@@ -65,7 +65,7 @@ fun SurrogateParentNotAssignScreen(title: String) {
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 60.dp)
+                    .padding(top = 52.dp)
                     .constrainAs(tv_tittle_your_surrogate_mother) {
                         top.linkTo(img_icon_your_surrogate_mother.bottom, margin = 2.dp)
                         start.linkTo(parent.start)

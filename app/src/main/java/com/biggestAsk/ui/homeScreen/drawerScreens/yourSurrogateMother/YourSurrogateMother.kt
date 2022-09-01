@@ -30,9 +30,11 @@ import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.ui.HomeActivity
 import com.biggestAsk.ui.homeScreen.drawerScreens.notification.advancedShadow
 import com.biggestAsk.ui.homeScreen.drawerScreens.yourAccount.YourAccountSurrogateShimmerAnimation
+import com.biggestAsk.ui.homeScreen.drawerScreens.yourAccount.getAge
 import com.biggestAsk.ui.main.viewmodel.YourSurrogateMotherViewModel
 import com.biggestAsk.ui.main.viewmodel.YourSurrogateViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
+import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 
@@ -42,8 +44,8 @@ fun YourSurrogateMother(
     yourSurrogateMotherViewModel: YourSurrogateMotherViewModel,
     context: Context
 ) {
-    val type = PreferenceProvider(context).getValue("type", "")
-    val userId = PreferenceProvider(context).getIntValue("user_id", 0)
+    val type = PreferenceProvider(context).getValue(Constants.TYPE, "")
+    val userId = PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
     LaunchedEffect(Unit) {
         if (type != null) {
             getIntendedProfile(
@@ -121,40 +123,99 @@ fun YourSurrogateMother(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(
-                        modifier = Modifier
-                            .wrapContentWidth(),
-                        text = yourSurrogateMotherViewModel.surrogateMotherFullName,
-                        style = MaterialTheme.typography.h2.copy(
-                            color = Color.Black,
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.W600,
-                            lineHeight = 32.sp
+                    if (yourSurrogateMotherViewModel.surrogateMotherFullName != "") {
+                        Text(
+                            modifier = Modifier
+                                .wrapContentWidth(),
+                            text = yourSurrogateMotherViewModel.surrogateMotherFullName,
+                            style = MaterialTheme.typography.h2.copy(
+                                color = Color.Black,
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.W600,
+                                lineHeight = 32.sp
+                            )
                         )
-                    )
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 8.dp),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                    }
+                    if (yourSurrogateMotherViewModel.surrogateMotherDateOfBirth != "") {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            val dateOfBirth =
+                                yourSurrogateMotherViewModel.surrogateMotherDateOfBirth.replace(
+                                    "/",
+                                    ""
+                                )
+                            val age = getAge(
+                                year = dateOfBirth.substring(0, 4).toInt(),
+                                month = dateOfBirth.substring(4, 6).toInt(),
+                                dayOfMonth = dateOfBirth.substring(6, 8).toInt()
+                            )
+                            if (age != 0) {
+                                Text(
+                                    modifier = Modifier
+                                        .wrapContentWidth()
+                                        .padding(end = 2.dp),
+                                    text = yourSurrogateMotherViewModel.surrogateMotherDateOfBirth,
+                                    style = MaterialTheme.typography.body2.copy(
+                                        color = Color(0xFF7F7D7C),
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.W500,
+                                        lineHeight = 22.sp
+                                    )
+                                )
+                                Text(
+                                    modifier = Modifier
+                                        .wrapContentWidth(),
+                                    text = "($age Year)",
+                                    style = MaterialTheme.typography.body2.copy(
+                                        color = Color.Black,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.W500,
+                                        lineHeight = 22.sp
+                                    )
+                                )
+                            }
+                        }
+                    }
+                    if (yourSurrogateMotherViewModel.surrogateMotherHomeAddress != "") {
                         Text(
                             modifier = Modifier
                                 .wrapContentWidth()
-                                .padding(end = 2.dp),
-                            text = yourSurrogateMotherViewModel.surrogateMotherDateOfBirth,
+                                .padding(top = 18.dp, start = 12.dp, end = 12.dp),
+                            text = yourSurrogateMotherViewModel.surrogateMotherHomeAddress,
                             style = MaterialTheme.typography.body2.copy(
-                                color = Color(0xFF7F7D7C),
+                                color = Color.Black,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.W500,
+                                lineHeight = 22.sp,
+                                textAlign = TextAlign.Center
+                            )
+                        )
+                    }
+                    if (yourSurrogateMotherViewModel.surrogateMotherPhoneNumber != "") {
+                        Text(
+                            modifier = Modifier
+                                .wrapContentWidth()
+                                .padding(top = 11.dp),
+                            text = yourSurrogateMotherViewModel.surrogateMotherPhoneNumber,
+                            style = MaterialTheme.typography.body2.copy(
+                                color = Custom_Blue,
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.W500,
                                 lineHeight = 22.sp
                             )
                         )
+                    }
+                    if (yourSurrogateMotherViewModel.surrogateMotherEmail != "") {
                         Text(
                             modifier = Modifier
-                                .wrapContentWidth(),
-                            text = "(37 Year)",
+                                .wrapContentWidth()
+                                .padding(top = 16.dp),
+                            text = yourSurrogateMotherViewModel.surrogateMotherEmail,
                             style = MaterialTheme.typography.body2.copy(
                                 color = Color.Black,
                                 fontSize = 14.sp,
@@ -163,43 +224,6 @@ fun YourSurrogateMother(
                             )
                         )
                     }
-                    Text(
-                        modifier = Modifier
-                            .wrapContentWidth()
-                            .padding(top = 18.dp, start = 12.dp, end = 12.dp),
-                        text = yourSurrogateMotherViewModel.surrogateMotherHomeAddress,
-                        style = MaterialTheme.typography.body2.copy(
-                            color = Color.Black,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.W500,
-                            lineHeight = 22.sp,
-                            textAlign = TextAlign.Center
-                        )
-                    )
-                    Text(
-                        modifier = Modifier
-                            .wrapContentWidth()
-                            .padding(top = 11.dp),
-                        text = yourSurrogateMotherViewModel.surrogateMotherPhoneNumber,
-                        style = MaterialTheme.typography.body2.copy(
-                            color = Custom_Blue,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.W500,
-                            lineHeight = 22.sp
-                        )
-                    )
-                    Text(
-                        modifier = Modifier
-                            .wrapContentWidth()
-                            .padding(top = 16.dp),
-                        text = yourSurrogateMotherViewModel.surrogateMotherEmail,
-                        style = MaterialTheme.typography.body2.copy(
-                            color = Color.Black,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.W500,
-                            lineHeight = 22.sp
-                        )
-                    )
                 }
             }
             if (yourSurrogateMotherViewModel.intendedProfileResponseQuestionList.isNotEmpty()) {

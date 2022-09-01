@@ -386,10 +386,8 @@ private fun handleUserData(
                     provider.setValue("partner_id", result.data.partner_id)
                     provider.setValue(Constants.LOGIN_STATUS, result.data.status)
                     provider.setValue("user_name", result.data.user_name)
-                    if (result.data.type == "surrogate") {
-                        provider.setValue("surrogate_image", result.data.surrogate)
-                    } else if (result.data.type == "parent") {
-                        provider.setValue("parent_image", result.data.parent1)
+                    if (result.data.image != null) {
+                        provider.setValue("updated_image", result.data.image)
                     }
                 }
             }

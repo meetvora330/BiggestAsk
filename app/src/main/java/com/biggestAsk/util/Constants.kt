@@ -1,7 +1,5 @@
 package com.biggestAsk.util
 
-import com.biggestAsk.data.model.response.Milestone
-
 
 object Constants {
     const val UNAUTHORISED = 401
@@ -14,7 +12,8 @@ object Constants {
         "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@\$!%*#?&])[A-Za-z\\d@\$!%*#?&]{8,}\$"
 
     const val BASE_URL_BIGGEST_ASK = "https://biggestaskbackend.justcodenow.com/api/"
-//    const val INSTAGRAM_URL_PATTERN = "/^\\s*(http\\:\\/\\/)?instagram\\.com\\/[a-z\\d-_]{1,255}\\s*\$/i"
+
+    //    const val INSTAGRAM_URL_PATTERN = "/^\\s*(http\\:\\/\\/)?instagram\\.com\\/[a-z\\d-_]{1,255}\\s*\$/i"
 //    const val INSTAGRAM_URL_PATTERN = "/(?:(?:http|https):\\/\\/)?(?:www\\.)?(?:instagram\\.com|instagram\\.am)\\/([A-Za-z0-9-_\\.]+)/im"
 //    const val INSTAGRAM_URL_PATTERN = "https?:\\/\\/www\\.?instagram\\.com\\/([A-Za-z0-9_](?:(?:[A-Za-z0-9_]|(?:\\.(?!\\.))){0,28}(?:[A-Za-z0-9_]))?\\S)\\?r="
     const val INSTAGRAM_URL_PATTERN = "(?<=instagram.com\\/)[A-Za-z0-9_.]+"
@@ -61,6 +60,7 @@ object Constants {
     const val GET_QUESTION_SCREEN_QUESTION = "get_qestion_screen_question"
     const val GET_FREQUENCY = "get_frequency"
     const val GET_QUESTION_BANK_CONTENT = "question_bank"
+    const val GET_PREGNANCY_STATUS = "get_pregnancy_status"
 
     //preference data
     const val LOGIN_STATUS = "login_status"

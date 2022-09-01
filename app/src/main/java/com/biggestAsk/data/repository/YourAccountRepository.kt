@@ -52,7 +52,7 @@ class YourAccountRepository @Inject constructor(
         partner_phone: MultipartBody.Part? = null,
         partner_dob: MultipartBody.Part? = null,
         partner_address: MultipartBody.Part? = null,
-        partner_gender: MultipartBody.Part? = null
+        partner_gender: MultipartBody.Part? = null,
     ): Flow<NetworkResult<UpdateUserProfileResponse>> {
         return flow {
             emit(safeApiCall {

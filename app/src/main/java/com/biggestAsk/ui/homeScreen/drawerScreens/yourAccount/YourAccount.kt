@@ -109,6 +109,7 @@ fun YourAccountScreen(
                 yourAccountViewModel.surrogateHomeAddress = ""
                 yourAccountViewModel.surrogatePartnerName = ""
                 yourAccountViewModel.surrogateImg = ""
+                yourAccountViewModel.yourAccountFullNameEmpty = false
                 yourAccountViewModel.isParentClicked = true
                 yourAccountViewModel.isMotherClicked = false
                 yourAccountViewModel.isGenderSelected = false
@@ -130,6 +131,7 @@ fun YourAccountScreen(
                 yourAccountViewModel.parentPartnerName = ""
                 yourAccountViewModel.isParentClicked = true
                 yourAccountViewModel.isGenderSelected = false
+                yourAccountViewModel.yourAccountFullNameEmpty = false
                 getUserDetailsParent(userId, type, homeActivity, yourAccountViewModel, context)
 
             }
@@ -138,12 +140,6 @@ fun YourAccountScreen(
             }
         }
     }
-    Log.d("TAG", "YourAccountScreen: surrogate gender ${yourAccountViewModel.surrogateGender}")
-    Log.d("TAG", "YourAccountScreen: parent gender ${yourAccountViewModel.parentGender}")
-    Log.d(
-        "TAG",
-        "YourAccountScreen: parent partner gender ${yourAccountViewModel.parentPartnerGender}"
-    )
     val openLogoutDialog = remember { mutableStateOf(false) }
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -308,7 +304,6 @@ fun YourAccountScreen(
                                     unfocusedIndicatorColor = Color.Transparent,
                                     textColor = Color.Black
                                 ), readOnly = !yourAccountViewModel.isEditable.value,
-                                maxLines = 1,
                                 textStyle = MaterialTheme.typography.body2,
                                 trailingIcon = {
                                     Icon(
@@ -531,15 +526,36 @@ fun YourAccountScreen(
                                         indication = null,
                                         interactionSource = MutableInteractionSource()
                                     ) {
+                                        val oldYear =
+                                            if (yourAccountViewModel.surrogateDateOfBirth == "") year - 24 else yourAccountViewModel.surrogateDateOfBirth
+                                                .substring(
+                                                    startIndex = 0,
+                                                    endIndex = 4
+                                                )
+                                                .toInt()
+                                        val oldMonth =
+                                            if (yourAccountViewModel.surrogateDateOfBirth == "") month else yourAccountViewModel.surrogateDateOfBirth
+                                                .substring(
+                                                    startIndex = 5,
+                                                    endIndex = 7
+                                                )
+                                                .toInt() - 1
+                                        val oldDay =
+                                            if (yourAccountViewModel.surrogateDateOfBirth == "") month else yourAccountViewModel.surrogateDateOfBirth
+                                                .substring(
+                                                    startIndex = 8,
+                                                    endIndex = 10
+                                                )
+                                                .toInt()
                                         val datePickerDialog = DatePickerDialog(
                                             context,
                                             R.style.CalenderViewCustom,
                                             { _: DatePicker, year: Int, month: Int, day: Int ->
                                                 yourAccountViewModel.surrogateDateOfBirth =
-                                                    "$year-" + "%02d".format(month + 1) + "-" + "%02d".format(
+                                                    "$year/" + "%02d".format(month + 1) + "/" + "%02d".format(
                                                         day
                                                     )
-                                            }, year, month, day
+                                            }, oldYear, oldMonth, oldDay
                                         )
                                         datePickerDialog.datePicker.maxDate = Date().time - 86400000
                                         datePickerDialog.show()
@@ -749,29 +765,31 @@ fun YourAccountScreen(
                                             month = dateOfBirth.substring(4, 6).toInt(),
                                             dayOfMonth = dateOfBirth.substring(6, 8).toInt()
                                         )
-                                        Text(
-                                            modifier = Modifier
-                                                .wrapContentWidth()
-                                                .padding(end = 2.dp),
-                                            text = yourAccountViewModel.surrogateDateOfBirth,
-                                            style = MaterialTheme.typography.body2.copy(
-                                                color = Color(0xFF7F7D7C),
-                                                fontSize = 14.sp,
-                                                fontWeight = FontWeight.W500,
-                                                lineHeight = 22.sp
+                                        if (age!=0){
+                                            Text(
+                                                modifier = Modifier
+                                                    .wrapContentWidth()
+                                                    .padding(end = 2.dp),
+                                                text = yourAccountViewModel.surrogateDateOfBirth,
+                                                style = MaterialTheme.typography.body2.copy(
+                                                    color = Color(0xFF7F7D7C),
+                                                    fontSize = 14.sp,
+                                                    fontWeight = FontWeight.W500,
+                                                    lineHeight = 22.sp
+                                                )
                                             )
-                                        )
-                                        Text(
-                                            modifier = Modifier
-                                                .wrapContentWidth(),
-                                            text = "($age Year)",
-                                            style = MaterialTheme.typography.body2.copy(
-                                                color = Color.Black,
-                                                fontSize = 14.sp,
-                                                fontWeight = FontWeight.W500,
-                                                lineHeight = 22.sp
+                                            Text(
+                                                modifier = Modifier
+                                                    .wrapContentWidth(),
+                                                text = "($age Year)",
+                                                style = MaterialTheme.typography.body2.copy(
+                                                    color = Color.Black,
+                                                    fontSize = 14.sp,
+                                                    fontWeight = FontWeight.W500,
+                                                    lineHeight = 22.sp
+                                                )
                                             )
-                                        )
+                                        }
                                     }
                                 }
                                 Image(
@@ -967,6 +985,7 @@ fun YourAccountScreen(
                                             interactionSource = MutableInteractionSource()
                                         ) {
                                             yourAccountViewModel.isParentClicked = true
+                                            yourAccountViewModel.yourAccountFullNameEmpty = false
                                             yourAccountViewModel.isMotherClicked = false
                                         },
                                     painter = if (yourAccountViewModel.parentImg1 != "") painter1 else painterResource(
@@ -986,6 +1005,8 @@ fun YourAccountScreen(
                                             ) {
                                                 yourAccountViewModel.isParentClicked = true
                                                 yourAccountViewModel.isMotherClicked = false
+                                                yourAccountViewModel.yourAccountFullNameEmpty =
+                                                    false
                                             },
                                         bitmap = it.asImageBitmap(),
                                         contentDescription = "",
@@ -1134,89 +1155,133 @@ fun YourAccountScreen(
                                 verticalArrangement = Arrangement.Center,
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                if (yourAccountViewModel.parentFullName != "" || yourAccountViewModel.parentPartnerName != "") {
-                                    Text(
-                                        modifier = Modifier
-                                            .wrapContentWidth(),
-                                        text = if (yourAccountViewModel.isParentClicked) yourAccountViewModel.parentFullName else yourAccountViewModel.parentPartnerName,
-                                        style = MaterialTheme.typography.h2.copy(
-                                            color = Color.Black,
-                                            fontSize = 24.sp,
-                                            fontWeight = FontWeight.W600,
-                                            lineHeight = 32.sp
-                                        )
-                                    )
-                                }
-                                if (yourAccountViewModel.parentDateOfBirth != "" && yourAccountViewModel.parentPartnerDateOfBirth != "") {
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(top = 8.dp),
-                                        horizontalArrangement = Arrangement.Center,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        var parentDateOfBirth: String? = null
-                                        var parentPartnerDateOfBirth: String? = null
-                                        var parentAge: Int? = null
-                                        var parentPartnerAge: Int? = null
-                                        if (yourAccountViewModel.isParentClicked) {
-                                            if (yourAccountViewModel.parentDateOfBirth != "") {
-                                                parentDateOfBirth =
-                                                    yourAccountViewModel.parentDateOfBirth.replace(
-                                                        "/",
-                                                        ""
-                                                    )
-                                                parentAge = getAge(
-                                                    year = parentDateOfBirth.substring(0, 4)
-                                                        .toInt(),
-                                                    month = parentDateOfBirth.substring(4, 6)
-                                                        .toInt(),
-                                                    dayOfMonth = parentDateOfBirth.substring(6, 8)
-                                                        .toInt()
-                                                )
-                                            }
-                                        } else if (yourAccountViewModel.isMotherClicked) {
-                                            if (yourAccountViewModel.parentPartnerDateOfBirth != "") {
-                                                parentPartnerDateOfBirth =
-                                                    yourAccountViewModel.parentPartnerDateOfBirth.replace(
-                                                        "/",
-                                                        ""
-                                                    )
-                                                parentPartnerAge = getAge(
-                                                    year = parentPartnerDateOfBirth.substring(0, 4)
-                                                        .toInt(),
-                                                    month = parentPartnerDateOfBirth.substring(4, 6)
-                                                        .toInt(),
-                                                    dayOfMonth = parentPartnerDateOfBirth.substring(
-                                                        6,
-                                                        8
-                                                    ).toInt()
-                                                )
-                                            }
-                                        }
-                                        Text(
-                                            modifier = Modifier
-                                                .wrapContentWidth()
-                                                .padding(end = 2.dp),
-                                            text = if (yourAccountViewModel.isParentClicked) yourAccountViewModel.parentDateOfBirth else yourAccountViewModel.parentPartnerDateOfBirth,
-                                            style = MaterialTheme.typography.body2.copy(
-                                                color = Color(0xFF7F7D7C),
-                                                fontSize = 14.sp,
-                                                fontWeight = FontWeight.W500,
-                                                lineHeight = 22.sp
-                                            )
-                                        )
+                                if (yourAccountViewModel.isParentClicked) {
+                                    var parentDateOfBirth: String? = null
+                                    var parentAge: Int? = null
+                                    if (yourAccountViewModel.parentFullName != "") {
                                         Text(
                                             modifier = Modifier
                                                 .wrapContentWidth(),
-                                            text = if (yourAccountViewModel.isParentClicked) "($parentAge Year)" else "($parentPartnerAge Year)",
-                                            style = MaterialTheme.typography.body2.copy(
+                                            text = yourAccountViewModel.parentFullName,
+                                            style = MaterialTheme.typography.h2.copy(
                                                 color = Color.Black,
-                                                fontSize = 14.sp,
-                                                fontWeight = FontWeight.W500,
-                                                lineHeight = 22.sp
+                                                fontSize = 24.sp,
+                                                fontWeight = FontWeight.W600,
+                                                lineHeight = 32.sp
                                             )
                                         )
+                                    }
+                                    if (yourAccountViewModel.parentDateOfBirth != "") {
+                                        parentDateOfBirth =
+                                            yourAccountViewModel.parentDateOfBirth.replace(
+                                                "/",
+                                                ""
+                                            )
+                                        parentAge = getAge(
+                                            year = parentDateOfBirth.substring(0, 4)
+                                                .toInt(),
+                                            month = parentDateOfBirth.substring(4, 6)
+                                                .toInt(),
+                                            dayOfMonth = parentDateOfBirth.substring(6, 8)
+                                                .toInt()
+                                        )
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(top = 8.dp),
+                                            horizontalArrangement = Arrangement.Center,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            if (parentAge != 0) {
+                                                Text(
+                                                    modifier = Modifier
+                                                        .wrapContentWidth()
+                                                        .padding(end = 2.dp),
+                                                    text = yourAccountViewModel.parentDateOfBirth,
+                                                    style = MaterialTheme.typography.body2.copy(
+                                                        color = Color(0xFF7F7D7C),
+                                                        fontSize = 14.sp,
+                                                        fontWeight = FontWeight.W500,
+                                                        lineHeight = 22.sp
+                                                    )
+                                                )
+                                                Text(
+                                                    modifier = Modifier
+                                                        .wrapContentWidth(),
+                                                    text = "($parentAge Year)",
+                                                    style = MaterialTheme.typography.body2.copy(
+                                                        color = Color.Black,
+                                                        fontSize = 14.sp,
+                                                        fontWeight = FontWeight.W500,
+                                                        lineHeight = 22.sp
+                                                    )
+                                                )
+                                            }
+                                        }
+                                    }
+                                } else if (yourAccountViewModel.isMotherClicked) {
+                                    var parentPartnerDateOfBirth: String? = null
+                                    var parentPartnerAge: Int? = null
+                                    if (yourAccountViewModel.parentPartnerName != "") {
+                                        Text(
+                                            modifier = Modifier
+                                                .wrapContentWidth(),
+                                            text = yourAccountViewModel.parentPartnerName,
+                                            style = MaterialTheme.typography.h2.copy(
+                                                color = Color.Black,
+                                                fontSize = 24.sp,
+                                                fontWeight = FontWeight.W600,
+                                                lineHeight = 32.sp
+                                            )
+                                        )
+                                    }
+                                    if (yourAccountViewModel.parentPartnerDateOfBirth != "") {
+                                        parentPartnerDateOfBirth =
+                                            yourAccountViewModel.parentPartnerDateOfBirth.replace(
+                                                "/",
+                                                ""
+                                            )
+                                        parentPartnerAge = getAge(
+                                            year = parentPartnerDateOfBirth.substring(0, 4)
+                                                .toInt(),
+                                            month = parentPartnerDateOfBirth.substring(4, 6)
+                                                .toInt(),
+                                            dayOfMonth = parentPartnerDateOfBirth.substring(6, 8)
+                                                .toInt()
+                                        )
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(top = 8.dp),
+                                            horizontalArrangement = Arrangement.Center,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            if (parentPartnerAge != 0) {
+                                                Text(
+                                                    modifier = Modifier
+                                                        .wrapContentWidth()
+                                                        .padding(end = 2.dp),
+                                                    text = yourAccountViewModel.parentDateOfBirth,
+                                                    style = MaterialTheme.typography.body2.copy(
+                                                        color = Color(0xFF7F7D7C),
+                                                        fontSize = 14.sp,
+                                                        fontWeight = FontWeight.W500,
+                                                        lineHeight = 22.sp
+                                                    )
+                                                )
+                                                Text(
+                                                    modifier = Modifier
+                                                        .wrapContentWidth(),
+                                                    text = "($parentPartnerAge Year)",
+                                                    style = MaterialTheme.typography.body2.copy(
+                                                        color = Color.Black,
+                                                        fontSize = 14.sp,
+                                                        fontWeight = FontWeight.W500,
+                                                        lineHeight = 22.sp
+                                                    )
+                                                )
+                                            }
+                                        }
                                     }
                                 }
                                 Image(
@@ -1407,7 +1472,6 @@ fun YourAccountScreen(
                                         unfocusedIndicatorColor = Color.Transparent,
                                         textColor = Color.Black
                                     ), readOnly = false,
-                                    maxLines = 1,
                                     textStyle = MaterialTheme.typography.body2,
                                     trailingIcon = {
                                         Icon(
@@ -1629,6 +1693,27 @@ fun YourAccountScreen(
                                             indication = null,
                                             interactionSource = MutableInteractionSource()
                                         ) {
+                                            val oldYear =
+                                                if (yourAccountViewModel.parentDateOfBirth == "") year - 24 else yourAccountViewModel.parentDateOfBirth
+                                                    .substring(
+                                                        startIndex = 0,
+                                                        endIndex = 4
+                                                    )
+                                                    .toInt()
+                                            val oldMonth =
+                                                if (yourAccountViewModel.parentDateOfBirth == "") month else yourAccountViewModel.parentDateOfBirth
+                                                    .substring(
+                                                        startIndex = 5,
+                                                        endIndex = 7
+                                                    )
+                                                    .toInt() - 1
+                                            val oldDay =
+                                                if (yourAccountViewModel.parentDateOfBirth == "") month else yourAccountViewModel.parentDateOfBirth
+                                                    .substring(
+                                                        startIndex = 8,
+                                                        endIndex = 10
+                                                    )
+                                                    .toInt()
                                             val datePickerDialog = DatePickerDialog(
                                                 context,
                                                 R.style.CalenderViewCustom,
@@ -1637,7 +1722,7 @@ fun YourAccountScreen(
                                                         "$year/" + "%02d".format(month + 1) + "/" + "%02d".format(
                                                             day
                                                         )
-                                                }, year, month, day
+                                                }, oldYear, oldMonth, oldDay
                                             )
                                             datePickerDialog.datePicker.maxDate =
                                                 Date().time - 86400000
@@ -1833,7 +1918,6 @@ fun YourAccountScreen(
                                         unfocusedIndicatorColor = Color.Transparent,
                                         textColor = Color.Black
                                     ), readOnly = false,
-                                    maxLines = 1,
                                     textStyle = MaterialTheme.typography.body2,
                                     trailingIcon = {
                                         Icon(
@@ -2055,17 +2139,39 @@ fun YourAccountScreen(
                                             indication = null,
                                             interactionSource = MutableInteractionSource()
                                         ) {
+                                            val oldYear =
+                                                if (yourAccountViewModel.parentPartnerDateOfBirth == "") year - 24 else yourAccountViewModel.parentPartnerDateOfBirth
+                                                    .substring(
+                                                        startIndex = 0,
+                                                        endIndex = 4
+                                                    )
+                                                    .toInt()
+                                            val oldMonth =
+                                                if (yourAccountViewModel.parentPartnerDateOfBirth == "") month else yourAccountViewModel.parentPartnerDateOfBirth
+                                                    .substring(
+                                                        startIndex = 5,
+                                                        endIndex = 7
+                                                    )
+                                                    .toInt() - 1
+                                            val oldDay =
+                                                if (yourAccountViewModel.parentPartnerDateOfBirth == "") month else yourAccountViewModel.parentPartnerDateOfBirth
+                                                    .substring(
+                                                        startIndex = 8,
+                                                        endIndex = 10
+                                                    )
+                                                    .toInt()
                                             val datePickerDialog = DatePickerDialog(
                                                 context,
                                                 R.style.CalenderViewCustom,
                                                 { _: DatePicker, year: Int, month: Int, day: Int ->
                                                     yourAccountViewModel.parentPartnerDateOfBirth =
-                                                        "$year-" + "%02d".format(month + 1) + "-" + "%02d".format(
+                                                        "$year/" + "%02d".format(month + 1) + "/" + "%02d".format(
                                                             day
                                                         )
-                                                }, year, month, day
+                                                }, oldYear, oldMonth, oldDay
                                             )
-                                            datePickerDialog.datePicker.setMaxDate(Date().time - 86400000)
+                                            datePickerDialog.datePicker.maxDate =
+                                                Date().time - 86400000
                                             datePickerDialog.show()
                                             datePickerDialog
                                                 .getButton(DatePickerDialog.BUTTON_NEGATIVE)
@@ -2609,7 +2715,7 @@ private fun handleUserUpdateData(
             when (type) {
                 SURROGATE -> {
                     provider.setValue("user_name", yourAccountViewModel.surrogateFullName)
-                    provider.setValue("surrogate_image", yourAccountViewModel.surrogateImg)
+                    provider.setValue("updated_image", yourAccountViewModel.surrogateImg)
                     getUserDetailsSurrogate(
                         userId = userId,
                         type = type,
@@ -2620,7 +2726,7 @@ private fun handleUserUpdateData(
                 }
                 PARENT -> {
                     provider.setValue("user_name", yourAccountViewModel.parentFullName)
-                    provider.setValue("parent_image", yourAccountViewModel.parentImg1)
+                    provider.setValue("updated_image", yourAccountViewModel.parentImg1)
                     getUserDetailsParent(
                         userId = userId,
                         homeActivity = homeActivity,

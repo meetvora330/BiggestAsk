@@ -12,7 +12,6 @@ import com.biggestAsk.data.model.request.StoreQuestionAnsRequest
 import com.biggestAsk.data.model.request.UpdatePaymentStatusRequest
 import com.biggestAsk.data.model.response.BaseScreenQuestionResponse
 import com.biggestAsk.data.model.response.CommonResponse
-import com.biggestAsk.data.model.response.LoginBodyResponse
 import com.biggestAsk.data.repository.HomeRepository
 import com.biggestAsk.data.source.network.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,21 +26,6 @@ class HomeViewModel @Inject constructor(
 
     //Globally Used Variable
     var isLoading: Boolean by mutableStateOf(false)
-
-    //Email Verification Screen
-    var textEmailVerify: String by mutableStateOf("")
-    var sendOtpResponse: MutableLiveData<NetworkResult<CommonResponse>> = MutableLiveData()
-
-    //Verify Email Check Otp Screen
-
-    //Re-send Otp
-
-    //Register Screen
-    var registerScreen: MutableLiveData<NetworkResult<CommonResponse>> = MutableLiveData()
-
-    //Login Screen
-    var loginScreen: MutableLiveData<NetworkResult<LoginBodyResponse>> = MutableLiveData()
-
 
     //Base Question Screen
     var baseScreenQuestion: MutableLiveData<NetworkResult<List<BaseScreenQuestionResponse>>> =
@@ -64,8 +48,8 @@ class HomeViewModel @Inject constructor(
     }
 
     fun getBaseScreenQuestion() {
+        baseScreenQuestion.value = NetworkResult.Loading()
         viewModelScope.launch {
-            baseScreenQuestion.value = NetworkResult.Loading()
             homeRepository.getBaseScreenQuestion().collect {
                 baseScreenQuestion.value = it
             }

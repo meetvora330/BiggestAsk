@@ -20,6 +20,7 @@ import com.biggestAsk.ui.introScreen.LockScreenOrientation
 import com.biggestAsk.ui.main.viewmodel.*
 import com.biggestAsk.ui.ui.theme.BasicStructureTheme
 import com.biggestAsk.util.Constants
+import com.biggestAsk.util.PreferenceProvider
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 class HomeActivity : BaseActivity() {
@@ -92,6 +93,15 @@ class HomeActivity : BaseActivity() {
             }
             BasicStructureTheme {
                 LockScreenOrientation(orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+                val type = PreferenceProvider(this).getValue("type", "")
+                val updatedImage = PreferenceProvider(this).getValue("updated_image", "")
+                if (updatedImage != null) {
+                    if (type == "parent") {
+                        yourAccountViewModel.parentImg1 = updatedImage
+                    } else {
+                        yourAccountViewModel.surrogateImg = updatedImage
+                    }
+                }
                 HomeScreen(
                     navController = navController,
                     context = this,

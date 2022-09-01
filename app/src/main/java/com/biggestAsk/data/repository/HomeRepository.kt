@@ -208,4 +208,15 @@ class HomeRepository @Inject constructor(
             emit(safeApiCall { apiService.storeAnsImportantQuestion(storeAnsImportantQuestionRequest) })
         }.flowOn(Dispatchers.IO)
     }
+
+    suspend fun getPregnancyStatus(
+        type: String,
+        userId: Int
+    ):Flow<NetworkResult<GetPregnancyStatusResponse>>{
+        return flow {
+            emit(safeApiCall {
+                apiService.getPregnancyStatus(type = type, user_id = userId)
+            })
+        }
+    }
 }

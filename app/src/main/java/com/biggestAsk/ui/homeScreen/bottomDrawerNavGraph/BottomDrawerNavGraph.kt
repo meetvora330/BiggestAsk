@@ -51,6 +51,7 @@ fun BottomNavigationDrawerGraph(
     scaffoldState: ScaffoldState,
     frequencyViewModel: FrequencyViewModel
 ) {
+    val provider = PreferenceProvider(context)
     NavHost(
         navController = navHostController, startDestination = BottomNavScreen.Home.route
     ) {
@@ -67,7 +68,7 @@ fun BottomNavigationDrawerGraph(
         composable(
             route = BottomNavScreen.Home.route
         ) {
-            val provider = PreferenceProvider(context)
+
             val type = provider.getValue(Constants.TYPE, "")
             when (provider.getValue(Constants.LOGIN_STATUS, "")) {
                 LoginStatus.PARTNER_NOT_ASSIGN.name.lowercase(Locale.getDefault()) -> {
@@ -126,14 +127,31 @@ fun BottomNavigationDrawerGraph(
             )
         }
         composable(route = NavDrawerItem.IntendedParents.route) {
-            IntendParentsScreen(
-                homeActivity = homeActivity,
-                context = context,
-                intendedParentsViewModel = intendedParentsViewModel
-            )
+            val type = provider.getValue(Constants.TYPE, "")
+            when (provider.getValue(Constants.LOGIN_STATUS, "")) {
+                LoginStatus.PARTNER_NOT_ASSIGN.name.lowercase(Locale.getDefault()) -> {
+                    if (type == Constants.SURROGATE) {
+                        SurrogateParentNotAssignScreen(stringResource(id = R.string.label_surrogate_parent_not_available))
+                    }
+                }
+                LoginStatus.MILESTONE_DATE_NOT_ADDED.name.lowercase(Locale.getDefault()) -> {
+                    IntendParentsScreen(
+                        homeActivity = homeActivity,
+                        context = context,
+                        intendedParentsViewModel = intendedParentsViewModel
+                    )
+                }
+                else -> {
+                    IntendParentsScreen(
+                        homeActivity = homeActivity,
+                        context = context,
+                        intendedParentsViewModel = intendedParentsViewModel
+                    )
+                }
+            }
+
         }
         composable(route = NavDrawerItem.YourSurrogateMother.route) {
-            val provider = PreferenceProvider(context)
             when (provider.getValue(Constants.LOGIN_STATUS, "")) {
                 LoginStatus.PARTNER_NOT_ASSIGN.name.lowercase(Locale.getDefault()) -> {
                     AddSurrogateMother(
@@ -143,15 +161,20 @@ fun BottomNavigationDrawerGraph(
                         navHostController
                     )
                 }
-                else -> {
+                LoginStatus.MILESTONE_DATE_NOT_ADDED.name.lowercase(Locale.getDefault()) -> {
                     YourSurrogateMother(
                         homeActivity = homeActivity,
                         yourSurrogateMotherViewModel = yourSurrogateMotherViewModel,
                         context = context
                     )
+                }else->{
+                YourSurrogateMother(
+                    homeActivity = homeActivity,
+                    yourSurrogateMotherViewModel = yourSurrogateMotherViewModel,
+                    context = context
+                )
                 }
             }
-
         }
         composable(route = NavDrawerItem.Community.route) {
             Community(
@@ -168,9 +191,11 @@ fun BottomNavigationDrawerGraph(
         composable(
             route = NavDrawerItem.Notifications.route
         ) {
-            Notification(navHostController = navHostController,
+            Notification(
+                navHostController = navHostController,
                 notificationViewModel = notificationViewModel,
-                homeActivity = homeActivity)
+                homeActivity = homeActivity
+            )
         }
         composable(
             route = NotificationDetailScreenRoute.NotificationDetails.route, arguments = listOf(

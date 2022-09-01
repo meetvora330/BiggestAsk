@@ -12,7 +12,6 @@ sealed class Screen(val route: String) {
     object Login : Screen(route = Constants.ROUTE_LOGIN_SCREEN)
     object PaymentScreen : Screen(route = Constants.ROUTE_PAYMENT_SCREEN)
     object QuestionScreen : Screen(route = Constants.ROUTE_QUESTION_SCREEN)
-    object HomeScreen : Screen(route = Constants.ROUTE_HOME_SCREEN)
 
     fun emailVerification(
         email: String,

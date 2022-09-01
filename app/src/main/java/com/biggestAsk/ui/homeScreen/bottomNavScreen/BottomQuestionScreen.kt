@@ -66,6 +66,7 @@ fun BottomQuestionScreen(
     val type = provider.getValue("type", "")
     val selectedText = remember { mutableStateOf("") }
     val partnerId = provider.getIntValue("partner_id", 0)
+
     LaunchedEffect(Unit) {
         updateQuestionScreen(
             userId = userId,
@@ -406,75 +407,80 @@ fun BottomQuestionScreen(
                 QuestionScreenAnsweredQuestionShimmerAnimation()
             } else {
                 if (!questionViewModel.isErrorOccurredInQuestionLoading) {
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 24.dp, end = 24.dp, top = 32.dp, bottom = 10.dp),
-                        text = stringResource(id = R.string.bottom_ques_exist_ques),
-                        style = MaterialTheme.typography.body2,
-                        fontWeight = FontWeight.W900,
-                        textAlign = TextAlign.Center,
-                        fontSize = 22.sp,
-                        color = Color.Black
-                    )
-                    questionViewModel.questionAnsweredList.forEachIndexed { index, item ->
-                        Surface(
-                            shape = RoundedCornerShape(12.dp),
-                            color = Color.White,
-                            elevation = 2.dp,
+                    if (questionViewModel.questionAnsweredList.isNotEmpty()) {
+                        Text(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(start = 25.dp, end = 23.dp, top = 6.dp, bottom = 15.dp)
-                        ) {
-                            Column {
-                                item.question?.let { it1 ->
-                                    Text(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(start = 24.dp, top = 24.dp, end = 56.dp),
-                                        text = it1,
-                                        color = Color.Black,
-                                        style = MaterialTheme.typography.body2,
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.Normal,
-                                    )
-                                }
-                                Row {
-                                    item.user_name?.let { it1 ->
+                                .padding(start = 24.dp, end = 24.dp, top = 32.dp, bottom = 10.dp),
+                            text = stringResource(id = R.string.bottom_ques_exist_ques),
+                            style = MaterialTheme.typography.body2,
+                            fontWeight = FontWeight.W900,
+                            textAlign = TextAlign.Center,
+                            fontSize = 22.sp,
+                            color = Color.Black
+                        )
+                        questionViewModel.questionAnsweredList.forEachIndexed { index, item ->
+                            Surface(
+                                shape = RoundedCornerShape(12.dp),
+                                color = Color.White,
+                                elevation = 2.dp,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 25.dp, end = 23.dp, top = 6.dp, bottom = 15.dp)
+                            ) {
+                                Column {
+                                    item.question?.let { it1 ->
                                         Text(
-                                            modifier = Modifier.padding(start = 24.dp, top = 10.dp),
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(start = 24.dp, top = 24.dp, end = 56.dp),
                                             text = it1,
-                                            color = Custom_Blue,
+                                            color = Color.Black,
                                             style = MaterialTheme.typography.body2,
-                                            fontSize = 14.sp,
+                                            fontSize = 16.sp,
                                             fontWeight = FontWeight.Normal,
                                         )
                                     }
-                                    Text(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(top = 10.dp, end = 24.dp),
-                                        text = if (questionViewModel.questionAnsweredDaysList[index] == 0) "Today" else "${questionViewModel.questionAnsweredDaysList[index]} Day ago",
-                                        color = Color(0xFF9F9D9B),
-                                        style = MaterialTheme.typography.body2,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.Normal,
-                                        textAlign = TextAlign.End
-                                    )
-                                }
-                                item.answer?.let { it1 ->
-                                    Text(
-                                        modifier = Modifier.padding(
-                                            start = 24.dp,
-                                            top = 4.dp,
-                                            bottom = 22.dp
-                                        ),
-                                        text = it1,
-                                        color = Color.Black,
-                                        style = MaterialTheme.typography.body2,
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.Normal,
-                                    )
+                                    Row {
+                                        item.user_name?.let { it1 ->
+                                            Text(
+                                                modifier = Modifier.padding(
+                                                    start = 24.dp,
+                                                    top = 10.dp
+                                                ),
+                                                text = it1,
+                                                color = Custom_Blue,
+                                                style = MaterialTheme.typography.body2,
+                                                fontSize = 14.sp,
+                                                fontWeight = FontWeight.Normal,
+                                            )
+                                        }
+                                        Text(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(top = 10.dp, end = 24.dp),
+                                            text = if (questionViewModel.questionAnsweredDaysList[index] == 0) "Today" else "${questionViewModel.questionAnsweredDaysList[index]} Day ago",
+                                            color = Color(0xFF9F9D9B),
+                                            style = MaterialTheme.typography.body2,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.Normal,
+                                            textAlign = TextAlign.End
+                                        )
+                                    }
+                                    item.answer?.let { it1 ->
+                                        Text(
+                                            modifier = Modifier.padding(
+                                                start = 24.dp,
+                                                top = 4.dp,
+                                                bottom = 22.dp
+                                            ),
+                                            text = it1,
+                                            color = Color.Black,
+                                            style = MaterialTheme.typography.body2,
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.Normal,
+                                        )
+                                    }
                                 }
                             }
                         }

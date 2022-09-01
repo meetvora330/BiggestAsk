@@ -662,7 +662,6 @@ fun EditMilestoneScreen(
                                     )
 
                                 }
-
                                 Column(
                                     modifier = Modifier
                                         .fillMaxWidth()

@@ -73,6 +73,7 @@ fun VerifyOtpScreen(
     }
     val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
+        verifyOtpViewModel.ticks = 60
         while (verifyOtpViewModel.ticks != 0) {
             delay(1.seconds)
             verifyOtpViewModel.ticks--
@@ -323,6 +324,7 @@ private fun handleUserData(
             // bind data to the view
             Log.e("TAG", "handleUserData() --> Success  $result")
             verifyOtpViewModel.isLoading = false
+            navHostController.popBackStack(Screen.Verify.route, true)
             navHostController.popBackStack(Screen.VerifyEmail.route, true)
             navHostController.navigate(Screen.Register.emailVerified(email = email))
             navHostController.popBackStack(Screen.Register.registerRoute(), true)

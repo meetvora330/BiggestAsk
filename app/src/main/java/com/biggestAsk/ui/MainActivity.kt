@@ -12,9 +12,8 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,6 +23,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -37,11 +37,13 @@ import com.biggestAsk.data.model.LoginStatus
 import com.biggestAsk.data.model.response.IntroInfoResponse
 import com.biggestAsk.data.model.response.UpdatedStatusResponse
 import com.biggestAsk.data.source.network.NetworkResult
+import com.biggestAsk.data.source.network.isInternetAvailable
 import com.biggestAsk.navigation.SetUpNavGraph
 import com.biggestAsk.ui.base.BaseActivity
 import com.biggestAsk.ui.introScreen.LockScreenOrientation
 import com.biggestAsk.ui.main.viewmodel.*
 import com.biggestAsk.ui.ui.theme.BasicStructureTheme
+import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
@@ -69,6 +71,10 @@ class MainActivity : BaseActivity() {
             val systemUiController = rememberSystemUiController()
             val useDarkIcons = MaterialTheme.colors.isLight
             val navController = rememberNavController()
+            val isInternetAvailable = remember {
+                mutableStateOf(true)
+            }
+            val context = this
             focusManager.clearFocus()
             SideEffect {
                 // Update all of the system bar colors to be transparent, and use
@@ -79,49 +85,19 @@ class MainActivity : BaseActivity() {
                 )
             }
             LockScreenOrientation(orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
-            ProvideWindowInsets(
-                windowInsetsAnimationsEnabled = true
-            ) {
-                val provider = PreferenceProvider(this)
-                val isIntroDone = provider.getBooleanValue(Constants.IS_INTRO_DONE, false)
-                if (!isIntroDone) {
-                    LaunchedEffect(Unit) {
-                        introViewModel.getIntroInfo()
-                        introViewModel.getIntroInfoResponse.observe(this@MainActivity) {
-                            if (it != null) {
-                                handleUserData(
-                                    result = it,
-                                    context = this@MainActivity,
-                                    introViewModel = introViewModel
-                                )
-                            }
-                        }
-                    }
-                    if (!introViewModel.isIntroDataLoaded) {
-                        introLoader()
-                    }
-                } else {
-                    when (provider.getValue(Constants.LOGIN_STATUS, "")) {
-                        LoginStatus.PARTNER_NOT_ASSIGN.name.lowercase(Locale.getDefault()),
-                        LoginStatus.MILESTONE_DATE_NOT_ADDED.name.lowercase(Locale.getDefault()),
-                        LoginStatus.ON_BOARDING.name.lowercase(Locale.getDefault()) -> {
-                            introLoader()
-                        }
-                        else -> {
-                            if (!introViewModel.isUserStatusDataLoaded) {
-                                introLoader()
-                            }
-                        }
-                    }
-
-                    val userId = provider.getIntValue(Constants.USER_ID, 0)
-                    val type = provider.getValue(Constants.TYPE, "")
-                    if (userId != 0 && !type.isNullOrEmpty()) {
+            isInternetAvailable.value = isInternetAvailable(this)
+            if (isInternetAvailable.value) {
+                ProvideWindowInsets(
+                    windowInsetsAnimationsEnabled = true
+                ) {
+                    val provider = PreferenceProvider(this)
+                    val isIntroDone = provider.getBooleanValue(Constants.IS_INTRO_DONE, false)
+                    if (!isIntroDone) {
                         LaunchedEffect(Unit) {
-                            introViewModel.getUpdatedStatus(userId, type)
-                            introViewModel.getUpdatedStatusResponse.observe(this@MainActivity) {
+                            introViewModel.getIntroInfo()
+                            introViewModel.getIntroInfoResponse.observe(this@MainActivity) {
                                 if (it != null) {
-                                    handleUpdatedStatusData(
+                                    handleUserData(
                                         result = it,
                                         context = this@MainActivity,
                                         introViewModel = introViewModel
@@ -129,39 +105,144 @@ class MainActivity : BaseActivity() {
                                 }
                             }
                         }
-                    } else {
-                        introViewModel.isIntroDataLoaded = true
-                        introViewModel.isUserStatusDataLoaded = true
-                    }
-
-                }
-                if (introViewModel.isIntroDataLoaded || introViewModel.isUserStatusDataLoaded) {
-                    when (provider.getValue(Constants.LOGIN_STATUS, "")) {
-                        LoginStatus.PARTNER_NOT_ASSIGN.name.lowercase(Locale.getDefault()),
-                        LoginStatus.MILESTONE_DATE_NOT_ADDED.name.lowercase(Locale.getDefault()),
-                        LoginStatus.ON_BOARDING.name.lowercase(Locale.getDefault()) -> {
-                            val intent = Intent(this, HomeActivity::class.java)
-                            startActivity(intent)
-                            finish()
+                        if (!introViewModel.isIntroDataLoaded) {
+                            introLoader()
                         }
-                        else -> {
-                            BasicStructureTheme {
-                                LockScreenOrientation(orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
-                                focusManager.clearFocus()
-                                SetUpNavGraph(
-                                    navHostController = navController,
-                                    viewModel = viewModel,
-                                    homeViewModel = homeViewModel,
-                                    this,
-                                    introViewModel = introViewModel,
-                                    loginViewModel = loginViewModel,
-                                    registerViewModel = registerViewModel,
-                                    emailVerificationViewModel = emailVerificationViewModel,
-                                    verifyOtpViewModel = verifyOtpViewModel,
-                                    frequencyViewModel = frequencyViewModel
-                                )
+                    } else {
+                        when (provider.getValue(Constants.LOGIN_STATUS, "")) {
+                            LoginStatus.PARTNER_NOT_ASSIGN.name.lowercase(Locale.getDefault()),
+                            LoginStatus.MILESTONE_DATE_NOT_ADDED.name.lowercase(Locale.getDefault()),
+                            LoginStatus.ON_BOARDING.name.lowercase(Locale.getDefault()) -> {
+                                introLoader()
+                            }
+                            else -> {
+                                if (!introViewModel.isUserStatusDataLoaded) {
+                                    introLoader()
+                                }
                             }
                         }
+                        val userId = provider.getIntValue(Constants.USER_ID, 0)
+                        val type = provider.getValue(Constants.TYPE, "")
+                        if (userId != 0 && !type.isNullOrEmpty()) {
+                            LaunchedEffect(Unit) {
+                                introViewModel.getUpdatedStatus(userId, type)
+                                introViewModel.getUpdatedStatusResponse.observe(this@MainActivity) {
+                                    if (it != null) {
+                                        handleUpdatedStatusData(
+                                            result = it,
+                                            context = this@MainActivity,
+                                            introViewModel = introViewModel,
+                                        )
+                                    }
+                                }
+                            }
+                        } else {
+                            introViewModel.isIntroDataLoaded = true
+                            introViewModel.isUserStatusDataLoaded = true
+                        }
+
+                    }
+                    if (introViewModel.isIntroDataLoaded || introViewModel.isUserStatusDataLoaded) {
+                        when (provider.getValue(Constants.LOGIN_STATUS, "")) {
+                            LoginStatus.PARTNER_NOT_ASSIGN.name.lowercase(Locale.getDefault()),
+                            LoginStatus.MILESTONE_DATE_NOT_ADDED.name.lowercase(Locale.getDefault()),
+                            LoginStatus.ON_BOARDING.name.lowercase(Locale.getDefault()) -> {
+                                val intent = Intent(this, HomeActivity::class.java)
+                                startActivity(intent)
+                                finish()
+                            }
+                            else -> {
+                                BasicStructureTheme {
+                                    LockScreenOrientation(orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+                                    focusManager.clearFocus()
+                                    SetUpNavGraph(
+                                        navHostController = navController,
+                                        viewModel = viewModel,
+                                        homeViewModel = homeViewModel,
+                                        this,
+                                        introViewModel = introViewModel,
+                                        loginViewModel = loginViewModel,
+                                        registerViewModel = registerViewModel,
+                                        emailVerificationViewModel = emailVerificationViewModel,
+                                        verifyOtpViewModel = verifyOtpViewModel,
+                                        frequencyViewModel = frequencyViewModel
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        modifier = Modifier
+                            .width(300.dp)
+                            .height(300.dp),
+                        painter = painterResource(id = R.drawable.icon_internet_not_available),
+                        contentDescription = ""
+                    )
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 32.dp),
+                        text = "Whoops!!",
+                        style = MaterialTheme.typography.body2.copy(
+                            fontSize = 28.sp,
+                            lineHeight = 32.sp,
+                            textAlign = TextAlign.Center,
+                            color = Color.Black
+                        )
+                    )
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp),
+                        text = "No Internet connection was found.Check your connection or try again.",
+                        style = MaterialTheme.typography.body2.copy(
+                            color = Color.Black,
+                            fontWeight = FontWeight.W400,
+                            fontSize = 18.sp,
+                            lineHeight = 24.sp,
+                            textAlign = TextAlign.Center
+                        )
+                    )
+                    Button(
+                        onClick = {
+                            isInternetAvailable.value = isInternetAvailable(context)
+                        },
+                        modifier = Modifier
+                            .padding(top = 35.dp, start = 24.dp, end = 24.dp, bottom = 54.dp)
+                            .fillMaxWidth()
+                            .height(46.dp),
+                        elevation = ButtonDefaults.elevation(
+                            defaultElevation = 0.dp,
+                            pressedElevation = 0.dp,
+                            disabledElevation = 0.dp,
+                            hoveredElevation = 0.dp,
+                            focusedElevation = 0.dp
+                        ),
+                        shape = RoundedCornerShape(
+                            topEnd = 0.dp,
+                            bottomEnd = 10.dp,
+                            topStart = 10.dp,
+                            bottomStart = 0.dp
+                        ),
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = Custom_Blue,
+                        )
+                    ) {
+                        Text(
+                            text = "Try again",
+                            color = Color.White,
+                            style = MaterialTheme.typography.body2,
+                            lineHeight = 28.sp,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.W900
+                        )
                     }
                 }
             }
@@ -270,7 +351,7 @@ private fun handleUserData(
 private fun handleUpdatedStatusData(
     result: NetworkResult<UpdatedStatusResponse>,
     context: Context,
-    introViewModel: IntroViewModel
+    introViewModel: IntroViewModel,
 ) {
     when (result) {
         is NetworkResult.Loading -> {
@@ -290,6 +371,18 @@ private fun handleUpdatedStatusData(
             }
             result.data?.partner_id?.let {
                 provider.setValue(Constants.PARTNER_ID, it)
+            }
+            result.data?.image.let {
+                if (it != null) {
+                    PreferenceProvider(context).setValue("updated_image", it)
+                    introViewModel.updatedImage = it
+                }
+            }
+            result.data?.pregnancy_milestone_status.let {
+                if (it != null) {
+                    PreferenceProvider(context).setValue("pregnancy_milestone_status", it)
+                    introViewModel.pregnancyMilestoneStatus = it
+                }
             }
             introViewModel.isUserStatusDataLoaded = true
             introViewModel.isIntroDataLoaded = true

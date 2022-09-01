@@ -172,7 +172,7 @@ class YourAccountViewModel @Inject constructor(
         partner_phone: MultipartBody.Part? = null,
         partner_dob: MultipartBody.Part? = null,
         partner_address: MultipartBody.Part? = null,
-        partner_gender: MultipartBody.Part? = null
+        partner_gender: MultipartBody.Part? = null,
     ) {
         updateUserProfileResponse.value = NetworkResult.Loading()
         viewModelScope.launch {

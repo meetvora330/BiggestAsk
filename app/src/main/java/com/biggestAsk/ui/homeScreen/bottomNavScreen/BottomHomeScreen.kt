@@ -79,6 +79,15 @@ fun BottomHomeScreen(
             partnerId = partnerId
         )
     }
+    val enable = remember {
+        mutableStateOf(false)
+    }
+    BackHandler(enable.value) {
+        coroutineScope.launch {
+            homeBottomSheetScaffoldState.bottomSheetState.collapse()
+        }
+        enable.value = false
+    }
     BottomSheetScaffold(
         scaffoldState = homeBottomSheetScaffoldState,
         sheetGesturesEnabled = true,
@@ -606,6 +615,7 @@ fun BottomHomeScreen(
                                         onClick = {
                                             bottomHomeViewModel.homeScreenQuestionAns = ""
                                             bottomHomeViewModel.upperQuestion = false
+                                            enable.value = true
                                             coroutineScope.launch {
                                                 if (homeBottomSheetScaffoldState.bottomSheetState.isExpanded) {
                                                     homeBottomSheetScaffoldState.bottomSheetState.collapse()

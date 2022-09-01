@@ -5,7 +5,6 @@ package com.biggestAsk.ui.homeScreen
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -43,7 +42,10 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.rememberImagePainter
+import com.biggestAsk.data.model.response.GetPregnancyStatusResponse
+import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.ui.HomeActivity
+import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
 import com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph.*
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.BackHandler
 import com.biggestAsk.ui.homeScreen.drawerScreens.community.AddCommunityDialog
@@ -59,7 +61,7 @@ import com.example.biggestAsk.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalAnimationApi::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(
@@ -241,9 +243,11 @@ fun HomeScreen(
                             end.linkTo(icon_add.start)
                             bottom.linkTo(parent.bottom)
                         }
-                        .alpha(if (notificationViewModel.isNotificationScreen.value == true &&
-                            notificationViewModel.isSearchClicked.value
-                        ) 0f else 1f),
+                        .alpha(
+                            if (notificationViewModel.isNotificationScreen.value == true &&
+                                notificationViewModel.isSearchClicked.value
+                            ) 0f else 1f
+                        ),
                     text = mainViewModel.toolbarTittle,
                     style = MaterialTheme.typography.body2,
                     fontSize = 20.sp,
@@ -251,16 +255,18 @@ fun HomeScreen(
                     lineHeight = 24.sp
                 )
                 if (notificationViewModel.isNotificationScreen.value == true && notificationViewModel.isSearchClicked.value) {
-                    Row(modifier = Modifier
-                        .fillMaxWidth()
-                        .constrainAs(text_field_search) {
-                            top.linkTo(parent.top)
-                            start.linkTo(icon_open_drawer.end)
-                            end.linkTo(icon_add.start)
-                            bottom.linkTo(parent.bottom)
-                        },
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .constrainAs(text_field_search) {
+                                top.linkTo(parent.top)
+                                start.linkTo(icon_open_drawer.end)
+                                end.linkTo(icon_add.start)
+                                bottom.linkTo(parent.bottom)
+                            },
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(145.dp)) {
+                        horizontalArrangement = Arrangement.spacedBy(145.dp)
+                    ) {
                         BasicTextField(
                             modifier = Modifier
                                 .padding(start = 55.dp)
@@ -484,7 +490,9 @@ fun HomeScreen(
                 scaffoldState = scaffoldState,
                 scope = scope,
                 context = context,
-                homeActivity = homeActivity
+                homeActivity = homeActivity,
+                yourAccountViewModel = yourAccountViewModel,
+                homeViewModel = bottomHomeViewModel
             )
         })
 }
@@ -786,9 +794,12 @@ fun NavigationDrawerContent(
     scope: CoroutineScope,
     context: Context,
     homeActivity: HomeActivity,
+    yourAccountViewModel: YourAccountViewModel,
+    homeViewModel: BottomHomeViewModel
 ) {
     val provider = PreferenceProvider(context)
     val type = provider.getValue(Constants.TYPE, "")
+    val userId = provider.getIntValue(Constants.USER_ID, 0)
     val isSurrogate =
         if (type == Constants.PARENT) NavDrawerItem.YourSurrogateMother else NavDrawerItem.IntendedParents
     val navDrawerItems = mutableListOf(
@@ -798,10 +809,8 @@ fun NavigationDrawerContent(
         NavDrawerItem.Notifications,
         NavDrawerItem.Settings
     )
-    val image = if (type == "parent") provider.getValue(
-        "parent_image",
-        ""
-    ) else provider.getValue("surrogate_image", "")
+    val image =
+        if (type == "parent") yourAccountViewModel.parentImg1 else yourAccountViewModel.surrogateImg
     val userName = provider.getValue("user_name", "")
     val painter = rememberImagePainter(
         data = image,
@@ -810,6 +819,14 @@ fun NavigationDrawerContent(
         })
     val userType = if (type == "parent") "Parents" else "Surrogate Mother"
     val openLogoutDialog = remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+//        getPregnancyStatus(
+//            type = type,
+//            userId = userId,
+//            homeActivity = homeActivity,
+//            bottomHomeViewModel = homeViewModel,
+//        )
+    }
     Column(
         modifier = Modifier
             .padding(start = 24.dp, top = 40.dp)
@@ -835,7 +852,7 @@ fun NavigationDrawerContent(
                 modifier = Modifier
                     .width(56.dp)
                     .height(56.dp),
-                painter = painter,
+                painter = if (image != "") painter else painterResource(id = R.drawable.ic_placeholder_your_account),
                 contentDescription = ""
             )
             Column {
@@ -912,7 +929,8 @@ fun NavigationDrawerContent(
                 .fillMaxWidth()
                 .padding(top = 64.dp)
         ) {
-            val checkedState = remember { mutableStateOf(true) }
+            val getPregnancyStatus = provider.getValue("pregnancy_milestone_status", "")
+            homeViewModel.getPregnancyStatus = getPregnancyStatus == "active"
             Text(
                 text = stringResource(id = R.string.show_pregnancy_milestone),
                 style = MaterialTheme.typography.body1,
@@ -923,8 +941,16 @@ fun NavigationDrawerContent(
                 modifier = Modifier
                     .height(25.dp)
                     .padding(start = 35.dp),
-                checked = checkedState.value,
-                onCheckedChange = { checkedState.value = it },
+                checked = homeViewModel.getPregnancyStatus,
+                onCheckedChange = {
+                    homeViewModel.getPregnancyStatus = it
+                    getPregnancyStatus(
+                        type = type,
+                        userId = userId,
+                        homeActivity = homeActivity,
+                        bottomHomeViewModel = homeViewModel
+                    )
+                },
                 colors = SwitchDefaults.colors(
                     checkedThumbColor = Color.White,
                     checkedTrackColor = Custom_Blue,
@@ -932,6 +958,9 @@ fun NavigationDrawerContent(
                     uncheckedTrackColor = Custom_Blue
                 )
             )
+        }
+        if (homeViewModel.isPregnancyStatusLoaded) {
+            ProgressBarTransparentBackground(loadingText = "Updating....")
         }
         Row(
             modifier = Modifier
@@ -950,7 +979,7 @@ fun NavigationDrawerContent(
                 modifier = Modifier
                     .padding(start = 16.dp, bottom = 3.dp)
                     .clickable(indication = null, interactionSource = MutableInteractionSource()) {
-                     openLogoutDialog.value = true
+                        openLogoutDialog.value = true
                     },
                 text = stringResource(id = R.string.log_out),
                 style = MaterialTheme.typography.body1,
@@ -983,6 +1012,49 @@ fun NavigationDrawerContent(
         }
     }
 }
+
+fun getPregnancyStatus(
+    type: String?,
+    userId: Int,
+    homeActivity: HomeActivity,
+    bottomHomeViewModel: BottomHomeViewModel
+) {
+    type?.let { bottomHomeViewModel.getPregnancyStatus(type = it, user_id = userId) }
+    bottomHomeViewModel.getPregnancyStatusResponse.observe(homeActivity) {
+        if (it != null) {
+            handlePregnancyStatusData(
+                result = it,
+                bottomHomeViewModel = bottomHomeViewModel
+            )
+        }
+    }
+}
+
+private fun handlePregnancyStatusData(
+    result: NetworkResult<GetPregnancyStatusResponse>,
+    bottomHomeViewModel: BottomHomeViewModel,
+) {
+    when (result) {
+        is NetworkResult.Loading -> {
+            // show a progress bar
+            Log.e("TAG", "handleUserData() --> Loading  $result")
+            bottomHomeViewModel.isPregnancyStatusLoaded = true
+        }
+        is NetworkResult.Success -> {
+            // bind data to the view
+            Log.e("TAG", "handleUserData() --> Success  $result")
+            Log.i("TAG", result.message.toString())
+            bottomHomeViewModel.isPregnancyStatusLoaded = false
+            bottomHomeViewModel.getPregnancyStatus = result.data?.status == "active"
+        }
+        is NetworkResult.Error -> {
+            // show error message
+            bottomHomeViewModel.isPregnancyStatusLoaded = false
+            Log.e("TAG", "handleUserData() --> Error ${result.message}")
+        }
+    }
+}
+
 
 object ClearRippleTheme : RippleTheme {
     @Composable

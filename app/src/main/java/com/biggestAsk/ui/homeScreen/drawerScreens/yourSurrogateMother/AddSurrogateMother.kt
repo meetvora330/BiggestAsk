@@ -63,15 +63,6 @@ fun AddSurrogateMother(
     val isSurrogateConnected =
         PreferenceProvider(context).getBooleanValue("is_surrogate_connected", false)
     surrogateViewModel.invitationSend.value = isSurrogateConnected
-//    Column(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .padding(
-//                /*top =  if (viewModel.invitationSend.value) 20.dp else 30.dp,*/
-//                bottom = /*if (viewModel.invitationSend.value) 30.dp else*/ 60.dp
-//            )
-//            .verticalScroll(rememberScrollState())
-//    ) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
@@ -180,7 +171,6 @@ fun AddSurrogateMother(
             }
         }
     }
-//    }
     if (surrogateViewModel.isSurrogateInvited.value) {
         ProgressBarTransparentBackground(loadingText = "Adding...")
     }

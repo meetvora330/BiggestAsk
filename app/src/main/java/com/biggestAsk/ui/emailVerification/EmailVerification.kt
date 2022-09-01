@@ -323,6 +323,7 @@ private fun handleUserData(
             // bind data to the view
             Log.e("TAG", "handleUserData() --> Success  $result")
             emailVerificationViewModel.isLoading = false
+            navHostController.popBackStack(Screen.Verify.route, true)
             navHostController.navigate(Screen.Verify.emailVerification(email = emailVerificationViewModel.textEmailVerify))
         }
         is NetworkResult.Error -> {

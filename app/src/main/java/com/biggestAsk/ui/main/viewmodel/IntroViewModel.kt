@@ -28,6 +28,8 @@ class IntroViewModel @Inject constructor(
     var isIntroDataLoaded: Boolean by mutableStateOf(false)
     var isUserStatusDataLoaded: Boolean by mutableStateOf(false)
     var isAPILoadingFailed: Boolean by mutableStateOf(false)
+    var updatedImage:String by mutableStateOf("")
+    var pregnancyMilestoneStatus :String by mutableStateOf("")
     fun getIntroInfo() {
         getIntroInfoResponse.value = NetworkResult.Loading()
         viewModelScope.launch {

@@ -126,7 +126,7 @@ interface ApiService {
         @Part parent_partner_phone: MultipartBody.Part?,
         @Part parent_partner_dob: MultipartBody.Part?,
         @Part parent_partner_address: MultipartBody.Part?,
-        @Part parent_partner_gender: MultipartBody.Part?
+        @Part parent_partner_gender: MultipartBody.Part?,
     ): Response<UpdateUserProfileResponse>
 
     @Multipart
@@ -216,5 +216,11 @@ interface ApiService {
 
     @GET(Constants.GET_ABOUT_APP)
     suspend fun getAboutApp(): Response<AboutAppResponse>
+
+    @GET(Constants.GET_PREGNANCY_STATUS)
+    suspend fun getPregnancyStatus(
+        @Query("type") type: String,
+        @Query("user_id") user_id: Int
+    ):Response<GetPregnancyStatusResponse>
 
 }
