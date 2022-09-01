@@ -8,9 +8,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.biggestAsk.data.model.response.GetAboutAppResponse
-import com.biggestAsk.data.model.response.GetAboutAppResponseData
-import com.biggestAsk.data.repository.AboutAppRepository
+import com.biggestAsk.data.model.response.GetPrivacyPolicyResponse
+import com.biggestAsk.data.model.response.GetPrivacyPolicyResponseData
+import com.biggestAsk.data.repository.PrivacyPolicyRepository
 import com.biggestAsk.data.source.network.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -20,22 +20,22 @@ import javax.inject.Inject
  * Created by Abhin.
  */
 @HiltViewModel
-class AboutAppViewModel @Inject constructor(
-    private val aboutAppRepository: AboutAppRepository,
+class PrivacyPolicyViewModel @Inject constructor(
+    private val getPrivacyPolicyRepository: PrivacyPolicyRepository,
     application: Application,
 ) : AndroidViewModel(application) {
 
-    var getAboutAppResponse: MutableLiveData<NetworkResult<GetAboutAppResponse>> = MutableLiveData()
+    var getPrivacyPolicyResponse: MutableLiveData<NetworkResult<GetPrivacyPolicyResponse>> = MutableLiveData()
     var isDataNull: Boolean by mutableStateOf(false)
     var isLoading: Boolean by mutableStateOf(false)
-    var aboutAppList = mutableStateListOf<GetAboutAppResponseData>()
+    var privacyPolicyList = mutableStateListOf<GetPrivacyPolicyResponseData>()
     var lastUpdatedDate: String by mutableStateOf("")
 
-    fun getAboutApp() {
-        getAboutAppResponse.value = NetworkResult.Loading()
+    fun getPrivacyPolicy() {
+        getPrivacyPolicyResponse.value = NetworkResult.Loading()
         viewModelScope.launch {
-            aboutAppRepository.getAboutApp().collect {
-                getAboutAppResponse.value = it
+            getPrivacyPolicyRepository.getPrivacyPolicy().collect {
+                getPrivacyPolicyResponse.value = it
             }
         }
     }

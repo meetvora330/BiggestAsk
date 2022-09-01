@@ -8,7 +8,6 @@ import android.net.Uri
 import android.provider.Settings
 import android.text.TextUtils
 import android.util.Patterns
-import android.webkit.URLUtil
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -59,6 +58,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
+import java.util.regex.Pattern
 
 @Composable
 fun CreateContactDialog(
@@ -91,7 +91,7 @@ fun CreateContactDialog(
     val tfTextFourthEmpty = remember {
         mutableStateOf(false)
     }
-
+    val regex = Pattern.compile(Constants.REGEX_PHONE_PATTERN)
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
 
@@ -363,7 +363,9 @@ fun CreateContactDialog(
                     val maxChar = 12
                     val minChar = 8
                     if (it.length <= maxChar) {
-                        if (it.contains("+") || it.isDigitsOnly()) {
+                        if ((it.startsWith("+") && !regex.matcher(it)
+                                .find()) || it.isDigitsOnly()
+                        ) {
                             tf_text_fourth.value = it
                             contactYourProviderViewModel.phoneErrorVisible = minChar > it.length
                         }
@@ -480,7 +482,9 @@ fun CreateContactDialog(
                             tfTextThirdEmpty.value = true
                             tfTextFourthEmpty.value = true
                             if (!contactYourProviderViewModel.isImagePresent.value) {
-                                Toast.makeText(context, Constants.PLEASE_ADD_LOGO, Toast.LENGTH_SHORT)
+                                Toast.makeText(context,
+                                    Constants.PLEASE_ADD_LOGO,
+                                    Toast.LENGTH_SHORT)
                                     .show()
                             }
                         }
@@ -514,7 +518,8 @@ fun CreateContactDialog(
                                 contactYourProviderViewModel.uriPath?.let { convertImageMultiPart(it) }
 
                             contactYourProviderViewModel.createContact(
-                                MultipartBody.Part.createFormData(Constants.TITLE, tf_text_first.value),
+                                MultipartBody.Part.createFormData(Constants.TITLE,
+                                    tf_text_first.value),
                                 MultipartBody.Part.createFormData(Constants.AGENCY_NAME_CREATE_CONTACT,
                                     tf_text_second.value),
                                 MultipartBody.Part.createFormData(Constants.AGENCY_EMAIL_CREATE_CONTACT,
@@ -522,7 +527,8 @@ fun CreateContactDialog(
                                 MultipartBody.Part.createFormData(Constants.AGENCY_NUMBER_CREATE_CONTACT,
                                     tf_text_fourth.value),
                                 image,
-                                MultipartBody.Part.createFormData(Constants.USER_ID, userId.toString()),
+                                MultipartBody.Part.createFormData(Constants.USER_ID,
+                                    userId.toString()),
                                 MultipartBody.Part.createFormData(Constants.TYPE, type!!)
                             )
                             contactYourProviderViewModel.createContactResponse.observe(homeActivity) {

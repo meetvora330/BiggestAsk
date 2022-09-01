@@ -49,7 +49,9 @@ fun BottomNavigationDrawerGraph(
     intendedParentsViewModel: IntendedParentsViewModel,
     questionViewModel: BottomQuestionViewModel,
     scaffoldState: ScaffoldState,
-    frequencyViewModel: FrequencyViewModel
+    frequencyViewModel: FrequencyViewModel,
+    privacyPolicyViewModel: PrivacyPolicyViewModel,
+    termsOfServiceViewModel: TermsOfServiceViewModel,
 ) {
     val provider = PreferenceProvider(context)
     NavHost(
@@ -232,10 +234,14 @@ fun BottomNavigationDrawerGraph(
             AboutApp(homeActivity = homeActivity, aboutAppViewModel = aboutAppViewModel)
         }
         composable(route = SettingSubScreen.TermsOfService.route) {
-            TermsOfService()
+            TermsOfService(
+                homeActivity = homeActivity,
+                termsOfServiceViewModel = termsOfServiceViewModel
+            )
         }
         composable(route = SettingSubScreen.PrivacyPolicy.route) {
-            PrivacyPolicy()
+            PrivacyPolicy(homeActivity = homeActivity,
+                privacyPolicyViewModel = privacyPolicyViewModel)
         }
         composable(SettingSubScreen.DetailedSetting.route) {
             DetailedSettings()

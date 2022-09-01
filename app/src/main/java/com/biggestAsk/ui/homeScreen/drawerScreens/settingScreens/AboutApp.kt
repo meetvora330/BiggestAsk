@@ -2,7 +2,6 @@ package com.biggestAsk.ui.homeScreen.drawerScreens.settingScreens
 
 import android.content.Context
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -22,10 +21,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.biggestAsk.data.model.response.AboutAppResponse
+import com.biggestAsk.data.model.response.GetAboutAppResponse
 import com.biggestAsk.data.source.network.NetworkResult
-import com.biggestAsk.data.source.network.isInternetAvailable
 import com.biggestAsk.ui.HomeActivity
+import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
 import com.biggestAsk.ui.main.viewmodel.AboutAppViewModel
 import com.example.biggestAsk.R
 
@@ -36,28 +35,32 @@ fun AboutApp(
 ) {
     val context = LocalContext.current
     LaunchedEffect(Unit) {
-        if (isInternetAvailable(context)) {
-            getAboutApp(aboutAppViewModel,context,homeActivity)
-        } else {
-            aboutAppViewModel.isDataNull = false
-            aboutAppViewModel.aboutAppList.clear()
-            Toast.makeText(context, R.string.no_internet_available, Toast.LENGTH_SHORT).show()
-        }
+        getAboutApp(aboutAppViewModel, context, homeActivity)
+//        if (isInternetAvailable(context)) {
+//        } else {
+//            aboutAppViewModel.isDataNull = false
+//            aboutAppViewModel.aboutAppList.clear()
+//            aboutAppViewModel.lastUpdatedDate = ""
+//            Toast.makeText(context, R.string.no_internet_available, Toast.LENGTH_SHORT).show()
+//        }
     }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(bottom = 55.dp)
-            .verticalScroll(rememberScrollState())
-    ) {
+    if (aboutAppViewModel.isLoading) {
+        aboutAppViewModel.aboutAppList.clear()
+        ProgressBarTransparentBackground(stringResource(id = R.string.loading))
+    } else
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 30.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxSize()
+                .padding(bottom = 55.dp)
+                .verticalScroll(rememberScrollState())
         ) {
-//            aboutAppViewModel.aboutAppList.forEach { item ->
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 30.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 Image(
                     modifier = Modifier
                         .width(90.dp)
@@ -66,7 +69,7 @@ fun AboutApp(
                     contentDescription = ""
                 )
                 Text(
-                    text = aboutAppViewModel.lastUpdatedDate,
+                    text = if (aboutAppViewModel.lastUpdatedDate != "") "Last Updated on ${aboutAppViewModel.lastUpdatedDate}" else "",
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 29.dp),
@@ -77,74 +80,79 @@ fun AboutApp(
                         fontWeight = FontWeight.W400
                     ),
                 )
-                Text(
-                    text = "item.title",
+                aboutAppViewModel.aboutAppList.forEach { item ->
+                    item.title?.let {
+                        Text(
+                            text = it,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 40.dp, start = 20.dp),
+                            style = MaterialTheme.typography.body2.copy(
+                                fontWeight = FontWeight.W600,
+                                textAlign = TextAlign.Start,
+                                fontSize = 22.sp,
+                                color = Color.Black
+                            )
+                        )
+                    }
+                    item.info?.let {
+                        Text(
+                            text = it,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 24.dp, start = 20.dp),
+                            style = MaterialTheme.typography.body1.copy(
+                                fontWeight = FontWeight.W400,
+                                textAlign = TextAlign.Start,
+                                fontSize = 16.sp,
+                                lineHeight = 24.sp,
+                                color = Color(0xFF9B9BA8)
+                            )
+                        )
+                    }
+                    //                Text(
+                    //                    text = stringResource(id = R.string.setting_about_app_more_info_tittle),
+                    //                    modifier = Modifier
+                    //                        .fillMaxWidth()
+                    //                        .padding(top = 24.dp, start = 20.dp),
+                    //                    style = MaterialTheme.typography.body2.copy(
+                    //                        fontWeight = FontWeight.W600,
+                    //                        textAlign = TextAlign.Start,
+                    //                        fontSize = 22.sp
+                    //                    )
+                    //                )
+                    //                Text(
+                    //                    text = stringResource(id = R.string.setting_about_app_more_information_desc),
+                    //                    modifier = Modifier
+                    //                        .fillMaxWidth()
+                    //                        .padding(top = 16.dp, start = 20.dp),
+                    //                    style = MaterialTheme.typography.body1.copy(
+                    //                        fontWeight = FontWeight.W400,
+                    //                        textAlign = TextAlign.Start,
+                    //                        fontSize = 16.sp,
+                    //                        lineHeight = 24.sp,
+                    //                        color = Color.Black
+                    //                    )
+                    //                )
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 40.dp, start = 20.dp),
-                    style = MaterialTheme.typography.body2.copy(
-                        fontWeight = FontWeight.W600,
-                        textAlign = TextAlign.Start,
-                        fontSize = 22.sp,
-                        color = Color.Black
-                    )
-                )
-                Text(
-                    text = "item.info",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 24.dp, start = 20.dp),
-                    style = MaterialTheme.typography.body1.copy(
-                        fontWeight = FontWeight.W400,
-                        textAlign = TextAlign.Start,
-                        fontSize = 16.sp,
-                        lineHeight = 24.sp,
-                        color = Color(0xFF9B9BA8)
-                    )
-                )
-                Text(
-                    text = stringResource(id = R.string.setting_about_app_more_info_tittle),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 24.dp, start = 20.dp),
-                    style = MaterialTheme.typography.body2.copy(
-                        fontWeight = FontWeight.W600,
-                        textAlign = TextAlign.Start,
-                        fontSize = 22.sp
-                    )
-                )
-                Text(
-                    text = stringResource(id = R.string.setting_about_app_more_information_desc),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp, start = 20.dp),
-                    style = MaterialTheme.typography.body1.copy(
-                        fontWeight = FontWeight.W400,
-                        textAlign = TextAlign.Start,
-                        fontSize = 16.sp,
-                        lineHeight = 24.sp,
-                        color = Color.Black
-                    )
-                )
-//            }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 32.dp, bottom = 20.dp)
-            ) {
-                listAboutAppImageItem.forEach { img ->
-                    Image(
-                        modifier = Modifier,
-                        painter = painterResource(id = img.img),
-                        contentDescription = ""
-                    )
+                        .padding(top = 32.dp, bottom = 20.dp)
+                ) {
+                    listAboutAppImageItem.forEach { img ->
+                        Image(
+                            modifier = Modifier,
+                            painter = painterResource(id = img.img),
+                            contentDescription = ""
+                        )
+                    }
                 }
             }
-        }
 
-    }
+        }
 }
 
 fun getAboutApp(
@@ -167,7 +175,7 @@ fun getAboutApp(
 }
 
 private fun handleAboutAppApi(
-    result: NetworkResult<AboutAppResponse>,
+    result: NetworkResult<GetAboutAppResponse>,
     aboutAppViewModel: AboutAppViewModel,
 ) {
     when (result) {
@@ -175,13 +183,13 @@ private fun handleAboutAppApi(
             // show a progress bar
             aboutAppViewModel.isLoading = true
             aboutAppViewModel.isDataNull = false
+            aboutAppViewModel.aboutAppList.clear()
         }
         is NetworkResult.Success -> {
             // bind data to the view
             aboutAppViewModel.isLoading = false
             aboutAppViewModel.aboutAppList = result.data!!.about_app.toMutableStateList()
             aboutAppViewModel.lastUpdatedDate = result.data.about_app_date
-            //aboutAppViewModel.aboutTitle = result.data.about_app[].title
             aboutAppViewModel.isDataNull = aboutAppViewModel.aboutAppList.isEmpty()
         }
         is NetworkResult.Error -> {

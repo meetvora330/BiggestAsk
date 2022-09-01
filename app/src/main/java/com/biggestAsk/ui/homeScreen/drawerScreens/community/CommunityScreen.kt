@@ -242,6 +242,7 @@ private fun handleGetCommunityApi(
 ) {
     when (result) {
         is NetworkResult.Loading -> {
+            communityViewModel.communityList.clear()
             // show a progress bar
             communityViewModel.isLoading = true
             communityViewModel.isDataNull = false

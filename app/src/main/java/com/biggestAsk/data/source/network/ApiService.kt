@@ -215,7 +215,13 @@ interface ApiService {
     suspend fun getQuestionBankContent(): Response<QuestionBankContentResponse>
 
     @GET(Constants.GET_ABOUT_APP)
-    suspend fun getAboutApp(): Response<AboutAppResponse>
+    suspend fun getAboutApp(): Response<GetAboutAppResponse>
+
+    @GET(Constants.GET_PRIVACY_POLICY)
+    suspend fun getPrivacyPolicy(): Response<GetPrivacyPolicyResponse>
+
+    @GET(Constants.GET_TERMS_OF_SERVICE)
+    suspend fun getTermsOfService(): Response<GetTermsOfServiceResponse>
 
     @GET(Constants.GET_PREGNANCY_STATUS)
     suspend fun getPregnancyStatus(
