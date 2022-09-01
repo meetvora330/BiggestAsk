@@ -38,6 +38,8 @@ class HomeActivity : BaseActivity() {
     private val intendedParentsViewModel: IntendedParentsViewModel by viewModels()
     private val questionViewModel: BottomQuestionViewModel by viewModels()
     private val frequencyViewModel: FrequencyViewModel by viewModels()
+    private val privacyPolicyViewModel: PrivacyPolicyViewModel by viewModels()
+    private val termsOfServiceViewModel: TermsOfServiceViewModel by viewModels()
 
     private val permissionReqLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { it ->
@@ -109,7 +111,9 @@ class HomeActivity : BaseActivity() {
                     yourSurrogateMotherViewModel = yourSurrogateMotherViewModel,
                     intendedParentsViewModel = intendedParentsViewModel,
                     questionViewModel = questionViewModel,
-                    frequencyViewModel = frequencyViewModel
+                    frequencyViewModel = frequencyViewModel,
+                    privacyPolicyViewModel = privacyPolicyViewModel,
+                    termsOfServiceViewModel = termsOfServiceViewModel
                 )
             }
         }

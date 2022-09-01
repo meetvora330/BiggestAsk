@@ -30,6 +30,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.biggestAsk.data.source.network.isInternetAvailable
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.util.Constants
 import com.example.biggestAsk.R
@@ -65,16 +66,34 @@ fun Settings(navHostController: NavHostController) {
                                 )
                             }
                             Constants.ABOUT -> {
-                                navHostController.navigate(SettingSubScreen.AboutApp.route)
+                                if (isInternetAvailable(context)) {
+                                    navHostController.navigate(SettingSubScreen.AboutApp.route)
+                                } else Toast
+                                    .makeText(context,
+                                        R.string.no_internet_available,
+                                        Toast.LENGTH_SHORT)
+                                    .show()
                             }
                             Constants.DETAILED_SETTINGS -> {
                                 navHostController.navigate(SettingSubScreen.DetailedSetting.route)
                             }
                             Constants.PRIVACY_POLICY -> {
-                                navHostController.navigate(SettingSubScreen.PrivacyPolicy.route)
+                                if (isInternetAvailable(context)) {
+                                    navHostController.navigate(SettingSubScreen.PrivacyPolicy.route)
+                                } else Toast
+                                    .makeText(context,
+                                        R.string.no_internet_available,
+                                        Toast.LENGTH_SHORT)
+                                    .show()
                             }
                             Constants.TERMS_OF_SERVICE -> {
-                                navHostController.navigate(SettingSubScreen.TermsOfService.route)
+                                if (isInternetAvailable(context)) {
+                                    navHostController.navigate(SettingSubScreen.TermsOfService.route)
+                                } else Toast
+                                    .makeText(context,
+                                        R.string.no_internet_available,
+                                        Toast.LENGTH_SHORT)
+                                    .show()
                             }
                         }
                     },
@@ -169,7 +188,7 @@ fun SettingPreview() {
 fun SettingDialogDelete(
     openDialogDeleteSetting: MutableState<Boolean>,
     positive_btn_text: String,
-    negative_btn_text: String
+    negative_btn_text: String,
 ) {
     val context = LocalContext.current
     Column(

@@ -289,7 +289,7 @@
     <string name="link_to_forum">Link to Forum</string>
     <string name="link_to_instagram">Link to Instagram</string>
     <string name="dialog_phone">(222)–333–4444</string>
-    <string name="instagram_hint">www.instagram.com</string>
+    <string name="instagram_hint">https://instagram.com</string>
     <string name="add_community">+ Add a new Community</string>
     <string name="add_contact">+ Add a new Contact</string>
     <string name="agency_rep_name">Agency rep name</string>

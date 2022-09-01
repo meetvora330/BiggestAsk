@@ -79,7 +79,9 @@ fun HomeScreen(
     yourSurrogateMotherViewModel: YourSurrogateMotherViewModel,
     intendedParentsViewModel: IntendedParentsViewModel,
     questionViewModel: BottomQuestionViewModel,
-    frequencyViewModel: FrequencyViewModel
+    frequencyViewModel: FrequencyViewModel,
+    privacyPolicyViewModel: PrivacyPolicyViewModel,
+    termsOfServiceViewModel: TermsOfServiceViewModel,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val requester = FocusRequester()
@@ -343,11 +345,11 @@ fun HomeScreen(
                                 )
                             }
                             if (notificationViewModel.isNotificationScreen.value == true) {
-//                                if (notificationViewModel.searchText != ""){
-//                                    notificationViewModel.searchText = ""
-//                                }
+                                //                                if (notificationViewModel.searchText != ""){
+                                //                                    notificationViewModel.searchText = ""
+                                //                                }
                                 if (!notificationViewModel.isSearchClicked.value) {
-//                                    notificationViewModel.searchText = ""
+                                    //                                    notificationViewModel.searchText = ""
                                     notificationViewModel.isSearchClicked.value =
                                         notificationViewModel.isSearchClicked.value != true
                                 }
@@ -463,7 +465,9 @@ fun HomeScreen(
                 intendedParentsViewModel = intendedParentsViewModel,
                 questionViewModel = questionViewModel,
                 scaffoldState = scaffoldState,
-                frequencyViewModel = frequencyViewModel
+                frequencyViewModel = frequencyViewModel,
+                privacyPolicyViewModel = privacyPolicyViewModel,
+                termsOfServiceViewModel = termsOfServiceViewModel
             )
             BackHandler(scaffoldState.drawerState.isOpen) {
                 scope.launch {
@@ -950,7 +954,7 @@ fun NavigationDrawerContent(
                 modifier = Modifier
                     .padding(start = 16.dp, bottom = 3.dp)
                     .clickable(indication = null, interactionSource = MutableInteractionSource()) {
-                     openLogoutDialog.value = true
+                        openLogoutDialog.value = true
                     },
                 text = stringResource(id = R.string.log_out),
                 style = MaterialTheme.typography.body1,

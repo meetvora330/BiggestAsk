@@ -8,7 +8,7 @@ import android.net.Uri
 import android.provider.Settings
 import android.text.TextUtils
 import android.util.Log
-import android.webkit.URLUtil
+import android.util.Patterns
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -58,7 +58,6 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
-import java.util.regex.Pattern
 
 @Composable
 fun AddCommunityDialog(
@@ -350,11 +349,7 @@ fun AddCommunityDialog(
                 onValueChange = {
                     tf_text_fourth.value = it.trim()
                     tfTextFourthEmpty.value = false
-                    if (tf_text_fourth.value.isNotEmpty() && !communityViewModel.isValidInstagramUrl.value){
-                        communityViewModel.isValidInstagramUrl.value = !isValidEmail(tf_text_fourth.value)!!
-                    }else{
-                        communityViewModel.isValidInstagramUrl.value = false
-                    }
+                    communityViewModel.isValidInstagramUrl.value = tf_text_fourth.value.isNotEmpty() && !Patterns.WEB_URL.matcher(tf_text_fourth.value).matches()
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text, imeAction = ImeAction.Done
@@ -376,7 +371,6 @@ fun AddCommunityDialog(
                         color = Text_Accept_Terms
                     )
                 },
-                maxLines = 1,
             )
             if (communityViewModel.isValidInstagramUrl.value) {
                 Text(
@@ -461,7 +455,7 @@ fun AddCommunityDialog(
                         TextUtils.isEmpty(tf_text_first.value) &&
                                 TextUtils.isEmpty(tf_text_second.value) &&
                                 TextUtils.isEmpty(tf_text_third.value) &&
-                                TextUtils.isEmpty(tf_text_fourth.value) -> {
+                                TextUtils.isEmpty(tf_text_fourth.value)-> {
                             tfTextFirstEmpty.value = true
                             tfTextSecondEmpty.value = true
                             tfTextThirdEmpty.value = true
@@ -492,7 +486,7 @@ fun AddCommunityDialog(
                         communityViewModel.isImagePresent.value && !TextUtils.isEmpty(tf_text_first.value) &&
                                 !TextUtils.isEmpty(tf_text_second.value) &&
                                 !TextUtils.isEmpty(tf_text_third.value) &&
-                                !TextUtils.isEmpty(tf_text_fourth.value) && !communityViewModel.isValidInstagramUrl.value-> {
+                                !TextUtils.isEmpty(tf_text_fourth.value) && !communityViewModel.isValidInstagramUrl.value && Patterns.WEB_URL.matcher(tf_text_fourth.value).matches()-> {
 
 
                             val image =
@@ -638,11 +632,3 @@ private fun handleCreateCommunityApi(
         }
     }
 }
-fun isValidEmail(instagramUrl: String?) =
-    instagramUrl?.let {
-        Pattern
-        .compile(
-            Constants.INSTAGRAM_URL_PATTERN,
-            Pattern.CASE_INSENSITIVE
-        ).matcher(it).find()
-    }

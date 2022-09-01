@@ -247,6 +247,7 @@ private fun handleGetNotificationApi(
 ) {
     when (result) {
         is NetworkResult.Loading -> {
+            notificationViewModel.notificationList.clear()
             // show a progress bar
             notificationViewModel.isLoading = true
             notificationViewModel.isDataNull = false

@@ -245,10 +245,6 @@ fun getUpdatedContact(
             handleGetContactApi(
                 result = it,
                 contactYourProviderViewModel = contactYourProviderViewModel,
-                type = type,
-                user_id = user_id,
-                context = context,
-                homeActivity = homeActivity
             )
         } else {
             Log.e("TAG", "GetContactData is null: ")
@@ -259,13 +255,10 @@ fun getUpdatedContact(
 private fun handleGetContactApi(
     result: NetworkResult<GetContactResponse>,
     contactYourProviderViewModel: ContactYourProviderViewModel,
-    type: String,
-    user_id: Int,
-    context: Context,
-    homeActivity: HomeActivity,
 ) {
     when (result) {
         is NetworkResult.Loading -> {
+            contactYourProviderViewModel.contactList.clear()
             // show a progress bar
             contactYourProviderViewModel.isLoading = true
             contactYourProviderViewModel.isDataNull = false

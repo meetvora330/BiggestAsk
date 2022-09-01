@@ -1,7 +1,7 @@
 package com.biggestAsk.data.repository
 
 import android.content.Context
-import com.biggestAsk.data.model.response.GetAboutAppResponse
+import com.biggestAsk.data.model.response.GetPrivacyPolicyResponse
 import com.biggestAsk.data.source.network.ApiService
 import com.biggestAsk.data.source.network.BaseApiResponse
 import com.biggestAsk.data.source.network.NetworkResult
@@ -15,14 +15,14 @@ import javax.inject.Inject
 /**
  * Created by Abhin.
  */
-class AboutAppRepository @Inject constructor(
+class PrivacyPolicyRepository @Inject constructor(
     private val apiService: ApiService, @ApplicationContext context: Context,
 ) : BaseApiResponse(context) {
 
-    suspend fun getAboutApp(): Flow<NetworkResult<GetAboutAppResponse>> {
+    suspend fun getPrivacyPolicy(): Flow<NetworkResult<GetPrivacyPolicyResponse>> {
         return flow {
             emit(safeApiCall {
-                apiService.getAboutApp()
+                apiService.getPrivacyPolicy()
             })
         }.flowOn(Dispatchers.IO)
     }
