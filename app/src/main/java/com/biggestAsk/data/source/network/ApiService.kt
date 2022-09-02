@@ -223,10 +223,14 @@ interface ApiService {
     @GET(Constants.GET_TERMS_OF_SERVICE)
     suspend fun getTermsOfService(): Response<GetTermsOfServiceResponse>
 
-    @GET(Constants.GET_PREGNANCY_STATUS)
+    @POST(Constants.GET_PREGNANCY_STATUS)
     suspend fun getPregnancyStatus(
+        @Body getNotificationRequest: GetNotificationRequest
+    ): Response<GetPregnancyMilestoneStatusResponse>
+
+    @GET(Constants.GET_NOTIFICATION_COUNT)
+    suspend fun getNotificationCount(
         @Query("type") type: String,
         @Query("user_id") user_id: Int
-    ):Response<GetPregnancyStatusResponse>
-
+    ): Response<GetNotificationCountResponse>
 }

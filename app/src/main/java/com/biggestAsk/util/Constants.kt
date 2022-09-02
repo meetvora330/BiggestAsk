@@ -59,7 +59,8 @@ object Constants {
     const val GET_QUESTION_SCREEN_QUESTION = "get_qestion_screen_question"
     const val GET_FREQUENCY = "get_frequency"
     const val GET_QUESTION_BANK_CONTENT = "question_bank"
-    const val GET_PREGNANCY_STATUS = "get_pregnancy_status"
+    const val GET_PREGNANCY_STATUS = "pregnancy_milestone_status"
+    const val GET_NOTIFICATION_COUNT = "get_notification_count"
 
     //preference data
     const val LOGIN_STATUS = "login_status"

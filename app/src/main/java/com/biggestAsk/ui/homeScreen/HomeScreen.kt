@@ -5,6 +5,7 @@ package com.biggestAsk.ui.homeScreen
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,7 +27,9 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -42,7 +45,9 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.rememberImagePainter
-import com.biggestAsk.data.model.response.GetPregnancyStatusResponse
+import com.biggestAsk.data.model.request.GetNotificationRequest
+import com.biggestAsk.data.model.response.GetNotificationCountResponse
+import com.biggestAsk.data.model.response.GetPregnancyMilestoneStatusResponse
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.ui.HomeActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
@@ -824,12 +829,15 @@ fun NavigationDrawerContent(
     val userType = if (type == "parent") "Parents" else "Surrogate Mother"
     val openLogoutDialog = remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
-//        getPregnancyStatus(
-//            type = type,
-//            userId = userId,
-//            homeActivity = homeActivity,
-//            bottomHomeViewModel = homeViewModel,
-//        )
+        getNotificationCount(
+            type = type,
+            userId = userId,
+            homeActivity = homeActivity,
+            bottomHomeViewModel = homeViewModel,
+        )
+    }
+    if (homeViewModel.isPregnancyStatusLoaded) {
+        ProgressBarTransparentBackground(loadingText = "Updating....")
     }
     Column(
         modifier = Modifier
@@ -888,7 +896,7 @@ fun NavigationDrawerContent(
             modifier = Modifier
                 .padding(top = 40.dp)
         ) {
-            navDrawerItems.forEach { item ->
+            navDrawerItems.forEachIndexed { index, item ->
                 Row(
                     modifier = Modifier
                         .padding(top = 35.dp)
@@ -925,6 +933,28 @@ fun NavigationDrawerContent(
                         color = Color.Black,
                         fontWeight = FontWeight.Normal
                     )
+                    if (index == 3) {
+                        if (homeViewModel.notificationCount != "0") {
+                            Box(modifier = Modifier.padding(top = 2.5.dp, start = 18.dp)) {
+                                Canvas(
+                                    modifier = Modifier
+                                        .width(20.dp)
+                                        .height(20.dp)
+                                ) {
+                                    drawRoundRect(
+                                        color = Color(0xFFFF6E3F),
+                                        style = Fill,
+                                        cornerRadius = CornerRadius(20f, 20f)
+                                    )
+                                }
+                                Text(
+                                    modifier = Modifier.align(Alignment.Center),
+                                    text = homeViewModel.notificationCount,
+                                    color = Color.White
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -934,7 +964,8 @@ fun NavigationDrawerContent(
                 .padding(top = 64.dp)
         ) {
             val getPregnancyStatus = provider.getValue("pregnancy_milestone_status", "")
-            homeViewModel.getPregnancyStatus = getPregnancyStatus == "active"
+            homeViewModel.getPregnancyStatus =
+                if (getPregnancyStatus == "active") true else if (getPregnancyStatus == "inactive") false else false
             Text(
                 text = stringResource(id = R.string.show_pregnancy_milestone),
                 style = MaterialTheme.typography.body1,
@@ -952,7 +983,8 @@ fun NavigationDrawerContent(
                         type = type,
                         userId = userId,
                         homeActivity = homeActivity,
-                        bottomHomeViewModel = homeViewModel
+                        bottomHomeViewModel = homeViewModel,
+                        context = context
                     )
                 },
                 colors = SwitchDefaults.colors(
@@ -962,9 +994,6 @@ fun NavigationDrawerContent(
                     uncheckedTrackColor = Custom_Blue
                 )
             )
-        }
-        if (homeViewModel.isPregnancyStatusLoaded) {
-            ProgressBarTransparentBackground(loadingText = "Updating....")
         }
         Row(
             modifier = Modifier
@@ -1017,16 +1046,16 @@ fun NavigationDrawerContent(
     }
 }
 
-fun getPregnancyStatus(
+fun getNotificationCount(
     type: String?,
     userId: Int,
     homeActivity: HomeActivity,
     bottomHomeViewModel: BottomHomeViewModel
 ) {
-    type?.let { bottomHomeViewModel.getPregnancyStatus(type = it, user_id = userId) }
-    bottomHomeViewModel.getPregnancyStatusResponse.observe(homeActivity) {
+    type?.let { bottomHomeViewModel.getNotificationCount(type = it, user_id = userId) }
+    bottomHomeViewModel.getNotificationCountResponse.observe(homeActivity) {
         if (it != null) {
-            handlePregnancyStatusData(
+            handleNotificationCountData(
                 result = it,
                 bottomHomeViewModel = bottomHomeViewModel
             )
@@ -1034,9 +1063,36 @@ fun getPregnancyStatus(
     }
 }
 
-private fun handlePregnancyStatusData(
-    result: NetworkResult<GetPregnancyStatusResponse>,
+fun getPregnancyStatus(
+    type: String?,
+    userId: Int,
+    homeActivity: HomeActivity,
     bottomHomeViewModel: BottomHomeViewModel,
+    context: Context
+) {
+    type?.let {
+        bottomHomeViewModel.getPregnancyStatus(
+            getNotificationRequest = GetNotificationRequest(
+                type = type,
+                user_id = userId
+            )
+        )
+    }
+    bottomHomeViewModel.getPregnancyStatusResponse.observe(homeActivity) {
+        if (it != null) {
+            handlePregnancyStatusData(
+                result = it,
+                bottomHomeViewModel = bottomHomeViewModel,
+                context = context
+            )
+        }
+    }
+}
+
+private fun handlePregnancyStatusData(
+    result: NetworkResult<GetPregnancyMilestoneStatusResponse>,
+    bottomHomeViewModel: BottomHomeViewModel,
+    context: Context
 ) {
     when (result) {
         is NetworkResult.Loading -> {
@@ -1049,7 +1105,14 @@ private fun handlePregnancyStatusData(
             Log.e("TAG", "handleUserData() --> Success  $result")
             Log.i("TAG", result.message.toString())
             bottomHomeViewModel.isPregnancyStatusLoaded = false
-            bottomHomeViewModel.getPregnancyStatus = result.data?.status == "active"
+            bottomHomeViewModel.getPregnancyStatus =
+                if (result.data?.status == "active") true else if (result.data?.status == "inactive") false else false
+            result.data?.status?.let {
+                PreferenceProvider(context).setValue(
+                    "pregnancy_milestone_status",
+                    it
+                )
+            }
         }
         is NetworkResult.Error -> {
             // show error message
@@ -1059,6 +1122,27 @@ private fun handlePregnancyStatusData(
     }
 }
 
+private fun handleNotificationCountData(
+    result: NetworkResult<GetNotificationCountResponse>,
+    bottomHomeViewModel: BottomHomeViewModel,
+) {
+    when (result) {
+        is NetworkResult.Loading -> {
+            // show a progress bar
+            Log.e("TAG", "handleUserData() --> Loading  $result")
+        }
+        is NetworkResult.Success -> {
+            // bind data to the view
+            Log.e("TAG", "handleUserData() --> Success  $result")
+            bottomHomeViewModel.notificationCount = result.data?.count.toString()
+            Log.i("TAG", result.message.toString())
+        }
+        is NetworkResult.Error -> {
+            // show error message
+            Log.e("TAG", "handleUserData() --> Error ${result.message}")
+        }
+    }
+}
 
 object ClearRippleTheme : RippleTheme {
     @Composable

@@ -37,6 +37,7 @@ class BottomHomeViewModel @Inject constructor(
     var nearestMilestoneTime: String by mutableStateOf("")
     var nearestMilestoneImage: String by mutableStateOf("")
     var homeScreenQuestionAns: String by mutableStateOf("")
+    var notificationCount: String by mutableStateOf("")
     var homeScreenQuestionCategeryId: Int by mutableStateOf(0)
     var homeScreenQuestionId: Int by mutableStateOf(0)
     var homeScreenImportantQuestionId: Int by mutableStateOf(0)
@@ -70,7 +71,9 @@ class BottomHomeViewModel @Inject constructor(
         MutableLiveData()
     var answerList = mutableStateListOf<Answer>()
     var parentList = mutableStateListOf<String>()
-    val getPregnancyStatusResponse: MutableLiveData<NetworkResult<GetPregnancyStatusResponse>> =
+    val getPregnancyStatusResponse: MutableLiveData<NetworkResult<GetPregnancyMilestoneStatusResponse>> =
+        MutableLiveData()
+    val getNotificationCountResponse: MutableLiveData<NetworkResult<GetNotificationCountResponse>> =
         MutableLiveData()
     var getPregnancyStatus: Boolean by mutableStateOf(false)
 
@@ -129,11 +132,20 @@ class BottomHomeViewModel @Inject constructor(
     }
 
 
-    fun getPregnancyStatus(type: String, user_id: Int) {
+    fun getPregnancyStatus(getNotificationRequest: GetNotificationRequest) {
         getPregnancyStatusResponse.value = NetworkResult.Loading()
         viewModelScope.launch {
-            homeRepository.getPregnancyStatus(type = type, userId = user_id).collect {
+            homeRepository.getPregnancyStatus(getNotificationRequest = getNotificationRequest).collect {
                 getPregnancyStatusResponse.value = it
+            }
+        }
+    }
+
+    fun getNotificationCount(type: String, user_id: Int) {
+        getNotificationCountResponse.value = NetworkResult.Loading()
+        viewModelScope.launch {
+            homeRepository.getNotificationCount(type = type, userId = user_id).collect {
+                getNotificationCountResponse.value = it
             }
         }
     }

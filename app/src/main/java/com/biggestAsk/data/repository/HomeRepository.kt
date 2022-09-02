@@ -1,13 +1,11 @@
 package com.biggestAsk.data.repository
 
 import android.content.Context
-import androidx.datastore.preferences.core.booleanPreferencesKey
 import com.biggestAsk.data.model.request.*
 import com.biggestAsk.data.model.response.*
 import com.biggestAsk.data.source.network.ApiService
 import com.biggestAsk.data.source.network.BaseApiResponse
 import com.biggestAsk.data.source.network.NetworkResult
-import com.biggestAsk.util.Constants
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.Dispatchers
@@ -34,12 +32,6 @@ class HomeRepository @Inject constructor(
     ): Flow<NetworkResult<UpdatedStatusResponse>> {
         return flow {
             emit(safeApiCall { apiService.getUpdatedStatus(userId, type) })
-        }.flowOn(Dispatchers.IO)
-    }
-
-    suspend fun sendOtp(sendOtpRequest: SendOtpRequest): Flow<NetworkResult<CommonResponse>> {
-        return flow {
-            emit(safeApiCall { apiService.sendOtp(sendOtpRequest) })
         }.flowOn(Dispatchers.IO)
     }
 
@@ -210,12 +202,22 @@ class HomeRepository @Inject constructor(
     }
 
     suspend fun getPregnancyStatus(
-        type: String,
-        userId: Int
-    ):Flow<NetworkResult<GetPregnancyStatusResponse>>{
+        getNotificationRequest: GetNotificationRequest
+    ): Flow<NetworkResult<GetPregnancyMilestoneStatusResponse>> {
         return flow {
             emit(safeApiCall {
-                apiService.getPregnancyStatus(type = type, user_id = userId)
+                apiService.getPregnancyStatus(getNotificationRequest = getNotificationRequest)
+            })
+        }
+    }
+
+    suspend fun getNotificationCount(
+        type: String,
+        userId: Int
+    ): Flow<NetworkResult<GetNotificationCountResponse>> {
+        return flow {
+            emit(safeApiCall {
+                apiService.getNotificationCount(type = type, user_id = userId)
             })
         }
     }
