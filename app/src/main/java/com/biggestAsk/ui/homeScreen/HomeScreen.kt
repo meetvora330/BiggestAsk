@@ -84,6 +84,7 @@ fun HomeScreen(
     frequencyViewModel: FrequencyViewModel,
     privacyPolicyViewModel: PrivacyPolicyViewModel,
     termsOfServiceViewModel: TermsOfServiceViewModel,
+    logoutViewModel: LogoutViewModel,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val requester = FocusRequester()
@@ -473,7 +474,8 @@ fun HomeScreen(
                 scaffoldState = scaffoldState,
                 frequencyViewModel = frequencyViewModel,
                 privacyPolicyViewModel = privacyPolicyViewModel,
-                termsOfServiceViewModel = termsOfServiceViewModel
+                termsOfServiceViewModel = termsOfServiceViewModel,
+                logoutViewModel = logoutViewModel
             )
             BackHandler(scaffoldState.drawerState.isOpen) {
                 scope.launch {
@@ -496,7 +498,8 @@ fun HomeScreen(
                 context = context,
                 homeActivity = homeActivity,
                 yourAccountViewModel = yourAccountViewModel,
-                homeViewModel = bottomHomeViewModel
+                homeViewModel = bottomHomeViewModel,
+                logoutViewModel = logoutViewModel
             )
         })
 }
@@ -799,7 +802,8 @@ fun NavigationDrawerContent(
     context: Context,
     homeActivity: HomeActivity,
     yourAccountViewModel: YourAccountViewModel,
-    homeViewModel: BottomHomeViewModel
+    homeViewModel: BottomHomeViewModel,
+    logoutViewModel: LogoutViewModel,
 ) {
     val provider = PreferenceProvider(context)
     val type = provider.getValue(Constants.TYPE, "")
@@ -822,197 +826,202 @@ fun NavigationDrawerContent(
             placeholder(R.drawable.ic_placeholder_your_account)
         })
     val userType = if (type == "parent") "Parents" else "Surrogate Mother"
-    val openLogoutDialog = remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
-//        getPregnancyStatus(
-//            type = type,
-//            userId = userId,
-//            homeActivity = homeActivity,
-//            bottomHomeViewModel = homeViewModel,
-//        )
+        //        getPregnancyStatus(
+        //            type = type,
+        //            userId = userId,
+        //            homeActivity = homeActivity,
+        //            bottomHomeViewModel = homeViewModel,
+        //        )
     }
-    Column(
-        modifier = Modifier
-            .padding(start = 24.dp, top = 40.dp)
-    ) {
-        Row(
-            modifier = Modifier.clickable(
-                indication = null,
-                interactionSource = MutableInteractionSource()
-            ) {
-                navController.navigate(MyAccount.MyAccountScreen.route) {
-                    popUpTo(navController.graph.findStartDestination().id) {
-                        saveState = true
-                    }
-                    launchSingleTop = true
-                    restoreState = true
-                    scope.launch {
-                        scaffoldState.drawerState.close()
-                    }
-                }
-            }
-        ) {
-            Image(
-                modifier = Modifier
-                    .width(56.dp)
-                    .height(56.dp),
-                painter = if (image != "") painter else painterResource(id = R.drawable.ic_placeholder_your_account),
-                contentDescription = ""
-            )
-            Column {
-                userName?.let {
-                    Text(
-                        text = it, modifier = Modifier
-                            .wrapContentWidth()
-                            .padding(start = 13.dp),
-                        style = MaterialTheme.typography.body2,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.W600,
-                        lineHeight = 32.sp,
-                        color = Color.Black
-                    )
-                }
-                Text(
-                    text = userType, modifier = Modifier
-                        .wrapContentWidth()
-                        .padding(start = 13.dp, top = 5.dp),
-                    style = MaterialTheme.typography.body1,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.W400,
-                    lineHeight = 24.sp,
-                    color = Custom_Blue
-                )
-            }
-        }
+    Box {
         Column(
             modifier = Modifier
-                .padding(top = 40.dp)
+                .padding(start = 24.dp, top = 40.dp)
         ) {
-            navDrawerItems.forEach { item ->
-                Row(
-                    modifier = Modifier
-                        .padding(top = 35.dp)
-                        .clickable(
-                            indication = null,
-                            interactionSource = MutableInteractionSource()
-                        ) {
-                            navController.navigate(item.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                                scope.launch {
-                                    scaffoldState.drawerState.close()
-                                }
-                            }
-                        }
+            Row(
+                modifier = Modifier.clickable(
+                    indication = null,
+                    interactionSource = MutableInteractionSource()
                 ) {
-                    Icon(
-                        modifier = Modifier
-                            .width(24.dp)
-                            .height(24.dp),
-                        painter = painterResource(id = item.icon),
-                        contentDescription = ""
-                    )
+                    navController.navigate(MyAccount.MyAccountScreen.route) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                        scope.launch {
+                            scaffoldState.drawerState.close()
+                        }
+                    }
+                }
+            ) {
+                Image(
+                    modifier = Modifier
+                        .width(56.dp)
+                        .height(56.dp),
+                    painter = if (image != "") painter else painterResource(id = R.drawable.ic_placeholder_your_account),
+                    contentDescription = ""
+                )
+                Column {
+                    userName?.let {
+                        Text(
+                            text = it, modifier = Modifier
+                                .wrapContentWidth()
+                                .padding(start = 13.dp),
+                            style = MaterialTheme.typography.body2,
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.W600,
+                            lineHeight = 32.sp,
+                            color = Color.Black
+                        )
+                    }
                     Text(
-                        text = item.tittle,
-                        modifier = Modifier
+                        text = userType, modifier = Modifier
                             .wrapContentWidth()
-                            .padding(start = 16.dp, top = 2.dp),
+                            .padding(start = 13.dp, top = 5.dp),
                         style = MaterialTheme.typography.body1,
                         fontSize = 16.sp,
-                        color = Color.Black,
-                        fontWeight = FontWeight.Normal
+                        fontWeight = FontWeight.W400,
+                        lineHeight = 24.sp,
+                        color = Custom_Blue
                     )
                 }
             }
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 64.dp)
-        ) {
-            val getPregnancyStatus = provider.getValue("pregnancy_milestone_status", "")
-            homeViewModel.getPregnancyStatus = getPregnancyStatus == "active"
-            Text(
-                text = stringResource(id = R.string.show_pregnancy_milestone),
-                style = MaterialTheme.typography.body1,
-                fontSize = 16.sp,
-                color = Color.Black
-            )
-            Switch(
+            Column(
                 modifier = Modifier
-                    .height(25.dp)
-                    .padding(start = 35.dp),
-                checked = homeViewModel.getPregnancyStatus,
-                onCheckedChange = {
-                    homeViewModel.getPregnancyStatus = it
-                    getPregnancyStatus(
-                        type = type,
-                        userId = userId,
-                        homeActivity = homeActivity,
-                        bottomHomeViewModel = homeViewModel
-                    )
-                },
-                colors = SwitchDefaults.colors(
-                    checkedThumbColor = Color.White,
-                    checkedTrackColor = Custom_Blue,
-                    uncheckedThumbColor = Color.White,
-                    uncheckedTrackColor = Custom_Blue
-                )
-            )
-        }
-        if (homeViewModel.isPregnancyStatusLoaded) {
-            ProgressBarTransparentBackground(loadingText = "Updating....")
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = 20.dp),
-            verticalAlignment = Alignment.Bottom
-        ) {
-            Icon(
-                modifier = Modifier
-                    .width(24.dp)
-                    .height(24.dp),
-                painter = painterResource(id = R.drawable.ic_icon_nav_drawer_logout),
-                contentDescription = ""
-            )
-            Text(
-                modifier = Modifier
-                    .padding(start = 16.dp, bottom = 3.dp)
-                    .clickable(indication = null, interactionSource = MutableInteractionSource()) {
-                        openLogoutDialog.value = true
-                    },
-                text = stringResource(id = R.string.log_out),
-                style = MaterialTheme.typography.body1,
-                fontSize = 16.sp,
-                color = Color.Black
-            )
-        }
-        if (openLogoutDialog.value) {
-            Dialog(
-                onDismissRequest = { openLogoutDialog.value = false },
-                properties = DialogProperties(
-                    dismissOnBackPress = true,
-                    dismissOnClickOutside = false,
-                    usePlatformDefaultWidth = true,
-                )
+                    .padding(top = 40.dp)
             ) {
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(150.dp),
-                    shape = RoundedCornerShape(10.dp)
-                ) {
-                    LogoutDialog(
-                        openLogoutDialog = openLogoutDialog,
-                        context = context,
-                        homeActivity = homeActivity
-                    )
+                navDrawerItems.forEach { item ->
+                    Row(
+                        modifier = Modifier
+                            .padding(top = 35.dp)
+                            .clickable(
+                                indication = null,
+                                interactionSource = MutableInteractionSource()
+                            ) {
+                                navController.navigate(item.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                    scope.launch {
+                                        scaffoldState.drawerState.close()
+                                    }
+                                }
+                            }
+                    ) {
+                        Icon(
+                            modifier = Modifier
+                                .width(24.dp)
+                                .height(24.dp),
+                            painter = painterResource(id = item.icon),
+                            contentDescription = ""
+                        )
+                        Text(
+                            text = item.tittle,
+                            modifier = Modifier
+                                .wrapContentWidth()
+                                .padding(start = 16.dp, top = 2.dp),
+                            style = MaterialTheme.typography.body1,
+                            fontSize = 16.sp,
+                            color = Color.Black,
+                            fontWeight = FontWeight.Normal
+                        )
+                    }
                 }
             }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 64.dp)
+            ) {
+                val getPregnancyStatus = provider.getValue("pregnancy_milestone_status", "")
+                homeViewModel.getPregnancyStatus = getPregnancyStatus == "active"
+                Text(
+                    text = stringResource(id = R.string.show_pregnancy_milestone),
+                    style = MaterialTheme.typography.body1,
+                    fontSize = 16.sp,
+                    color = Color.Black
+                )
+                Switch(
+                    modifier = Modifier
+                        .height(25.dp)
+                        .padding(start = 35.dp),
+                    checked = homeViewModel.getPregnancyStatus,
+                    onCheckedChange = {
+                        homeViewModel.getPregnancyStatus = it
+                        getPregnancyStatus(
+                            type = type,
+                            userId = userId,
+                            homeActivity = homeActivity,
+                            bottomHomeViewModel = homeViewModel
+                        )
+                    },
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = Color.White,
+                        checkedTrackColor = Custom_Blue,
+                        uncheckedThumbColor = Color.White,
+                        uncheckedTrackColor = Custom_Blue
+                    )
+                )
+            }
+            if (homeViewModel.isPregnancyStatusLoaded) {
+                ProgressBarTransparentBackground(loadingText = "Updating....")
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 20.dp),
+                verticalAlignment = Alignment.Bottom
+            ) {
+                Icon(
+                    modifier = Modifier
+                        .width(24.dp)
+                        .height(24.dp),
+                    painter = painterResource(id = R.drawable.ic_icon_nav_drawer_logout),
+                    contentDescription = ""
+                )
+                Text(
+                    modifier = Modifier
+                        .padding(start = 16.dp, bottom = 3.dp)
+                        .clickable(indication = null,
+                            interactionSource = MutableInteractionSource()) {
+                            logoutViewModel.openLogoutDialog = true
+                        },
+                    text = stringResource(id = R.string.log_out),
+                    style = MaterialTheme.typography.body1,
+                    fontSize = 16.sp,
+                    color = Color.Black
+                )
+            }
+            if (logoutViewModel.openLogoutDialog) {
+                Dialog(
+                    onDismissRequest = { logoutViewModel.openLogoutDialog = false },
+                    properties = DialogProperties(
+                        dismissOnBackPress = true,
+                        dismissOnClickOutside = false,
+                        usePlatformDefaultWidth = true,
+                    )
+                ) {
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(150.dp),
+                        shape = RoundedCornerShape(10.dp)
+                    ) {
+                        LogoutDialog(
+                            context = context,
+                            homeActivity = homeActivity,
+                            logoutViewModel = logoutViewModel
+                        )
+                    }
+                }
+            }
+        }
+        if (logoutViewModel.isLoading) {
+            ProgressBarTransparentBackground(stringResource(id = R.string.loading))
         }
     }
 }
@@ -1021,7 +1030,7 @@ fun getPregnancyStatus(
     type: String?,
     userId: Int,
     homeActivity: HomeActivity,
-    bottomHomeViewModel: BottomHomeViewModel
+    bottomHomeViewModel: BottomHomeViewModel,
 ) {
     type?.let { bottomHomeViewModel.getPregnancyStatus(type = it, user_id = userId) }
     bottomHomeViewModel.getPregnancyStatusResponse.observe(homeActivity) {

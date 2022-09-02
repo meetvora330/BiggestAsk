@@ -307,7 +307,7 @@ fun BottomQuestionScreen(
                 )
                 selectedText.value = selectionChangeDropDown(
                     suggestions = suggestions,
-                    hint = "Frequency...",
+                    hint = stringResource(id = R.string.frequency),
                     modifier = Modifier
                         .padding(top = 12.dp, start = 24.dp, end = 24.dp),
                     style = MaterialTheme.typography.body2.copy(

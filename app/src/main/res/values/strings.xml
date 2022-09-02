@@ -211,6 +211,7 @@
     <string name="bottom_ques_new_ques_pro">New questions in the profile</string>
     <string name="bottom_ques_freq_ques_pro">Frequency of the questions:</string>
     <string name="select_gender">Select gender</string>
+    <string name="frequency">Frequency…</string>
     <string name="bottom_ques_exist_ques">Existing questions in the profile</string>
     <string name="bottom_ques_drop_down_hint_day">Days</string>
     <string name="frequency_drop_down_hint_day">Select frequency</string>
@@ -299,6 +300,7 @@
     <string name="minimum_8_character_required">minimum 8 character required</string>
     <string name="to_forum">To Forum</string>
     <string name="instagram">Instagram</string>
+    <string name="invalid_url">Invalid Url</string>
 
 <!--    Notification Screen-->
     <string name="NO_NOTIFICATION_FOUND">No Notification Found</string>

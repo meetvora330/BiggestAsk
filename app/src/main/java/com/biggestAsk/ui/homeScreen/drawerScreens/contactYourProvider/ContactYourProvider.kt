@@ -31,6 +31,7 @@ import com.biggestAsk.ui.HomeActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
 import com.biggestAsk.ui.main.viewmodel.ContactYourProviderViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
+import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 
@@ -40,8 +41,8 @@ fun ContactYourProvider(
     contactYourProviderViewModel: ContactYourProviderViewModel,
 ) {
     val context = LocalContext.current
-    val type = PreferenceProvider(context).getValue("type", "")
-    val userId = PreferenceProvider(context).getIntValue("user_id", 0)
+    val type = PreferenceProvider(context).getValue(Constants.TYPE, "")
+    val userId = PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
     LaunchedEffect(Unit) {
         if (isInternetAvailable(context)) {
             getUpdatedContact(type!!, userId, contactYourProviderViewModel, context, homeActivity)
@@ -212,7 +213,7 @@ fun ContactYourProvider(
 
     }
     if (contactYourProviderViewModel.isLoading) {
-        ProgressBarTransparentBackground("Loading...")
+        ProgressBarTransparentBackground(stringResource(id = R.string.loading))
     }
     if (contactYourProviderViewModel.isDataNull) {
         Column(

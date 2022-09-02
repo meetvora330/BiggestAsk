@@ -52,6 +52,7 @@ fun BottomNavigationDrawerGraph(
     frequencyViewModel: FrequencyViewModel,
     privacyPolicyViewModel: PrivacyPolicyViewModel,
     termsOfServiceViewModel: TermsOfServiceViewModel,
+    logoutViewModel: LogoutViewModel
 ) {
     val provider = PreferenceProvider(context)
     NavHost(
@@ -251,7 +252,8 @@ fun BottomNavigationDrawerGraph(
                 navHostController = navHostController,
                 yourAccountViewModel = yourAccountViewModel,
                 homeActivity = homeActivity,
-                context = context
+                context = context,
+                logoutViewModel = logoutViewModel
             )
         }
 

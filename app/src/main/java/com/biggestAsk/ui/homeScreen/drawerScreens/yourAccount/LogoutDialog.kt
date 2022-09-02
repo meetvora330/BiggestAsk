@@ -2,6 +2,8 @@ package com.biggestAsk.ui.homeScreen.drawerScreens.yourAccount
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -10,32 +12,34 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.biggestAsk.data.model.request.LogoutRequest
+import com.biggestAsk.data.model.response.LogoutResponse
+import com.biggestAsk.data.source.network.NetworkResult
+import com.biggestAsk.data.source.network.isInternetAvailable
 import com.biggestAsk.ui.HomeActivity
 import com.biggestAsk.ui.MainActivity
 import com.biggestAsk.ui.introScreen.findActivity
+import com.biggestAsk.ui.main.viewmodel.LogoutViewModel
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 
 @Composable
 fun LogoutDialog(
-    openLogoutDialog: MutableState<Boolean>,
     context: Context,
-    homeActivity: HomeActivity
+    homeActivity: HomeActivity,
+    logoutViewModel: LogoutViewModel,
 ) {
+    val type = PreferenceProvider(context).getValue("type", "")
+    val userId = PreferenceProvider(context).getIntValue("user_id", 0)
     Column(modifier = Modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -79,7 +83,7 @@ fun LogoutDialog(
                 modifier = Modifier
                     .padding(start = 25.dp, top = 13.dp)
                     .clickable(indication = null, interactionSource = MutableInteractionSource()) {
-                        openLogoutDialog.value = false
+                        logoutViewModel.openLogoutDialog = false
                     },
                 text = stringResource(id = R.string.negative_btn_text),
                 style = MaterialTheme.typography.body2.copy(
@@ -102,14 +106,17 @@ fun LogoutDialog(
                     .wrapContentWidth()
                     .padding(end = 25.dp, top = 13.dp)
                     .clickable(indication = null, interactionSource = MutableInteractionSource()) {
-                        PreferenceProvider(context).setValue("user_logout", true)
-                        val intent = Intent(homeActivity, MainActivity::class.java)
-                        context.startActivity(intent)
-                        context
-                            .findActivity()
-                            ?.finish()
-                        PreferenceProvider(context).clear()
-                        PreferenceProvider(context).setValue("isIntroDone", true)
+                        if (isInternetAvailable(context)) {
+                            type?.let {
+                                logOutUser(it,
+                                    userId,
+                                    logoutViewModel,
+                                    homeActivity,
+                                    context)
+                            }
+                        } else Toast
+                            .makeText(context, R.string.no_internet_available, Toast.LENGTH_SHORT)
+                            .show()
                     },
                 text = stringResource(id = R.string.positive_btn_text),
                 style = MaterialTheme.typography.body2.copy(
@@ -123,10 +130,70 @@ fun LogoutDialog(
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun LogoutDialogPreview() {
-    LogoutDialog(openLogoutDialog = remember {
-        mutableStateOf(true)
-    }, context = LocalContext.current, homeActivity = HomeActivity())
+fun logOutUser(
+    type: String,
+    user_id: Int,
+    logoutViewModel: LogoutViewModel,
+    homeActivity: HomeActivity,
+    context: Context,
+) {
+    logoutViewModel.logOut(
+        logoutRequest = LogoutRequest(
+            type = type,
+            user_id = user_id
+        )
+    )
+    logoutViewModel.logOutResponse.observe(homeActivity) {
+        if (it != null) {
+            handleLogOutApi(
+                result = it,
+                logoutViewModel = logoutViewModel,
+                context = context,
+                homeActivity = homeActivity
+            )
+        } else {
+            Log.e("TAG", "LogoutResponse null: ")
+        }
+    }
 }
+
+private fun handleLogOutApi(
+    result: NetworkResult<LogoutResponse>,
+    logoutViewModel: LogoutViewModel,
+    context: Context,
+    homeActivity: HomeActivity,
+) {
+    when (result) {
+        is NetworkResult.Loading -> {
+            // show a progress bar
+            logoutViewModel.isLoading = true
+            logoutViewModel.openLogoutDialog = false
+        }
+        is NetworkResult.Success -> {
+            // bind data to the view
+            logoutViewModel.isLoading = false
+            logoutViewModel.logOutSuccessMessage = result.data!!.message
+            PreferenceProvider(context).setValue("user_logout", true)
+            val intent = Intent(homeActivity, MainActivity::class.java)
+            context.startActivity(intent)
+            context
+                .findActivity()
+                ?.finish()
+            PreferenceProvider(context).clear()
+            PreferenceProvider(context).setValue("isIntroDone", true)
+        }
+        is NetworkResult.Error -> {
+            //show error message
+            logoutViewModel.isLoading = false
+            logoutViewModel.openLogoutDialog = true
+        }
+    }
+}
+
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//fun LogoutDialogPreview() {
+//    LogoutDialog(openLogoutDialog = remember {
+//        mutableStateOf(true)
+//    }, context = LocalContext.current, homeActivity = HomeActivity())
+//}

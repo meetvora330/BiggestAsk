@@ -229,4 +229,9 @@ interface ApiService {
         @Query("user_id") user_id: Int
     ):Response<GetPregnancyStatusResponse>
 
+    @GET(Constants.LOGOUT)
+    suspend fun logOut(
+        @Query("type") type: String,
+        @Query("user_id") user_id: Int
+    ):Response<LogoutResponse>
 }

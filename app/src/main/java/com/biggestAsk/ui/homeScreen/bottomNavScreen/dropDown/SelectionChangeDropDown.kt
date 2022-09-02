@@ -32,6 +32,7 @@ import com.biggestAsk.ui.main.viewmodel.BottomQuestionViewModel
 import com.biggestAsk.ui.main.viewmodel.FrequencyViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.ET_Bg
+import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 
@@ -115,7 +116,7 @@ fun selectionChangeDropDown(
                                     Log.d("TAG", "SimpleDropDown: item changed $selectedText")
                                     val userId = provider.getIntValue("user_id", 0)
                                     val type = provider
-                                        .getValue("type", "")
+                                        .getValue(Constants.TYPE, "")
                                     frequencyViewModel.screenQuestionStatus(
                                         screenQuestionStatusRequest = ScreenQuestionStatusRequest(
                                             type = type!!,

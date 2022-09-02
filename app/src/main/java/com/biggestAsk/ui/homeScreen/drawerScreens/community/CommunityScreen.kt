@@ -149,7 +149,7 @@ fun Community(
                                     } catch (e: RuntimeException) {
                                         e.printStackTrace()
                                         Toast.makeText(context,
-                                            "Invalid Url",
+                                            R.string.invalid_url,
                                             Toast.LENGTH_SHORT).show()
                                     }
                                 },
