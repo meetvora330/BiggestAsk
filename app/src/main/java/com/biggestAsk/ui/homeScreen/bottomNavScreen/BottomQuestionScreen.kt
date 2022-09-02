@@ -260,6 +260,16 @@ fun BottomQuestionScreen(
             }
         }
     }, content = {
+        BackHandler(questionBottomSheetScaffoldState.bottomSheetState.isExpanded) {
+            coroutineScope.launch {
+                if(questionViewModel.isBottomSheetOpened){
+                    questionBottomSheetScaffoldState.bottomSheetState.expand()
+                }else{
+                    questionBottomSheetScaffoldState.bottomSheetState.collapse()
+                }
+                questionViewModel.isBottomSheetOpened = false
+            }
+        }
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -363,11 +373,14 @@ fun BottomQuestionScreen(
                                 )
                                 Button(
                                     onClick = {
+                                        questionViewModel.isBottomSheetOpened = true
                                         coroutineScope.launch {
                                             if (questionBottomSheetScaffoldState.bottomSheetState.isExpanded) {
                                                 questionBottomSheetScaffoldState.bottomSheetState.collapse()
+                                                questionViewModel.isBottomSheetOpened = true
                                             } else {
                                                 questionBottomSheetScaffoldState.bottomSheetState.expand()
+                                                questionViewModel.isBottomSheetOpened = false
                                             }
                                         }
                                     },

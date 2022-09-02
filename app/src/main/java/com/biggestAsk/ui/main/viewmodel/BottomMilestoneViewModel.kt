@@ -39,6 +39,7 @@ class BottomMilestoneViewModel @Inject constructor(
     var addNewMilestoneLocationB: MutableState<String> = mutableStateOf("")
     var addNewMilestoneLocationBEmpty: MutableState<Boolean> = mutableStateOf(false)
     var isNewMilestoneAdded: MutableState<Boolean> = mutableStateOf(false)
+    var isBottomSheetOpen: MutableState<Boolean> = mutableStateOf(false)
     var createMilestoneResponse: MutableLiveData<NetworkResult<CommonResponse>> = MutableLiveData()
     var isSelected: Boolean by mutableStateOf(false)
 

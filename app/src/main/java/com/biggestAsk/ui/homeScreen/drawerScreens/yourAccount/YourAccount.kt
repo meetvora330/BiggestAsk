@@ -765,7 +765,7 @@ fun YourAccountScreen(
                                             month = dateOfBirth.substring(4, 6).toInt(),
                                             dayOfMonth = dateOfBirth.substring(6, 8).toInt()
                                         )
-                                        if (age!=0){
+                                        if (age != 0) {
                                             Text(
                                                 modifier = Modifier
                                                     .wrapContentWidth()

@@ -35,6 +35,7 @@ class BottomQuestionViewModel @Inject constructor(
     var isErrorOccurredQuestionScreenQuestion: Boolean by mutableStateOf(false)
     var isQuestionBankContentLoaded: Boolean by mutableStateOf(false)
     var isErrorOccurredQuestionBankContent: Boolean by mutableStateOf(false)
+    var isBottomSheetOpened: Boolean by mutableStateOf(false)
     var questionScreenQuestionCategeryId: Int by mutableStateOf(0)
     var questionScreenQuestionId: Int by mutableStateOf(0)
     var questionScreenLatestQuestion: String by mutableStateOf("")

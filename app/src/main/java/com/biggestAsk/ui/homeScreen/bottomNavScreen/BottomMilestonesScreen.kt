@@ -169,7 +169,8 @@ fun MilestonesScreen(
                                 .wrapContentWidth()
                                 .padding(top = 11.dp)
                                 .align(CenterHorizontally),
-                            text = stringResource(id = R.string.add_milestone), style = MaterialTheme.typography.h2.copy(
+                            text = stringResource(id = R.string.add_milestone),
+                            style = MaterialTheme.typography.h2.copy(
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.W600,
                                 lineHeight = 32.sp,
@@ -506,9 +507,13 @@ fun MilestonesScreen(
                                             true
                                     }
                                     else -> {
-                                        val type = PreferenceProvider(context).getValue(Constants.TYPE, "")
+                                        val type =
+                                            PreferenceProvider(context).getValue(Constants.TYPE, "")
                                         val userId =
-                                            PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
+                                            PreferenceProvider(context).getIntValue(
+                                                Constants.USER_ID,
+                                                0
+                                            )
                                         val createMilestoneRequest = CreateMilestoneRequest(
                                             milestone = milestoneViewModel.addNewMilestoneTittle.value,
                                             user_type = type!!,
@@ -564,7 +569,16 @@ fun MilestonesScreen(
                 }
             }, sheetPeekHeight = 40.dp,
             content = {
-
+                BackHandler(addNewMilestoneBottomSheetState.bottomSheetState.isExpanded) {
+                    coroutineScope.launch {
+                        if (milestoneViewModel.isBottomSheetOpen.value) {
+                            addNewMilestoneBottomSheetState.bottomSheetState.expand()
+                        } else {
+                            addNewMilestoneBottomSheetState.bottomSheetState.collapse()
+                        }
+                        milestoneViewModel.isBottomSheetOpen.value = false
+                    }
+                }
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
@@ -591,6 +605,7 @@ fun MilestonesScreen(
                             )
                             Button(
                                 onClick = {
+                                    milestoneViewModel.isBottomSheetOpen.value = true
                                     coroutineScope.launch {
                                         milestoneViewModel.addNewMilestoneTittleEmpty.value = false
                                         milestoneViewModel.addNewMilestoneDateEmpty.value = false
@@ -603,8 +618,10 @@ fun MilestonesScreen(
                                         milestoneViewModel.addNewMilestoneLocationB.value = ""
                                         if (addNewMilestoneBottomSheetState.bottomSheetState.isExpanded) {
                                             addNewMilestoneBottomSheetState.bottomSheetState.collapse()
+                                            milestoneViewModel.isBottomSheetOpen.value = true
                                         } else {
                                             addNewMilestoneBottomSheetState.bottomSheetState.expand()
+                                            milestoneViewModel.isBottomSheetOpen.value = false
                                         }
                                     }
                                 },
@@ -977,7 +994,6 @@ fun getMilestones(
 ) {
     val userId = PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
     val type = PreferenceProvider(context).getValue(Constants.TYPE, "")
-//    if (milestoneViewModel.milestoneList.isEmpty()) {
     milestoneViewModel.getMilestones(
         GetPregnancyMilestoneRequest(
             user_id = userId,
@@ -992,7 +1008,6 @@ fun getMilestones(
             )
         }
     }
-//    }
 }
 
 @Composable

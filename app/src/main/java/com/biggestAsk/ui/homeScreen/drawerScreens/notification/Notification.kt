@@ -1,5 +1,6 @@
 package com.biggestAsk.ui.homeScreen.drawerScreens.notification
 
+import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -21,7 +22,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -48,6 +48,7 @@ fun Notification(
     navHostController: NavHostController,
     notificationViewModel: NotificationViewModel,
     homeActivity: HomeActivity,
+    context: Context
 ) {
     Column(
         modifier = Modifier
@@ -56,17 +57,19 @@ fun Notification(
                 rememberScrollState()
             )
     ) {
-        val context = LocalContext.current
         val type = PreferenceProvider(context).getValue(Constants.TYPE, "")
         val userId = PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
         LaunchedEffect(Unit) {
             if (isInternetAvailable(context)) {
                 //getUpdatedNotification("parent", 191, notificationViewModel, homeActivity)
                 type?.let {
-                    getUpdatedNotification(it,
+                    getUpdatedNotification(
+                        it,
                         userId,
                         notificationViewModel,
-                        homeActivity)
+                        homeActivity,
+                        context = context
+                    )
                 }
             } else {
                 notificationViewModel.isDataNull = false
@@ -223,17 +226,21 @@ fun getUpdatedNotification(
     user_id: Int,
     notificationViewModel: NotificationViewModel,
     homeActivity: HomeActivity,
+    context: Context
 ) {
-    notificationViewModel.getNotification(getNotificationRequest = GetNotificationRequest(
-        type = type,
-        user_id = user_id
-    ))
+    notificationViewModel.getNotification(
+        getNotificationRequest = GetNotificationRequest(
+            type = type,
+            user_id = user_id
+        )
+    )
 
     notificationViewModel.getNotificationResponse.observe(homeActivity) {
         if (it != null) {
             handleGetNotificationApi(
                 result = it,
                 notificationViewModel = notificationViewModel,
+                context = context
             )
         } else {
             Log.e("TAG", "GetContactData is null: ")
@@ -244,6 +251,7 @@ fun getUpdatedNotification(
 private fun handleGetNotificationApi(
     result: NetworkResult<GetNotificationResponse>,
     notificationViewModel: NotificationViewModel,
+    context: Context
 ) {
     when (result) {
         is NetworkResult.Loading -> {
@@ -261,6 +269,10 @@ private fun handleGetNotificationApi(
             notificationViewModel.updatedList.addAll(notificationViewModel.notificationList)
             notificationViewModel.notificationDaysList.clear()
             result.data?.let { notificationViewModel.notificationDaysList.addAll(it.days) }
+            PreferenceProvider(appContext = context).setValue(
+                "notification_count",
+                "0"
+            )
             notificationViewModel.isDataNull = notificationViewModel.notificationList.isEmpty()
         }
         is NetworkResult.Error -> {

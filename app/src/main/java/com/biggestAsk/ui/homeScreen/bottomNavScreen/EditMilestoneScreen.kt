@@ -197,6 +197,7 @@ fun EditMilestoneScreen(
             partner_id = partnerId,
         )
     }
+
     if (!editMilestoneViewModel.isEditMilestoneDataLoaded.value) {
         BottomSheetScaffold(
             scaffoldState = editMilestoneBottomSheetState,
@@ -623,6 +624,16 @@ fun EditMilestoneScreen(
                 }
             }, sheetPeekHeight = 40.dp,
             content = {
+                BackHandler(editMilestoneBottomSheetState.bottomSheetState.isExpanded) {
+                    coroutineScope.launch {
+                        if(editMilestoneViewModel.isBottomSheetOpen.value){
+                            editMilestoneBottomSheetState.bottomSheetState.expand()
+                        }else{
+                            editMilestoneBottomSheetState.bottomSheetState.collapse()
+                        }
+                        editMilestoneViewModel.isBottomSheetOpen.value = false
+                    }
+                }
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
@@ -660,11 +671,10 @@ fun EditMilestoneScreen(
                                         contentDescription = "",
                                         contentScale = ContentScale.Inside
                                     )
-
                                 }
                                 Column(
                                     modifier = Modifier
-                                        .fillMaxWidth()
+                                        .wrapContentWidth()
                                         .clickable(
                                             indication = null,
                                             interactionSource = MutableInteractionSource()
@@ -675,11 +685,14 @@ fun EditMilestoneScreen(
                                                 false
                                             editMilestoneViewModel.editMilestoneLocationBEmpty.value =
                                                 false
+                                            editMilestoneViewModel.isBottomSheetOpen.value = true
                                             coroutineScope.launch {
                                                 if (editMilestoneBottomSheetState.bottomSheetState.isExpanded) {
                                                     editMilestoneBottomSheetState.bottomSheetState.collapse()
+                                                    editMilestoneViewModel.isBottomSheetOpen.value = true
                                                 } else {
                                                     editMilestoneBottomSheetState.bottomSheetState.expand()
+                                                    editMilestoneViewModel.isBottomSheetOpen.value = false
                                                 }
                                             }
                                         }
@@ -698,11 +711,14 @@ fun EditMilestoneScreen(
                                                     false
                                                 editMilestoneViewModel.editMilestoneLocationBEmpty.value =
                                                     false
+                                                editMilestoneViewModel.isBottomSheetOpen.value = true
                                                 coroutineScope.launch {
                                                     if (editMilestoneBottomSheetState.bottomSheetState.isExpanded) {
                                                         editMilestoneBottomSheetState.bottomSheetState.collapse()
+                                                        editMilestoneViewModel.isBottomSheetOpen.value = true
                                                     } else {
                                                         editMilestoneBottomSheetState.bottomSheetState.expand()
+                                                        editMilestoneViewModel.isBottomSheetOpen.value = false
                                                     }
                                                 }
                                             },

@@ -52,6 +52,7 @@ class BottomHomeViewModel @Inject constructor(
     var isHomeScreenQuestionDataLoaded: Boolean by mutableStateOf(false)
     var isIntendedParentQuestionDataLoaded: Boolean by mutableStateOf(false)
     var upperQuestion: Boolean by mutableStateOf(false)
+    var isBottomSheetOpen: Boolean by mutableStateOf(false)
     var isNearestMilestoneDataLoaded: Boolean by mutableStateOf(false)
     var isPregnancyStatusLoaded: Boolean by mutableStateOf(false)
     var getPregnancyMilestoneResponse: MutableLiveData<NetworkResult<GetImportantQuestionResponse>> =

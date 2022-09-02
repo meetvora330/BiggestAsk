@@ -169,12 +169,13 @@ fun BottomNavigationDrawerGraph(
                         yourSurrogateMotherViewModel = yourSurrogateMotherViewModel,
                         context = context
                     )
-                }else->{
-                YourSurrogateMother(
-                    homeActivity = homeActivity,
-                    yourSurrogateMotherViewModel = yourSurrogateMotherViewModel,
-                    context = context
-                )
+                }
+                else -> {
+                    YourSurrogateMother(
+                        homeActivity = homeActivity,
+                        yourSurrogateMotherViewModel = yourSurrogateMotherViewModel,
+                        context = context
+                    )
                 }
             }
         }
@@ -196,7 +197,8 @@ fun BottomNavigationDrawerGraph(
             Notification(
                 navHostController = navHostController,
                 notificationViewModel = notificationViewModel,
-                homeActivity = homeActivity
+                homeActivity = homeActivity,
+                context = context
             )
         }
         composable(
@@ -240,8 +242,10 @@ fun BottomNavigationDrawerGraph(
             )
         }
         composable(route = SettingSubScreen.PrivacyPolicy.route) {
-            PrivacyPolicy(homeActivity = homeActivity,
-                privacyPolicyViewModel = privacyPolicyViewModel)
+            PrivacyPolicy(
+                homeActivity = homeActivity,
+                privacyPolicyViewModel = privacyPolicyViewModel
+            )
         }
         composable(SettingSubScreen.DetailedSetting.route) {
             DetailedSettings()

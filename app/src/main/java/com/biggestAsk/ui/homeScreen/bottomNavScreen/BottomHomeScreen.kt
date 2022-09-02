@@ -68,9 +68,6 @@ fun BottomHomeScreen(
     val partnerId = provider.getIntValue(Constants.PARTNER_ID, 0)
     val selectedText = remember { mutableStateOf("") }
     LaunchedEffect(Unit) {
-        Log.d("TAG", "BottomHomeScreen: User Id $userId")
-        Log.d("TAG", "BottomHomeScreen: Type $type")
-        Log.d("TAG", "BottomHomeScreen: Partner Id $partnerId")
         updateHomeScreenData(
             bottomHomeViewModel = bottomHomeViewModel,
             userId = userId,
@@ -79,15 +76,8 @@ fun BottomHomeScreen(
             partnerId = partnerId
         )
     }
-    val enable = remember {
-        mutableStateOf(false)
-    }
-    BackHandler(enable.value) {
-        coroutineScope.launch {
-            homeBottomSheetScaffoldState.bottomSheetState.collapse()
-        }
-        enable.value = false
-    }
+
+
     BottomSheetScaffold(
         scaffoldState = homeBottomSheetScaffoldState,
         sheetGesturesEnabled = true,
@@ -304,6 +294,16 @@ fun BottomHomeScreen(
             }
         },
         content = {
+            BackHandler(homeBottomSheetScaffoldState.bottomSheetState.isExpanded) {
+                coroutineScope.launch {
+                    if(bottomHomeViewModel.isBottomSheetOpen){
+                        homeBottomSheetScaffoldState.bottomSheetState.expand()
+                    }else{
+                        homeBottomSheetScaffoldState.bottomSheetState.collapse()
+                    }
+                    bottomHomeViewModel.isBottomSheetOpen = false
+                }
+            }
             if (bottomHomeViewModel.isErrorOccurredPregnancyMilestone && bottomHomeViewModel.isErrorOccurredNearestMilestone && bottomHomeViewModel.isErrorOccurredHomeScreenQuestion && bottomHomeViewModel.isErrorOccurredIntendedParentQuestion) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
@@ -314,9 +314,7 @@ fun BottomHomeScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = 24.dp, end = 24.dp, top = 10.dp),
-                        text = if (bottomHomeViewModel.isHomeScreenQuestionDataLoaded && bottomHomeViewModel.isPregnancyDataLoaded && bottomHomeViewModel.isNearestMilestoneDataLoaded && bottomHomeViewModel.isIntendedParentQuestionDataLoaded) stringResource(
-                            id = R.string.no_data_found
-                        ) else "",
+                        text = stringResource(id = R.string.no_data_found),
                         style = MaterialTheme.typography.body2,
                         textAlign = TextAlign.Center,
                         fontSize = 24.sp,
@@ -415,14 +413,17 @@ fun BottomHomeScreen(
                                             onClick = {
                                                 bottomHomeViewModel.homeScreenQuestionAns = ""
                                                 bottomHomeViewModel.upperQuestion = true
+                                                bottomHomeViewModel.isBottomSheetOpen = true
                                                 coroutineScope.launch {
                                                     if (homeBottomSheetScaffoldState.bottomSheetState.isExpanded) {
                                                         homeBottomSheetScaffoldState.bottomSheetState.collapse()
+                                                        bottomHomeViewModel.isBottomSheetOpen = true
                                                     } else {
                                                         homeBottomSheetScaffoldState.bottomSheetState.expand()
+                                                        bottomHomeViewModel.isBottomSheetOpen =
+                                                            false
                                                     }
                                                 }
-
                                             },
                                             modifier = Modifier
                                                 .padding(
@@ -615,12 +616,15 @@ fun BottomHomeScreen(
                                         onClick = {
                                             bottomHomeViewModel.homeScreenQuestionAns = ""
                                             bottomHomeViewModel.upperQuestion = false
-                                            enable.value = true
+                                            bottomHomeViewModel.isBottomSheetOpen = true
                                             coroutineScope.launch {
                                                 if (homeBottomSheetScaffoldState.bottomSheetState.isExpanded) {
                                                     homeBottomSheetScaffoldState.bottomSheetState.collapse()
+                                                    bottomHomeViewModel.isBottomSheetOpen = true
                                                 } else {
                                                     homeBottomSheetScaffoldState.bottomSheetState.expand()
+                                                    bottomHomeViewModel.isBottomSheetOpen =
+                                                        false
                                                 }
                                             }
                                         },
@@ -977,7 +981,6 @@ private fun handleHomeQuestionData(
             bottomHomeViewModel.isAllDataLoaded = false
             bottomHomeViewModel.isErrorOccurred = false
 
-//            result.data?.data?.name?.size
             if (result.data?.data?.category_id == null || result.data.data.id == null || result.data.data.question == "") {
                 bottomHomeViewModel.homeScreenQuestionCategeryId = 0
                 bottomHomeViewModel.homeScreenQuestionId = 0
@@ -1026,17 +1029,17 @@ private fun handleNearestMilestoneData(
             Log.e("TAG", "handleUserData() --> Success  $result")
             Log.i("TAG", result.message.toString())
             bottomHomeViewModel.nearestMilestoneTittle = result.data?.title!!
-            if (result.data.date.isNullOrEmpty())
+            if (result.data.date.isEmpty())
                 bottomHomeViewModel.nearestMilestoneDate = ""
             else
                 bottomHomeViewModel.nearestMilestoneDate = result.data.date
 
-            if (result.data.time.isNullOrEmpty())
+            if (result.data.time.isEmpty())
                 bottomHomeViewModel.nearestMilestoneTime = ""
             else
                 bottomHomeViewModel.nearestMilestoneTime = result.data.time
 
-            if (result.data.milestone_image.isNullOrEmpty())
+            if (result.data.milestone_image.isEmpty())
                 bottomHomeViewModel.nearestMilestoneImage = ""
             else
                 bottomHomeViewModel.nearestMilestoneImage = result.data.milestone_image

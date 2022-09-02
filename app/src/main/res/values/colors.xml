@@ -15,4 +15,5 @@
     <color name="gray_line">#C0C0C0</color>
     <color name="custom_blue">#3870C9</color>
     <color name="custom_white">#7AFFFFFF</color>
+    <color name="transparent">#00FFFFFF</color>
 </resources>
