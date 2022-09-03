@@ -101,8 +101,10 @@ fun AddCommunityDialog(
         effect = {
             val observer = LifecycleEventObserver { _, event ->
                 if (event == Lifecycle.Event.ON_RESUME) {
-                    if (ActivityCompat.checkSelfPermission(homeActivity,
-                            Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                    if (ActivityCompat.checkSelfPermission(
+                            homeActivity,
+                            Manifest.permission.READ_EXTERNAL_STORAGE
+                        ) == PackageManager.PERMISSION_GRANTED
                     ) {
                         communityViewModel.isPermissionAllowed = false
                     }
@@ -349,7 +351,10 @@ fun AddCommunityDialog(
                 onValueChange = {
                     tf_text_fourth.value = it.trim()
                     tfTextFourthEmpty.value = false
-                    communityViewModel.isValidInstagramUrl.value = tf_text_fourth.value.isNotEmpty() && !Patterns.WEB_URL.matcher(tf_text_fourth.value).matches()
+                    communityViewModel.isValidInstagramUrl.value =
+                        tf_text_fourth.value.isNotEmpty() && !Patterns.WEB_URL.matcher(
+                            tf_text_fourth.value
+                        ).matches()
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text, imeAction = ImeAction.Done
@@ -455,14 +460,18 @@ fun AddCommunityDialog(
                         TextUtils.isEmpty(tf_text_first.value) &&
                                 TextUtils.isEmpty(tf_text_second.value) &&
                                 TextUtils.isEmpty(tf_text_third.value) &&
-                                TextUtils.isEmpty(tf_text_fourth.value)-> {
+                                TextUtils.isEmpty(tf_text_fourth.value) -> {
                             tfTextFirstEmpty.value = true
                             tfTextSecondEmpty.value = true
                             tfTextThirdEmpty.value = true
                             tfTextFourthEmpty.value = true
 
                             if (!communityViewModel.isImagePresent.value) {
-                                Toast.makeText(context, Constants.PLEASE_ADD_LOGO, Toast.LENGTH_SHORT)
+                                Toast.makeText(
+                                    context,
+                                    Constants.PLEASE_ADD_LOGO,
+                                    Toast.LENGTH_SHORT
+                                )
                                     .show()
                             }
                         }
@@ -486,22 +495,36 @@ fun AddCommunityDialog(
                         communityViewModel.isImagePresent.value && !TextUtils.isEmpty(tf_text_first.value) &&
                                 !TextUtils.isEmpty(tf_text_second.value) &&
                                 !TextUtils.isEmpty(tf_text_third.value) &&
-                                !TextUtils.isEmpty(tf_text_fourth.value) && !communityViewModel.isValidInstagramUrl.value && Patterns.WEB_URL.matcher(tf_text_fourth.value).matches()-> {
+                                !TextUtils.isEmpty(tf_text_fourth.value) && !communityViewModel.isValidInstagramUrl.value && Patterns.WEB_URL.matcher(
+                            tf_text_fourth.value
+                        ).matches() -> {
 
 
                             val image =
                                 communityViewModel.uriPath?.let { convertImageMultiPart(it) }
                             Log.e(Constants.IMAGE, "AddCommunityDialog: $image")
                             communityViewModel.createCommunity(
-                                MultipartBody.Part.createFormData(Constants.TITLE, tf_text_first.value),
-                                MultipartBody.Part.createFormData(Constants.DESCRIPTION,
-                                    tf_text_second.value),
-                                MultipartBody.Part.createFormData(Constants.FORUM_LINK,
-                                    tf_text_third.value),
-                                MultipartBody.Part.createFormData(Constants.INST_LINK,
-                                    tf_text_fourth.value),
+                                MultipartBody.Part.createFormData(
+                                    Constants.TITLE,
+                                    tf_text_first.value
+                                ),
+                                MultipartBody.Part.createFormData(
+                                    Constants.DESCRIPTION,
+                                    tf_text_second.value
+                                ),
+                                MultipartBody.Part.createFormData(
+                                    Constants.FORUM_LINK,
+                                    tf_text_third.value
+                                ),
+                                MultipartBody.Part.createFormData(
+                                    Constants.INST_LINK,
+                                    tf_text_fourth.value
+                                ),
                                 image,
-                                MultipartBody.Part.createFormData(Constants.USER_ID, userId.toString()),
+                                MultipartBody.Part.createFormData(
+                                    Constants.USER_ID,
+                                    userId.toString()
+                                ),
                                 MultipartBody.Part.createFormData(Constants.TYPE, type!!)
                             )
                             communityViewModel.createCommunityResponse.observe(homeActivity) {
@@ -620,10 +643,12 @@ private fun handleCreateCommunityApi(
             tf_text_fourth.value = ""
             communityViewModel.isValidInstagramUrl.value = false
             communityViewModel.bitmap.value = null
-            getUpdatedCommunity(type = type,
+            getUpdatedCommunity(
+                type = type,
                 user_id = user_id,
                 communityViewModel = communityViewModel,
-                homeActivity = homeActivity)
+                homeActivity = homeActivity
+            )
         }
         is NetworkResult.Error -> {
             // show error message

@@ -41,6 +41,7 @@ class HomeActivity : BaseActivity() {
     private val frequencyViewModel: FrequencyViewModel by viewModels()
     private val privacyPolicyViewModel: PrivacyPolicyViewModel by viewModels()
     private val termsOfServiceViewModel: TermsOfServiceViewModel by viewModels()
+    private val detailedSettingsViewModel: DetailedSettingsViewModel by viewModels()
 
     private val permissionReqLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { it ->
@@ -123,7 +124,8 @@ class HomeActivity : BaseActivity() {
                     questionViewModel = questionViewModel,
                     frequencyViewModel = frequencyViewModel,
                     privacyPolicyViewModel = privacyPolicyViewModel,
-                    termsOfServiceViewModel = termsOfServiceViewModel
+                    termsOfServiceViewModel = termsOfServiceViewModel,
+                    detailedSettingsViewModel = detailedSettingsViewModel
                 )
             }
         }

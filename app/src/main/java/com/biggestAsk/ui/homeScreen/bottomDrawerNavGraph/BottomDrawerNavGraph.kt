@@ -33,7 +33,6 @@ import java.util.*
 @Composable
 fun BottomNavigationDrawerGraph(
     navHostController: NavHostController,
-    mainViewModel: MainViewModel,
     context: Context,
     homeActivity: HomeActivity,
     bottomHomeViewModel: BottomHomeViewModel,
@@ -52,6 +51,7 @@ fun BottomNavigationDrawerGraph(
     frequencyViewModel: FrequencyViewModel,
     privacyPolicyViewModel: PrivacyPolicyViewModel,
     termsOfServiceViewModel: TermsOfServiceViewModel,
+    detailedSettingsViewModel: DetailedSettingsViewModel
 ) {
     val provider = PreferenceProvider(context)
     NavHost(
@@ -70,7 +70,6 @@ fun BottomNavigationDrawerGraph(
         composable(
             route = BottomNavScreen.Home.route
         ) {
-
             val type = provider.getValue(Constants.TYPE, "")
             when (provider.getValue(Constants.LOGIN_STATUS, "")) {
                 LoginStatus.PARTNER_NOT_ASSIGN.name.lowercase(Locale.getDefault()) -> {
@@ -248,7 +247,11 @@ fun BottomNavigationDrawerGraph(
             )
         }
         composable(SettingSubScreen.DetailedSetting.route) {
-            DetailedSettings()
+            DetailedSettings(
+                context = context,
+                homeActivity = homeActivity,
+                detailedSettingsViewModel = detailedSettingsViewModel
+            )
         }
         composable(route = MyAccount.MyAccountScreen.route) {
             YourAccountScreen(

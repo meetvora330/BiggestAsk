@@ -2,9 +2,6 @@ package com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph
 
 import com.biggestAsk.util.Constants
 
-const val ADD_NEW_MILESTONE_ARGS_TITTLE = "milestone_name"
-const val ADD_NEW_MILESTONE_ARGS_DATE = "milestone_date"
-const val ADD_NEW_MILESTONE_ARGS_TIME = "milestone_time"
 const val ADD_NEW_MILESTONE_ARGS_ID = Constants.MILESTONE_ID
 
 sealed class BottomNavScreen(
@@ -13,7 +10,9 @@ sealed class BottomNavScreen(
     object MileStones : BottomNavScreen(Constants.BOTTOM_NAV_MILESTONES_SCREEN)
     object Home : BottomNavScreen(Constants.BOTTOM_NAV_HOME_SCREEN)
     object Question : BottomNavScreen(Constants.BOTTOM_NAV_QUESTION_SCREEN)
-    object SurrogateParentNotAssignScreen : BottomNavScreen(Constants.BOTTOM_NAV_SURROGATE_PARENT_NOT_ASSIGN_SCREEN)
+    object SurrogateParentNotAssignScreen :
+        BottomNavScreen(Constants.BOTTOM_NAV_SURROGATE_PARENT_NOT_ASSIGN_SCREEN)
+
     object AddNewMileStones :
         BottomNavScreen("edit_milestone/{$ADD_NEW_MILESTONE_ARGS_ID}") {
         fun editMilestone(
@@ -23,11 +22,3 @@ sealed class BottomNavScreen(
         }
     }
 }
-
-data class MilestoneDetails(
-    val tittle: String,
-    val calendarIcon: Int,
-    val dateTime: String,
-    val locationIcon: Int,
-    var show: Boolean
-)

@@ -181,10 +181,11 @@ fun BottomQuestionScreen(
                     fontWeight = FontWeight.W800
                 )
                 selectedText.value = SimpleDropDown(
-                    suggestions = suggestions,
+                    suggestions = questionViewModel.parentList,
                     hint = "Parents",
                     modifier = Modifier
-                        .padding(top = 12.dp, start = 24.dp, end = 24.dp),
+                        .fillMaxWidth()
+                        .padding(start = 12.dp, end = 12.dp, top = 12.dp),
                     style = MaterialTheme.typography.body2.copy(
                         fontWeight = FontWeight.W600,
                         fontSize = 16.sp,
@@ -262,9 +263,9 @@ fun BottomQuestionScreen(
     }, content = {
         BackHandler(questionBottomSheetScaffoldState.bottomSheetState.isExpanded) {
             coroutineScope.launch {
-                if(questionViewModel.isBottomSheetOpened){
+                if (questionViewModel.isBottomSheetOpened) {
                     questionBottomSheetScaffoldState.bottomSheetState.expand()
-                }else{
+                } else {
                     questionBottomSheetScaffoldState.bottomSheetState.collapse()
                 }
                 questionViewModel.isBottomSheetOpened = false

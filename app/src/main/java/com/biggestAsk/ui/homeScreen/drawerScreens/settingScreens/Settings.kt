@@ -69,9 +69,11 @@ fun Settings(navHostController: NavHostController) {
                                 if (isInternetAvailable(context)) {
                                     navHostController.navigate(SettingSubScreen.AboutApp.route)
                                 } else Toast
-                                    .makeText(context,
+                                    .makeText(
+                                        context,
                                         R.string.no_internet_available,
-                                        Toast.LENGTH_SHORT)
+                                        Toast.LENGTH_SHORT
+                                    )
                                     .show()
                             }
                             Constants.DETAILED_SETTINGS -> {
@@ -81,18 +83,22 @@ fun Settings(navHostController: NavHostController) {
                                 if (isInternetAvailable(context)) {
                                     navHostController.navigate(SettingSubScreen.PrivacyPolicy.route)
                                 } else Toast
-                                    .makeText(context,
+                                    .makeText(
+                                        context,
                                         R.string.no_internet_available,
-                                        Toast.LENGTH_SHORT)
+                                        Toast.LENGTH_SHORT
+                                    )
                                     .show()
                             }
                             Constants.TERMS_OF_SERVICE -> {
                                 if (isInternetAvailable(context)) {
                                     navHostController.navigate(SettingSubScreen.TermsOfService.route)
                                 } else Toast
-                                    .makeText(context,
+                                    .makeText(
+                                        context,
                                         R.string.no_internet_available,
-                                        Toast.LENGTH_SHORT)
+                                        Toast.LENGTH_SHORT
+                                    )
                                     .show()
                             }
                         }

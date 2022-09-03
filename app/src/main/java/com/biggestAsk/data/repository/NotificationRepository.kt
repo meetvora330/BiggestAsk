@@ -2,7 +2,7 @@ package com.biggestAsk.data.repository
 
 import android.content.Context
 import com.biggestAsk.data.model.request.GetNotificationRequest
-import com.biggestAsk.data.model.response.*
+import com.biggestAsk.data.model.response.GetNotificationResponse
 import com.biggestAsk.data.source.network.ApiService
 import com.biggestAsk.data.source.network.BaseApiResponse
 import com.biggestAsk.data.source.network.NetworkResult

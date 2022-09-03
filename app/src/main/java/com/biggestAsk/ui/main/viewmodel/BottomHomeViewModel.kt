@@ -136,9 +136,10 @@ class BottomHomeViewModel @Inject constructor(
     fun getPregnancyStatus(getNotificationRequest: GetNotificationRequest) {
         getPregnancyStatusResponse.value = NetworkResult.Loading()
         viewModelScope.launch {
-            homeRepository.getPregnancyStatus(getNotificationRequest = getNotificationRequest).collect {
-                getPregnancyStatusResponse.value = it
-            }
+            homeRepository.getPregnancyStatus(getNotificationRequest = getNotificationRequest)
+                .collect {
+                    getPregnancyStatusResponse.value = it
+                }
         }
     }
 

@@ -225,7 +225,8 @@ fun EditMilestoneScreen(
                                 .wrapContentWidth()
                                 .padding(top = 11.dp)
                                 .align(Alignment.CenterHorizontally),
-                            text = stringResource(id = R.string.update_information), style = MaterialTheme.typography.h2.copy(
+                            text = stringResource(id = R.string.update_information),
+                            style = MaterialTheme.typography.h2.copy(
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.W600,
                                 lineHeight = 32.sp,
@@ -563,9 +564,13 @@ fun EditMilestoneScreen(
                                             true
                                     }
                                     else -> {
-                                        val type = PreferenceProvider(context).getValue(Constants.TYPE, "")
+                                        val type =
+                                            PreferenceProvider(context).getValue(Constants.TYPE, "")
                                         val userId =
-                                            PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
+                                            PreferenceProvider(context).getIntValue(
+                                                Constants.USER_ID,
+                                                0
+                                            )
                                         val updateMilestoneAnsInfoRequest =
                                             UpdateMilestoneAnsInfoRequest(
                                                 title = editMilestoneViewModel.editMilestoneTittle.value,
@@ -626,9 +631,9 @@ fun EditMilestoneScreen(
             content = {
                 BackHandler(editMilestoneBottomSheetState.bottomSheetState.isExpanded) {
                     coroutineScope.launch {
-                        if(editMilestoneViewModel.isBottomSheetOpen.value){
+                        if (editMilestoneViewModel.isBottomSheetOpen.value) {
                             editMilestoneBottomSheetState.bottomSheetState.expand()
-                        }else{
+                        } else {
                             editMilestoneBottomSheetState.bottomSheetState.collapse()
                         }
                         editMilestoneViewModel.isBottomSheetOpen.value = false
@@ -689,10 +694,12 @@ fun EditMilestoneScreen(
                                             coroutineScope.launch {
                                                 if (editMilestoneBottomSheetState.bottomSheetState.isExpanded) {
                                                     editMilestoneBottomSheetState.bottomSheetState.collapse()
-                                                    editMilestoneViewModel.isBottomSheetOpen.value = true
+                                                    editMilestoneViewModel.isBottomSheetOpen.value =
+                                                        true
                                                 } else {
                                                     editMilestoneBottomSheetState.bottomSheetState.expand()
-                                                    editMilestoneViewModel.isBottomSheetOpen.value = false
+                                                    editMilestoneViewModel.isBottomSheetOpen.value =
+                                                        false
                                                 }
                                             }
                                         }
@@ -711,14 +718,17 @@ fun EditMilestoneScreen(
                                                     false
                                                 editMilestoneViewModel.editMilestoneLocationBEmpty.value =
                                                     false
-                                                editMilestoneViewModel.isBottomSheetOpen.value = true
+                                                editMilestoneViewModel.isBottomSheetOpen.value =
+                                                    true
                                                 coroutineScope.launch {
                                                     if (editMilestoneBottomSheetState.bottomSheetState.isExpanded) {
                                                         editMilestoneBottomSheetState.bottomSheetState.collapse()
-                                                        editMilestoneViewModel.isBottomSheetOpen.value = true
+                                                        editMilestoneViewModel.isBottomSheetOpen.value =
+                                                            true
                                                     } else {
                                                         editMilestoneBottomSheetState.bottomSheetState.expand()
-                                                        editMilestoneViewModel.isBottomSheetOpen.value = false
+                                                        editMilestoneViewModel.isBottomSheetOpen.value =
+                                                            false
                                                     }
                                                 }
                                             },
@@ -1414,13 +1424,23 @@ fun EditMilestoneScreen(
                                         intent.data = uri
                                         context.startActivity(intent)
                                     })
-                                    { Text(text = stringResource(id = R.string.app_settings), color = Color.Red) }
+                                    {
+                                        Text(
+                                            text = stringResource(id = R.string.app_settings),
+                                            color = Color.Red
+                                        )
+                                    }
                                 },
                                 dismissButton = {
                                     TextButton(onClick = {
                                         editMilestoneViewModel.isPermissionAllowed.value = false
                                     })
-                                    { Text(text = stringResource(id = R.string.cancel_dialog), color = Color.Red) }
+                                    {
+                                        Text(
+                                            text = stringResource(id = R.string.cancel_dialog),
+                                            color = Color.Red
+                                        )
+                                    }
                                 },
                                 title = { Text(text = stringResource(id = R.string.permission_denied_dialog)) },
                                 text = { Text(text = stringResource(id = R.string.allow_permission_dialog)) }
@@ -1474,7 +1494,8 @@ fun EditMilestoneScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(top = 26.dp),
-                            text = stringResource(id = R.string.notes), style = MaterialTheme.typography.body2.copy(
+                            text = stringResource(id = R.string.notes),
+                            style = MaterialTheme.typography.body2.copy(
                                 color = Color.Black,
                                 fontWeight = FontWeight.W800,
                                 fontSize = 12.sp
@@ -1767,7 +1788,10 @@ fun EditMilestoneScreen(
                                     modifier = Modifier.width(218.dp),
                                     onClick = {
                                         val userId =
-                                            PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
+                                            PreferenceProvider(context).getIntValue(
+                                                Constants.USER_ID,
+                                                0
+                                            )
                                         val imageList = ArrayList<MultipartBody.Part?>()
                                         editMilestoneViewModel.imageList.forEach {
                                             if (it.is_need_to_upload) {
@@ -1856,7 +1880,11 @@ fun EditMilestoneScreen(
         ProgressBarTransparentBackground(loadingText = stringResource(id = R.string.loading))
     }
     if (editMilestoneViewModel.isMilestoneDataUpdated.value || editMilestoneViewModel.isNoteSaved.value) {
-        ProgressBarTransparentBackground(loadingText = if (editMilestoneViewModel.isMilestoneDataUpdated.value) stringResource(id = R.string.updating) else stringResource(id = R.string.saving))
+        ProgressBarTransparentBackground(
+            loadingText = if (editMilestoneViewModel.isMilestoneDataUpdated.value) stringResource(
+                id = R.string.updating
+            ) else stringResource(id = R.string.saving)
+        )
     }
     if (editMilestoneViewModel.isMilestoneAnsUpdated.value || editMilestoneViewModel.isMilestoneImageUpdated.value) {
         ProgressBarTransparentBackground(loadingText = stringResource(id = R.string.updating))

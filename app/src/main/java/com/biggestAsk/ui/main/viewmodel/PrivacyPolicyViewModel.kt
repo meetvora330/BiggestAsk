@@ -25,7 +25,8 @@ class PrivacyPolicyViewModel @Inject constructor(
     application: Application,
 ) : AndroidViewModel(application) {
 
-    var getPrivacyPolicyResponse: MutableLiveData<NetworkResult<GetPrivacyPolicyResponse>> = MutableLiveData()
+    var getPrivacyPolicyResponse: MutableLiveData<NetworkResult<GetPrivacyPolicyResponse>> =
+        MutableLiveData()
     var isDataNull: Boolean by mutableStateOf(false)
     var isLoading: Boolean by mutableStateOf(false)
     var privacyPolicyList = mutableStateListOf<GetPrivacyPolicyResponseData>()

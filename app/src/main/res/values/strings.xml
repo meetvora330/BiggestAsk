@@ -280,7 +280,7 @@
     <string name="allow_permission_dialog">Permission is denied, Please allow permission from App Settings</string>
     <string name="attach_photo_and_comment">For confirmation, you must attach a picture of the ultrasound and leave a comment.</string>
 
-<!--    Create Contact and Community Dialog-->
+    <!--    Create Contact and Community Dialog-->
     <string name="create_community">Create Community</string>
     <string name="create_contact">Create Contact</string>
     <string name="the_happy_agency">The Happy Agency</string>
@@ -300,7 +300,7 @@
     <string name="to_forum">To Forum</string>
     <string name="instagram">Instagram</string>
 
-<!--    Notification Screen-->
+    <!--    Notification Screen-->
     <string name="NO_NOTIFICATION_FOUND">No Notification Found</string>
 
     <string name="existing_question_profile">Existing questions in the profile</string>

@@ -89,6 +89,7 @@ fun HomeScreen(
     frequencyViewModel: FrequencyViewModel,
     privacyPolicyViewModel: PrivacyPolicyViewModel,
     termsOfServiceViewModel: TermsOfServiceViewModel,
+    detailedSettingsViewModel: DetailedSettingsViewModel
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val requester = FocusRequester()
@@ -460,7 +461,6 @@ fun HomeScreen(
         content = {
             BottomNavigationDrawerGraph(
                 navHostController = navController,
-                mainViewModel = mainViewModel,
                 context = context,
                 homeActivity = homeActivity,
                 bottomHomeViewModel = bottomHomeViewModel,
@@ -478,7 +478,8 @@ fun HomeScreen(
                 scaffoldState = scaffoldState,
                 frequencyViewModel = frequencyViewModel,
                 privacyPolicyViewModel = privacyPolicyViewModel,
-                termsOfServiceViewModel = termsOfServiceViewModel
+                termsOfServiceViewModel = termsOfServiceViewModel,
+                detailedSettingsViewModel = detailedSettingsViewModel
             )
             BackHandler(scaffoldState.drawerState.isOpen) {
                 scope.launch {

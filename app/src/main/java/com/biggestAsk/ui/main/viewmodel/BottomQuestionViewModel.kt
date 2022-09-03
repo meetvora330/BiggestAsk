@@ -46,6 +46,7 @@ class BottomQuestionViewModel @Inject constructor(
     var questionParentList = mutableStateListOf<String>()
     var frequency: String by mutableStateOf("")
     var answerList = mutableStateListOf<Answer>()
+    var parentList = mutableStateListOf<String>("Advin Dao")
     var questionBankInfo: String by mutableStateOf("")
     var getHomeScreenQuestionResponse: MutableLiveData<NetworkResult<GetHomeScreenQuestionResponse>> =
         MutableLiveData()

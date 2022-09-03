@@ -233,4 +233,21 @@ interface ApiService {
         @Query("type") type: String,
         @Query("user_id") user_id: Int
     ): Response<GetNotificationCountResponse>
+
+    @POST(Constants.NOTIFICATION_STATUS_UPDATE)
+    suspend fun notificationStatusUpdate(
+        @Body notificationStatusUpdateRequest: NotificationStatusUpdateRequest
+    ): Response<CommonResponse>
+
+    @GET(Constants.GET_NOTIFICATION_STATUS)
+    suspend fun getNotificationStatus(
+        @Query("type") type: String,
+        @Query("user_id") user_id: Int
+    ): Response<GetNotificationStatusResponse>
+
+    @GET(Constants.USER_LOGOUT)
+    suspend fun userLogout(
+        @Query("type") type: String,
+        @Query("user_id") user_id: Int
+    ): Response<CommonResponse>
 }

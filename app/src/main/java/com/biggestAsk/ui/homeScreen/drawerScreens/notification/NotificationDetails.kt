@@ -1,27 +1,17 @@
 package com.biggestAsk.ui.homeScreen.drawerScreens.notification
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import com.biggestAsk.data.model.request.GetNotificationRequest
-import com.biggestAsk.data.model.response.GetNotificationResponse
-import com.biggestAsk.data.source.network.NetworkResult
-import com.biggestAsk.ui.HomeActivity
-import com.biggestAsk.ui.main.viewmodel.NotificationViewModel
-import com.example.biggestAsk.R
 
 @Composable
 fun NotificationDetails(
@@ -63,7 +53,7 @@ fun NotificationDetails(
             modifier = Modifier
                 .wrapContentWidth()
                 .padding(top = 20.dp),
-            text = "${ notificationDetailsDays!! } Day ago",
+            text = "${notificationDetailsDays!!} Day ago",
             style = MaterialTheme.typography.body1,
             fontSize = 14.sp,
             fontWeight = FontWeight.W400,

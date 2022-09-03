@@ -46,10 +46,12 @@ fun Community(
     val userId = PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
     LaunchedEffect(Unit) {
         if (isInternetAvailable(context)) {
-            getUpdatedCommunity(type!!,
+            getUpdatedCommunity(
+                type!!,
                 userId,
                 communityViewModel = communityViewModel,
-                homeActivity)
+                homeActivity
+            )
             Log.e("communityScreen", "communityScreen() --> InternetAvailable")
         } else {
             communityViewModel.isDataNull = false
@@ -148,9 +150,11 @@ fun Community(
                                         context.startActivity(instagramIntent)
                                     } catch (e: RuntimeException) {
                                         e.printStackTrace()
-                                        Toast.makeText(context,
+                                        Toast.makeText(
+                                            context,
                                             "Invalid Url",
-                                            Toast.LENGTH_SHORT).show()
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                     }
                                 },
                                 elevation = ButtonDefaults.elevation(

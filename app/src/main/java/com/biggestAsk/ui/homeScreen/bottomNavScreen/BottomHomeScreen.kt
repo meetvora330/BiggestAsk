@@ -296,9 +296,9 @@ fun BottomHomeScreen(
         content = {
             BackHandler(homeBottomSheetScaffoldState.bottomSheetState.isExpanded) {
                 coroutineScope.launch {
-                    if(bottomHomeViewModel.isBottomSheetOpen){
+                    if (bottomHomeViewModel.isBottomSheetOpen) {
                         homeBottomSheetScaffoldState.bottomSheetState.expand()
-                    }else{
+                    } else {
                         homeBottomSheetScaffoldState.bottomSheetState.collapse()
                     }
                     bottomHomeViewModel.isBottomSheetOpen = false

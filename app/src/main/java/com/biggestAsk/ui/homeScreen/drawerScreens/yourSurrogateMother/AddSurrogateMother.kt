@@ -304,8 +304,8 @@ fun YourSurrogateDialog(
                 } else {
                     openDialogCustom.value = false
                     val provider = PreferenceProvider(context)
-                    val userId = provider.getIntValue("user_id", 0)
-                    val type = provider.getValue("type", "")
+                    val userId = provider.getIntValue(Constants.USER_ID, 0)
+                    val type = provider.getValue(Constants.TYPE, "")
                     val inviteSurrogateRequest = InviteSurrogateRequest(
                         email = surrogateViewModel.textSurrogateDialogEmail.value,
                         type = type!!

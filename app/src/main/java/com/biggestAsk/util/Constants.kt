@@ -61,6 +61,8 @@ object Constants {
     const val GET_QUESTION_BANK_CONTENT = "question_bank"
     const val GET_PREGNANCY_STATUS = "pregnancy_milestone_status"
     const val GET_NOTIFICATION_COUNT = "get_notification_count"
+    const val NOTIFICATION_STATUS_UPDATE = "notification_status_update"
+    const val GET_NOTIFICATION_STATUS = "get_notification_status"
 
     //preference data
     const val LOGIN_STATUS = "login_status"

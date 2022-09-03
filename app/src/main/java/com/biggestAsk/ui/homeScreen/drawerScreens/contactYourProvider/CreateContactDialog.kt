@@ -118,7 +118,8 @@ fun CreateContactDialog(
         }
     )
 
-    val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         contactYourProviderViewModel.imageData = uri
         contactYourProviderViewModel.getImage(context)
@@ -482,9 +483,11 @@ fun CreateContactDialog(
                             tfTextThirdEmpty.value = true
                             tfTextFourthEmpty.value = true
                             if (!contactYourProviderViewModel.isImagePresent.value) {
-                                Toast.makeText(context,
+                                Toast.makeText(
+                                    context,
                                     Constants.PLEASE_ADD_LOGO,
-                                    Toast.LENGTH_SHORT)
+                                    Toast.LENGTH_SHORT
+                                )
                                     .show()
                             }
                         }
@@ -509,7 +512,8 @@ fun CreateContactDialog(
                         }
 
                         !contactYourProviderViewModel.phoneErrorVisible && contactYourProviderViewModel.isImagePresent.value && !TextUtils.isEmpty(
-                            tf_text_first.value) &&
+                            tf_text_first.value
+                        ) &&
                                 !TextUtils.isEmpty(tf_text_second.value) &&
                                 !TextUtils.isEmpty(tf_text_third.value) &&
                                 !TextUtils.isEmpty(tf_text_fourth.value) -> {
@@ -518,17 +522,27 @@ fun CreateContactDialog(
                                 contactYourProviderViewModel.uriPath?.let { convertImageMultiPart(it) }
 
                             contactYourProviderViewModel.createContact(
-                                MultipartBody.Part.createFormData(Constants.TITLE,
-                                    tf_text_first.value),
-                                MultipartBody.Part.createFormData(Constants.AGENCY_NAME_CREATE_CONTACT,
-                                    tf_text_second.value),
-                                MultipartBody.Part.createFormData(Constants.AGENCY_EMAIL_CREATE_CONTACT,
-                                    tf_text_third.value),
-                                MultipartBody.Part.createFormData(Constants.AGENCY_NUMBER_CREATE_CONTACT,
-                                    tf_text_fourth.value),
+                                MultipartBody.Part.createFormData(
+                                    Constants.TITLE,
+                                    tf_text_first.value
+                                ),
+                                MultipartBody.Part.createFormData(
+                                    Constants.AGENCY_NAME_CREATE_CONTACT,
+                                    tf_text_second.value
+                                ),
+                                MultipartBody.Part.createFormData(
+                                    Constants.AGENCY_EMAIL_CREATE_CONTACT,
+                                    tf_text_third.value
+                                ),
+                                MultipartBody.Part.createFormData(
+                                    Constants.AGENCY_NUMBER_CREATE_CONTACT,
+                                    tf_text_fourth.value
+                                ),
                                 image,
-                                MultipartBody.Part.createFormData(Constants.USER_ID,
-                                    userId.toString()),
+                                MultipartBody.Part.createFormData(
+                                    Constants.USER_ID,
+                                    userId.toString()
+                                ),
                                 MultipartBody.Part.createFormData(Constants.TYPE, type!!)
                             )
                             contactYourProviderViewModel.createContactResponse.observe(homeActivity) {
@@ -648,11 +662,13 @@ private fun handleCreateContactData(
             tf_text_fourth.value = ""
             contactYourProviderViewModel.bitmap.value = null
             Toast.makeText(context, result.data!!.message, Toast.LENGTH_SHORT).show()
-            getUpdatedContact(type = type,
+            getUpdatedContact(
+                type = type,
                 user_id = user_id,
                 contactYourProviderViewModel = contactYourProviderViewModel,
                 context,
-                homeActivity)
+                homeActivity
+            )
         }
         is NetworkResult.Error -> {
             // show error message
