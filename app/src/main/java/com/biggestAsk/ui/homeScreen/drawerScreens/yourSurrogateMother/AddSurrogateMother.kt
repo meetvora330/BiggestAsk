@@ -40,7 +40,7 @@ import com.biggestAsk.data.model.LoginStatus
 import com.biggestAsk.data.model.request.InviteSurrogateRequest
 import com.biggestAsk.data.model.response.InviteSurrogateResponse
 import com.biggestAsk.data.source.network.NetworkResult
-import com.biggestAsk.ui.HomeActivity
+import com.biggestAsk.ui.activity.HomeActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
 import com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph.BottomNavScreen
 import com.biggestAsk.ui.main.viewmodel.YourSurrogateViewModel

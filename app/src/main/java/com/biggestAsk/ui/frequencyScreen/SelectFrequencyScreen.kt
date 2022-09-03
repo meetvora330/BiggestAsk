@@ -27,8 +27,8 @@ import com.biggestAsk.data.model.LoginStatus
 import com.biggestAsk.data.model.request.ScreenQuestionStatusRequest
 import com.biggestAsk.data.model.response.CommonResponse
 import com.biggestAsk.data.source.network.NetworkResult
-import com.biggestAsk.ui.HomeActivity
-import com.biggestAsk.ui.MainActivity
+import com.biggestAsk.ui.activity.HomeActivity
+import com.biggestAsk.ui.activity.MainActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.SimpleDropDown
 import com.biggestAsk.ui.introScreen.findActivity

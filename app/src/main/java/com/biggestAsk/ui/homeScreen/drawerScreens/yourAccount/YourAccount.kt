@@ -59,7 +59,7 @@ import com.biggestAsk.data.model.response.GetUserDetailsParentResponse
 import com.biggestAsk.data.model.response.GetUserDetailsSurrogateResponse
 import com.biggestAsk.data.model.response.UpdateUserProfileResponse
 import com.biggestAsk.data.source.network.NetworkResult
-import com.biggestAsk.ui.HomeActivity
+import com.biggestAsk.ui.activity.HomeActivity
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.BackHandler
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.SimpleDropDown
 import com.biggestAsk.ui.main.viewmodel.YourAccountViewModel

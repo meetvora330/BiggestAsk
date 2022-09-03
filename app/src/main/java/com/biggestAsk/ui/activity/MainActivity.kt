@@ -1,4 +1,4 @@
-package com.biggestAsk.ui
+package com.biggestAsk.ui.activity
 
 import android.content.Context
 import android.content.Intent
@@ -51,8 +51,6 @@ import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import java.util.*
 
-
-@Suppress("OPT_IN_IS_NOT_ENABLED")
 class MainActivity : BaseActivity() {
     private val homeViewModel: HomeViewModel by viewModels()
     private val viewModel: MainViewModel by viewModels()
@@ -106,18 +104,18 @@ class MainActivity : BaseActivity() {
                             }
                         }
                         if (!introViewModel.isIntroDataLoaded) {
-                            introLoader()
+                            IntroLoader()
                         }
                     } else {
                         when (provider.getValue(Constants.LOGIN_STATUS, "")) {
                             LoginStatus.PARTNER_NOT_ASSIGN.name.lowercase(Locale.getDefault()),
                             LoginStatus.MILESTONE_DATE_NOT_ADDED.name.lowercase(Locale.getDefault()),
                             LoginStatus.ON_BOARDING.name.lowercase(Locale.getDefault()) -> {
-                                introLoader()
+                                IntroLoader()
                             }
                             else -> {
                                 if (!introViewModel.isUserStatusDataLoaded) {
-                                    introLoader()
+                                    IntroLoader()
                                 }
                             }
                         }
@@ -250,7 +248,7 @@ class MainActivity : BaseActivity() {
     }
 
     @Composable
-    private fun introLoader() {
+    private fun IntroLoader() {
         Column(
             modifier = Modifier
                 .fillMaxSize()

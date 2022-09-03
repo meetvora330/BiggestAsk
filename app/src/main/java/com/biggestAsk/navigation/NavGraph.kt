@@ -19,7 +19,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.biggestAsk.data.model.LoginStatus
-import com.biggestAsk.ui.MainActivity
+import com.biggestAsk.ui.activity.MainActivity
 import com.biggestAsk.ui.emailVerification.EmailVerification
 import com.biggestAsk.ui.frequencyScreen.SelectFrequencyScreen
 import com.biggestAsk.ui.introScreen.IntroScreen

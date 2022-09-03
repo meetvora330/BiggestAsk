@@ -10,7 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.biggestAsk.data.model.LoginStatus
-import com.biggestAsk.ui.HomeActivity
+import com.biggestAsk.ui.activity.HomeActivity
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.BottomHomeScreen
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.BottomQuestionScreen
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.EditMilestoneScreen

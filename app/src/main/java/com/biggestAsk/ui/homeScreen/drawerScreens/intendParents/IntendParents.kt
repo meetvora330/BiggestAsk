@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.biggestAsk.data.model.response.GetIntendedProfileResponse
 import com.biggestAsk.data.source.network.NetworkResult
-import com.biggestAsk.ui.HomeActivity
+import com.biggestAsk.ui.activity.HomeActivity
 import com.biggestAsk.ui.homeScreen.drawerScreens.yourAccount.YourAccountParentShimmerAnimation
 import com.biggestAsk.ui.homeScreen.drawerScreens.yourAccount.getAge
 import com.biggestAsk.ui.main.viewmodel.IntendedParentsViewModel

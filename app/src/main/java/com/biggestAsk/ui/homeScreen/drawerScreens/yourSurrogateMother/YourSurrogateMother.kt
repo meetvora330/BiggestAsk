@@ -27,7 +27,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import coil.compose.rememberImagePainter
 import com.biggestAsk.data.model.response.GetIntendedProfileResponse
 import com.biggestAsk.data.source.network.NetworkResult
-import com.biggestAsk.ui.HomeActivity
+import com.biggestAsk.ui.activity.HomeActivity
 import com.biggestAsk.ui.homeScreen.drawerScreens.notification.advancedShadow
 import com.biggestAsk.ui.homeScreen.drawerScreens.yourAccount.YourAccountSurrogateShimmerAnimation
 import com.biggestAsk.ui.homeScreen.drawerScreens.yourAccount.getAge

@@ -20,8 +20,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.biggestAsk.ui.HomeActivity
-import com.biggestAsk.ui.MainActivity
+import com.biggestAsk.ui.activity.HomeActivity
+import com.biggestAsk.ui.activity.MainActivity
 import com.biggestAsk.ui.introScreen.findActivity
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R

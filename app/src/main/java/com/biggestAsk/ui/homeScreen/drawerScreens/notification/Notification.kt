@@ -34,7 +34,7 @@ import com.biggestAsk.data.model.request.GetNotificationRequest
 import com.biggestAsk.data.model.response.GetNotificationResponse
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.data.source.network.isInternetAvailable
-import com.biggestAsk.ui.HomeActivity
+import com.biggestAsk.ui.activity.HomeActivity
 import com.biggestAsk.ui.main.viewmodel.NotificationViewModel
 import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider

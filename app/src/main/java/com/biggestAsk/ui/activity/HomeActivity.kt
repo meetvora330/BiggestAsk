@@ -1,4 +1,4 @@
-package com.biggestAsk.ui
+package com.biggestAsk.ui.activity
 
 import android.Manifest
 import android.content.pm.ActivityInfo

@@ -49,7 +49,7 @@ import com.biggestAsk.data.model.request.GetNotificationRequest
 import com.biggestAsk.data.model.response.GetNotificationCountResponse
 import com.biggestAsk.data.model.response.GetPregnancyMilestoneStatusResponse
 import com.biggestAsk.data.source.network.NetworkResult
-import com.biggestAsk.ui.HomeActivity
+import com.biggestAsk.ui.activity.HomeActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
 import com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph.*
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.BackHandler

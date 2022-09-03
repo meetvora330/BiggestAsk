@@ -28,7 +28,7 @@ import com.biggestAsk.data.model.request.GetCommunityRequest
 import com.biggestAsk.data.model.response.GetCommunityResponse
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.data.source.network.isInternetAvailable
-import com.biggestAsk.ui.HomeActivity
+import com.biggestAsk.ui.activity.HomeActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
 import com.biggestAsk.ui.main.viewmodel.CommunityViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue

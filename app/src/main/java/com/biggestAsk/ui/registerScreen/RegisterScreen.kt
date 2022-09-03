@@ -40,7 +40,7 @@ import com.biggestAsk.data.model.request.RegistrationBodyRequest
 import com.biggestAsk.data.model.response.CommonResponse
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.navigation.Screen
-import com.biggestAsk.ui.MainActivity
+import com.biggestAsk.ui.activity.MainActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.SimpleDropDown
 import com.biggestAsk.ui.main.viewmodel.EmailVerificationViewModel

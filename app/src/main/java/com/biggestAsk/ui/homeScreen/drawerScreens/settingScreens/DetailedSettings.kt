@@ -25,7 +25,7 @@ import com.biggestAsk.data.model.request.NotificationStatusUpdateRequest
 import com.biggestAsk.data.model.response.CommonResponse
 import com.biggestAsk.data.model.response.GetNotificationStatusResponse
 import com.biggestAsk.data.source.network.NetworkResult
-import com.biggestAsk.ui.HomeActivity
+import com.biggestAsk.ui.activity.HomeActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
 import com.biggestAsk.ui.main.viewmodel.DetailedSettingsViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue

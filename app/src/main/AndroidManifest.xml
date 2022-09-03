@@ -20,11 +20,11 @@
         android:windowSoftInputMode="adjustResize|stateHidden">
 
         <activity
-            android:name="com.biggestAsk.ui.HomeActivity"
+            android:name="com.biggestAsk.ui.activity.HomeActivity"
             android:exported="false"
             android:theme="@style/Theme.MyLearningProject" />
         <activity
-            android:name="com.biggestAsk.ui.MainActivity"
+            android:name="com.biggestAsk.ui.activity.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.MyLearningProject"
             android:windowSoftInputMode="adjustResize">

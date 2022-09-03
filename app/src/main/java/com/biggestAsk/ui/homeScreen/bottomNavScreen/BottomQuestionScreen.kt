@@ -29,7 +29,7 @@ import com.biggestAsk.data.model.request.GetPregnancyMilestoneRequest
 import com.biggestAsk.data.model.request.StoreBaseScreenQuestionAnsRequest
 import com.biggestAsk.data.model.response.*
 import com.biggestAsk.data.source.network.NetworkResult
-import com.biggestAsk.ui.HomeActivity
+import com.biggestAsk.ui.activity.HomeActivity
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.dropDown.selectionChangeDropDown
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer.HomeScreenQuestionShimmerAnimation
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer.QuestionBankContentShimmerAnimation

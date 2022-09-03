@@ -31,7 +31,7 @@ import com.biggestAsk.data.model.request.*
 import com.biggestAsk.data.model.request.Answer
 import com.biggestAsk.data.model.response.*
 import com.biggestAsk.data.source.network.NetworkResult
-import com.biggestAsk.ui.HomeActivity
+import com.biggestAsk.ui.activity.HomeActivity
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer.HomeScreenQuestionShimmerAnimation
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer.IntendedParentsShimmerAnimation
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer.NearestMilestoneShimmerAnimation

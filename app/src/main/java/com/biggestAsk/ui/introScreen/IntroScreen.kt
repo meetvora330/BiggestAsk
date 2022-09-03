@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.biggestAsk.data.model.response.DataXX
 import com.biggestAsk.navigation.Screen
-import com.biggestAsk.ui.MainActivity
+import com.biggestAsk.ui.activity.MainActivity
 import com.biggestAsk.ui.main.viewmodel.IntroViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.Light_Gray

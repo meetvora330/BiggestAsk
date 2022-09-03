@@ -45,8 +45,8 @@ import com.biggestAsk.data.model.request.LoginBodyRequest
 import com.biggestAsk.data.model.response.LoginBodyResponse
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.navigation.Screen
-import com.biggestAsk.ui.HomeActivity
-import com.biggestAsk.ui.MainActivity
+import com.biggestAsk.ui.activity.HomeActivity
+import com.biggestAsk.ui.activity.MainActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
 import com.biggestAsk.ui.main.viewmodel.LoginViewModel
 import com.biggestAsk.ui.ui.theme.*

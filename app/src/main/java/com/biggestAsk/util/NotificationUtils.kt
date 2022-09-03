@@ -9,7 +9,7 @@ import android.graphics.BitmapFactory
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
-import com.biggestAsk.ui.MainActivity
+import com.biggestAsk.ui.activity.MainActivity
 import com.example.biggestAsk.R
 import com.google.firebase.messaging.RemoteMessage
 

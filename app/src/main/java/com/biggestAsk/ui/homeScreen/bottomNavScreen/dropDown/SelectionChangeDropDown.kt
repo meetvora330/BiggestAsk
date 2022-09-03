@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.toSize
 import com.biggestAsk.data.model.request.ScreenQuestionStatusRequest
 import com.biggestAsk.data.model.response.CommonResponse
 import com.biggestAsk.data.source.network.NetworkResult
-import com.biggestAsk.ui.HomeActivity
+import com.biggestAsk.ui.activity.HomeActivity
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.updateFrequency
 import com.biggestAsk.ui.main.viewmodel.BottomQuestionViewModel
 import com.biggestAsk.ui.main.viewmodel.FrequencyViewModel
