@@ -47,6 +47,7 @@ import com.biggestAsk.data.model.request.GetPregnancyMilestoneRequest
 import com.biggestAsk.data.model.request.ResetMilestoneRequest
 import com.biggestAsk.data.model.response.CommonResponse
 import com.biggestAsk.data.model.response.GetMilestoneResponse
+import com.biggestAsk.data.model.response.ResetMilestoneResponse
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.ui.activity.HomeActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
@@ -1146,7 +1147,7 @@ fun resetMilestoneApiCall(
 }
 
 private fun handleResetMilestoneData(
-    result: NetworkResult<CommonResponse>,
+    result: NetworkResult<ResetMilestoneResponse>,
     context: Context,
     milestoneViewModel: BottomMilestoneViewModel,
     homeActivity: HomeActivity

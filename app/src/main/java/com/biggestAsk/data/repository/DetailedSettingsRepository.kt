@@ -2,8 +2,10 @@ package com.biggestAsk.data.repository
 
 import android.content.Context
 import com.biggestAsk.data.model.request.NotificationStatusUpdateRequest
+import com.biggestAsk.data.model.request.ResetMilestoneRequest
 import com.biggestAsk.data.model.response.CommonResponse
 import com.biggestAsk.data.model.response.GetNotificationStatusResponse
+import com.biggestAsk.data.model.response.ResetMilestoneResponse
 import com.biggestAsk.data.source.network.ApiService
 import com.biggestAsk.data.source.network.BaseApiResponse
 import com.biggestAsk.data.source.network.NetworkResult
@@ -44,16 +46,12 @@ class DetailedSettingsRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    suspend fun userLogout(
-        type: String,
-        userId: Int
-    ): Flow<NetworkResult<CommonResponse>> {
+    suspend fun resetMilestone(
+        resetMilestoneRequest: ResetMilestoneRequest
+    ): Flow<NetworkResult<ResetMilestoneResponse>> {
         return flow {
             emit(safeApiCall {
-                apiService.userLogout(
-                    type = type,
-                    user_id = userId
-                )
+                apiService.resetMilestone(resetMilestoneRequest = resetMilestoneRequest)
             })
         }
     }

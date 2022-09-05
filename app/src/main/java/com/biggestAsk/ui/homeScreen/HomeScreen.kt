@@ -89,7 +89,8 @@ fun HomeScreen(
     frequencyViewModel: FrequencyViewModel,
     privacyPolicyViewModel: PrivacyPolicyViewModel,
     termsOfServiceViewModel: TermsOfServiceViewModel,
-    detailedSettingsViewModel: DetailedSettingsViewModel
+    detailedSettingsViewModel: DetailedSettingsViewModel,
+    settingViewModel: SettingViewModel
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val requester = FocusRequester()
@@ -479,7 +480,8 @@ fun HomeScreen(
                 frequencyViewModel = frequencyViewModel,
                 privacyPolicyViewModel = privacyPolicyViewModel,
                 termsOfServiceViewModel = termsOfServiceViewModel,
-                detailedSettingsViewModel = detailedSettingsViewModel
+                detailedSettingsViewModel = detailedSettingsViewModel,
+                settingViewModel = settingViewModel
             )
             BackHandler(scaffoldState.drawerState.isOpen) {
                 scope.launch {
@@ -995,7 +997,7 @@ fun NavigationDrawerContent(
                             bottomHomeViewModel = homeViewModel,
                             context = context
                         )
-                    },
+                    }, enabled = !homeViewModel.isPregnancyStatusLoaded,
                     colors = SwitchDefaults.colors(
                         checkedThumbColor = Color.White,
                         checkedTrackColor = Custom_Blue,

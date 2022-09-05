@@ -115,7 +115,7 @@ class HomeRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    suspend fun resetMilestone(resetMilestoneRequest: ResetMilestoneRequest): Flow<NetworkResult<CommonResponse>> {
+    suspend fun resetMilestone(resetMilestoneRequest: ResetMilestoneRequest): Flow<NetworkResult<ResetMilestoneResponse>> {
         return flow {
             emit(safeApiCall { apiService.resetMilestone(resetMilestoneRequest) })
         }.flowOn(Dispatchers.IO)

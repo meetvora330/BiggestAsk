@@ -2,8 +2,6 @@ package com.biggestAsk.ui.homeScreen.drawerScreens.settingScreens
 
 import android.content.Context
 import android.util.Log
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -13,12 +11,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.biggestAsk.data.model.request.NotificationStatusUpdateRequest
@@ -51,161 +44,161 @@ fun DetailedSettings(
             detailedSettingsViewModel = detailedSettingsViewModel
         )
     }
-    if (detailedSettingsViewModel.isNotificationStatusUpdated) {
-        ProgressBarTransparentBackground(loadingText = "Updating...")
-    }
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 30.dp, end = 30.dp, top = 30.dp, bottom = 50.dp)
-            .verticalScroll(rememberScrollState())
-    ) {
-        listDetailedSettingsItem.forEach { item ->
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 24.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = item.startTittle, style = MaterialTheme.typography.body1.copy(
-                        fontWeight = FontWeight.W400,
-                        fontSize = 16.sp,
-                        lineHeight = 20.sp,
-                        color = Color(0xFF676870)
+    if (detailedSettingsViewModel.isNotificationStatusUpdated || detailedSettingsViewModel.isNotificationStatusFetched) {
+        ProgressBarTransparentBackground(loadingText = if (detailedSettingsViewModel.isNotificationStatusUpdated) "Updating..." else "Fetching")
+    } else {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 30.dp, end = 30.dp, top = 30.dp, bottom = 50.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            listDetailedSettingsItem.forEach { item ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 24.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = item.startTittle, style = MaterialTheme.typography.body1.copy(
+                            fontWeight = FontWeight.W400,
+                            fontSize = 16.sp,
+                            lineHeight = 20.sp,
+                            color = Color(0xFF676870)
+                        )
                     )
-                )
+                    Text(
+                        text = item.endTittle, style = MaterialTheme.typography.body2.copy(
+                            fontWeight = FontWeight.W600,
+                            fontSize = 16.sp,
+                            lineHeight = 20.sp,
+                            color = Custom_Blue
+                        )
+                    )
+                }
                 Text(
-                    text = item.endTittle, style = MaterialTheme.typography.body2.copy(
+                    modifier = Modifier.padding(top = 10.dp),
+                    text = item.item, style = MaterialTheme.typography.body2.copy(
                         fontWeight = FontWeight.W600,
                         fontSize = 16.sp,
-                        lineHeight = 20.sp,
-                        color = Custom_Blue
+                        color = Color.Black
                     )
                 )
-            }
-            Text(
-                modifier = Modifier.padding(top = 10.dp),
-                text = item.item, style = MaterialTheme.typography.body2.copy(
-                    fontWeight = FontWeight.W600,
-                    fontSize = 16.sp,
-                    color = Color.Black
-                )
-            )
-            Divider(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 24.dp),
-                color = Color(0xFFF8F5F2),
-                thickness = 1.dp
-            )
-        }
-        Column {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 24.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = stringResource(id = R.string.receive_notification),
-                    style = MaterialTheme.typography.body1.copy(
-                        fontWeight = FontWeight.W400,
-                        fontSize = 16.sp,
-                        lineHeight = 20.sp,
-                        color = Color(0xFF676870)
-                    )
-                )
-                Switch(
+                Divider(
                     modifier = Modifier
-                        .height(25.dp),
-                    checked = detailedSettingsViewModel.checkedStateNotification,
-                    onCheckedChange = {
-                        detailedSettingsViewModel.checkedStateNotification = it
-                        if (type != null) {
-                            notificationStatusUpdate(
-                                homeActivity = homeActivity,
-                                detailedSettingsViewModel = detailedSettingsViewModel,
-                                context = context,
-                                user_id = userId,
-                                type = type
-                            )
-                        }
-                    },
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = Color.White,
-                        checkedTrackColor = Custom_Blue,
-                        uncheckedThumbColor = Color.White,
-                        uncheckedTrackColor = Custom_Blue
-                    )
+                        .fillMaxWidth()
+                        .padding(top = 24.dp),
+                    color = Color(0xFFF8F5F2),
+                    thickness = 1.dp
                 )
             }
-            Text(
-                modifier = Modifier.padding(top = 10.dp),
-                text = if (detailedSettingsViewModel.checkedStateNotification) stringResource(id = R.string.enabled) else stringResource(
-                    id = R.string.disabled
-                ),
-                style = MaterialTheme.typography.body2.copy(
-                    fontWeight = FontWeight.W600,
-                    fontSize = 16.sp,
-                    color = if (detailedSettingsViewModel.checkedStateNotification) Color.Black else Color(
-                        0xFFC7C7CC
-                    )
-                )
-            )
-            Divider(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 24.dp),
-                color = Color(0xFFF8F5F2),
-                thickness = 1.dp
-            )
-        }
-        Column {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 24.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = stringResource(id = R.string.receive_newsletters),
-                    style = MaterialTheme.typography.body1.copy(
-                        fontWeight = FontWeight.W400,
-                        fontSize = 16.sp,
-                        lineHeight = 20.sp,
-                        color = Color(0xFF676870)
-                    )
-                )
-                Switch(
+            Column {
+                Row(
                     modifier = Modifier
-                        .height(25.dp),
-                    checked = detailedSettingsViewModel.checkedStateNewsLetters,
-                    onCheckedChange = {
-                        detailedSettingsViewModel.checkedStateNewsLetters = it
-                    },
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = Color.White,
-                        checkedTrackColor = Custom_Blue,
-                        uncheckedThumbColor = Color.White,
-                        uncheckedTrackColor = Custom_Blue
+                        .fillMaxWidth()
+                        .padding(top = 24.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.receive_notification),
+                        style = MaterialTheme.typography.body1.copy(
+                            fontWeight = FontWeight.W400,
+                            fontSize = 16.sp,
+                            lineHeight = 20.sp,
+                            color = Color(0xFF676870)
+                        )
+                    )
+                    Switch(
+                        modifier = Modifier
+                            .height(25.dp),
+                        checked = detailedSettingsViewModel.checkedStateNotification,
+                        onCheckedChange = {
+                            detailedSettingsViewModel.checkedStateNotification = it
+                            if (type != null) {
+                                notificationStatusUpdate(
+                                    homeActivity = homeActivity,
+                                    detailedSettingsViewModel = detailedSettingsViewModel,
+                                    context = context,
+                                    user_id = userId,
+                                    type = type
+                                )
+                            }
+                        }, enabled = !detailedSettingsViewModel.isNotificationStatusUpdated,
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = Color.White,
+                            checkedTrackColor = Custom_Blue,
+                            uncheckedThumbColor = Color.White,
+                            uncheckedTrackColor = Custom_Blue
+                        )
+                    )
+                }
+                Text(
+                    modifier = Modifier.padding(top = 10.dp),
+                    text = if (detailedSettingsViewModel.checkedStateNotification) stringResource(id = R.string.enabled) else stringResource(
+                        id = R.string.disabled
+                    ),
+                    style = MaterialTheme.typography.body2.copy(
+                        fontWeight = FontWeight.W600,
+                        fontSize = 16.sp,
+                        color = if (detailedSettingsViewModel.checkedStateNotification) Color.Black else Color(
+                            0xFFC7C7CC
+                        )
+                    )
+                )
+                Divider(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 24.dp),
+                    color = Color(0xFFF8F5F2),
+                    thickness = 1.dp
+                )
+            }
+            Column {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 24.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.receive_newsletters),
+                        style = MaterialTheme.typography.body1.copy(
+                            fontWeight = FontWeight.W400,
+                            fontSize = 16.sp,
+                            lineHeight = 20.sp,
+                            color = Color(0xFF676870)
+                        )
+                    )
+                    Switch(
+                        modifier = Modifier
+                            .height(25.dp),
+                        checked = detailedSettingsViewModel.checkedStateNewsLetters,
+                        onCheckedChange = {
+                            detailedSettingsViewModel.checkedStateNewsLetters = it
+                        },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = Color.White,
+                            checkedTrackColor = Custom_Blue,
+                            uncheckedThumbColor = Color.White,
+                            uncheckedTrackColor = Custom_Blue
+                        )
+                    )
+                }
+                Text(
+                    modifier = Modifier.padding(top = 10.dp),
+                    text = if (detailedSettingsViewModel.checkedStateNewsLetters) stringResource(id = R.string.enabled) else stringResource(
+                        id = R.string.disabled
+                    ),
+                    style = MaterialTheme.typography.body2.copy(
+                        fontWeight = FontWeight.W600,
+                        fontSize = 16.sp,
+                        color = if (detailedSettingsViewModel.checkedStateNewsLetters) Color.Black else Color(
+                            0xFFC7C7CC
+                        )
                     )
                 )
             }
-            Text(
-                modifier = Modifier.padding(top = 10.dp),
-                text = if (detailedSettingsViewModel.checkedStateNewsLetters) stringResource(id = R.string.enabled) else stringResource(
-                    id = R.string.disabled
-                ),
-                style = MaterialTheme.typography.body2.copy(
-                    fontWeight = FontWeight.W600,
-                    fontSize = 16.sp,
-                    color = if (detailedSettingsViewModel.checkedStateNewsLetters) Color.Black else Color(
-                        0xFFC7C7CC
-                    )
-                )
-            )
-        }
 //        Surface(
 //            modifier = Modifier
 //                .fillMaxWidth()
@@ -253,43 +246,44 @@ fun DetailedSettings(
 //                }
 //            }
 //        }
-        Text(
-            modifier = Modifier
-                .wrapContentWidth()
-                .padding(top = 37.dp, bottom = 20.dp)
-                .clickable(indication = null, interactionSource = MutableInteractionSource()) {
-
-                    if (type != null) {
-                        detailedSettingsViewModel.userLogout(
-                            user_id = userId,
-                            type = type
-                        )
-                    }
-                    detailedSettingsViewModel.userLogoutResponse.observe(homeActivity) {
-                        if (it != null) {
-                            handleUserLogoutData(
-                                result = it,
-                                detailedSettingsViewModel = detailedSettingsViewModel
-                            )
-                        }
-                    }
-                },
-            text = buildAnnotatedString {
-                val logout = context.resources.getString(R.string.logout)
-                withStyle(
-                    style = SpanStyle(
-                        fontWeight = FontWeight.W600,
-                        textDecoration = TextDecoration.Underline,
-                        color = Custom_Blue,
-                        fontSize = 16.sp,
-                    )
-                ) {
-                    append(logout)
-                }
-            },
-            style = MaterialTheme.typography.body2,
-            textAlign = TextAlign.Center
-        )
+//        Text(
+//            modifier = Modifier
+//                .wrapContentWidth()
+//                .padding(top = 37.dp, bottom = 20.dp)
+//                .clickable(indication = null, interactionSource = MutableInteractionSource()) {
+//
+//                    if (type != null) {
+//                        detailedSettingsViewModel.userLogout(
+//                            user_id = userId,
+//                            type = type
+//                        )
+//                    }
+//                    detailedSettingsViewModel.userLogoutResponse.observe(homeActivity) {
+//                        if (it != null) {
+//                            handleUserLogoutData(
+//                                result = it,
+//                                detailedSettingsViewModel = detailedSettingsViewModel
+//                            )
+//                        }
+//                    }
+//                },
+//            text = buildAnnotatedString {
+//                val logout = context.resources.getString(R.string.logout)
+//                withStyle(
+//                    style = SpanStyle(
+//                        fontWeight = FontWeight.W600,
+//                        textDecoration = TextDecoration.Underline,
+//                        color = Custom_Blue,
+//                        fontSize = 16.sp,
+//                    )
+//                ) {
+//                    append(logout)
+//                }
+//            },
+//            style = MaterialTheme.typography.body2,
+//            textAlign = TextAlign.Center
+//        )
+        }
     }
 }
 
@@ -413,13 +407,6 @@ private fun handleNotificationStatusUpdateData(
             // bind data to the view
             Log.e("TAG", "handleUserData() --> Success  $result")
             detailedSettingsViewModel.isNotificationStatusUpdated = false
-            getNotificationStatus(
-                userId = userId,
-                homeActivity = homeActivity,
-                type = type,
-                context = context,
-                detailedSettingsViewModel = detailedSettingsViewModel
-            )
         }
         is NetworkResult.Error -> {
             // show error message

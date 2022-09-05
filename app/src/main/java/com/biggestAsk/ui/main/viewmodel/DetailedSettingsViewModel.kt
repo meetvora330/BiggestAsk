@@ -8,8 +8,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.biggestAsk.data.model.request.NotificationStatusUpdateRequest
+import com.biggestAsk.data.model.request.ResetMilestoneRequest
 import com.biggestAsk.data.model.response.CommonResponse
 import com.biggestAsk.data.model.response.GetNotificationStatusResponse
+import com.biggestAsk.data.model.response.ResetMilestoneResponse
 import com.biggestAsk.data.repository.DetailedSettingsRepository
 import com.biggestAsk.data.source.network.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,7 +32,8 @@ class DetailedSettingsViewModel @Inject constructor(
         MutableLiveData()
     var getNotificationStatusResponse: MutableLiveData<NetworkResult<GetNotificationStatusResponse>> =
         MutableLiveData()
-    var userLogoutResponse: MutableLiveData<NetworkResult<CommonResponse>> = MutableLiveData()
+    var resetMilestoneResponse: MutableLiveData<NetworkResult<ResetMilestoneResponse>> =
+        MutableLiveData()
 
     fun notificationStatusUpdate(notificationStatusUpdateRequest: NotificationStatusUpdateRequest) {
         notificationStatusUpdateResponse.value = NetworkResult.Loading()
@@ -58,18 +61,13 @@ class DetailedSettingsViewModel @Inject constructor(
         }
     }
 
-    fun userLogout(
-        type: String,
-        user_id: Int
-    ) {
-        userLogoutResponse.value = NetworkResult.Loading()
+    fun resetMilestone(resetMilestoneRequest: ResetMilestoneRequest) {
+        resetMilestoneResponse.value = NetworkResult.Loading()
         viewModelScope.launch {
-            detailedSettingsRepository.userLogout(
-                type = type,
-                userId = user_id
-            ).collect {
-                userLogoutResponse.value = it
-            }
+            detailedSettingsRepository.resetMilestone(resetMilestoneRequest = resetMilestoneRequest)
+                .collect {
+                    resetMilestoneResponse.value = it
+                }
         }
     }
 

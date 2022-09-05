@@ -74,7 +74,7 @@ interface ApiService {
     suspend fun createMilestone(@Body createMilestoneRequest: CreateMilestoneRequest): Response<CommonResponse>
 
     @POST(Constants.RESET_MILESTONE)
-    suspend fun resetMilestone(@Body resetMilestoneRequest: ResetMilestoneRequest): Response<CommonResponse>
+    suspend fun resetMilestone(@Body resetMilestoneRequest: ResetMilestoneRequest): Response<ResetMilestoneResponse>
 
     @GET(Constants.EDIT_MILESTONE)
     suspend fun editMilestone(

@@ -267,28 +267,28 @@ fun LoginScreen(
                         textAlign = TextAlign.Left
                     )
                 }
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 25.dp, end = 33.dp)
-                        .clickable(indication = null,
-                            interactionSource = remember { MutableInteractionSource() }) {
-                        },
-                    text = buildAnnotatedString {
-                        withStyle(
-                            style = SpanStyle(
-                                fontWeight = FontWeight.Bold,
-                                textDecoration = TextDecoration.Underline,
-                                color = Color(0xFF3870C9),
-                                fontSize = 16.sp
-                            )
-                        ) {
-                            append(stringResource(id = R.string.login_tv_forgot_password_text))
-                        }
-                    },
-                    fontSize = 16.sp,
-                    textAlign = TextAlign.Right
-                )
+//                Text(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(top = 25.dp, end = 33.dp)
+//                        .clickable(indication = null,
+//                            interactionSource = remember { MutableInteractionSource() }) {
+//                        },
+//                    text = buildAnnotatedString {
+//                        withStyle(
+//                            style = SpanStyle(
+//                                fontWeight = FontWeight.Bold,
+//                                textDecoration = TextDecoration.Underline,
+//                                color = Color(0xFF3870C9),
+//                                fontSize = 16.sp
+//                            )
+//                        ) {
+//                            append(stringResource(id = R.string.login_tv_forgot_password_text))
+//                        }
+//                    },
+//                    fontSize = 16.sp,
+//                    textAlign = TextAlign.Right
+//                )
                 Button(
                     onClick = {
                         when {

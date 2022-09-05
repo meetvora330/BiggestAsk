@@ -51,7 +51,8 @@ fun BottomNavigationDrawerGraph(
     frequencyViewModel: FrequencyViewModel,
     privacyPolicyViewModel: PrivacyPolicyViewModel,
     termsOfServiceViewModel: TermsOfServiceViewModel,
-    detailedSettingsViewModel: DetailedSettingsViewModel
+    detailedSettingsViewModel: DetailedSettingsViewModel,
+    settingViewModel: SettingViewModel
 ) {
     val provider = PreferenceProvider(context)
     NavHost(
@@ -229,7 +230,12 @@ fun BottomNavigationDrawerGraph(
             )
         }
         composable(route = NavDrawerItem.Settings.route) {
-            Settings(navHostController = navHostController)
+            Settings(
+                navHostController = navHostController,
+                settingViewModel = settingViewModel,
+                homeActivity = homeActivity,
+                context = context
+            )
         }
         composable(route = SettingSubScreen.AboutApp.route) {
             AboutApp(homeActivity = homeActivity, aboutAppViewModel = aboutAppViewModel)

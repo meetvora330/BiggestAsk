@@ -11,6 +11,7 @@ import com.biggestAsk.data.model.request.ResetMilestoneRequest
 import com.biggestAsk.data.model.response.CommonResponse
 import com.biggestAsk.data.model.response.GetMilestoneResponse
 import com.biggestAsk.data.model.response.Milestone
+import com.biggestAsk.data.model.response.ResetMilestoneResponse
 import com.biggestAsk.data.repository.HomeRepository
 import com.biggestAsk.data.source.network.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +25,7 @@ class BottomMilestoneViewModel @Inject constructor(
 ) : AndroidViewModel(application) {
     var getMilestoneResponse: MutableLiveData<NetworkResult<GetMilestoneResponse>> =
         MutableLiveData()
-    var resetMilestoneResponse: MutableLiveData<NetworkResult<CommonResponse>> =
+    var resetMilestoneResponse: MutableLiveData<NetworkResult<ResetMilestoneResponse>> =
         MutableLiveData()
     val milestoneList = mutableStateListOf<Milestone>()
     var emptyList by mutableStateOf(listOf<Milestone>())
