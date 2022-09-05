@@ -17,7 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import com.biggestAsk.ui.base.BaseActivity
 import com.biggestAsk.ui.homeScreen.HomeScreen
 import com.biggestAsk.ui.introScreen.LockScreenOrientation
-import com.biggestAsk.ui.main.viewmodel.*
+import com.biggestAsk.ui.main.viewmodel.* // ktlint-disable no-wildcard-imports
 import com.biggestAsk.ui.ui.theme.BasicStructureTheme
 import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider

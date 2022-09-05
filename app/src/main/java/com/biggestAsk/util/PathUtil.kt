@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
+import android.text.TextUtils
 import java.net.URISyntaxException
 
 
@@ -32,10 +33,15 @@ object PathUtil {
                 }
                 isDownloadsDocument(mURI) -> {
                     val id = DocumentsContract.getDocumentId(mURI)
-                    mURI = ContentUris.withAppendedId(
-                        Uri.parse("content://downloads/public_downloads"),
-                        java.lang.Long.valueOf(id)
-                    )
+                    if (!TextUtils.isEmpty(id)) {
+                        if (id.startsWith("raw:")) {
+                            return id.replaceFirst("raw:", "");
+                        }
+                        mURI = ContentUris.withAppendedId(
+                            Uri.parse("content://downloads/public_downloads"),
+                            java.lang.Long.valueOf(id)
+                        )
+                    }
                 }
                 isMediaDocument(mURI) -> {
                     val docId = DocumentsContract.getDocumentId(mURI)
