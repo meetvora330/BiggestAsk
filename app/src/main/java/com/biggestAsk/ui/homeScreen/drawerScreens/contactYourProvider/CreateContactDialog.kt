@@ -561,6 +561,7 @@ fun CreateContactDialog(
                                         homeActivity = homeActivity
                                     )
                                 }
+
                             }
                         }
                         else -> {
@@ -662,13 +663,12 @@ private fun handleCreateContactData(
             tf_text_fourth.value = ""
             contactYourProviderViewModel.bitmap.value = null
             Toast.makeText(context, result.data!!.message, Toast.LENGTH_SHORT).show()
-            getUpdatedContact(
-                type = type,
-                user_id = user_id,
-                contactYourProviderViewModel = contactYourProviderViewModel,
-                context,
-                homeActivity
-            )
+            if (!openDialogCustom.value){
+                getUpdatedContact(type = type,
+                    user_id = user_id,
+                    contactYourProviderViewModel = contactYourProviderViewModel,
+                    homeActivity)
+            }
         }
         is NetworkResult.Error -> {
             // show error message

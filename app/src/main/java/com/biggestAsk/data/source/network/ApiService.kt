@@ -245,9 +245,9 @@ interface ApiService {
         @Query("user_id") user_id: Int
     ): Response<GetNotificationStatusResponse>
 
-    @GET(Constants.USER_LOGOUT)
-    suspend fun userLogout(
+    @GET(Constants.LOGOUT)
+    suspend fun logOut(
         @Query("type") type: String,
         @Query("user_id") user_id: Int
-    ): Response<CommonResponse>
+    ):Response<LogoutResponse>
 }

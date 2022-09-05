@@ -2032,7 +2032,7 @@ private fun handleEditMilestoneData(
             editMilestoneViewModel.isEditMilestoneDataLoaded.value = true
         }
         is NetworkResult.Success -> {
-            val type = PreferenceProvider(context).getValue("type", "")
+            val type = PreferenceProvider(context).getValue(Constants.TYPE, "")
             editMilestoneViewModel.editMilestoneTittle.value =
                 result.data?.milestone?.get(0)?.title!!
             if (result.data.milestone[0].date == null) {

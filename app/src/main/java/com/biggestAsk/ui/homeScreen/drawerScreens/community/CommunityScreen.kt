@@ -145,16 +145,22 @@ fun Community(
                                 onClick = {
                                     try {
                                         val instaLink = item.insta_link
-                                        val instagramIntent =
-                                            Intent(Intent.ACTION_VIEW, Uri.parse("$instaLink/"))
-                                        context.startActivity(instagramIntent)
+                                        if (instaLink.startsWith("https://") || instaLink.startsWith(
+                                                "http://")
+                                        ) {
+                                            val instagramIntent =
+                                                Intent(Intent.ACTION_VIEW, Uri.parse(instaLink))
+                                            context.startActivity(instagramIntent)
+                                        } else {
+                                            val instagramIntent = Intent(Intent.ACTION_VIEW,
+                                                Uri.parse("https://$instaLink"))
+                                            context.startActivity(instagramIntent)
+                                        }
                                     } catch (e: RuntimeException) {
                                         e.printStackTrace()
-                                        Toast.makeText(
-                                            context,
-                                            "Invalid Url",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
+                                        Toast.makeText(context,
+                                            R.string.invalid_url,
+                                            Toast.LENGTH_SHORT).show()
                                     }
                                 },
                                 elevation = ButtonDefaults.elevation(

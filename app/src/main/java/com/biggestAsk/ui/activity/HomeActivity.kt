@@ -43,6 +43,7 @@ class HomeActivity : BaseActivity() {
     private val termsOfServiceViewModel: TermsOfServiceViewModel by viewModels()
     private val detailedSettingsViewModel: DetailedSettingsViewModel by viewModels()
     private val settingViewModel: SettingViewModel by viewModels()
+    private val logoutViewModel: LogoutViewModel by viewModels()
 
     private val permissionReqLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { it ->
@@ -127,7 +128,8 @@ class HomeActivity : BaseActivity() {
                     privacyPolicyViewModel = privacyPolicyViewModel,
                     termsOfServiceViewModel = termsOfServiceViewModel,
                     detailedSettingsViewModel = detailedSettingsViewModel,
-                    settingViewModel = settingViewModel
+                    settingViewModel = settingViewModel,
+                    logoutViewModel = logoutViewModel
                 )
             }
         }

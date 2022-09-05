@@ -4,17 +4,18 @@ import android.app.Application
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
+import android.graphics.Matrix
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
-import androidx.compose.runtime.*
+import androidx.compose.runtime.* // ktlint-disable no-wildcard-imports
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.biggestAsk.data.model.request.GetUserDetailsParentRequest
 import com.biggestAsk.data.model.request.GetUserDetailsSurrogateRequest
-import com.biggestAsk.data.model.response.*
+import com.biggestAsk.data.model.response.* // ktlint-disable no-wildcard-imports
 import com.biggestAsk.data.repository.YourAccountRepository
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.util.PathUtil
@@ -24,11 +25,10 @@ import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 import javax.inject.Inject
 
-
 @HiltViewModel
 class YourAccountViewModel @Inject constructor(
     private val yourAccountRepository: YourAccountRepository,
-    application: Application,
+    application: Application
 ) : AndroidViewModel(application) {
 
     var isLoading: Boolean by mutableStateOf(false)
@@ -50,7 +50,6 @@ class YourAccountViewModel @Inject constructor(
         MutableLiveData()
     var questionAnsweredList = mutableStateListOf<DataXXX>()
     var questionAnsweredDaysList = mutableStateListOf<Int>()
-
 
     //  surrogate
     var surrogateFullName: String by mutableStateOf("")
@@ -97,7 +96,6 @@ class YourAccountViewModel @Inject constructor(
     var isMotherClicked: Boolean by mutableStateOf(false)
     var isParentApiCalled: Boolean by mutableStateOf(false)
 
-
     fun getUserDetailsSurrogate(getUserDetailsRequestSurrogate: GetUserDetailsSurrogateRequest) {
         getUserDetailResponseSurrogate.value = NetworkResult.Loading()
         viewModelScope.launch {
@@ -132,30 +130,44 @@ class YourAccountViewModel @Inject constructor(
                     uriPathParent = uri?.let { it1 -> PathUtil.getPath(context, it1) }
                 }
                 Log.e("uriPath", "AddCommunityDialog: $uriPathParent")
-                if (Build.VERSION.SDK_INT < 28) {
+                if (Build.VERSION.SDK_INT < 29) {
                     if (isParentClicked) {
                         bitmapImage1.value =
-                            MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+                            getResizedBitmap(MediaStore.Images.Media.getBitmap(context.contentResolver, uri), 512, 512)
                     }
                     if (isMotherClicked) {
                         bitmapImage2.value =
-                            MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+                            getResizedBitmap(MediaStore.Images.Media.getBitmap(context.contentResolver, uri), 512, 512)
                     }
                 } else {
-                    val source =
-                        uri?.let { it1 -> ImageDecoder.createSource(context.contentResolver, it1) }
+                    val source = uri?.let { it1 -> ImageDecoder.createSource(context.contentResolver, it1) }
+                    val bitmap = source?.let { it1 -> ImageDecoder.decodeBitmap(it1) }
                     if (isParentClicked) {
-                        bitmapImage1.value = source?.let { it1 -> ImageDecoder.decodeBitmap(it1) }
+                        bitmapImage1.value = bitmap?.let { it1 -> getResizedBitmap(it1, 512, 512) }
                     }
                     if (isMotherClicked) {
-                        bitmapImage2.value = source?.let { it1 -> ImageDecoder.decodeBitmap(it1) }
+                        bitmapImage2.value = bitmap?.let { it1 -> getResizedBitmap(it1, 512, 512) }
                     }
-
                 }
             }
         }
     }
 
+    private fun getResizedBitmap(bm: Bitmap, newHeight: Int, newWidth: Int): Bitmap? {
+        val width = bm.width
+        val height = bm.height
+        val scaleWidth = newWidth.toFloat() / width
+        val scaleHeight = newHeight.toFloat() / height
+
+        // create a matrix for the manipulation
+        val matrix = Matrix()
+
+        // resize the bit map
+        matrix.postScale(scaleWidth, scaleHeight)
+
+        // recreate the new Bitmap
+        return Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false)
+    }
 
     fun updateUserProfile(
         userId: Int,
@@ -172,7 +184,7 @@ class YourAccountViewModel @Inject constructor(
         partner_phone: MultipartBody.Part? = null,
         partner_dob: MultipartBody.Part? = null,
         partner_address: MultipartBody.Part? = null,
-        partner_gender: MultipartBody.Part? = null,
+        partner_gender: MultipartBody.Part? = null
     ) {
         updateUserProfileResponse.value = NetworkResult.Loading()
         viewModelScope.launch {

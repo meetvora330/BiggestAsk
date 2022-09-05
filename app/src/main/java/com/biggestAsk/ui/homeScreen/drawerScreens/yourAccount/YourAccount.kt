@@ -62,6 +62,7 @@ import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.ui.activity.HomeActivity
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.BackHandler
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.SimpleDropDown
+import com.biggestAsk.ui.main.viewmodel.LogoutViewModel
 import com.biggestAsk.ui.main.viewmodel.YourAccountViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.ET_Bg
@@ -84,7 +85,8 @@ fun YourAccountScreen(
     navHostController: NavHostController,
     yourAccountViewModel: YourAccountViewModel,
     homeActivity: HomeActivity,
-    context: Context
+    context: Context,
+    logoutViewModel: LogoutViewModel
 ) {
     val type = PreferenceProvider(context).getValue("type", "")
     val userId = PreferenceProvider(context).getIntValue("user_id", 0)
@@ -713,9 +715,9 @@ fun YourAccountScreen(
                                         shape = RoundedCornerShape(10.dp)
                                     ) {
                                         LogoutDialog(
-                                            openLogoutDialog = openLogoutDialog,
                                             context = context,
-                                            homeActivity = homeActivity
+                                            homeActivity = homeActivity,
+                                            logoutViewModel = logoutViewModel
                                         )
                                     }
                                 }

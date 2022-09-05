@@ -35,13 +35,11 @@ import com.biggestAsk.data.model.response.GetNotificationResponse
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.data.source.network.isInternetAvailable
 import com.biggestAsk.ui.activity.HomeActivity
+import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
 import com.biggestAsk.ui.main.viewmodel.NotificationViewModel
 import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
-import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.placeholder
-import com.google.accompanist.placeholder.shimmer
 
 @Composable
 fun Notification(
@@ -61,15 +59,12 @@ fun Notification(
         val userId = PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
         LaunchedEffect(Unit) {
             if (isInternetAvailable(context)) {
-                //getUpdatedNotification("parent", 191, notificationViewModel, homeActivity)
+                //                getUpdatedNotification("surrogate", 2, notificationViewModel, homeActivity)
                 type?.let {
-                    getUpdatedNotification(
-                        it,
+                    getUpdatedNotification(it,
                         userId,
                         notificationViewModel,
-                        homeActivity,
-                        context = context
-                    )
+                        homeActivity)
                 }
             } else {
                 notificationViewModel.isDataNull = false
@@ -110,15 +105,15 @@ fun Notification(
                             offsetX = 0.dp,
                             offsetY = 4.dp
                         )
-                        .placeholder(
-                            visible = notificationViewModel.isLoading,
-                            color = Color.LightGray,
-                            // optional, defaults to RectangleShape
-                            shape = RoundedCornerShape(14.dp),
-                            highlight = PlaceholderHighlight.shimmer(
-                                highlightColor = Color.White,
-                            ),
-                        )
+                    //                        .placeholder(
+                    //                            visible = notificationViewModel.isLoading,
+                    //                            color = Color.LightGray,
+                    //                            // optional, defaults to RectangleShape
+                    //                            shape = RoundedCornerShape(14.dp),
+                    //                            highlight = PlaceholderHighlight.shimmer(
+                    //                                highlightColor = Color.White,
+                    //                            ),
+                    //                        )
                 ) {
                     Column {
                         Row(
@@ -175,6 +170,9 @@ fun Notification(
                 }
             }
         }
+    }
+    if (notificationViewModel.isLoading) {
+        ProgressBarTransparentBackground(stringResource(id = R.string.loading))
     }
     if (notificationViewModel.isDataNull) {
         Column(

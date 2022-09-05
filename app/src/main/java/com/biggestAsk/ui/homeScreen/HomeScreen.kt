@@ -90,7 +90,8 @@ fun HomeScreen(
     privacyPolicyViewModel: PrivacyPolicyViewModel,
     termsOfServiceViewModel: TermsOfServiceViewModel,
     detailedSettingsViewModel: DetailedSettingsViewModel,
-    settingViewModel: SettingViewModel
+    settingViewModel: SettingViewModel,
+    logoutViewModel: LogoutViewModel
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val requester = FocusRequester()
@@ -481,7 +482,8 @@ fun HomeScreen(
                 privacyPolicyViewModel = privacyPolicyViewModel,
                 termsOfServiceViewModel = termsOfServiceViewModel,
                 detailedSettingsViewModel = detailedSettingsViewModel,
-                settingViewModel = settingViewModel
+                settingViewModel = settingViewModel,
+                logoutViewModel = logoutViewModel
             )
             BackHandler(scaffoldState.drawerState.isOpen) {
                 scope.launch {
@@ -504,7 +506,8 @@ fun HomeScreen(
                 context = context,
                 homeActivity = homeActivity,
                 yourAccountViewModel = yourAccountViewModel,
-                homeViewModel = bottomHomeViewModel
+                homeViewModel = bottomHomeViewModel,
+                logoutViewModel = logoutViewModel
             )
         })
 }
@@ -807,7 +810,8 @@ fun NavigationDrawerContent(
     context: Context,
     homeActivity: HomeActivity,
     yourAccountViewModel: YourAccountViewModel,
-    homeViewModel: BottomHomeViewModel
+    homeViewModel: BottomHomeViewModel,
+    logoutViewModel: LogoutViewModel,
 ) {
     val provider = PreferenceProvider(context)
     val type = provider.getValue(Constants.TYPE, "")
@@ -830,7 +834,6 @@ fun NavigationDrawerContent(
             placeholder(R.drawable.ic_placeholder_your_account)
         })
     val userType = if (type == "parent") "Parents" else "Surrogate Mother"
-    val openLogoutDialog = remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         getNotificationCount(
             type = type,
@@ -1057,6 +1060,9 @@ fun NavigationDrawerContent(
                     )
                 }
             }
+        }
+        if (logoutViewModel.isLoading) {
+            ProgressBarTransparentBackground(stringResource(id = R.string.loading))
         }
     }
 }

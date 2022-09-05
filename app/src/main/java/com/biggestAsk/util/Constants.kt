@@ -23,6 +23,7 @@ object Constants {
     const val RESEND_OTP = "resend_otp"
     const val REGISTRATION = "registration"
     const val LOGIN = "login"
+    const val LOGOUT = "user_logout"
     const val GET_MONTH_QUESTION = "get_month_question"
     const val STORE_QUESTION_ANS = "store_question_ans"
     const val SCREEN_QUESTION_STATUS = "screen_question_status"

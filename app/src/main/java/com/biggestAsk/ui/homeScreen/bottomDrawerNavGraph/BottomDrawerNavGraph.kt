@@ -52,7 +52,8 @@ fun BottomNavigationDrawerGraph(
     privacyPolicyViewModel: PrivacyPolicyViewModel,
     termsOfServiceViewModel: TermsOfServiceViewModel,
     detailedSettingsViewModel: DetailedSettingsViewModel,
-    settingViewModel: SettingViewModel
+    settingViewModel: SettingViewModel,
+    logoutViewModel: LogoutViewModel
 ) {
     val provider = PreferenceProvider(context)
     NavHost(
@@ -188,7 +189,8 @@ fun BottomNavigationDrawerGraph(
         composable(route = NavDrawerItem.ContactYourProviders.route) {
             ContactYourProvider(
                 homeActivity = homeActivity,
-                contactYourProviderViewModel = contactYourProviderViewModel
+                contactYourProviderViewModel = contactYourProviderViewModel,
+                context = context
             )
         }
         composable(
@@ -264,7 +266,8 @@ fun BottomNavigationDrawerGraph(
                 navHostController = navHostController,
                 yourAccountViewModel = yourAccountViewModel,
                 homeActivity = homeActivity,
-                context = context
+                context = context,
+                logoutViewModel = logoutViewModel
             )
         }
 
