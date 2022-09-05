@@ -1,6 +1,9 @@
 package com.biggestAsk.ui.homeScreen.drawerScreens.contactYourProvider
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
@@ -16,12 +19,12 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import coil.compose.rememberImagePainter
 import com.biggestAsk.data.model.request.GetContactRequest
 import com.biggestAsk.data.model.response.GetContactResponse
@@ -35,17 +38,18 @@ import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 
+
 @Composable
 fun ContactYourProvider(
     homeActivity: HomeActivity,
     contactYourProviderViewModel: ContactYourProviderViewModel,
+    context: Context,
 ) {
-    val context = LocalContext.current
     val type = PreferenceProvider(context).getValue(Constants.TYPE, "")
     val userId = PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
     LaunchedEffect(Unit) {
         if (isInternetAvailable(context)) {
-            getUpdatedContact(type!!, userId, contactYourProviderViewModel, context, homeActivity)
+            getUpdatedContact(type!!, userId, contactYourProviderViewModel, homeActivity)
         } else {
             contactYourProviderViewModel.isDataNull = false
             contactYourProviderViewModel.contactList.clear()
@@ -193,7 +197,11 @@ fun ContactYourProvider(
                                 disabledElevation = 0.dp,
                                 focusedElevation = 0.dp
                             ),
-                            onClick = { }, shape = RoundedCornerShape(12.dp),
+                            onClick = {
+                                val intent = Intent(Intent.ACTION_DIAL)
+                                intent.data = Uri.parse("tel:" + item.agency_number)
+                                startActivity(homeActivity, intent, Bundle())
+                            }, shape = RoundedCornerShape(12.dp),
                             colors = ButtonDefaults.buttonColors(backgroundColor = Custom_Blue)
                         ) {
                             Text(
@@ -231,7 +239,6 @@ fun getUpdatedContact(
     type: String,
     user_id: Int,
     contactYourProviderViewModel: ContactYourProviderViewModel,
-    context: Context,
     homeActivity: HomeActivity,
 ) {
     contactYourProviderViewModel.getContact(

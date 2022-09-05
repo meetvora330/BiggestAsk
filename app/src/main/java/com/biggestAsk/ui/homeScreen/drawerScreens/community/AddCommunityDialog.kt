@@ -58,6 +58,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
+import java.util.regex.Pattern
 
 @Composable
 fun AddCommunityDialog(
@@ -90,6 +91,7 @@ fun AddCommunityDialog(
     val tfTextFourthEmpty = remember {
         mutableStateOf(false)
     }
+    val regex = "((http|https)://)(www.)?[a-zA-Z0-9@:%._+~#?&/=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._+~#?&/=]*)"
 
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
@@ -620,10 +622,12 @@ private fun handleCreateCommunityApi(
             tf_text_fourth.value = ""
             communityViewModel.isValidInstagramUrl.value = false
             communityViewModel.bitmap.value = null
-            getUpdatedCommunity(type = type,
-                user_id = user_id,
-                communityViewModel = communityViewModel,
-                homeActivity = homeActivity)
+            if (!openDialogCustom.value){
+                getUpdatedCommunity(type = type,
+                    user_id = user_id,
+                    communityViewModel = communityViewModel,
+                    homeActivity = homeActivity)
+            }
         }
         is NetworkResult.Error -> {
             // show error message

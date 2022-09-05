@@ -188,7 +188,8 @@ fun BottomNavigationDrawerGraph(
         composable(route = NavDrawerItem.ContactYourProviders.route) {
             ContactYourProvider(
                 homeActivity = homeActivity,
-                contactYourProviderViewModel = contactYourProviderViewModel
+                contactYourProviderViewModel = contactYourProviderViewModel,
+                context = context
             )
         }
         composable(
