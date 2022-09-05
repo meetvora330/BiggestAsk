@@ -140,15 +140,6 @@ fun LogoutDialog(
     }
 }
 
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun LogoutDialogPreview() {
-    val dialog = remember {
-        androidx.compose.runtime.mutableStateOf(false)
-    }
-    val context = LocalContext.current
-    LogoutDialog(openLogoutDialog = dialog, context = context, homeActivity = HomeActivity())
-}
 fun logOutUser(
     type: String,
     user_id: Int,

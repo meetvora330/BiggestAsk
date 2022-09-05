@@ -61,10 +61,13 @@ fun Notification(
             if (isInternetAvailable(context)) {
                 //                getUpdatedNotification("surrogate", 2, notificationViewModel, homeActivity)
                 type?.let {
-                    getUpdatedNotification(it,
+                    getUpdatedNotification(
+                        it,
                         userId,
                         notificationViewModel,
-                        homeActivity)
+                        homeActivity,
+                        context
+                    )
                 }
             } else {
                 notificationViewModel.isDataNull = false

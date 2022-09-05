@@ -1029,7 +1029,7 @@ fun NavigationDrawerContent(
                             indication = null,
                             interactionSource = MutableInteractionSource()
                         ) {
-                            openLogoutDialog.value = true
+                            logoutViewModel.openLogoutDialog = true
                         },
                     text = stringResource(id = R.string.log_out),
                     style = MaterialTheme.typography.body1,
@@ -1038,9 +1038,9 @@ fun NavigationDrawerContent(
                 )
             }
         }
-        if (openLogoutDialog.value) {
+        if (logoutViewModel.openLogoutDialog) {
             Dialog(
-                onDismissRequest = { openLogoutDialog.value = false },
+                onDismissRequest = { logoutViewModel.openLogoutDialog = false },
                 properties = DialogProperties(
                     dismissOnBackPress = true,
                     dismissOnClickOutside = false,
@@ -1056,7 +1056,7 @@ fun NavigationDrawerContent(
                     LogoutDialog(
                         context = context,
                         homeActivity = homeActivity,
-                        openLogoutDialog = openLogoutDialog
+                        logoutViewModel = logoutViewModel
                     )
                 }
             }
