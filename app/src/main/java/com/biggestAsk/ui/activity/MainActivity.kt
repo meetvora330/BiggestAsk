@@ -19,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -29,9 +28,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.compose.rememberNavController
 import com.biggestAsk.data.model.LoginStatus
 import com.biggestAsk.data.model.response.IntroInfoResponse
@@ -49,6 +45,7 @@ import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.google.firebase.messaging.FirebaseMessaging
 import java.util.*
 
 class MainActivity : BaseActivity() {
@@ -85,6 +82,12 @@ class MainActivity : BaseActivity() {
             LockScreenOrientation(orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
             isInternetAvailable.value = isInternetAvailable(this)
             if (isInternetAvailable.value) {
+                FirebaseMessaging.getInstance().token.addOnCompleteListener {
+                    if (it.isComplete) {
+                        val firebaseToken = it.result.toString()
+                        PreferenceProvider(this).setValue("notification_token", firebaseToken)
+                    }
+                }
                 ProvideWindowInsets(
                     windowInsetsAnimationsEnabled = true
                 ) {
@@ -121,9 +124,10 @@ class MainActivity : BaseActivity() {
                         }
                         val userId = provider.getIntValue(Constants.USER_ID, 0)
                         val type = provider.getValue(Constants.TYPE, "")
-                        if (userId != 0 && !type.isNullOrEmpty()) {
+                        val fcmToken = provider.getValue(Constants.NOTIFICATION_TOKEN, "")
+                        if (userId != 0 && !type.isNullOrEmpty() && fcmToken != null) {
                             LaunchedEffect(Unit) {
-                                introViewModel.getUpdatedStatus(userId, type)
+                                introViewModel.getUpdatedStatus(userId, type, fcmToken)
                                 introViewModel.getUpdatedStatusResponse.observe(this@MainActivity) {
                                     if (it != null) {
                                         handleUpdatedStatusData(
@@ -291,24 +295,6 @@ class MainActivity : BaseActivity() {
 }
 
 
-@Composable
-fun OnLifecycleEvent(onEvent: (owner: LifecycleOwner, event: Lifecycle.Event) -> Unit) {
-    val eventHandler = rememberUpdatedState(onEvent)
-    val lifecycleOwner = rememberUpdatedState(LocalLifecycleOwner.current)
-
-    DisposableEffect(lifecycleOwner.value) {
-        val lifecycle = lifecycleOwner.value.lifecycle
-        val observer = LifecycleEventObserver { owner, event ->
-            eventHandler.value(owner, event)
-        }
-
-        lifecycle.addObserver(observer)
-        onDispose {
-            lifecycle.removeObserver(observer)
-        }
-    }
-}
-
 private fun handleUserData(
     result: NetworkResult<IntroInfoResponse>,
     context: Context,
@@ -380,6 +366,11 @@ private fun handleUpdatedStatusData(
                 if (it != null) {
                     PreferenceProvider(context).setValue("pregnancy_milestone_status", it)
                     introViewModel.pregnancyMilestoneStatus = it
+                }
+            }
+            result.data?.user_name.let {
+                if (it != null) {
+                    PreferenceProvider(context).setValue("user_name", it)
                 }
             }
             introViewModel.isUserStatusDataLoaded = true

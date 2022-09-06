@@ -39,10 +39,10 @@ class IntroViewModel @Inject constructor(
         }
     }
 
-    fun getUpdatedStatus(userId: Int, type: String) {
+    fun getUpdatedStatus(userId: Int, type: String,fcm_token:String) {
         getUpdatedStatusResponse.value = NetworkResult.Loading()
         viewModelScope.launch {
-            homeRepository.getUpdatedStatus(userId, type).collect {
+            homeRepository.getUpdatedStatus(userId, type,fcm_token).collect {
                 getUpdatedStatusResponse.value = it
             }
         }

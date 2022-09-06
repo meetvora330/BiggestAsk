@@ -2124,8 +2124,9 @@ private fun handleUpdateMilestoneData(
             val provider = PreferenceProvider(context)
             val type = provider.getValue("type", "")
             val userId = provider.getIntValue("user_id", 0)
-            if (userId != 0 && !type.isNullOrEmpty()) {
-                editMilestoneViewModel.getUpdatedStatus(userId, type)
+            val fcmToken = provider.getValue(Constants.NOTIFICATION_TOKEN, "")
+            if (userId != 0 && !type.isNullOrEmpty() && fcmToken != null) {
+                editMilestoneViewModel.getUpdatedStatus(userId, type, fcmToken)
                 editMilestoneViewModel.getUpdatedStatusResponse.observe(homeActivity) {
                     if (it != null) {
                         handleUpdatedStatusData(it, context)

@@ -16,6 +16,7 @@ interface ApiService {
     suspend fun getUpdatedStatus(
         @Query(Constants.USER_ID) user_id: Int,
         @Query(Constants.TYPE) type: String,
+        @Query(Constants.FCM_TOKEN)fcm_token : String
     ): Response<UpdatedStatusResponse>
 
     @POST(Constants.SEND_OTP)
@@ -249,5 +250,5 @@ interface ApiService {
     suspend fun logOut(
         @Query("type") type: String,
         @Query("user_id") user_id: Int
-    ):Response<LogoutResponse>
+    ): Response<LogoutResponse>
 }

@@ -753,10 +753,6 @@ fun MilestonesScreen(
                                                 .padding(start = 24.dp, end = 24.dp)
                                                 .combinedClickable(
                                                     onClick = {
-                                                        Log.d(
-                                                            "TAG",
-                                                            "MilestonesScreen: ${milestoneViewModel.milestoneList[index]}"
-                                                        )
                                                         if (milestoneViewModel.isSelected) {
                                                             coroutineScope.launch {
                                                                 milestoneViewModel.milestoneList[index] =
@@ -800,7 +796,6 @@ fun MilestonesScreen(
                                                                     true
                                                             }
                                                             back.value = true
-                                                            //  viewModel.list = viewModel.listMilestoneDetails
                                                         }
                                                     }
                                                 ),
@@ -838,29 +833,29 @@ fun MilestonesScreen(
                                                         painter = painterResource(id = R.drawable.img_medical_calender_icon),
                                                         contentDescription = ""
                                                     )
-                                                    if (milestoneViewModel.milestoneList[index].date == null || milestoneViewModel.milestoneList[index].time == null) {
-                                                        Text(
-                                                            modifier = Modifier.padding(
-                                                                start = 8.dp,
-                                                                top = 35.dp
-                                                            ),
-                                                            text = "N/A",
-                                                            style = MaterialTheme.typography.body2,
-                                                            color = Color(0xFF9F9D9B),
-                                                            fontSize = 13.sp,
-                                                        )
-                                                    } else {
-                                                        Text(
-                                                            modifier = Modifier.padding(
-                                                                start = 8.dp,
-                                                                top = 35.dp
-                                                            ),
-                                                            text = "${milestoneViewModel.milestoneList[index].date} at ${milestoneViewModel.milestoneList[index].time}",
-                                                            style = MaterialTheme.typography.body2,
-                                                            color = Color(0xFF9F9D9B),
-                                                            fontSize = 13.sp,
-                                                        )
-                                                    }
+//                                                    if (milestoneViewModel.milestoneList[index].date == null || milestoneViewModel.milestoneList[index].time == null) {
+//                                                        Text(
+//                                                            modifier = Modifier.padding(
+//                                                                start = 8.dp,
+//                                                                top = 35.dp
+//                                                            ),
+//                                                            text = "N/A",
+//                                                            style = MaterialTheme.typography.body2,
+//                                                            color = Color(0xFF9F9D9B),
+//                                                            fontSize = 13.sp,
+//                                                        )
+//                                                    } else {
+                                                    Text(
+                                                        modifier = Modifier.padding(
+                                                            start = 8.dp,
+                                                            top = 35.dp
+                                                        ),
+                                                        text = if (milestoneViewModel.milestoneList[index].date != null && milestoneViewModel.milestoneList[index].time != null && milestoneViewModel.milestoneList[index].date != "" && milestoneViewModel.milestoneList[index].time != "") "${milestoneViewModel.milestoneList[index].date} at ${milestoneViewModel.milestoneList[index].time}" else "N/A",
+                                                        style = MaterialTheme.typography.body2,
+                                                        color = Color(0xFF9F9D9B),
+                                                        fontSize = 13.sp,
+                                                    )
+//                                                    }
                                                     Row(
                                                         modifier = Modifier.fillMaxWidth(),
                                                         verticalAlignment = Alignment.Top,

@@ -87,6 +87,8 @@ object Constants {
     const val PARTNER_ID = "partner_id"
     const val MILESTONE_ID = "milestone_id"
     const val ID = "id"
+    const val FCM_TOKEN = "fcm_token"
+    const val NOTIFICATION_TOKEN = "notification_token"
 
     //Screen
     const val ROUTE_INTRO_SCREEN = "intro_screen"

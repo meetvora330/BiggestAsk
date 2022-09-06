@@ -45,7 +45,10 @@ fun DetailedSettings(
         )
     }
     if (detailedSettingsViewModel.isNotificationStatusUpdated || detailedSettingsViewModel.isNotificationStatusFetched) {
-        ProgressBarTransparentBackground(loadingText = if (detailedSettingsViewModel.isNotificationStatusUpdated) "Updating..." else "Fetching")
+        ProgressBarTransparentBackground(
+            loadingText = if (detailedSettingsViewModel.isNotificationStatusUpdated) "Updating..." else "Fetching",
+            id = R.color.transparent
+        )
     } else {
         Column(
             modifier = Modifier

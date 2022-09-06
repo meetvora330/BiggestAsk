@@ -28,10 +28,11 @@ class HomeRepository @Inject constructor(
 
     suspend fun getUpdatedStatus(
         userId: Int,
-        type: String
+        type: String,
+        fcmToken:String
     ): Flow<NetworkResult<UpdatedStatusResponse>> {
         return flow {
-            emit(safeApiCall { apiService.getUpdatedStatus(userId, type) })
+            emit(safeApiCall { apiService.getUpdatedStatus(userId, type,fcmToken) })
         }.flowOn(Dispatchers.IO)
     }
 

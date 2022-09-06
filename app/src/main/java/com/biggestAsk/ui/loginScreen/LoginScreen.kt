@@ -27,15 +27,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -309,20 +305,25 @@ fun LoginScreen(
                                 loginViewModel.isLoginEmailValid = true
                             }
                             else -> {
-                                val loginDetails = LoginBodyRequest(
-                                    email = loginViewModel.loginTextEmail.trim(),
-                                    password = loginViewModel.loginTextPass.trim()
-                                )
-                                loginViewModel.login(loginBodyRequest = loginDetails)
-                                loginViewModel.loginScreen.observe(mainActivity) {
-                                    if (it != null) {
-                                        handleUserData(
-                                            navHostController = navHostController,
-                                            result = it,
-                                            loginViewModel = loginViewModel,
-                                            context = context,
-                                            mainActivity
-                                        )
+                                val fcmToken =
+                                    PreferenceProvider(context).getValue("notification_token", "")
+                                if (fcmToken != null) {
+                                    val loginDetails = LoginBodyRequest(
+                                        email = loginViewModel.loginTextEmail.trim(),
+                                        password = loginViewModel.loginTextPass.trim(),
+                                        fcm_token = fcmToken
+                                    )
+                                    loginViewModel.login(loginBodyRequest = loginDetails)
+                                    loginViewModel.loginScreen.observe(mainActivity) {
+                                        if (it != null) {
+                                            handleUserData(
+                                                navHostController = navHostController,
+                                                result = it,
+                                                loginViewModel = loginViewModel,
+                                                context = context,
+                                                mainActivity
+                                            )
+                                        }
                                     }
                                 }
                             }
