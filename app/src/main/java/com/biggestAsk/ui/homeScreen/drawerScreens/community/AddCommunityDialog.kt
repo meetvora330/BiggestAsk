@@ -8,7 +8,6 @@ import android.net.Uri
 import android.provider.Settings
 import android.text.TextUtils
 import android.util.Log
-import android.util.Patterns
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -91,8 +90,7 @@ fun AddCommunityDialog(
     val tfTextFourthEmpty = remember {
         mutableStateOf(false)
     }
-    val regex = "((http|https)://)(www.)?[a-zA-Z0-9@:%._+~#?&/=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._+~#?&/=]*)"
-
+    val validUrlRegex = "^((https?|ftp|smtp)://)?(www.)?[a-z0-9]+\\.[a-z]{2}+(/[a-zA-Z0-9#]+/?)*\$"
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
 
@@ -351,7 +349,9 @@ fun AddCommunityDialog(
                 onValueChange = {
                     tf_text_fourth.value = it.trim()
                     tfTextFourthEmpty.value = false
-                    communityViewModel.isValidInstagramUrl.value = tf_text_fourth.value.isNotEmpty() && !Patterns.WEB_URL.matcher(tf_text_fourth.value).matches()
+                    communityViewModel.isValidInstagramUrl.value =
+                        tf_text_fourth.value.isNotEmpty() && !Pattern.compile(validUrlRegex)
+                            .matcher(tf_text_fourth.value).matches()
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text, imeAction = ImeAction.Done
@@ -457,14 +457,16 @@ fun AddCommunityDialog(
                         TextUtils.isEmpty(tf_text_first.value) &&
                                 TextUtils.isEmpty(tf_text_second.value) &&
                                 TextUtils.isEmpty(tf_text_third.value) &&
-                                TextUtils.isEmpty(tf_text_fourth.value)-> {
+                                TextUtils.isEmpty(tf_text_fourth.value) -> {
                             tfTextFirstEmpty.value = true
                             tfTextSecondEmpty.value = true
                             tfTextThirdEmpty.value = true
                             tfTextFourthEmpty.value = true
 
                             if (!communityViewModel.isImagePresent.value) {
-                                Toast.makeText(context, Constants.PLEASE_ADD_LOGO, Toast.LENGTH_SHORT)
+                                Toast.makeText(context,
+                                    Constants.PLEASE_ADD_LOGO,
+                                    Toast.LENGTH_SHORT)
                                     .show()
                             }
                         }
@@ -488,14 +490,17 @@ fun AddCommunityDialog(
                         communityViewModel.isImagePresent.value && !TextUtils.isEmpty(tf_text_first.value) &&
                                 !TextUtils.isEmpty(tf_text_second.value) &&
                                 !TextUtils.isEmpty(tf_text_third.value) &&
-                                !TextUtils.isEmpty(tf_text_fourth.value) && !communityViewModel.isValidInstagramUrl.value && Patterns.WEB_URL.matcher(tf_text_fourth.value).matches()-> {
+                                !TextUtils.isEmpty(tf_text_fourth.value) && !communityViewModel.isValidInstagramUrl.value && Pattern.compile(
+                            validUrlRegex)
+                            .matcher(tf_text_fourth.value).matches() -> {
 
 
                             val image =
                                 communityViewModel.uriPath?.let { convertImageMultiPart(it) }
                             Log.e(Constants.IMAGE, "AddCommunityDialog: $image")
                             communityViewModel.createCommunity(
-                                MultipartBody.Part.createFormData(Constants.TITLE, tf_text_first.value),
+                                MultipartBody.Part.createFormData(Constants.TITLE,
+                                    tf_text_first.value),
                                 MultipartBody.Part.createFormData(Constants.DESCRIPTION,
                                     tf_text_second.value),
                                 MultipartBody.Part.createFormData(Constants.FORUM_LINK,
@@ -503,7 +508,8 @@ fun AddCommunityDialog(
                                 MultipartBody.Part.createFormData(Constants.INST_LINK,
                                     tf_text_fourth.value),
                                 image,
-                                MultipartBody.Part.createFormData(Constants.USER_ID, userId.toString()),
+                                MultipartBody.Part.createFormData(Constants.USER_ID,
+                                    userId.toString()),
                                 MultipartBody.Part.createFormData(Constants.TYPE, type!!)
                             )
                             communityViewModel.createCommunityResponse.observe(homeActivity) {
@@ -622,12 +628,10 @@ private fun handleCreateCommunityApi(
             tf_text_fourth.value = ""
             communityViewModel.isValidInstagramUrl.value = false
             communityViewModel.bitmap.value = null
-            if (!openDialogCustom.value){
                 getUpdatedCommunity(type = type,
                     user_id = user_id,
                     communityViewModel = communityViewModel,
                     homeActivity = homeActivity)
-            }
         }
         is NetworkResult.Error -> {
             // show error message
