@@ -76,8 +76,6 @@ fun BottomHomeScreen(
             partnerId = partnerId
         )
     }
-
-
     BottomSheetScaffold(
         scaffoldState = homeBottomSheetScaffoldState,
         sheetGesturesEnabled = true,
@@ -217,6 +215,9 @@ fun BottomHomeScreen(
                                             user_name = if (type == Constants.PARENT) selectedText.value else bottomHomeViewModel.parentList[0]
                                         )
                                     )
+                                    coroutineScope.launch {
+                                        homeBottomSheetScaffoldState.bottomSheetState.collapse()
+                                    }
                                     bottomHomeViewModel.storeAnsImportantQuestionResponse.observe(
                                         homeActivity
                                     ) {

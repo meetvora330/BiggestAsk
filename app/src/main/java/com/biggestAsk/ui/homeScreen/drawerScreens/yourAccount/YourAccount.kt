@@ -96,7 +96,7 @@ fun YourAccountScreen(
     val month = c.get(Calendar.MONTH)
     val day = c.get(Calendar.DAY_OF_MONTH)
     val suggestions =
-        listOf("Male", "Female", "Other")
+        listOf("male", "female", "other")
     LaunchedEffect(Unit) {
         yourAccountViewModel.isEditable.value = false
         getAnsweredQuestionList(userId, type, yourAccountViewModel, homeActivity)

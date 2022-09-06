@@ -56,7 +56,7 @@ object NotificationUtils {
                     .bigText(contentText)
             )
             setGroup("GROUP_KEY")
-            priority = NotificationCompat.PRIORITY_MAX
+            priority = NotificationCompat.PRIORITY_HIGH
             setAutoCancel(true)
         }
 
