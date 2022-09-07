@@ -263,26 +263,14 @@ fun HomeScreen(
                     fontWeight = FontWeight.W900,
                     lineHeight = 24.sp
                 )
-                if (notificationViewModel.isNotificationScreen.value == true && notificationViewModel.isSearchClicked.value) {
-//                    Row(
-//                        modifier = Modifier
-//                            .constrainAs(text_field_search) {
-//                                top.linkTo(parent.top)
-//                                start.linkTo(icon_open_drawer.end)
-//                                end.linkTo(icon_add.start)
-//                                bottom.linkTo(parent.bottom)
-//                                width = Dimension.fillToConstraints
-//                            },
-//                        verticalAlignment = Alignment.CenterVertically,
-//                        horizontalArrangement = Arrangement.spacedBy(145.dp)
-//                    ) {
+                if (notificationViewModel.isSearchClicked.value) {
                     BasicTextField(
                         modifier = Modifier
                             .constrainAs(text_field_search) {
                                 start.linkTo(icon_open_drawer.end, margin = 10.dp)
                                 top.linkTo(parent.top)
                                 bottom.linkTo(parent.bottom)
-                                end.linkTo(icon_clear_search.start, margin = 10.dp)
+                                end.linkTo(icon_add.start, margin = 10.dp)
                                 width = Dimension.fillToConstraints
                             }
                             .focusRequester(requester)
@@ -307,69 +295,22 @@ fun HomeScreen(
                         ),
                         singleLine = true,
                         decorationBox = { innerText ->
-                            if (notificationViewModel.searchText == "") {
+                            if (notificationViewModel.searchText == " ") {
                                 Text(text = "Search ", modifier = Modifier.fillMaxWidth())
                             } else {
                                 innerText()
                             }
                         },
                     )
-                    Image(
-                        modifier = Modifier
-                            .padding(start = 5.dp)
-                            .clickable(
-                                indication = null,
-                                interactionSource = MutableInteractionSource()
-                            ) {
-                                notificationViewModel.searchText =
-                                    "" // Remove text from TextField when you press the 'X' icon
-                                notificationViewModel.isNotificationScreen.value = true
-                                notificationViewModel.isSearchClicked.value = false
-                                notificationViewModel.updatedList.clear()
-                                notificationViewModel.updatedList.addAll(notificationViewModel.notificationList)
-                            }
-                            .width(48.dp)
-                            .height(48.dp)
-                            .constrainAs(icon_clear_search) {
-                                top.linkTo(parent.top)
-                                end.linkTo(parent.end, margin = 15.dp)
-                                bottom.linkTo(parent.bottom)
-                            },
-                        painter = painterResource(id = R.drawable.ic_img_clear_searched),
-                        contentDescription = ""
-                    )
-//                    IconButton(
-//                        modifier = Modifier.constrainAs(icon_clear_search) {
-//                            top.linkTo(parent.top)
-//                            bottom.linkTo(parent.bottom)
-//                            end.linkTo(parent.end)
-//                        },
-//                        onClick = {
-//                            notificationViewModel.searchText =
-//                                "" // Remove text from TextField when you press the 'X' icon
-//                            notificationViewModel.isNotificationScreen.value = true
-//                            notificationViewModel.isSearchClicked.value = false
-//                            notificationViewModel.updatedList.clear()
-//                            notificationViewModel.updatedList.addAll(notificationViewModel.notificationList)
-//                        }
-//                    ) {
-//                        Icon(
-//                            Icons.Default.Close,
-//                            contentDescription = "",
-//                            modifier = Modifier.size(24.dp)
-//                        )
-//                    }
                 }
                 Icon(
                     modifier = Modifier
                         .padding(end = 24.dp)
-                        .width(24.dp)
-                        .height(24.dp)
                         .alpha(
                             if (communityViewModel.isCommunityScreen.value == true ||
                                 contactYourProviderViewModel.isContactProvidersScreen.value == true ||
                                 yourAccountViewModel.isYourAccountScreen.value == true ||
-                                (notificationViewModel.isNotificationScreen.value == true && !notificationViewModel.isSearchClicked.value)
+                                notificationViewModel.isNotificationScreen.value == true || notificationViewModel.isSearchClicked.value
                             ) 1f else 0f
                         )
                         .constrainAs(icon_add)
@@ -397,11 +338,31 @@ fun HomeScreen(
                                 )
                             }
                             if (notificationViewModel.isNotificationScreen.value == true) {
-                                if (!notificationViewModel.isSearchClicked.value) {
-                                    notificationViewModel.searchText = ""
-                                    notificationViewModel.isSearchClicked.value =
-                                        notificationViewModel.isSearchClicked.value != true
+                                Log.d(
+                                    "TAG",
+                                    "HomeScreen: isNotification screen search is visible ${notificationViewModel.isNotificationScreen.value}"
+                                )
+                                notificationViewModel.isSearchClicked.value =
+                                    notificationViewModel.isNotificationScreen.value!!
+                                if (notificationViewModel.isSearchClicked.value) {
+                                    Log.d(
+                                        "TAG",
+                                        "HomeScreen: is Search clicked ${notificationViewModel.isSearchClicked.value}"
+                                    )
+                                    notificationViewModel.isNotificationScreen.value = false
                                 }
+                            } else {
+                                Log.d(
+                                    "TAG",
+                                    "HomeScreen: isNotification screen search is visible ${notificationViewModel.isNotificationScreen.value}"
+                                )
+                                notificationViewModel.searchText = ""
+                                notificationViewModel.isNotificationScreen.value = true
+                                notificationViewModel.isSearchClicked.value = false
+                                Log.d(
+                                    "TAG",
+                                    "HomeScreen: is Search clicked ${notificationViewModel.isSearchClicked.value}"
+                                )
                             }
                         },
                     painter = painterResource(
@@ -417,6 +378,9 @@ fun HomeScreen(
                             }
                             notificationViewModel.isNotificationScreen.value -> {
                                 R.drawable.ic_baseline_search_24
+                            }
+                            notificationViewModel.isSearchClicked.value -> {
+                                R.drawable.ic_clear_search
                             }
                             else -> {
                                 R.drawable.ic_icon_toolbar_add
@@ -559,6 +523,7 @@ fun currentRoute(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     when (navController.currentDestination?.route) {
         BottomNavItems.Home.navRoute -> {
+            notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.text_home_bottom_nav_home)
             //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false
@@ -575,6 +540,7 @@ fun currentRoute(
             viewModel.isSettingSubPrivacyPolicyScreen.value = false
         }
         BottomNavItems.Questions.navRoute -> {
+            notificationViewModel.isSearchClicked.value = false
             //            viewModel.imageList.clear()
             viewModel.toolbarTittle = stringResource(id = R.string.text_home_bottom_nav_question)
             //            viewModel.list = viewModel.emptyList
@@ -593,6 +559,7 @@ fun currentRoute(
             viewModel.isSettingSubPrivacyPolicyScreen.value = false
         }
         BottomNavItems.Milestones.navRoute -> {
+            notificationViewModel.isSearchClicked.value = false
             //            viewModel.imageList.clear()
             //            viewModel.listData.forEachIndexed { index, _ ->
             //                viewModel.listData[index].show = false
@@ -614,6 +581,7 @@ fun currentRoute(
             viewModel.isSettingSubPrivacyPolicyScreen.value = false
         }
         NavDrawerItem.YourSurrogateMother.route -> {
+            notificationViewModel.isSearchClicked.value = false
             //            viewModel.imageList.clear()
             //            viewModel.list = viewModel.emptyList
             viewModel.toolbarTittle = stringResource(id = R.string.your_surrogate_mother)
@@ -632,6 +600,7 @@ fun currentRoute(
             viewModel.isSettingSubPrivacyPolicyScreen.value = false
         }
         NavDrawerItem.IntendedParents.route -> {
+            notificationViewModel.isSearchClicked.value = false
             //            viewModel.imageList.clear()
             //            viewModel.list = viewModel.emptyList
             viewModel.toolbarTittle = stringResource(id = R.string.intended_parents)
@@ -650,6 +619,7 @@ fun currentRoute(
             viewModel.isSettingSubDetailedSettingScreen.value = false
         }
         NavDrawerItem.Community.route -> {
+            notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.community)
             //            viewModel.list = viewModel.emptyList
             contactYourProviderViewModel.isContactProvidersScreen.value = false
@@ -667,6 +637,7 @@ fun currentRoute(
             communityViewModel.isCommunityScreen.value = true
         }
         NavDrawerItem.ContactYourProviders.route -> {
+            notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.contact_your_providers)
             //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false
@@ -703,6 +674,7 @@ fun currentRoute(
             notificationViewModel.isNotificationScreen.value = true
         }
         NavDrawerItem.Settings.route -> {
+            notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.settings)
             //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false
@@ -720,6 +692,7 @@ fun currentRoute(
             viewModel.isSettingSubPrivacyPolicyScreen.value = false
         }
         MyAccount.MyAccountScreen.route -> {
+            notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.your_account)
             //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false
@@ -736,6 +709,7 @@ fun currentRoute(
             yourAccountViewModel.isYourAccountScreen.value = true
         }
         BottomNavScreen.AddNewMileStones.route -> {
+            notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.edit_milestone)
             //            viewModel.list = viewModel.emptyList
             yourAccountViewModel.isYourAccountScreen.value = false
@@ -753,6 +727,7 @@ fun currentRoute(
             viewModel.isAddMilestoneScreen.value = true
         }
         NotificationDetailScreenRoute.NotificationDetails.route -> {
+            notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.notifications)
             //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false
@@ -770,6 +745,7 @@ fun currentRoute(
             viewModel.isSettingSubPrivacyPolicyScreen.value = false
         }
         SettingSubScreen.AboutApp.route -> {
+            notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.about_app)
             //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false
@@ -786,6 +762,7 @@ fun currentRoute(
             viewModel.isSettingSubDetailedSettingScreen.value = false
         }
         SettingSubScreen.DetailedSetting.route -> {
+            notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.detailed_settings)
             //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false
@@ -802,6 +779,7 @@ fun currentRoute(
             viewModel.isSettingSubDetailedSettingScreen.value = true
         }
         SettingSubScreen.PrivacyPolicy.route -> {
+            notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.privacy_policy)
             //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false
@@ -818,6 +796,7 @@ fun currentRoute(
             viewModel.isSettingSubPrivacyPolicyScreen.value = true
         }
         SettingSubScreen.TermsOfService.route -> {
+            notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.terms_of_service)
             //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false

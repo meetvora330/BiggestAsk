@@ -33,7 +33,7 @@ class NotificationViewModel @Inject constructor(
     val isNotificationDetailsScreen: MutableState<Boolean> = mutableStateOf(false)
     var isSearchClicked: MutableState<Boolean> = mutableStateOf(false)
     var updatedList = mutableStateListOf<GetNotificationResponseData>()
-    var searchText: String by mutableStateOf("")
+    var searchText: String by mutableStateOf(" ")
 
     fun getNotification(getNotificationRequest: GetNotificationRequest) {
         getNotificationResponse.value = NetworkResult.Loading()
