@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.material.ripple.RippleAlpha
 import androidx.compose.material.ripple.RippleTheme
@@ -40,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -141,7 +140,7 @@ fun HomeScreen(
                     .padding(top = 10.dp)
                     .background(Color.White)
             ) {
-                val (icon_open_drawer, tv_tittle_toolbar, icon_add, text_field_search) = createRefs()
+                val (icon_open_drawer, tv_tittle_toolbar, icon_add, text_field_search, icon_clear_search) = createRefs()
                 Image(
                     modifier = Modifier
                         .padding(start = 24.dp)
@@ -265,46 +264,63 @@ fun HomeScreen(
                     lineHeight = 24.sp
                 )
                 if (notificationViewModel.isNotificationScreen.value == true && notificationViewModel.isSearchClicked.value) {
-                    Row(
+//                    Row(
+//                        modifier = Modifier
+//                            .constrainAs(text_field_search) {
+//                                top.linkTo(parent.top)
+//                                start.linkTo(icon_open_drawer.end)
+//                                end.linkTo(icon_add.start)
+//                                bottom.linkTo(parent.bottom)
+//                                width = Dimension.fillToConstraints
+//                            },
+//                        verticalAlignment = Alignment.CenterVertically,
+//                        horizontalArrangement = Arrangement.spacedBy(145.dp)
+//                    ) {
+                    BasicTextField(
                         modifier = Modifier
-                            .fillMaxWidth()
                             .constrainAs(text_field_search) {
+                                start.linkTo(icon_open_drawer.end, margin = 10.dp)
                                 top.linkTo(parent.top)
-                                start.linkTo(icon_open_drawer.end)
-                                end.linkTo(icon_add.start)
                                 bottom.linkTo(parent.bottom)
-                            },
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(145.dp)
-                    ) {
-                        BasicTextField(
-                            modifier = Modifier
-                                .padding(start = 55.dp)
-                                .focusRequester(requester)
-                                .onFocusChanged {
-                                    if (!it.isFocused) {
-                                        requester.requestFocus()
-                                        keyboardController?.show()
-                                    }
+                                end.linkTo(icon_clear_search.start, margin = 10.dp)
+                                width = Dimension.fillToConstraints
+                            }
+                            .focusRequester(requester)
+                            .onFocusChanged {
+                                if (!it.isFocused) {
+                                    requester.requestFocus()
+                                    keyboardController?.show()
                                 }
-                                .background(Color.White),
-                            value = notificationViewModel.searchText,
-                            onValueChange = { it1 ->
-                                notificationViewModel.updatedList.clear()
-                                notificationViewModel.searchText = it1
-                                notificationViewModel.getFilteredList(notificationViewModel.searchText)
-                            },
-                            singleLine = true,
-                            decorationBox = { innerText ->
-                                if (notificationViewModel.searchText == "") {
-                                    Text(text = "Search ", modifier = Modifier.fillMaxWidth())
-                                } else {
-                                    innerText()
-                                }
-                            },
-                        )
-                        IconButton(
-                            onClick = {
+                            }
+                            .background(Color.White),
+                        value = notificationViewModel.searchText,
+                        onValueChange = { it1 ->
+                            notificationViewModel.updatedList.clear()
+                            notificationViewModel.searchText = it1
+                            notificationViewModel.getFilteredList(notificationViewModel.searchText)
+                        },
+                        textStyle = MaterialTheme.typography.body2.copy(
+                            fontSize = 16.sp,
+                            color = Color.Black,
+                            fontWeight = FontWeight.Normal,
+                            lineHeight = 16.sp
+                        ),
+                        singleLine = true,
+                        decorationBox = { innerText ->
+                            if (notificationViewModel.searchText == "") {
+                                Text(text = "Search ", modifier = Modifier.fillMaxWidth())
+                            } else {
+                                innerText()
+                            }
+                        },
+                    )
+                    Image(
+                        modifier = Modifier
+                            .padding(start = 5.dp)
+                            .clickable(
+                                indication = null,
+                                interactionSource = MutableInteractionSource()
+                            ) {
                                 notificationViewModel.searchText =
                                     "" // Remove text from TextField when you press the 'X' icon
                                 notificationViewModel.isNotificationScreen.value = true
@@ -312,15 +328,37 @@ fun HomeScreen(
                                 notificationViewModel.updatedList.clear()
                                 notificationViewModel.updatedList.addAll(notificationViewModel.notificationList)
                             }
-                        ) {
-                            Icon(
-                                Icons.Default.Close,
-                                contentDescription = "",
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                    }
-
+                            .width(48.dp)
+                            .height(48.dp)
+                            .constrainAs(icon_clear_search) {
+                                top.linkTo(parent.top)
+                                end.linkTo(parent.end, margin = 15.dp)
+                                bottom.linkTo(parent.bottom)
+                            },
+                        painter = painterResource(id = R.drawable.ic_img_clear_searched),
+                        contentDescription = ""
+                    )
+//                    IconButton(
+//                        modifier = Modifier.constrainAs(icon_clear_search) {
+//                            top.linkTo(parent.top)
+//                            bottom.linkTo(parent.bottom)
+//                            end.linkTo(parent.end)
+//                        },
+//                        onClick = {
+//                            notificationViewModel.searchText =
+//                                "" // Remove text from TextField when you press the 'X' icon
+//                            notificationViewModel.isNotificationScreen.value = true
+//                            notificationViewModel.isSearchClicked.value = false
+//                            notificationViewModel.updatedList.clear()
+//                            notificationViewModel.updatedList.addAll(notificationViewModel.notificationList)
+//                        }
+//                    ) {
+//                        Icon(
+//                            Icons.Default.Close,
+//                            contentDescription = "",
+//                            modifier = Modifier.size(24.dp)
+//                        )
+//                    }
                 }
                 Icon(
                     modifier = Modifier
@@ -359,11 +397,8 @@ fun HomeScreen(
                                 )
                             }
                             if (notificationViewModel.isNotificationScreen.value == true) {
-                                //                                if (notificationViewModel.searchText != ""){
-                                //                                    notificationViewModel.searchText = ""
-                                //                                }
                                 if (!notificationViewModel.isSearchClicked.value) {
-                                    //                                    notificationViewModel.searchText = ""
+                                    notificationViewModel.searchText = ""
                                     notificationViewModel.isSearchClicked.value =
                                         notificationViewModel.isSearchClicked.value != true
                                 }

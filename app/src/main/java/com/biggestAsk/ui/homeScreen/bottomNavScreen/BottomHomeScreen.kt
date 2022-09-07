@@ -1040,7 +1040,7 @@ private fun handleNearestMilestoneData(
             else
                 bottomHomeViewModel.nearestMilestoneTime = result.data.time
 
-            if (result.data.milestone_image.isEmpty())
+            if (result.data.milestone_image==null)
                 bottomHomeViewModel.nearestMilestoneImage = ""
             else
                 bottomHomeViewModel.nearestMilestoneImage = result.data.milestone_image
