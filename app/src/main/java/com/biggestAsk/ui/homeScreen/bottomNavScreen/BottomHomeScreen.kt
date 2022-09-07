@@ -76,8 +76,6 @@ fun BottomHomeScreen(
             partnerId = partnerId
         )
     }
-
-
     BottomSheetScaffold(
         scaffoldState = homeBottomSheetScaffoldState,
         sheetGesturesEnabled = true,
@@ -217,6 +215,9 @@ fun BottomHomeScreen(
                                             user_name = if (type == Constants.PARENT) selectedText.value else bottomHomeViewModel.parentList[0]
                                         )
                                     )
+                                    coroutineScope.launch {
+                                        homeBottomSheetScaffoldState.bottomSheetState.collapse()
+                                    }
                                     bottomHomeViewModel.storeAnsImportantQuestionResponse.observe(
                                         homeActivity
                                     ) {
@@ -1039,7 +1040,7 @@ private fun handleNearestMilestoneData(
             else
                 bottomHomeViewModel.nearestMilestoneTime = result.data.time
 
-            if (result.data.milestone_image.isEmpty())
+            if (result.data.milestone_image==null)
                 bottomHomeViewModel.nearestMilestoneImage = ""
             else
                 bottomHomeViewModel.nearestMilestoneImage = result.data.milestone_image

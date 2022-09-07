@@ -66,7 +66,7 @@ fun RegisterScreen(
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
     val suggestions =
-        listOf("Male", "Female", "Other")
+        listOf("male", "female", "other")
     var selectedText by remember { mutableStateOf("") }
     LaunchedEffect(Unit) {
         registerViewModel.textFullName = ""

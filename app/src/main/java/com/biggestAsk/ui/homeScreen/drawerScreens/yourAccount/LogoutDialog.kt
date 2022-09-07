@@ -12,8 +12,6 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,12 +21,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.biggestAsk.ui.activity.HomeActivity
-import com.biggestAsk.ui.activity.MainActivity
 import com.biggestAsk.data.model.request.LogoutRequest
 import com.biggestAsk.data.model.response.LogoutResponse
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.data.source.network.isInternetAvailable
+import com.biggestAsk.ui.activity.HomeActivity
+import com.biggestAsk.ui.activity.MainActivity
 import com.biggestAsk.ui.introScreen.findActivity
 import com.biggestAsk.ui.main.viewmodel.LogoutViewModel
 import com.biggestAsk.util.PreferenceProvider
@@ -115,11 +113,13 @@ fun LogoutDialog(
                     .clickable(indication = null, interactionSource = MutableInteractionSource()) {
                         if (isInternetAvailable(context)) {
                             type?.let {
-                                logOutUser(it,
+                                logOutUser(
+                                    it,
                                     userId,
                                     logoutViewModel,
                                     homeActivity,
-                                    context)
+                                    context
+                                )
                             }
                         } else Toast
                             .makeText(context, R.string.no_internet_available, Toast.LENGTH_SHORT)
@@ -191,6 +191,10 @@ private fun handleLogOutApi(
                 ?.finish()
             PreferenceProvider(context).clear()
             PreferenceProvider(context).setValue("isIntroDone", true)
+            PreferenceProvider(appContext = context).setValue(
+                "notification_count",
+                "0"
+            )
         }
         is NetworkResult.Error -> {
             //show error message

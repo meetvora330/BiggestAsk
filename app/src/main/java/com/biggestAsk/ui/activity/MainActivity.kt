@@ -347,10 +347,10 @@ private fun handleUpdatedStatusData(
         is NetworkResult.Success -> {
             // bind data to the view
             val provider = PreferenceProvider(context)
-            result.data?.let {
+            if (result.data?.status != null) {
                 provider.setValue(
                     Constants.LOGIN_STATUS,
-                    it.status
+                    result.data.status
                 )
             }
             result.data?.partner_id?.let {
