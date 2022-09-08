@@ -47,7 +47,7 @@ class MarshMellowHelper(activity: Activity, permissions: Array<String>, requestC
     fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
-        grantResults: IntArray
+        grantResults: IntArray,
     ) {
         if (requestCode == this.requestCode) {
             var denied = false

@@ -6,5 +6,5 @@ data class DataXXXX(
     val ques_type: String,
     val type: String,
     val updated_at: String,
-    val user_id: Int
+    val user_id: Int,
 )

@@ -2,7 +2,6 @@ package com.biggestAsk.ui.homeScreen.drawerScreens.community
 
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -52,7 +51,6 @@ fun Community(
                 communityViewModel = communityViewModel,
                 homeActivity
             )
-            Log.e("communityScreen", "communityScreen() --> InternetAvailable")
         } else {
             communityViewModel.isDataNull = false
             communityViewModel.communityList.clear()
@@ -102,7 +100,7 @@ fun Community(
                                     .clip(RoundedCornerShape(10.dp)),
                                 contentScale = ContentScale.Crop,
                                 painter = painter,
-                                contentDescription = ""
+                                contentDescription = stringResource(id = R.string.content_description),
                             )
                             Column(modifier = Modifier.padding(start = 16.dp)) {
                                 Text(

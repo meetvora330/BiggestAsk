@@ -4,7 +4,6 @@ package com.biggestAsk.ui.homeScreen
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -90,7 +89,7 @@ fun HomeScreen(
     termsOfServiceViewModel: TermsOfServiceViewModel,
     detailedSettingsViewModel: DetailedSettingsViewModel,
     settingViewModel: SettingViewModel,
-    logoutViewModel: LogoutViewModel
+    logoutViewModel: LogoutViewModel,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val requester = FocusRequester()
@@ -140,7 +139,7 @@ fun HomeScreen(
                     .padding(top = 10.dp)
                     .background(Color.White)
             ) {
-                val (icon_open_drawer, tv_tittle_toolbar, icon_add, text_field_search, icon_clear_search) = createRefs()
+                val (icon_open_drawer, tv_tittle_toolbar, icon_add, text_field_search) = createRefs()
                 Image(
                     modifier = Modifier
                         .padding(start = 24.dp)
@@ -242,7 +241,7 @@ fun HomeScreen(
                             }
                         }
                     ),
-                    contentDescription = ""
+                    contentDescription = stringResource(id = R.string.content_description),
                 )
                 Text(
                     modifier = Modifier
@@ -296,7 +295,8 @@ fun HomeScreen(
                         singleLine = true,
                         decorationBox = { innerText ->
                             if (notificationViewModel.searchText == " ") {
-                                Text(text = "Search ", modifier = Modifier.fillMaxWidth())
+                                Text(text = stringResource(id = R.string.search),
+                                    modifier = Modifier.fillMaxWidth())
                             } else {
                                 innerText()
                             }
@@ -332,37 +332,17 @@ fun HomeScreen(
                             if (yourAccountViewModel.isYourAccountScreen.value == true) {
                                 yourAccountViewModel.isEditable.value =
                                     yourAccountViewModel.isEditable.value != true
-                                Log.d(
-                                    "TAG",
-                                    "HomeScreen: isEditable ${yourAccountViewModel.isEditable.value}"
-                                )
                             }
                             if (notificationViewModel.isNotificationScreen.value == true) {
-                                Log.d(
-                                    "TAG",
-                                    "HomeScreen: isNotification screen search is visible ${notificationViewModel.isNotificationScreen.value}"
-                                )
                                 notificationViewModel.isSearchClicked.value =
                                     notificationViewModel.isNotificationScreen.value!!
                                 if (notificationViewModel.isSearchClicked.value) {
-                                    Log.d(
-                                        "TAG",
-                                        "HomeScreen: is Search clicked ${notificationViewModel.isSearchClicked.value}"
-                                    )
                                     notificationViewModel.isNotificationScreen.value = false
+                                    notificationViewModel.searchText = ""
                                 }
                             } else {
-                                Log.d(
-                                    "TAG",
-                                    "HomeScreen: isNotification screen search is visible ${notificationViewModel.isNotificationScreen.value}"
-                                )
-                                notificationViewModel.searchText = ""
                                 notificationViewModel.isNotificationScreen.value = true
                                 notificationViewModel.isSearchClicked.value = false
-                                Log.d(
-                                    "TAG",
-                                    "HomeScreen: is Search clicked ${notificationViewModel.isSearchClicked.value}"
-                                )
                             }
                         },
                     painter = painterResource(
@@ -387,7 +367,7 @@ fun HomeScreen(
                             }
                         }
                     ),
-                    contentDescription = "",
+                    contentDescription = stringResource(id = R.string.content_description),
                     tint = if (yourAccountViewModel.isEditable.value) Custom_Blue else Color.Black
                 )
             }
@@ -525,7 +505,6 @@ fun currentRoute(
         BottomNavItems.Home.navRoute -> {
             notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.text_home_bottom_nav_home)
-            //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
@@ -541,9 +520,7 @@ fun currentRoute(
         }
         BottomNavItems.Questions.navRoute -> {
             notificationViewModel.isSearchClicked.value = false
-            //            viewModel.imageList.clear()
             viewModel.toolbarTittle = stringResource(id = R.string.text_home_bottom_nav_question)
-            //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isEditable.value = false
@@ -560,11 +537,6 @@ fun currentRoute(
         }
         BottomNavItems.Milestones.navRoute -> {
             notificationViewModel.isSearchClicked.value = false
-            //            viewModel.imageList.clear()
-            //            viewModel.listData.forEachIndexed { index, _ ->
-            //                viewModel.listData[index].show = false
-            //            }
-            // viewModel.isSelected = false
             viewModel.toolbarTittle = stringResource(id = R.string.text_home_bottom_nav_milestone)
             communityViewModel.isCommunityScreen.value = false
             yourAccountViewModel.isEditable.value = false
@@ -582,8 +554,6 @@ fun currentRoute(
         }
         NavDrawerItem.YourSurrogateMother.route -> {
             notificationViewModel.isSearchClicked.value = false
-            //            viewModel.imageList.clear()
-            //            viewModel.list = viewModel.emptyList
             viewModel.toolbarTittle = stringResource(id = R.string.your_surrogate_mother)
             communityViewModel.isCommunityScreen.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
@@ -601,8 +571,6 @@ fun currentRoute(
         }
         NavDrawerItem.IntendedParents.route -> {
             notificationViewModel.isSearchClicked.value = false
-            //            viewModel.imageList.clear()
-            //            viewModel.list = viewModel.emptyList
             viewModel.toolbarTittle = stringResource(id = R.string.intended_parents)
             communityViewModel.isCommunityScreen.value = false
             yourAccountViewModel.isEditable.value = false
@@ -621,7 +589,6 @@ fun currentRoute(
         NavDrawerItem.Community.route -> {
             notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.community)
-            //            viewModel.list = viewModel.emptyList
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             yourAccountViewModel.isEditable.value = false
@@ -639,7 +606,6 @@ fun currentRoute(
         NavDrawerItem.ContactYourProviders.route -> {
             notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.contact_your_providers)
-            //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
             yourAccountViewModel.isEditable.value = false
@@ -656,7 +622,6 @@ fun currentRoute(
         }
         NavDrawerItem.Notifications.route -> {
             viewModel.toolbarTittle = stringResource(id = R.string.notifications)
-            //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false
             notificationViewModel.isSearchClicked.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
@@ -676,7 +641,6 @@ fun currentRoute(
         NavDrawerItem.Settings.route -> {
             notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.settings)
-            //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
@@ -694,7 +658,6 @@ fun currentRoute(
         MyAccount.MyAccountScreen.route -> {
             notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.your_account)
-            //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false
             viewModel.isEditable.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
@@ -711,7 +674,6 @@ fun currentRoute(
         BottomNavScreen.AddNewMileStones.route -> {
             notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.edit_milestone)
-            //            viewModel.list = viewModel.emptyList
             yourAccountViewModel.isYourAccountScreen.value = false
             communityViewModel.isCommunityScreen.value = false
             yourAccountViewModel.isEditable.value = false
@@ -729,7 +691,6 @@ fun currentRoute(
         NotificationDetailScreenRoute.NotificationDetails.route -> {
             notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.notifications)
-            //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false
             yourAccountViewModel.isEditable.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
@@ -747,7 +708,6 @@ fun currentRoute(
         SettingSubScreen.AboutApp.route -> {
             notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.about_app)
-            //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
@@ -764,7 +724,6 @@ fun currentRoute(
         SettingSubScreen.DetailedSetting.route -> {
             notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.detailed_settings)
-            //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
@@ -781,7 +740,6 @@ fun currentRoute(
         SettingSubScreen.PrivacyPolicy.route -> {
             notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.privacy_policy)
-            //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
@@ -798,7 +756,6 @@ fun currentRoute(
         SettingSubScreen.TermsOfService.route -> {
             notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.terms_of_service)
-            //            viewModel.list = viewModel.emptyList
             communityViewModel.isCommunityScreen.value = false
             contactYourProviderViewModel.isContactProvidersScreen.value = false
             yourAccountViewModel.isYourAccountScreen.value = false
@@ -840,14 +797,14 @@ fun NavigationDrawerContent(
         NavDrawerItem.Settings
     )
     val image =
-        if (type == "parent") yourAccountViewModel.parentImg1 else yourAccountViewModel.surrogateImg
-    val userName = provider.getValue("user_name", "")
+        if (type == Constants.PARENT) yourAccountViewModel.parentImg1 else yourAccountViewModel.surrogateImg
+    val userName = provider.getValue(Constants.USER_NAME, "")
     val painter = rememberImagePainter(
         data = image,
         builder = {
             placeholder(R.drawable.ic_placeholder_your_account)
         })
-    val userType = if (type == "parent") "Parents" else "Surrogate Mother"
+    val userType = if (type == Constants.PARENT) Constants.PARENTS else Constants.SURROGATE_MOTHER
     LaunchedEffect(Unit) {
         getNotificationCount(
             type = type,
@@ -890,7 +847,7 @@ fun NavigationDrawerContent(
                         .width(56.dp)
                         .height(56.dp),
                     painter = if (image != "") painter else painterResource(id = R.drawable.ic_placeholder_your_account),
-                    contentDescription = ""
+                    contentDescription = stringResource(id = R.string.content_description),
                 )
                 Column {
                     userName?.let {
@@ -946,7 +903,7 @@ fun NavigationDrawerContent(
                                 .width(24.dp)
                                 .height(24.dp),
                             painter = painterResource(id = item.icon),
-                            contentDescription = ""
+                            contentDescription = stringResource(id = R.string.content_description),
                         )
                         Text(
                             text = item.tittle,
@@ -960,7 +917,8 @@ fun NavigationDrawerContent(
                         )
                         if (index == 3) {
                             homeViewModel.notificationCount =
-                                PreferenceProvider(context).getValue("notification_count", "")
+                                PreferenceProvider(context).getValue(Constants.NOTIFICATION_COUNT,
+                                    "")
                                     .toString()
                             if (homeViewModel.notificationCount != "0") {
                                 Box(modifier = Modifier.padding(top = 2.5.dp, start = 18.dp)) {
@@ -991,9 +949,9 @@ fun NavigationDrawerContent(
                     .fillMaxWidth()
                     .padding(top = 64.dp)
             ) {
-                val getPregnancyStatus = provider.getValue("pregnancy_milestone_status", "")
+                val getPregnancyStatus = provider.getValue(Constants.PREGNANCY_MILESTONE_STATUS, "")
                 homeViewModel.getPregnancyStatus =
-                    if (getPregnancyStatus == "active") true else if (getPregnancyStatus == "inactive") false else false
+                    if (getPregnancyStatus == Constants.ACTIVE) true else if (getPregnancyStatus == Constants.IN_ACTIVE) false else false
                 Text(
                     text = stringResource(id = R.string.show_pregnancy_milestone),
                     style = MaterialTheme.typography.body1,
@@ -1034,7 +992,7 @@ fun NavigationDrawerContent(
                         .width(24.dp)
                         .height(24.dp),
                     painter = painterResource(id = R.drawable.ic_icon_nav_drawer_logout),
-                    contentDescription = ""
+                    contentDescription = stringResource(id = R.string.content_description),
                 )
                 Text(
                     modifier = Modifier
@@ -1086,7 +1044,7 @@ fun getNotificationCount(
     userId: Int,
     homeActivity: HomeActivity,
     bottomHomeViewModel: BottomHomeViewModel,
-    context: Context
+    context: Context,
 ) {
     type?.let { bottomHomeViewModel.getNotificationCount(type = it, user_id = userId) }
     bottomHomeViewModel.getNotificationCountResponse.observe(homeActivity) {
@@ -1105,7 +1063,7 @@ fun getPregnancyStatus(
     userId: Int,
     homeActivity: HomeActivity,
     bottomHomeViewModel: BottomHomeViewModel,
-    context: Context
+    context: Context,
 ) {
     type?.let {
         bottomHomeViewModel.getPregnancyStatus(
@@ -1129,24 +1087,21 @@ fun getPregnancyStatus(
 private fun handlePregnancyStatusData(
     result: NetworkResult<GetPregnancyMilestoneStatusResponse>,
     bottomHomeViewModel: BottomHomeViewModel,
-    context: Context
+    context: Context,
 ) {
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
-            Log.e("TAG", "handleUserData() --> Loading  $result")
             bottomHomeViewModel.isPregnancyStatusLoaded = true
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
-            Log.i("TAG", result.message.toString())
             bottomHomeViewModel.isPregnancyStatusLoaded = false
             bottomHomeViewModel.getPregnancyStatus =
-                if (result.data?.status == "active") true else if (result.data?.status == "inactive") false else false
+                if (result.data?.status == Constants.ACTIVE) true else if (result.data?.status == Constants.IN_ACTIVE) false else false
             result.data?.status?.let {
                 PreferenceProvider(context).setValue(
-                    "pregnancy_milestone_status",
+                    Constants.PREGNANCY_MILESTONE_STATUS,
                     it
                 )
             }
@@ -1154,7 +1109,6 @@ private fun handlePregnancyStatusData(
         is NetworkResult.Error -> {
             // show error message
             bottomHomeViewModel.isPregnancyStatusLoaded = false
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
         }
     }
 }
@@ -1162,26 +1116,22 @@ private fun handlePregnancyStatusData(
 private fun handleNotificationCountData(
     result: NetworkResult<GetNotificationCountResponse>,
     bottomHomeViewModel: BottomHomeViewModel,
-    context: Context
+    context: Context,
 ) {
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
-            Log.e("TAG", "handleUserData() --> Loading  $result")
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
             bottomHomeViewModel.notificationCount = result.data?.count.toString()
             PreferenceProvider(appContext = context).setValue(
-                "notification_count",
+                Constants.NOTIFICATION_COUNT,
                 result.data?.count.toString()
             )
-            Log.i("TAG", result.message.toString())
         }
         is NetworkResult.Error -> {
             // show error message
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
         }
     }
 }
@@ -1230,11 +1180,11 @@ fun BottomNavigation(navController: NavController, viewModel: MainViewModel) {
                     icon = {
                         if (selected) Image(
                             painter = painterResource(id = item.selectedIcon),
-                            contentDescription = "",
+                            contentDescription = stringResource(id = R.string.content_description),
                             modifier = Modifier.align(Alignment.CenterVertically)
                         ) else Image(
                             painter = painterResource(id = item.defaultIcon),
-                            contentDescription = "",
+                            contentDescription = stringResource(id = R.string.content_description),
                             modifier = Modifier
                                 .align(Alignment.CenterVertically)
                                 .padding(bottom = 4.dp)
@@ -1250,7 +1200,6 @@ fun BottomNavigation(navController: NavController, viewModel: MainViewModel) {
                                 saveState = true
                             }
                             launchSingleTop = true
-                            //                            restoreState = true
                         }
                     },
                 )

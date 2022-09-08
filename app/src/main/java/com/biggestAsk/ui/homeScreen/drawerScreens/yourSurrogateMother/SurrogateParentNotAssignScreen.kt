@@ -33,7 +33,7 @@ fun SurrogateParentNotAssignScreen(title: String) {
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            val (img_icon_your_surrogate_mother, tv_tittle_your_surrogate_mother, img_main_your_surrogate_mother, btn_add_surrogate_mother) = createRefs()
+            val (img_icon_your_surrogate_mother, tv_tittle_your_surrogate_mother, img_main_your_surrogate_mother) = createRefs()
             Image(
                 modifier = Modifier
                     .padding(top = 30.dp)
@@ -44,7 +44,7 @@ fun SurrogateParentNotAssignScreen(title: String) {
                         end.linkTo(parent.end)
                     },
                 painter = painterResource(id = R.drawable.ic_empty_icon_surrogate_mother),
-                contentDescription = "",
+                contentDescription = stringResource(id = R.string.content_description),
             )
             Image(
                 modifier = Modifier
@@ -59,7 +59,7 @@ fun SurrogateParentNotAssignScreen(title: String) {
                         )
                     },
                 painter = painterResource(id = R.drawable.ic_img_invitation_send_your_surrogate_mother),
-                contentDescription = "",
+                contentDescription = stringResource(id = R.string.content_description),
                 contentScale = ContentScale.FillBounds
             )
             Text(

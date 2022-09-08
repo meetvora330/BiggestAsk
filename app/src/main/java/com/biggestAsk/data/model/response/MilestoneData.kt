@@ -15,5 +15,5 @@ data class MilestoneData(
     val surrogate_share_note_with_biggestask_status: Int,
     val time: String,
     val title: String,
-    val type: String
+    val type: String,
 )

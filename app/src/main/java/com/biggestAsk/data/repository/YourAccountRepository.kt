@@ -79,7 +79,7 @@ class YourAccountRepository @Inject constructor(
 
     suspend fun getYourAccountAnsweredQuestionList(
         userId: Int,
-        type: String
+        type: String,
     ): Flow<NetworkResult<GetAnsweredQuestionListResponse>> {
         return flow {
             emit(safeApiCall {

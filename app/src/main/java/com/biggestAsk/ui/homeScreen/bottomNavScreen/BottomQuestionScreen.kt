@@ -2,7 +2,6 @@ package com.biggestAsk.ui.homeScreen.bottomNavScreen
 
 import android.content.Context
 import android.text.TextUtils
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -41,6 +40,7 @@ import com.biggestAsk.ui.main.viewmodel.YourAccountViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.ET_Bg
 import com.biggestAsk.ui.ui.theme.Text_Color
+import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 import kotlinx.coroutines.CoroutineScope
@@ -52,7 +52,7 @@ fun BottomQuestionScreen(
     questionViewModel: BottomQuestionViewModel, context: Context,
     homeActivity: HomeActivity,
     yourAccountViewModel: YourAccountViewModel,
-    frequencyViewModel: FrequencyViewModel
+    frequencyViewModel: FrequencyViewModel,
 ) {
     val suggestions =
         listOf("Every day", "Every 3 days", "Every week")
@@ -62,10 +62,10 @@ fun BottomQuestionScreen(
     val coroutineScope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
     val provider = PreferenceProvider(context)
-    val userId = provider.getIntValue("user_id", 0)
-    val type = provider.getValue("type", "")
+    val userId = provider.getIntValue(Constants.USER_ID, 0)
+    val type = provider.getValue(Constants.TYPE, "")
     val selectedText = remember { mutableStateOf("") }
-    val partnerId = provider.getIntValue("partner_id", 0)
+    val partnerId = provider.getIntValue(Constants.PARTNER_ID, 0)
 
     LaunchedEffect(Unit) {
         updateQuestionScreen(
@@ -88,7 +88,7 @@ fun BottomQuestionScreen(
                     .fillMaxWidth()
                     .padding(top = 20.dp),
                 painter = painterResource(id = R.drawable.ic_img_bottom_sheet_opener),
-                contentDescription = ""
+                contentDescription = stringResource(id = R.string.content_description),
             )
             Text(
                 modifier = Modifier
@@ -169,7 +169,7 @@ fun BottomQuestionScreen(
                     fontSize = 12.sp
                 )
             }
-            if (type == "parent") {
+            if (type == Constants.PARENT) {
                 Text(
                     modifier = Modifier
                         .wrapContentWidth()
@@ -182,7 +182,7 @@ fun BottomQuestionScreen(
                 )
                 selectedText.value = SimpleDropDown(
                     suggestions = questionViewModel.parentList,
-                    hint = "Parents",
+                    hint = stringResource(id = R.string.hint_drop_down),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 12.dp, end = 12.dp, top = 12.dp),
@@ -511,7 +511,7 @@ fun updateQuestionScreen(
     type: String?,
     yourAccountViewModel: YourAccountViewModel,
     questionViewModel: BottomQuestionViewModel,
-    homeActivity: HomeActivity
+    homeActivity: HomeActivity,
 ) {
     yourAccountViewModel.getYourAccountAnsweredQuestionList(userId = userId, type = type!!)
     questionViewModel.getHomeScreenQuestion(
@@ -551,7 +551,7 @@ fun updateFrequency(
     userId: Int,
     type: String,
     questionViewModel: BottomQuestionViewModel,
-    homeActivity: HomeActivity
+    homeActivity: HomeActivity,
 ) {
     questionViewModel.getFrequency(user_id = userId, type = type)
     questionViewModel.getFrequencyResponse.observe(homeActivity) {
@@ -568,20 +568,17 @@ fun handleQuestionBankContentData(
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
-            Log.e("TAG", "handleUserData() --> Loading  $result")
             questionViewModel.isQuestionBankContentLoaded = true
             questionViewModel.isErrorOccurredQuestionBankContent = false
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
             questionViewModel.isQuestionBankContentLoaded = false
             questionViewModel.isErrorOccurredQuestionBankContent = false
             questionViewModel.questionBankInfo = result.data?.question_bank?.get(0)?.info.toString()
         }
         is NetworkResult.Error -> {
             // show error message
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
             questionViewModel.isQuestionBankContentLoaded = false
             questionViewModel.isErrorOccurredQuestionBankContent = true
         }
@@ -598,18 +595,15 @@ private fun handleStoreAnsImportantQuestion(
     userId: Int,
     type: String,
     yourAccountViewModel: YourAccountViewModel,
-    homeActivity: HomeActivity
+    homeActivity: HomeActivity,
 ) {
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
-            Log.e("TAG", "handleUserData() --> Loading  $result")
             questionViewModel.isQuestionScreenQuestionAnswered = true
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
-            Log.i("TAG", result.message.toString())
             updateQuestionScreen(
                 userId = userId,
                 yourAccountViewModel = yourAccountViewModel,
@@ -630,7 +624,6 @@ private fun handleStoreAnsImportantQuestion(
                 bottomSheetScaffoldState.bottomSheetState.expand()
             }
             questionViewModel.isQuestionScreenQuestionAnswered = false
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
         }
     }
 }
@@ -642,26 +635,20 @@ fun handleQuestionAnswerList(
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
-            Log.e("TAG", "handleUserData() --> Loading  $result")
             questionViewModel.isAnsweredQuestionLoading = true
             questionViewModel.isErrorOccurredInQuestionLoading = false
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
             questionViewModel.isAnsweredQuestionLoading = false
             questionViewModel.isErrorOccurredInQuestionLoading = false
-            Log.d("TAG", "BottomQuestionScreen: ${questionViewModel.questionAnsweredList.size}")
             questionViewModel.questionAnsweredList.clear()
             questionViewModel.questionAnsweredDaysList.clear()
             result.data?.data?.let { questionViewModel.questionAnsweredList.addAll(it) }
-            Log.d("TAG", "BottomQuestionScreen: ${result.data?.data?.size}")
-            Log.d("TAG", "BottomQuestionScreen: ${questionViewModel.questionAnsweredList.size}")
             result.data?.days?.let { questionViewModel.questionAnsweredDaysList.addAll(it) }
         }
         is NetworkResult.Error -> {
             // show error message
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
             questionViewModel.isAnsweredQuestionLoading = false
             questionViewModel.isErrorOccurredInQuestionLoading = true
         }
@@ -670,20 +657,16 @@ fun handleQuestionAnswerList(
 
 private fun handleQuestionData(
     result: NetworkResult<GetHomeScreenQuestionResponse>,
-    questionViewModel: BottomQuestionViewModel
+    questionViewModel: BottomQuestionViewModel,
 ) {
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
-            Log.e("TAG", "handleUserData() --> Loading  $result")
             questionViewModel.isQuestionScreenQuestionDataLoaded = false
             questionViewModel.isErrorOccurredQuestionScreenQuestion = false
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
-            Log.i("TAG", result.message.toString())
-            Log.d("TAG", "handleHomeQuestionData: ${result.data?.data?.question}")
             if (result.data?.data?.category_id == null || result.data.data.question == "") {
                 questionViewModel.questionScreenQuestionCategeryId = 0
                 questionViewModel.questionScreenQuestionId = 0
@@ -707,7 +690,6 @@ private fun handleQuestionData(
         }
         is NetworkResult.Error -> {
             // show error message
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
             questionViewModel.isQuestionScreenQuestionDataLoaded = false
             questionViewModel.isErrorOccurredQuestionScreenQuestion = true
         }
@@ -721,18 +703,15 @@ private fun handleFrequencyData(
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
-            Log.e("TAG", "handleUserData() --> Loading  $result")
             questionViewModel.isFrequencyDataLoading = true
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
             questionViewModel.isFrequencyDataLoading = false
             questionViewModel.frequency = result.data?.data?.get(0)?.ques_type!!
         }
         is NetworkResult.Error -> {
             // show error message
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
             questionViewModel.isFrequencyDataLoading = false
         }
     }

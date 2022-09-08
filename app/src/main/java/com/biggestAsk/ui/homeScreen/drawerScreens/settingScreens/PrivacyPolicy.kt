@@ -1,6 +1,5 @@
 package com.biggestAsk.ui.homeScreen.drawerScreens.settingScreens
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -13,7 +12,6 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -32,16 +30,8 @@ fun PrivacyPolicy(
     homeActivity: HomeActivity,
     privacyPolicyViewModel: PrivacyPolicyViewModel,
 ) {
-    val context = LocalContext.current
     LaunchedEffect(Unit) {
         getPrivacyPolicy(privacyPolicyViewModel, homeActivity)
-//        if (isInternetAvailable(context)) {
-//        } else {
-//            privacyPolicyViewModel.isDataNull = false
-//            privacyPolicyViewModel.privacyPolicyList.clear()
-//            privacyPolicyViewModel.lastUpdatedDate = ""
-//            Toast.makeText(context, R.string.no_internet_available, Toast.LENGTH_SHORT).show()
-//        }
     }
     if (privacyPolicyViewModel.isLoading) {
         privacyPolicyViewModel.privacyPolicyList.clear()
@@ -110,7 +100,7 @@ fun PrivacyPolicy(
                                 )
                             )
                         }
-                    } else Log.e("TAG", "PrivacyPolicy() --> ")
+                    }
                 }
             }
         }
@@ -128,8 +118,6 @@ fun getPrivacyPolicy(
                 result = it,
                 privacyPolicyViewModel = privacyPolicyViewModel
             )
-        } else {
-            Log.e("TAG", "PrivacyPolicyData is null: ")
         }
     }
 }

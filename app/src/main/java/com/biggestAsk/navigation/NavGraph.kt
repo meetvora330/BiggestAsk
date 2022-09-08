@@ -47,7 +47,7 @@ fun SetUpNavGraph(
     registerViewModel: RegisterViewModel,
     emailVerificationViewModel: EmailVerificationViewModel,
     verifyOtpViewModel: VerifyOtpViewModel,
-    frequencyViewModel: FrequencyViewModel
+    frequencyViewModel: FrequencyViewModel,
 ) {
     var startDestination = Screen.Intro.route
     val provider = PreferenceProvider(mainActivity.applicationContext)
@@ -90,12 +90,9 @@ fun SetUpNavGraph(
                     items = onBoardItem,
                     scope = rememberCoroutineScope(),
                     modifier = Modifier.fillMaxWidth(),
-                    modifierBox = Modifier.padding(bottom = 56.dp),
-                    modifier_indicator = Modifier.padding(bottom = 80.dp),
                     modifier_img = Modifier.fillMaxHeight(0.6f),
                     navController = navHostController,
                     context = mainActivity.applicationContext,
-                    mainActivity = mainActivity
                 )
             } else {
                 IntroScreen(
@@ -104,12 +101,9 @@ fun SetUpNavGraph(
                     introViewModel = introViewModel,
                     scope = rememberCoroutineScope(),
                     modifier = Modifier.fillMaxWidth(),
-                    modifierBox = Modifier.padding(bottom = 50.dp),
-                    modifier_indicator = Modifier.padding(bottom = 70.dp),
                     modifier_img = Modifier.fillMaxHeight(0.5f),
                     navController = navHostController,
                     context = mainActivity.applicationContext,
-                    mainActivity = mainActivity
                 )
             }
         }
@@ -140,20 +134,18 @@ fun SetUpNavGraph(
             if (configuration.screenHeightDp > 700) {
                 VerifyOtpScreen(
                     email = it.arguments?.getString(EMAIL_VERIFICATION).toString(),
-                    navHostController, modifierTimerText = Modifier
+                    navHostController, modifier = Modifier
                         .wrapContentWidth(Alignment.CenterHorizontally)
                         .padding(top = 24.dp, bottom = 130.dp),
-                    viewModel = homeViewModel,
                     mainActivity = mainActivity,
                     verifyOtpViewModel = verifyOtpViewModel
                 )
             } else {
                 VerifyOtpScreen(
                     email = it.arguments?.getString(EMAIL_VERIFICATION).toString(),
-                    navHostController, modifierTimerText = Modifier
+                    navHostController, modifier = Modifier
                         .wrapContentWidth(Alignment.CenterHorizontally)
                         .padding(top = 24.dp, bottom = 30.dp),
-                    viewModel = homeViewModel,
                     mainActivity = mainActivity,
                     verifyOtpViewModel = verifyOtpViewModel
                 )

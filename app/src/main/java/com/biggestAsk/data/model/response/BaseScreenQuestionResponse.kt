@@ -6,5 +6,5 @@ data class BaseScreenQuestionResponse(
     val id: Int,
     val question: String,
     val updated_at: String,
-    val answer: String
+    val answer: String,
 )

@@ -1,7 +1,6 @@
 package com.biggestAsk.ui.homeScreen.bottomNavScreen.dropDown
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -48,7 +47,7 @@ fun selectionChangeDropDown(
     isFrequencyChanged: Boolean = false,
     context: Context,
     homeActivity: HomeActivity,
-    questionViewModel: BottomQuestionViewModel
+    questionViewModel: BottomQuestionViewModel,
 ): String {
     var expanded by remember { mutableStateOf(false) }
     var selectedText by remember { mutableStateOf(text) }
@@ -113,8 +112,7 @@ fun selectionChangeDropDown(
                                     val provider = PreferenceProvider(context)
                                     expanded = !expanded
                                     selectedText = label
-                                    Log.d("TAG", "SimpleDropDown: item changed $selectedText")
-                                    val userId = provider.getIntValue("user_id", 0)
+                                    val userId = provider.getIntValue(Constants.USER_ID, 0)
                                     val type = provider
                                         .getValue(Constants.TYPE, "")
                                     frequencyViewModel.screenQuestionStatus(
@@ -166,12 +164,9 @@ private fun handleFrequencyChangedData(
         is NetworkResult.Loading -> {
             // show a progress bar
             frequencyViewModel.isLoading = true
-            Log.e("TAG", "handleUserData() --> Loading  $result")
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
-            Log.i("TAG", result.message.toString())
             updateFrequency(
                 userId = user_id,
                 questionViewModel = questionViewModel,
@@ -184,7 +179,6 @@ private fun handleFrequencyChangedData(
             // show error message
             frequencyViewModel.isLoading = false
             Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
         }
     }
 }

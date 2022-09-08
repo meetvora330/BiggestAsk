@@ -5,5 +5,5 @@ data class ResetMilestoneResponse(
     val message: String,
     val partner_id: Int,
     val pregnancy_milestone_status: String,
-    val status: String
+    val status: String,
 )

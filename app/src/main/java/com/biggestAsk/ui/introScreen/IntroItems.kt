@@ -5,7 +5,7 @@ import com.example.biggestAsk.R
 data class SampleOnBoard(
     val image: Int,
     val tittle: String = "",
-    val description: String
+    val description: String,
 )
 
 val onBoardItem = listOf(

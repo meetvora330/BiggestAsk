@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 @ActivityRetainedScoped
 class HomeRepository @Inject constructor(
-    private val apiService: ApiService, @ApplicationContext context: Context
+    private val apiService: ApiService, @ApplicationContext context: Context,
 ) : BaseApiResponse(context) {
 
     suspend fun getIntroInfo(): Flow<NetworkResult<IntroInfoResponse>> {
@@ -29,10 +29,10 @@ class HomeRepository @Inject constructor(
     suspend fun getUpdatedStatus(
         userId: Int,
         type: String,
-        fcmToken:String
+        fcmToken: String,
     ): Flow<NetworkResult<UpdatedStatusResponse>> {
         return flow {
-            emit(safeApiCall { apiService.getUpdatedStatus(userId, type,fcmToken) })
+            emit(safeApiCall { apiService.getUpdatedStatus(userId, type, fcmToken) })
         }.flowOn(Dispatchers.IO)
     }
 
@@ -167,7 +167,7 @@ class HomeRepository @Inject constructor(
 
     suspend fun updateMilestoneImage(
         image_id: MultipartBody.Part?,
-        image: MultipartBody.Part?
+        image: MultipartBody.Part?,
     ): Flow<NetworkResult<UpdateImageResponse>> {
         return flow {
             emit(safeApiCall { apiService.updateMilestoneImage(image_id, image) })
@@ -175,7 +175,7 @@ class HomeRepository @Inject constructor(
     }
 
     suspend fun deleteMilestoneImage(
-        image_id: DeleteMilestoneImageRequest
+        image_id: DeleteMilestoneImageRequest,
     ): Flow<NetworkResult<CommonResponse>> {
         return flow {
             emit(safeApiCall { apiService.deleteMilestoneImage(image_id = image_id) })
@@ -183,7 +183,7 @@ class HomeRepository @Inject constructor(
     }
 
     suspend fun storeBaseScreenQuestionAns(
-        storeBaseScreenQuestionAnsRequest: StoreBaseScreenQuestionAnsRequest
+        storeBaseScreenQuestionAnsRequest: StoreBaseScreenQuestionAnsRequest,
     ): Flow<NetworkResult<CommonResponse>> {
         return flow {
             emit(safeApiCall {
@@ -195,7 +195,7 @@ class HomeRepository @Inject constructor(
     }
 
     suspend fun storeAnsImportantQuestion(
-        storeAnsImportantQuestionRequest: StoreAnsImportantQuestionRequest
+        storeAnsImportantQuestionRequest: StoreAnsImportantQuestionRequest,
     ): Flow<NetworkResult<CommonResponse>> {
         return flow {
             emit(safeApiCall { apiService.storeAnsImportantQuestion(storeAnsImportantQuestionRequest) })
@@ -203,7 +203,7 @@ class HomeRepository @Inject constructor(
     }
 
     suspend fun getPregnancyStatus(
-        getNotificationRequest: GetNotificationRequest
+        getNotificationRequest: GetNotificationRequest,
     ): Flow<NetworkResult<GetPregnancyMilestoneStatusResponse>> {
         return flow {
             emit(safeApiCall {
@@ -214,7 +214,7 @@ class HomeRepository @Inject constructor(
 
     suspend fun getNotificationCount(
         type: String,
-        userId: Int
+        userId: Int,
     ): Flow<NetworkResult<GetNotificationCountResponse>> {
         return flow {
             emit(safeApiCall {

@@ -7,5 +7,5 @@ data class PregnancyMilestone(
     val image: String,
     val title: String,
     val updated_at: String,
-    val week: Int
+    val week: Int,
 )

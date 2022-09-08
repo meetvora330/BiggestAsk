@@ -10,5 +10,5 @@ data class GetCommunityResponseData(
     val title: String,
     val type: String,
     val updated_at: String,
-    val user_id: Int
+    val user_id: Int,
 )

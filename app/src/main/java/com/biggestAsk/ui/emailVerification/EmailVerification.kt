@@ -3,7 +3,6 @@ package com.biggestAsk.ui.emailVerification
 import android.annotation.SuppressLint
 import android.content.Context
 import android.text.TextUtils
-import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.foundation.*
@@ -50,7 +49,7 @@ import com.example.biggestAsk.R
 fun EmailVerification(
     navHostController: NavHostController,
     emailVerificationViewModel: EmailVerificationViewModel,
-    mainActivity: MainActivity
+    mainActivity: MainActivity,
 ) {
     val focusManager = LocalFocusManager.current
     var isEmailVerified: Boolean by remember {
@@ -61,7 +60,7 @@ fun EmailVerification(
         Image(
             modifier = Modifier.fillMaxSize(),
             painter = painterResource(id = R.drawable.img_login_bg),
-            contentDescription = "",
+            contentDescription = stringResource(id = R.string.content_description),
             contentScale = ContentScale.FillBounds
         )
         Text(
@@ -85,7 +84,7 @@ fun EmailVerification(
         ) {
             Image(
                 painter = painterResource(id = R.drawable.img_login_tittle),
-                contentDescription = "login_img_up",
+                contentDescription = stringResource(id = R.string.content_description),
                 modifier = Modifier
                     .width(92.dp)
                     .height(104.dp)
@@ -120,7 +119,7 @@ fun EmailVerification(
                         .fillMaxWidth()
                         .padding(top = 15.dp, bottom = 20.dp),
                     painter = painterResource(id = R.drawable.ic_img_bottom_sheet_opener),
-                    contentDescription = ""
+                    contentDescription = stringResource(id = R.string.content_description)
                 )
                 Text(
                     modifier = Modifier
@@ -191,7 +190,7 @@ fun EmailVerification(
                         if (isEmailVerified) {
                             Icon(
                                 imageVector = Icons.Filled.Error,
-                                "error",
+                                contentDescription = stringResource(id = R.string.content_description),
                                 tint = MaterialTheme.colors.error
                             )
                         }
@@ -311,17 +310,15 @@ private fun handleUserData(
     navHostController: NavHostController,
     result: NetworkResult<CommonResponse>,
     emailVerificationViewModel: EmailVerificationViewModel,
-    context: Context
+    context: Context,
 ) {
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
             emailVerificationViewModel.isLoading = true
-            Log.e("TAG", "handleUserData() --> Loading  $result")
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
             emailVerificationViewModel.isLoading = false
             navHostController.popBackStack(Screen.Verify.route, true)
             navHostController.navigate(Screen.Verify.emailVerification(email = emailVerificationViewModel.textEmailVerify))
@@ -330,7 +327,6 @@ private fun handleUserData(
             // show error message
             emailVerificationViewModel.isLoading = false
             Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
         }
     }
 }

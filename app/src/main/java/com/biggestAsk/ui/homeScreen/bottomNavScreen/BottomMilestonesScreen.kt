@@ -1,10 +1,10 @@
 package com.biggestAsk.ui.homeScreen.bottomNavScreen
 
+//import com.biggestAsk.ui.homeScreen.ClearRippleTheme
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.text.TextUtils
-import android.util.Log
 import android.widget.DatePicker
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -52,7 +52,6 @@ import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.ui.activity.HomeActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
 import com.biggestAsk.ui.homeScreen.ClearRippleTheme
-//import com.biggestAsk.ui.homeScreen.ClearRippleTheme
 import com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph.BottomNavScreen
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer.MilestoneScreenShimmerAnimation
 import com.biggestAsk.ui.main.viewmodel.BottomMilestoneViewModel
@@ -73,7 +72,7 @@ fun MilestonesScreen(
     navHostController: NavHostController,
     milestoneViewModel: BottomMilestoneViewModel,
     homeActivity: HomeActivity,
-    scaffoldState: ScaffoldState
+    scaffoldState: ScaffoldState,
 ) {
     val addNewMilestoneBottomSheetState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
@@ -144,7 +143,6 @@ fun MilestonesScreen(
         BottomSheetScaffold(
             scaffoldState = addNewMilestoneBottomSheetState,
             sheetContent = {
-
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -161,7 +159,7 @@ fun MilestonesScreen(
                                 .padding(top = 30.dp)
                                 .align(CenterHorizontally),
                             painter = painterResource(id = R.drawable.ic_img_bottom_sheet_opener),
-                            contentDescription = ""
+                            contentDescription = stringResource(id = R.string.content_description),
                         )
                         Text(
                             modifier = Modifier
@@ -181,7 +179,7 @@ fun MilestonesScreen(
                                 .fillMaxWidth()
                                 .padding(top = 8.dp)
                                 .align(CenterHorizontally),
-                            text = "Posuere faucibus laoreet vitae fermentum. Porttitor\nquis egestas porta arcu scelerisque sed sed turpis.",
+                            text = stringResource(id = R.string.add_new_milestone_bottom_sheet_tittle),
                             style = MaterialTheme.typography.body2.copy(
                                 color = Color(0xFF7F7D7C),
                                 fontWeight = FontWeight.W600,
@@ -741,7 +739,7 @@ fun MilestonesScreen(
                                                     end.linkTo(card_main.end, margin = 24.dp)
                                                 },
                                             painter = painterResource(id = R.drawable.ic_icon_milestone_screen_item_select),
-                                            contentDescription = ""
+                                            contentDescription = stringResource(id = R.string.content_description),
                                         )
                                         Column(
                                             modifier = Modifier
@@ -846,7 +844,7 @@ fun MilestonesScreen(
                                                                 start = 24.dp
                                                             ),
                                                             painter = painterResource(id = R.drawable.img_medical_calender_icon),
-                                                            contentDescription = ""
+                                                            contentDescription = stringResource(id = R.string.content_description),
                                                         )
                                                         Text(
                                                             modifier = Modifier.padding(
@@ -870,7 +868,8 @@ fun MilestonesScreen(
                                                                         end = 28.dp
                                                                     ),
                                                                 painter = painterResource(R.drawable.img_milestone_location),
-                                                                contentDescription = ""
+                                                                contentDescription = stringResource(
+                                                                    id = R.string.content_description),
                                                             )
                                                         }
                                                         Card(
@@ -989,7 +988,7 @@ fun MilestonesScreen(
 fun getMilestones(
     milestoneViewModel: BottomMilestoneViewModel,
     context: Context,
-    homeActivity: HomeActivity
+    homeActivity: HomeActivity,
 ) {
     val userId = PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
     val type = PreferenceProvider(context).getValue(Constants.TYPE, "")
@@ -1028,7 +1027,7 @@ fun ResetMilestoneMilestone(
                     .height(59.dp)
                     .padding(top = 16.dp),
                 painter = painterResource(id = R.drawable.logo_setting_delete_dialog),
-                contentDescription = ""
+                contentDescription = stringResource(id = R.string.content_description),
             )
             Text(
                 modifier = Modifier
@@ -1112,7 +1111,7 @@ fun resetMilestoneApiCall(
     selectedMilestoneId: ArrayList<Int>,
     context: Context,
     milestoneViewModel: BottomMilestoneViewModel,
-    homeActivity: HomeActivity
+    homeActivity: HomeActivity,
 ) {
     milestoneViewModel.milestoneList.forEachIndexed { index, _ ->
         milestoneViewModel.milestoneList[index].show = false
@@ -1148,12 +1147,11 @@ private fun handleResetMilestoneData(
     result: NetworkResult<ResetMilestoneResponse>,
     context: Context,
     milestoneViewModel: BottomMilestoneViewModel,
-    homeActivity: HomeActivity
+    homeActivity: HomeActivity,
 ) {
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
-            Log.e("TAG", "handleUserData() --> Loading  $result")
             milestoneViewModel.isAllMilestoneLoaded = true
         }
         is NetworkResult.Success -> {
@@ -1170,18 +1168,16 @@ private fun handleResetMilestoneData(
 
 private fun handleGetMilestoneData(
     result: NetworkResult<GetMilestoneResponse>,
-    milestoneViewModel: BottomMilestoneViewModel
+    milestoneViewModel: BottomMilestoneViewModel,
 ) {
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
-            Log.e("TAG", "handleUserData() --> Loading  $result")
             milestoneViewModel.isAllMilestoneLoaded = true
             milestoneViewModel.isAnyErrorOccurred = false
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
             milestoneViewModel.isAllMilestoneLoaded = false
             if (result.data?.milestone?.isEmpty()!!) {
                 milestoneViewModel.isAnyErrorOccurred = true
@@ -1191,7 +1187,6 @@ private fun handleGetMilestoneData(
         }
         is NetworkResult.Error -> {
             // show error message
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
             milestoneViewModel.isAllMilestoneLoaded = false
             milestoneViewModel.isAnyErrorOccurred = true
         }
@@ -1206,17 +1201,15 @@ private fun handleCreatedMilestoneData(
     context: Context,
     milestoneViewModel: BottomMilestoneViewModel,
     coroutineScope: CoroutineScope,
-    addNewMilestoneBottomSheetState: BottomSheetScaffoldState
+    addNewMilestoneBottomSheetState: BottomSheetScaffoldState,
 ) {
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
-            Log.e("TAG", "handleUserData() --> Loading  $result")
             milestoneViewModel.isNewMilestoneAdded.value = true
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
             coroutineScope.launch {
                 addNewMilestoneBottomSheetState.bottomSheetState.collapse()
             }
@@ -1232,7 +1225,6 @@ private fun handleCreatedMilestoneData(
         }
         is NetworkResult.Error -> {
             // show error message
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
             milestoneViewModel.isNewMilestoneAdded.value = false
             Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
         }

@@ -11,5 +11,5 @@ data class QuestionAn(
     val type: String,
     val updated_at: String,
     val user_id: Int,
-    val user_name: String? = null
+    val user_name: String? = null,
 )

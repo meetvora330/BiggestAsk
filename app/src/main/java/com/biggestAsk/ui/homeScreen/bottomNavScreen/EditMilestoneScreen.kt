@@ -12,7 +12,6 @@ import android.os.Build
 import android.provider.MediaStore
 import android.provider.Settings
 import android.text.TextUtils
-import android.util.Log
 import android.view.Gravity
 import android.widget.DatePicker
 import android.widget.Toast
@@ -92,7 +91,7 @@ fun EditMilestoneScreen(
     navHostController: NavHostController,
     milestoneId: Int,
     editMilestoneViewModel: EditMilestoneViewModel,
-    homeActivity: HomeActivity
+    homeActivity: HomeActivity,
 ) {
     val context =
         LocalContext.current
@@ -139,7 +138,6 @@ fun EditMilestoneScreen(
         contract = ActivityResultContracts.GetContent(),
     ) { uri: Uri? ->
         if (uri != null) {
-            Log.i("TAG", "The URI is $uri")
             uriPath = uri.let { it1 -> PathUtil.getPath(context, it1) }
             if (editMilestoneViewModel.imageListIndex.value != -1) {
                 val image = uriPath?.let { convertImageMultiPartSingle(it) }
@@ -171,8 +169,6 @@ fun EditMilestoneScreen(
                 )
             }
             editMilestoneViewModel.imageListIndex.value = -1
-            Log.i("TAG", editMilestoneViewModel.imageList.size.toString())
-            Log.i("TAG", "The URI Path is ${uriPath.toString()}")
         }
     }
     val isPicAvailable = remember {
@@ -181,14 +177,12 @@ fun EditMilestoneScreen(
     val coroutineScope = rememberCoroutineScope()
     val type = provider.getValue(Constants.TYPE, "")
     val partnerId = provider.getIntValue(Constants.PARTNER_ID, 0)
-    val milestoneType = remember { mutableStateOf("") }
     LaunchedEffect(Unit) {
         editMilestoneViewModel.editMilestoneLocationB.value = ""
         editMilestoneViewModel.editMilestoneTimeEmpty.value = false
         editMilestoneViewModel.editMilestoneDateEmpty.value = false
         editMilestoneViewModel.editMilestoneLocationBEmpty.value = false
         editMilestoneViewModel.milestoneType.value = ""
-        Log.d("TAG", "EditMilestoneScreen: $milestoneId")
         getUpdatedMilestone(
             homeActivity = homeActivity,
             editMilestoneViewModel = editMilestoneViewModel,
@@ -218,7 +212,7 @@ fun EditMilestoneScreen(
                                 .padding(top = 30.dp)
                                 .align(Alignment.CenterHorizontally),
                             painter = painterResource(id = R.drawable.ic_img_bottom_sheet_opener),
-                            contentDescription = ""
+                            contentDescription = stringResource(id = R.string.content_description),
                         )
                         Text(
                             modifier = Modifier
@@ -238,7 +232,7 @@ fun EditMilestoneScreen(
                                 .fillMaxWidth()
                                 .padding(top = 8.dp)
                                 .align(Alignment.CenterHorizontally),
-                            text = "Posuere faucibus laoreet vitae fermentum. Porttitor\nquis egestas porta arcu scelerisque sed sed turpis.",
+                            text = stringResource(id = R.string.add_new_milestone_bottom_sheet_tittle),
                             style = MaterialTheme.typography.body2.copy(
                                 color = Color(0xFF7F7D7C),
                                 fontWeight = FontWeight.W600,
@@ -660,7 +654,7 @@ fun EditMilestoneScreen(
                                             .width(75.dp)
                                             .height(75.dp),
                                         painter = painterResource(id = R.drawable.img_user_add_new_milestone),
-                                        contentDescription = ""
+                                        contentDescription = stringResource(id = R.string.content_description),
                                     )
                                 } else {
                                     val painter = rememberImagePainter(
@@ -673,7 +667,7 @@ fun EditMilestoneScreen(
                                             .width(75.dp)
                                             .height(75.dp),
                                         painter = painter,
-                                        contentDescription = "",
+                                        contentDescription = stringResource(id = R.string.content_description),
                                         contentScale = ContentScale.Inside
                                     )
                                 }
@@ -745,7 +739,7 @@ fun EditMilestoneScreen(
                                             if (editMilestoneViewModel.editMilestoneDate.value == "" && editMilestoneViewModel.editMilestoneTime.value == "") "N/A" else "${editMilestoneViewModel.editMilestoneDate.value} at ${editMilestoneViewModel.editMilestoneTime.value}"
                                         Image(
                                             painter = painterResource(id = R.drawable.img_medical_calender_icon),
-                                            contentDescription = ""
+                                            contentDescription = stringResource(id = R.string.content_description),
                                         )
                                         Text(
                                             modifier = Modifier
@@ -817,7 +811,6 @@ fun EditMilestoneScreen(
                                                                     type = type,
                                                                     milestoneId = milestoneId,
                                                                     partner_id = partnerId,
-                                                                    milestone_type = milestoneType.value
                                                                 )
                                                             }
                                                         }
@@ -825,7 +818,7 @@ fun EditMilestoneScreen(
                                                 },
                                             imageVector = Icons.Default.Close,
                                             tint = Color.White,
-                                            contentDescription = ""
+                                            contentDescription = stringResource(id = R.string.content_description),
                                         )
                                     }
                                 } else {
@@ -839,10 +832,6 @@ fun EditMilestoneScreen(
                                             )
                                             .clickable {
                                                 if (editMilestoneViewModel.imageList[index].is_need_to_upload) {
-                                                    Log.d(
-                                                        "TAG",
-                                                        "EditMilestoneScreen: New Image Remove"
-                                                    )
                                                     editMilestoneViewModel.imageList.removeAt(
                                                         index
                                                     )
@@ -870,7 +859,6 @@ fun EditMilestoneScreen(
                                                                 type = type,
                                                                 milestoneId = milestoneId,
                                                                 partner_id = partnerId,
-                                                                milestone_type = milestoneType.value
                                                             )
                                                         }
                                                     }
@@ -878,7 +866,7 @@ fun EditMilestoneScreen(
                                             },
                                         imageVector = Icons.Default.Close,
                                         tint = Color.White,
-                                        contentDescription = ""
+                                        contentDescription = stringResource(id = R.string.content_description),
                                     )
                                 }
                             }
@@ -907,7 +895,7 @@ fun EditMilestoneScreen(
                                                     context.contentResolver,
                                                     editMilestoneViewModel.imageList[index].imageUri
                                                 ).asImageBitmap(),
-                                                contentDescription = "",
+                                                contentDescription = stringResource(id = R.string.content_description),
                                                 contentScale = ContentScale.Crop
                                             )
                                         } else {
@@ -921,7 +909,7 @@ fun EditMilestoneScreen(
                                                         .fillMaxWidth(),
                                                     bitmap = ImageDecoder.decodeBitmap(source)
                                                         .asImageBitmap(),
-                                                    contentDescription = "",
+                                                    contentDescription = stringResource(id = R.string.content_description),
                                                     contentScale = ContentScale.Crop
                                                 )
                                             }
@@ -936,7 +924,7 @@ fun EditMilestoneScreen(
                                             modifier = Modifier
                                                 .fillMaxWidth(),
                                             painter = painter,
-                                            contentDescription = "",
+                                            contentDescription = stringResource(id = R.string.content_description),
                                             contentScale = ContentScale.Crop
                                         )
                                     }
@@ -1004,7 +992,7 @@ fun EditMilestoneScreen(
                                             Icon(
                                                 modifier = Modifier.padding(start = 13.dp),
                                                 painter = painterResource(id = R.drawable.ic_icon_btn_upload_picture),
-                                                contentDescription = "",
+                                                contentDescription = stringResource(id = R.string.content_description),
                                                 tint = Color.White
                                             )
                                         }
@@ -1069,7 +1057,7 @@ fun EditMilestoneScreen(
                                         Icon(
                                             modifier = Modifier.padding(start = 13.dp),
                                             painter = painterResource(id = R.drawable.ic_icon_btn_upload_picture),
-                                            contentDescription = "",
+                                            contentDescription = stringResource(id = R.string.content_description),
                                             tint = Color.White
                                         )
                                     }
@@ -1205,7 +1193,7 @@ fun EditMilestoneScreen(
                                         Icon(
                                             modifier = Modifier.padding(start = 13.dp),
                                             painter = painterResource(id = R.drawable.ic_icon_btn_upload_picture),
-                                            contentDescription = "",
+                                            contentDescription = stringResource(id = R.string.content_description),
                                             tint = Color.White
                                         )
                                     }
@@ -1398,7 +1386,7 @@ fun EditMilestoneScreen(
                                     Icon(
                                         modifier = Modifier.padding(start = 13.dp),
                                         painter = painterResource(id = R.drawable.ic_icon_btn_upload_picture),
-                                        contentDescription = "",
+                                        contentDescription = stringResource(id = R.string.content_description),
                                         tint = Color.White
                                     )
                                 }
@@ -1770,7 +1758,7 @@ fun EditMilestoneScreen(
                                         Icon(
                                             modifier = Modifier.padding(start = 8.dp),
                                             painter = painterResource(id = R.drawable.ic_img_btn_add_milestone),
-                                            contentDescription = "",
+                                            contentDescription = stringResource(id = R.string.content_description),
                                             tint = Color.White
                                         )
                                     }
@@ -1863,7 +1851,7 @@ fun EditMilestoneScreen(
                                     Icon(
                                         modifier = Modifier.padding(start = 8.dp),
                                         painter = painterResource(id = R.drawable.ic_img_btn_add_milestone),
-                                        contentDescription = "",
+                                        contentDescription = stringResource(id = R.string.content_description),
                                         tint = Color.White
                                     )
                                 }
@@ -1930,18 +1918,14 @@ private fun handleDeleteImageData(
     type: String?,
     milestoneId: Int,
     partner_id: Int,
-    milestone_type: String
 ) {
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
-            Log.e("TAG", "handleUserData() --> Loading  $result")
             editMilestoneViewModel.isImageDeleted.value = true
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
-            Log.i("TAG", result.message.toString())
             editMilestoneViewModel.isImageDeleted.value = false
             getUpdatedMilestone(
                 homeActivity = homeActivity,
@@ -1955,7 +1939,6 @@ private fun handleDeleteImageData(
         is NetworkResult.Error -> {
             // show error message
             editMilestoneViewModel.isImageDeleted.value = false
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
         }
     }
 }
@@ -1964,7 +1947,7 @@ private fun handleUpdateImageData(
     result: NetworkResult<UpdateImageResponse>,
     editMilestoneViewModel: EditMilestoneViewModel,
     context: Context,
-    selectedImageIndex: Int
+    selectedImageIndex: Int,
 ) {
     when (result) {
         is NetworkResult.Loading -> {
@@ -1995,14 +1978,13 @@ private fun handleStoreMilestoneData(
     result: NetworkResult<UpdateUserProfileResponse>,
     editMilestoneViewModel: EditMilestoneViewModel,
     navHostController: NavHostController,
-    milestoneId: Int
+    milestoneId: Int,
 ) {
     when (result) {
         is NetworkResult.Loading -> {
             editMilestoneViewModel.isMilestoneAnsUpdated.value = true
         }
         is NetworkResult.Success -> {
-            Log.i("TAG", result.message.toString())
             editMilestoneViewModel.isMilestoneAnsUpdated.value = false
             navHostController.popBackStack(
                 BottomNavScreen.AddNewMileStones.route,
@@ -2024,7 +2006,7 @@ private fun handleStoreMilestoneData(
 private fun handleEditMilestoneData(
     result: NetworkResult<EditMilestoneResponse>,
     context: Context,
-    editMilestoneViewModel: EditMilestoneViewModel
+    editMilestoneViewModel: EditMilestoneViewModel,
 ) {
     when (result) {
         is NetworkResult.Loading -> {
@@ -2105,25 +2087,23 @@ private fun handleUpdateMilestoneData(
     result: NetworkResult<CommonResponse>,
     editMilestoneViewModel: EditMilestoneViewModel,
     context: Context,
-    homeActivity: HomeActivity
+    homeActivity: HomeActivity,
 ) {
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
             editMilestoneViewModel.isMilestoneDataUpdated.value = true
-            Log.e("TAG", "handleUserData() --> Loading  $result")
         }
         is NetworkResult.Success -> {
             // bind data to the view
             editMilestoneViewModel.isMilestoneDataUpdated.value = false
-            Log.e("TAG", "handleUserData() --> Success  $result")
             Toast.makeText(context, result.data?.message, Toast.LENGTH_SHORT).show()
             coroutineScope.launch {
                 editMilestoneBottomSheetScaffoldState.bottomSheetState.collapse()
             }
             val provider = PreferenceProvider(context)
-            val type = provider.getValue("type", "")
-            val userId = provider.getIntValue("user_id", 0)
+            val type = provider.getValue(Constants.TYPE, "")
+            val userId = provider.getIntValue(Constants.USER_ID, 0)
             val fcmToken = provider.getValue(Constants.NOTIFICATION_TOKEN, "")
             if (userId != 0 && !type.isNullOrEmpty() && fcmToken != null) {
                 editMilestoneViewModel.getUpdatedStatus(userId, type, fcmToken)
@@ -2136,7 +2116,6 @@ private fun handleUpdateMilestoneData(
         }
         is NetworkResult.Error -> {
             // show error message
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
             editMilestoneViewModel.isMilestoneDataUpdated.value = false
             Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
         }
@@ -2164,24 +2143,21 @@ fun convertImageMultiPartSingle(imagePath: String): MultipartBody.Part {
 private fun handleSaveNoteData(
     result: NetworkResult<CommonResponse>,
     editMilestoneViewModel: EditMilestoneViewModel,
-    context: Context
+    context: Context,
 ) {
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
             editMilestoneViewModel.isNoteSaved.value = true
-            Log.e("TAG", "handleUserData() --> Loading  $result")
         }
         is NetworkResult.Success -> {
             // bind data to the view
             editMilestoneViewModel.isNoteSaved.value = false
-            Log.e("TAG", "handleUserData() --> Success  $result")
             Toast.makeText(context, result.data?.message, Toast.LENGTH_SHORT).show()
 
         }
         is NetworkResult.Error -> {
             // show error message
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
             editMilestoneViewModel.isNoteSaved.value = false
         }
     }
@@ -2189,7 +2165,7 @@ private fun handleSaveNoteData(
 
 private fun handleUpdatedStatusData(
     result: NetworkResult<UpdatedStatusResponse>,
-    context: Context
+    context: Context,
 ) {
     when (result) {
         is NetworkResult.Loading -> {

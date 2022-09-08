@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.text.TextUtils
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -59,7 +58,7 @@ fun RegisterScreen(
     email: String,
     registerViewModel: RegisterViewModel,
     mainActivity: MainActivity,
-    emailVerificationViewModel: EmailVerificationViewModel
+    emailVerificationViewModel: EmailVerificationViewModel,
 ) {
     val systemUiController = rememberSystemUiController()
     val useDarkIcons = MaterialTheme.colors.isLight
@@ -191,7 +190,7 @@ fun RegisterScreen(
                     if (registerViewModel.isNameEmpty) {
                         Icon(
                             imageVector = Icons.Filled.Error,
-                            "error",
+                            contentDescription = stringResource(id = R.string.content_description),
                             tint = MaterialTheme.colors.error
                         )
                     }
@@ -337,7 +336,7 @@ fun RegisterScreen(
                     if (registerViewModel.isPassEmpty) {
                         Icon(
                             imageVector = Icons.Filled.Error,
-                            "error",
+                            contentDescription = stringResource(id = R.string.content_description),
                             tint = MaterialTheme.colors.error
                         )
                     }
@@ -413,7 +412,7 @@ fun RegisterScreen(
                     if (registerViewModel.isRePassEmpty) {
                         Icon(
                             imageVector = Icons.Filled.Error,
-                            "error",
+                            contentDescription = stringResource(id = R.string.content_description),
                             tint = MaterialTheme.colors.error
                         )
                     }
@@ -519,7 +518,6 @@ fun RegisterScreen(
                                         navHostController = navHostController,
                                         result = it,
                                         registerViewModel = registerViewModel,
-                                        context = context,
                                         emailVerificationViewModel = emailVerificationViewModel
                                     )
                                 }
@@ -571,29 +569,24 @@ private fun handleUserData(
     result: NetworkResult<CommonResponse>,
     registerViewModel: RegisterViewModel,
     emailVerificationViewModel: EmailVerificationViewModel,
-    context: Context
 ) {
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
             registerViewModel.isLoading = true
-            Log.e("TAG", "handleUserData() --> Loading  $result")
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
             registerViewModel.isLoading = false
             navHostController.popBackStack()
             navHostController.navigate(
                 Screen.Login.route
             )
             emailVerificationViewModel.textEmailVerify = ""
-            Toast.makeText(context, "User Registered Successfully", Toast.LENGTH_SHORT).show()
         }
         is NetworkResult.Error -> {
             // show error message
             registerViewModel.isLoading = false
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
         }
     }
 }
@@ -606,12 +599,13 @@ fun AnnotatedClickableText(context: Context) {
                 color = Text_Accept_Terms, fontSize = 16.sp
             )
         ) {
-            append("Accept  ")
+            append(stringResource(id = R.string.accept))
         }
         // We attach this *URL* annotation to the following content
         // until `pop()` is called
         pushStringAnnotation(
-            tag = "URL", annotation = "https://thebiggestask.com/"
+            tag = stringResource(id = R.string.url),
+            annotation = stringResource(id = R.string.url_string)
         )
         withStyle(
             style = SpanStyle(
@@ -621,7 +615,7 @@ fun AnnotatedClickableText(context: Context) {
                 fontSize = 16.sp
             )
         ) {
-            append("Term of Service")
+            append(stringResource(id = R.string.terms_of_service))
         }
         pop()
     }
@@ -641,5 +635,6 @@ fun AnnotatedClickableText(context: Context) {
                 intent.data = Uri.parse(urlTerms)
                 context.startActivity(intent)
             }
-        })
+        }
+    )
 }

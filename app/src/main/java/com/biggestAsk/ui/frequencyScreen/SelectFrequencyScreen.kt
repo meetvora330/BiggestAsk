@@ -2,7 +2,6 @@ package com.biggestAsk.ui.frequencyScreen
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -69,7 +68,7 @@ fun SelectFrequencyScreen(
                             .wrapContentHeight()
                             .padding(end = 10.dp, top = 50.dp),
                         painter = painterResource(id = R.drawable.ic_img_question_screen_logo),
-                        contentDescription = "",
+                        contentDescription = stringResource(id = R.string.content_description),
                         contentScale = ContentScale.FillHeight
                     )
                 }
@@ -157,14 +156,11 @@ private fun frequencySubmitApiCall(
     context: Context,
     frequencyViewModel: FrequencyViewModel,
     mainActivity: MainActivity,
-    selectedText: String
+    selectedText: String,
 ) {
     val provider = PreferenceProvider(context)
     val type = provider.getValue(Constants.TYPE, "")
     val userId = provider.getIntValue(Constants.USER_ID, 0)
-    val frequency =
-        if (frequencyViewModel.selectedValueEveryDayRb.value) "everyday" else if (frequencyViewModel.selectedValueEvery3DaysRb.value) "every_3_day" else "every_week"
-    Log.d("TAG", "QuestionScreenF: $frequency")
     frequencyViewModel.screenQuestionStatus(
         ScreenQuestionStatusRequest(
             type = type!!,
@@ -193,12 +189,9 @@ private fun handleUserData(
         is NetworkResult.Loading -> {
             // show a progress bar
             frequencyViewModel.isLoading = true
-            Log.e("TAG", "handleUserData() --> Loading  $result")
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
-            Log.i("TAG", result.message.toString())
             frequencyViewModel.isLoading = false
             GlobalScope.launch {
                 result.data?.let {
@@ -221,7 +214,6 @@ private fun handleUserData(
             // show error message
             frequencyViewModel.isLoading = false
             Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
         }
     }
 }

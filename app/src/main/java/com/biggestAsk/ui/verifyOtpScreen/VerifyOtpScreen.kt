@@ -1,8 +1,9 @@
+@file:Suppress("SameParameterValue")
+
 package com.biggestAsk.ui.verifyOtpScreen
 
 import android.content.Context
 import android.text.TextUtils
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -33,7 +34,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -46,7 +46,6 @@ import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.navigation.Screen
 import com.biggestAsk.ui.activity.MainActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
-import com.biggestAsk.ui.main.viewmodel.HomeViewModel
 import com.biggestAsk.ui.main.viewmodel.VerifyOtpViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.example.biggestAsk.R
@@ -60,10 +59,9 @@ import kotlin.time.Duration.Companion.seconds
 fun VerifyOtpScreen(
     email: String,
     navHostController: NavHostController,
-    modifierTimerText: Modifier,
-    viewModel: HomeViewModel,
+    modifier: Modifier,
     mainActivity: MainActivity,
-    verifyOtpViewModel: VerifyOtpViewModel
+    verifyOtpViewModel: VerifyOtpViewModel,
 ) {
     var otpValue by remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
@@ -87,7 +85,7 @@ fun VerifyOtpScreen(
         Image(
             modifier = Modifier.fillMaxWidth(6f),
             painter = painterResource(id = R.drawable.img_verify_screen),
-            contentDescription = "",
+            contentDescription = stringResource(id = R.string.content_description),
             contentScale = ContentScale.Fit,
         )
         Text(
@@ -172,10 +170,10 @@ fun VerifyOtpScreen(
             )
         }
         Text(
-            modifier = modifierTimerText
+            modifier = modifier
                 .alpha(if (verifyOtpViewModel.ticks < 1) 0f else 1f)
                 .align(CenterHorizontally),
-            text = "Resend Code: 0:${verifyOtpViewModel.ticks}",
+            text = stringResource(id = R.string.resend_code_with0) + { verifyOtpViewModel.ticks },
             fontSize = 16.sp,
             fontStyle = FontStyle.Normal,
             color = Custom_Blue
@@ -207,7 +205,7 @@ fun VerifyOtpScreen(
                                     )
                                 }
                             }
-                            loadingText = "Re-sending OTP"
+                            loadingText = context.getString(R.string.resending_otp)
                             verifyOtpViewModel.ticks = 60
                         }
 
@@ -222,7 +220,7 @@ fun VerifyOtpScreen(
                                 )
                             }
                         }
-                        loadingText = "Re-sending OTP"
+                        loadingText = context.getString(R.string.resending_otp)
                         verifyOtpViewModel.ticks = 60
                     } else {
                         verifyOtpViewModel.checkOtp(CheckOtpRequest(otp = otpValue, email = email))
@@ -236,7 +234,7 @@ fun VerifyOtpScreen(
                                     verifyOtpViewModel = verifyOtpViewModel
                                 )
                             }
-                            loadingText = "Verifying OTP"
+                            loadingText = context.getString(R.string.verify_otp)
                         }
                     }
                 },
@@ -273,20 +271,22 @@ private fun handleUserResendOtp(
     result: NetworkResult<CommonResponse>,
     verifyOtpViewModel: VerifyOtpViewModel,
     context: Context,
-    coroutineScope: CoroutineScope
+    coroutineScope: CoroutineScope,
 ) {
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
             verifyOtpViewModel.isLoading = true
             verifyOtpViewModel.isOtpValueVerified = false
-            Log.e("TAG", "handleUserData() --> Loading  $result")
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
             Toast
-                .makeText(context, "OTP Resend Successfully", Toast.LENGTH_SHORT)
+                .makeText(
+                    context,
+                    context.getString(R.string.otp_send_display_message),
+                    Toast.LENGTH_SHORT
+                )
                 .show()
             coroutineScope.launch {
                 while (verifyOtpViewModel.ticks != 0) {
@@ -302,7 +302,6 @@ private fun handleUserResendOtp(
             verifyOtpViewModel.isLoading = false
             verifyOtpViewModel.isOtpValueVerified = false
             Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
         }
     }
 }
@@ -312,17 +311,15 @@ private fun handleUserData(
     result: NetworkResult<CommonResponse>,
     email: String,
     verifyOtpViewModel: VerifyOtpViewModel,
-    context: Context
+    context: Context,
 ) {
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
             verifyOtpViewModel.isLoading = true
-            Log.e("TAG", "handleUserData() --> Loading  $result")
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
             verifyOtpViewModel.isLoading = false
             navHostController.popBackStack(Screen.Verify.route, true)
             navHostController.popBackStack(Screen.VerifyEmail.route, true)
@@ -332,7 +329,6 @@ private fun handleUserData(
         is NetworkResult.Error -> {
             // show error message
             verifyOtpViewModel.isLoading = false
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
             Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
         }
     }
@@ -347,7 +343,7 @@ private fun CharView(
     containerSize: Dp,
     charBackground: Color = Color.Transparent,
     password: Boolean = false,
-    passwordChar: String = ""
+    passwordChar: String = "",
 ) {
     val modifier = Modifier
         .width(containerSize)
@@ -375,11 +371,4 @@ private fun CharView(
             textAlign = TextAlign.Center,
         )
     }
-}
-
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun VerifyScreenPreview() {
-//    VerifyScreen(email = "", rememberNavController(), modifierTimerText = Modifier, viewModel = HomeViewModel())
 }

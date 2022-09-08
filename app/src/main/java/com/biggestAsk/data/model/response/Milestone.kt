@@ -5,5 +5,5 @@ data class Milestone(
     val time: String? = null,
     val title: String? = null,
     val id: Int? = null,
-    var show: Boolean = false
+    var show: Boolean = false,
 )

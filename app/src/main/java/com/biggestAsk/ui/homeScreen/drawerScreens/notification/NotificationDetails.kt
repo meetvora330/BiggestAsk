@@ -11,15 +11,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 
 @Composable
 fun NotificationDetails(
-    navHostController: NavHostController,
     notificationDetailsIcon: Int?,
     notificationDetailsTittle: String?,
     notificationDetailsDescription: String?,
-    notificationDetailsDays: String?
+    notificationDetailsDays: String?,
 ) {
     Column(
         modifier = Modifier
@@ -61,14 +59,3 @@ fun NotificationDetails(
         )
     }
 }
-//@Preview(showBackground = true, showSystemUi = true)
-//@Composable
-//fun NotificationDetailsPreview() {
-//    NotificationDetails(
-//        navHostController = rememberNavController(),
-//        notificationDetailsIcon = R.drawable.ic_icon_notification_1,
-//        notificationDetailsTittle = "You had the medical",
-//        notificationDetailsDescription = "You have passed the medical examination\nand the results of the examination are\nready",
-//        notificationDetailsDays = "1 Day ago"
-//    )
-//}

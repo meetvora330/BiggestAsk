@@ -17,7 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class YourSurrogateViewModel @Inject constructor(
     private val inviteSurrogateRepository: InviteSurrogateRepository,
-    application: Application
+    application: Application,
 ) : AndroidViewModel(application) {
     //Your Surrogate Mother
     var isSurrogateInvited: MutableState<Boolean> = mutableStateOf(false)

@@ -18,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class EmailVerificationViewModel @Inject constructor(
     private val emailVerificationRepository: EmailVerificationRepository,
-    application: Application
+    application: Application,
 ) : AndroidViewModel(application) {
     var isLoading: Boolean by mutableStateOf(false)
     var textEmailVerify: String by mutableStateOf("")

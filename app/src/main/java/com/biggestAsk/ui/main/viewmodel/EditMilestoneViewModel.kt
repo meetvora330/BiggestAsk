@@ -20,7 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class EditMilestoneViewModel @Inject constructor(
     private val homeRepository: HomeRepository,
-    application: Application
+    application: Application,
 ) : AndroidViewModel(application) {
     var editMilestoneTittle: MutableState<String> = mutableStateOf("")
     var editMilestoneTittleEmpty: MutableState<Boolean> = mutableStateOf(false)
@@ -128,10 +128,10 @@ class EditMilestoneViewModel @Inject constructor(
         }
     }
 
-    fun getUpdatedStatus(userId: Int, type: String,fcm_token:String) {
+    fun getUpdatedStatus(userId: Int, type: String, fcm_token: String) {
         getUpdatedStatusResponse.value = NetworkResult.Loading()
         viewModelScope.launch {
-            homeRepository.getUpdatedStatus(userId, type,fcm_token).collect {
+            homeRepository.getUpdatedStatus(userId, type, fcm_token).collect {
                 getUpdatedStatusResponse.value = it
             }
         }

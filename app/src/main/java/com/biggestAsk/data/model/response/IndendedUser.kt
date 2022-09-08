@@ -13,5 +13,5 @@ data class IndendedUser(
     val partner_date_of_birth: String,
     val partner_address: String,
     val partner_number: String,
-    val partner_email: String
+    val partner_email: String,
 )

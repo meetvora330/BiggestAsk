@@ -7,5 +7,5 @@ data class GetTermsOfServiceResponseData(
     val info_type: String? = null,
     val screen: Any? = null,
     val title: String? = null,
-    val updated_at: String? = null
+    val updated_at: String? = null,
 )

@@ -1,7 +1,5 @@
 package com.biggestAsk.ui.homeScreen.drawerScreens.settingScreens
 
-import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -14,7 +12,6 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -33,16 +30,8 @@ fun AboutApp(
     homeActivity: HomeActivity,
     aboutAppViewModel: AboutAppViewModel,
 ) {
-    val context = LocalContext.current
     LaunchedEffect(Unit) {
-        getAboutApp(aboutAppViewModel, context, homeActivity)
-//        if (isInternetAvailable(context)) {
-//        } else {
-//            aboutAppViewModel.isDataNull = false
-//            aboutAppViewModel.aboutAppList.clear()
-//            aboutAppViewModel.lastUpdatedDate = ""
-//            Toast.makeText(context, R.string.no_internet_available, Toast.LENGTH_SHORT).show()
-//        }
+        getAboutApp(aboutAppViewModel, homeActivity)
     }
     if (aboutAppViewModel.isLoading) {
         aboutAppViewModel.aboutAppList.clear()
@@ -66,7 +55,7 @@ fun AboutApp(
                         .width(90.dp)
                         .height(90.dp),
                     painter = painterResource(id = R.drawable.logo_setting_privacy_policy),
-                    contentDescription = ""
+                    contentDescription = stringResource(id = R.string.content_description),
                 )
                 Text(
                     text = if (aboutAppViewModel.lastUpdatedDate != "") "Last Updated on ${aboutAppViewModel.lastUpdatedDate}" else "",
@@ -110,30 +99,6 @@ fun AboutApp(
                             )
                         )
                     }
-                    //                Text(
-                    //                    text = stringResource(id = R.string.setting_about_app_more_info_tittle),
-                    //                    modifier = Modifier
-                    //                        .fillMaxWidth()
-                    //                        .padding(top = 24.dp, start = 20.dp),
-                    //                    style = MaterialTheme.typography.body2.copy(
-                    //                        fontWeight = FontWeight.W600,
-                    //                        textAlign = TextAlign.Start,
-                    //                        fontSize = 22.sp
-                    //                    )
-                    //                )
-                    //                Text(
-                    //                    text = stringResource(id = R.string.setting_about_app_more_information_desc),
-                    //                    modifier = Modifier
-                    //                        .fillMaxWidth()
-                    //                        .padding(top = 16.dp, start = 20.dp),
-                    //                    style = MaterialTheme.typography.body1.copy(
-                    //                        fontWeight = FontWeight.W400,
-                    //                        textAlign = TextAlign.Start,
-                    //                        fontSize = 16.sp,
-                    //                        lineHeight = 24.sp,
-                    //                        color = Color.Black
-                    //                    )
-                    //                )
                 }
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -146,7 +111,7 @@ fun AboutApp(
                         Image(
                             modifier = Modifier,
                             painter = painterResource(id = img.img),
-                            contentDescription = ""
+                            contentDescription = stringResource(id = R.string.content_description),
                         )
                     }
                 }
@@ -157,7 +122,6 @@ fun AboutApp(
 
 fun getAboutApp(
     aboutAppViewModel: AboutAppViewModel,
-    context: Context,
     homeActivity: HomeActivity,
 ) {
     aboutAppViewModel.getAboutApp()
@@ -168,8 +132,6 @@ fun getAboutApp(
                 result = it,
                 aboutAppViewModel = aboutAppViewModel
             )
-        } else {
-            Log.e("TAG", "GetContactData is null: ")
         }
     }
 }

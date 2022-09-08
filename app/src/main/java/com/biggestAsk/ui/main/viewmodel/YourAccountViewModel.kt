@@ -28,7 +28,7 @@ import javax.inject.Inject
 @HiltViewModel
 class YourAccountViewModel @Inject constructor(
     private val yourAccountRepository: YourAccountRepository,
-    application: Application
+    application: Application,
 ) : AndroidViewModel(application) {
 
     var isLoading: Boolean by mutableStateOf(false)
@@ -133,14 +133,17 @@ class YourAccountViewModel @Inject constructor(
                 if (Build.VERSION.SDK_INT < 29) {
                     if (isParentClicked) {
                         bitmapImage1.value =
-                            getResizedBitmap(MediaStore.Images.Media.getBitmap(context.contentResolver, uri), 512, 512)
+                            getResizedBitmap(MediaStore.Images.Media.getBitmap(context.contentResolver,
+                                uri), 512, 512)
                     }
                     if (isMotherClicked) {
                         bitmapImage2.value =
-                            getResizedBitmap(MediaStore.Images.Media.getBitmap(context.contentResolver, uri), 512, 512)
+                            getResizedBitmap(MediaStore.Images.Media.getBitmap(context.contentResolver,
+                                uri), 512, 512)
                     }
                 } else {
-                    val source = uri?.let { it1 -> ImageDecoder.createSource(context.contentResolver, it1) }
+                    val source =
+                        uri?.let { it1 -> ImageDecoder.createSource(context.contentResolver, it1) }
                     val bitmap = source?.let { it1 -> ImageDecoder.decodeBitmap(it1) }
                     if (isParentClicked) {
                         bitmapImage1.value = bitmap?.let { it1 -> getResizedBitmap(it1, 512, 512) }
@@ -184,7 +187,7 @@ class YourAccountViewModel @Inject constructor(
         partner_phone: MultipartBody.Part? = null,
         partner_dob: MultipartBody.Part? = null,
         partner_address: MultipartBody.Part? = null,
-        partner_gender: MultipartBody.Part? = null
+        partner_gender: MultipartBody.Part? = null,
     ) {
         updateUserProfileResponse.value = NetworkResult.Loading()
         viewModelScope.launch {
@@ -212,7 +215,7 @@ class YourAccountViewModel @Inject constructor(
 
     fun getYourAccountAnsweredQuestionList(
         userId: Int,
-        type: String
+        type: String,
     ) {
         viewModelScope.launch {
             getAnsweredQuestionListResponse.value = NetworkResult.Loading()

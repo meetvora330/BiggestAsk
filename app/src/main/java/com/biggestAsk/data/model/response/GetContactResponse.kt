@@ -1,5 +1,5 @@
 package com.biggestAsk.data.model.response
 
 data class GetContactResponse(
-    val data: List<GetContactResponseData>
+    val data: List<GetContactResponseData>,
 )

@@ -21,7 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class BottomMilestoneViewModel @Inject constructor(
     private val homeRepository: HomeRepository,
-    application: Application
+    application: Application,
 ) : AndroidViewModel(application) {
     var getMilestoneResponse: MutableLiveData<NetworkResult<GetMilestoneResponse>> =
         MutableLiveData()

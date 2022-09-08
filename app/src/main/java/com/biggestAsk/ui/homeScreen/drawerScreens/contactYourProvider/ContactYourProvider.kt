@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -87,7 +86,7 @@ fun ContactYourProvider(
                                 .height(48.dp)
                                 .padding(top = 16.dp, start = 16.dp),
                             painter = painter,
-                            contentDescription = "",
+                            contentDescription = stringResource(id = R.string.content_description),
                         )
                         Column(modifier = Modifier.padding(start = 16.dp)) {
                             Text(
@@ -100,7 +99,7 @@ fun ContactYourProvider(
                             )
                             Text(
                                 modifier = Modifier.padding(top = 16.dp),
-                                text = "Agency rep name",
+                                text = stringResource(id = R.string.agency_rep_name),
                                 style = MaterialTheme.typography.body1,
                                 fontSize = 14.sp,
                                 color = Color(0xFF8995A3)
@@ -116,7 +115,7 @@ fun ContactYourProvider(
                             )
                             Text(
                                 modifier = Modifier.padding(top = 16.dp),
-                                text = "Agency email",
+                                text = stringResource(id = R.string.agency_email),
                                 style = MaterialTheme.typography.body1,
                                 fontSize = 14.sp,
                                 color = Color(0xFF8995A3)
@@ -132,7 +131,7 @@ fun ContactYourProvider(
                             )
                             Text(
                                 modifier = Modifier.padding(top = 16.dp),
-                                text = "Agency phone number",
+                                text = stringResource(id = R.string.agency_phone_number),
                                 style = MaterialTheme.typography.body1,
                                 fontSize = 14.sp,
                                 color = Color(0xFF8995A3)
@@ -254,8 +253,6 @@ fun getUpdatedContact(
                 result = it,
                 contactYourProviderViewModel = contactYourProviderViewModel,
             )
-        } else {
-            Log.e("TAG", "GetContactData is null: ")
         }
     }
 }
@@ -284,11 +281,3 @@ private fun handleGetContactApi(
         }
     }
 }
-
-//@Preview(showSystemUi = true, showBackground = true)
-//@Composable
-//fun ContactYourProviderPreview() {
-//    ContactYourProvider(
-//        modifier = Modifier
-//    )
-//}

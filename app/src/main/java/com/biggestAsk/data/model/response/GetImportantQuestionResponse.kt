@@ -4,5 +4,5 @@ data class GetImportantQuestionResponse(
     val pregnancy_milestone: PregnancyMilestoneX,
     val question: QuestionX,
     val status: String,
-    val user_name: List<String>
+    val user_name: List<String>,
 )

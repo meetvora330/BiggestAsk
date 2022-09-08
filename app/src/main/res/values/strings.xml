@@ -114,6 +114,21 @@
     <string name="log_out">Log out</string>
     <string name="no_community_found">No Community Found</string>
     <string name="no_contact_found">No Contact Found</string>
+    <string name="alert_whoops">Whoops!!</string>
+    <string name="no_internet_found">No Internet connection was found.Check your connection or try again.</string>
+    <string name="try_again">Try again</string>
+    <string name="content_description" />
+    <string name="resend_code_with0">Resend Code: 0:</string>
+    <string name="resending_otp">Re-sending OTP</string>
+    <string name="verify_otp">Verifying OTP</string>
+    <string name="otp_send_display_message">OTP Resend Successfully</string>
+    <string name="url">URL</string>
+    <string name="accept">Accept  </string>
+    <string name="url_string">https://thebiggestask.com/</string>
+    <string name="date_time_concat">at</string>
+    <string name="days_concat"> Day ago</string>
+    <string name="hint_drop_down">Parents</string>
+    <string name="search">Search </string>
 
 
     <!-- Intro Screen   -->
@@ -196,7 +211,7 @@
     <string name="bottom_home_screen_your_intended_parents">Your Intended Parents:</string>
     <string name="text_home_bottom_nav_milestone">Milestones</string>
     <string name="text_home_bottom_nav_home">Home</string>
-    <string name="text_home_bottom_nav_question">Questions</string>
+    <string name="text_home_bottom_nav_question">Question Bank</string>
     <string name="select_user_name_hint">Select user name</string>
     <string name="your_surrogate_mother">Your Surrogate Mother</string>
     <string name="parents_hint">Parents</string>
@@ -205,6 +220,7 @@
 
     <!-- Bottom Milestone Screen   -->
     <string name="tittle_bottom_milestone">Euismod eget auctor eget risus tristique ipsum urna.</string>
+    <string name="add_new_milestone_bottom_sheet_tittle">Posuere faucibus laoreet vitae fermentum. Porttitor\nquis egestas porta arcu scelerisque sed sed turpis.</string>
 
     <!-- Bottom Question Screen    -->
     <string name="bottom_ques_screen_desc"> The intended parents and the surrogate will answer the same questions so they would know each other better.Come back often- more interesting questions will be unlocked as your journey moves forward!</string>
@@ -304,8 +320,16 @@
 
     <!--    Notification Screen-->
     <string name="NO_NOTIFICATION_FOUND">No Notification Found</string>
-
     <string name="existing_question_profile">Existing questions in the profile</string>
     <string name="no_surrogate_found">No surrogate found!!</string>
+
+    <!--    Your Account-->
+    <string name="enter_your_name">Enter your name</string>
+    <string name="phone_number">Phone number</string>
+    <string name="home_address">Home address</string>
+    <string name="your_date_of_birth">Your date of birth</string>
+    <string name="date_of_birth">Date of birth</string>
+    <string name="save_editing">Save Editing</string>
+
 
 </resources>

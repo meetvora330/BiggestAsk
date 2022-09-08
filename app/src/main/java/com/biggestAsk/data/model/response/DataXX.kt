@@ -6,5 +6,5 @@ data class DataXX(
     val info: String,
     val screen: Int,
     val title: String,
-    val updated_at: String
+    val updated_at: String,
 )

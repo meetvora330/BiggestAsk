@@ -53,7 +53,7 @@ fun BottomNavigationDrawerGraph(
     termsOfServiceViewModel: TermsOfServiceViewModel,
     detailedSettingsViewModel: DetailedSettingsViewModel,
     settingViewModel: SettingViewModel,
-    logoutViewModel: LogoutViewModel
+    logoutViewModel: LogoutViewModel,
 ) {
     val provider = PreferenceProvider(context)
     NavHost(
@@ -94,7 +94,6 @@ fun BottomNavigationDrawerGraph(
                         context = context,
                         homeActivity = homeActivity,
                         bottomHomeViewModel = bottomHomeViewModel,
-                        frequencyViewModel = frequencyViewModel
                     )
                 }
             }
@@ -224,7 +223,6 @@ fun BottomNavigationDrawerGraph(
             val desc = it.arguments?.getString(NOTIFICATION_DETAILS_DESC_KEY)
             val days = it.arguments?.getString(NOTIFICATION_DETAILS_DAYS_KEY)
             NotificationDetails(
-                navHostController = navHostController,
                 notificationDetailsIcon = icon,
                 notificationDetailsTittle = title,
                 notificationDetailsDescription = desc,
@@ -263,7 +261,6 @@ fun BottomNavigationDrawerGraph(
         }
         composable(route = MyAccount.MyAccountScreen.route) {
             YourAccountScreen(
-                navHostController = navHostController,
                 yourAccountViewModel = yourAccountViewModel,
                 homeActivity = homeActivity,
                 context = context,

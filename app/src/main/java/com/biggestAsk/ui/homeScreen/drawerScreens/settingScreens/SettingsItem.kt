@@ -4,7 +4,7 @@ import com.biggestAsk.util.Constants
 import com.example.biggestAsk.R
 
 sealed class SettingSubScreen(
-    val route: String
+    val route: String,
 ) {
     object AboutApp : SettingSubScreen(route = Constants.ROUTE_ABOUT_APP)
     object PrivacyPolicy : SettingSubScreen(route = Constants.ROUTE_PRIVACY_POLICY)
@@ -14,7 +14,7 @@ sealed class SettingSubScreen(
 
 data class SettingsItem(
     val icon: Int,
-    val title: String
+    val title: String,
 )
 
 val listSettingsItem = mutableListOf(

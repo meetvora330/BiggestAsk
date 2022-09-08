@@ -21,7 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailedSettingsViewModel @Inject constructor(
     private val detailedSettingsRepository: DetailedSettingsRepository,
-    application: Application
+    application: Application,
 ) : AndroidViewModel(application) {
 
     var checkedStateNotification: Boolean by mutableStateOf(false)
@@ -48,7 +48,7 @@ class DetailedSettingsViewModel @Inject constructor(
 
     fun getNotificationStatus(
         type: String,
-        user_id: Int
+        user_id: Int,
     ) {
         getNotificationStatusResponse.value = NetworkResult.Loading()
         viewModelScope.launch {

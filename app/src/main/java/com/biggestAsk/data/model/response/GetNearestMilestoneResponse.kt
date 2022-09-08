@@ -4,5 +4,5 @@ data class GetNearestMilestoneResponse(
     val date: String,
     val time: String,
     val title: String,
-    val milestone_image: String
+    val milestone_image: String,
 )

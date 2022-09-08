@@ -1,6 +1,5 @@
 package com.biggestAsk.ui.homeScreen.drawerScreens.settingScreens
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -13,7 +12,6 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -32,16 +30,8 @@ fun TermsOfService(
     homeActivity: HomeActivity,
     termsOfServiceViewModel: TermsOfServiceViewModel,
 ) {
-    val context = LocalContext.current
     LaunchedEffect(Unit) {
         getTermsOfService(termsOfServiceViewModel, homeActivity)
-//        if (isInternetAvailable(context)) {
-//        } else {
-//            termsOfServiceViewModel.isDataNull = false
-//            termsOfServiceViewModel.termsOfServiceList.clear()
-//            termsOfServiceViewModel.lastUpdatedDate = ""
-//            Toast.makeText(context, R.string.no_internet_available, Toast.LENGTH_SHORT).show()
-//        }
     }
     if (termsOfServiceViewModel.isLoading) {
         termsOfServiceViewModel.termsOfServiceList.clear()
@@ -109,30 +99,6 @@ fun TermsOfService(
                             )
                         )
                     }
-                    //                Text(
-                    //                    text = stringResource(id = R.string.setting_terms_of_service_service_tittle),
-                    //                    modifier = Modifier
-                    //                        .fillMaxWidth()
-                    //                        .padding(top = 24.dp, start = 20.dp),
-                    //                    style = MaterialTheme.typography.body2.copy(
-                    //                        fontWeight = FontWeight.W600,
-                    //                        textAlign = TextAlign.Start,
-                    //                        fontSize = 22.sp
-                    //                    )
-                    //                )
-                    //                Text(
-                    //                    text = stringResource(id = R.string.setting_terms_of_service_service_desc),
-                    //                    modifier = Modifier
-                    //                        .fillMaxWidth()
-                    //                        .padding(top = 16.dp, start = 20.dp),
-                    //                    style = MaterialTheme.typography.body1.copy(
-                    //                        fontWeight = FontWeight.W400,
-                    //                        textAlign = TextAlign.Start,
-                    //                        fontSize = 16.sp,
-                    //                        lineHeight = 24.sp,
-                    //                        color = Color(0xFF9B9BA8)
-                    //                    )
-                    //                )
                 }
             }
         }
@@ -150,8 +116,6 @@ fun getTermsOfService(
                 result = it,
                 termsOfServiceViewModel = termsOfServiceViewModel
             )
-        } else {
-            Log.e("TAG", "TermsOfServiceApiData is null: ")
         }
     }
 }

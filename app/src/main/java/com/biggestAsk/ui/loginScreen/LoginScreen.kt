@@ -3,7 +3,6 @@ package com.biggestAsk.ui.loginScreen
 import android.content.Context
 import android.content.Intent
 import android.text.TextUtils
-import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -18,6 +17,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
@@ -62,10 +62,14 @@ fun LoginScreen(
     context: Context,
 ) {
     val focusManager = LocalFocusManager.current
+    LaunchedEffect(Unit) {
+        loginViewModel.isLoginEmailEmpty = false
+        loginViewModel.isLoginPassEmpty = false
+    }
     Image(
         modifier = Modifier.fillMaxSize(),
         painter = painterResource(id = R.drawable.img_login_bg),
-        contentDescription = "",
+        contentDescription = stringResource(id = R.string.content_description),
         contentScale = ContentScale.FillBounds
     )
     LazyColumn {
@@ -105,7 +109,7 @@ fun LoginScreen(
                 )
                 Image(
                     painter = painterResource(id = R.drawable.img_login_tittle),
-                    contentDescription = "login_img_up",
+                    contentDescription = stringResource(id = R.string.content_description),
                     modifier = Modifier
                         .width(92.dp)
                         .height(104.dp)
@@ -168,7 +172,7 @@ fun LoginScreen(
                         if (loginViewModel.isLoginEmailEmpty) {
                             Icon(
                                 imageVector = Icons.Filled.Error,
-                                "error",
+                                contentDescription = stringResource(id = R.string.content_description),
                                 tint = MaterialTheme.colors.error
                             )
                         }
@@ -245,7 +249,7 @@ fun LoginScreen(
                         if (loginViewModel.isLoginPassEmpty) {
                             Icon(
                                 imageVector = Icons.Filled.Error,
-                                "error",
+                                contentDescription = stringResource(id = R.string.content_description),
                                 tint = MaterialTheme.colors.error
                             )
                         }
@@ -306,7 +310,8 @@ fun LoginScreen(
                             }
                             else -> {
                                 val fcmToken =
-                                    PreferenceProvider(context).getValue("notification_token", "")
+                                    PreferenceProvider(context).getValue(Constants.NOTIFICATION_TOKEN,
+                                        "")
                                 if (fcmToken != null) {
                                     val loginDetails = LoginBodyRequest(
                                         email = loginViewModel.loginTextEmail.trim(),
@@ -368,13 +373,12 @@ private fun handleUserData(
     result: NetworkResult<LoginBodyResponse>,
     loginViewModel: LoginViewModel,
     context: Context,
-    mainActivity: MainActivity
+    mainActivity: MainActivity,
 ) {
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
             loginViewModel.isLoading = true
-            Log.e("TAG", "handleUserData() --> Loading  $result")
         }
         is NetworkResult.Success -> {
             // bind data to the view
@@ -382,13 +386,14 @@ private fun handleUserData(
             GlobalScope.launch {
                 result.data?.let {
                     val provider = PreferenceProvider(context)
-                    provider.setValue("user_id", result.data.user_id)
-                    provider.setValue("type", result.data.type)
-                    provider.setValue("partner_id", result.data.partner_id)
+                    provider.setValue(Constants.USER_ID, result.data.user_id)
+                    provider.setValue(Constants.TYPE, result.data.type)
+                    provider.setValue(Constants.PARTNER_ID, result.data.partner_id)
                     provider.setValue(Constants.LOGIN_STATUS, result.data.status)
-                    provider.setValue("user_name", result.data.user_name)
+                    provider.setValue(Constants.USER_NAME, result.data.user_name)
+                    provider.setValue(Constants.PREGNANCY_MILESTONE_STATUS, result.data.pregnancy_milestone_status)
                     if (result.data.image != null) {
-                        provider.setValue("updated_image", result.data.image)
+                        provider.setValue(Constants.UPDATED_IMAGE, result.data.image)
                     }
                 }
             }
@@ -403,7 +408,8 @@ private fun handleUserData(
                 }
                 LoginStatus.PARTNER_NOT_ASSIGN.name.lowercase(Locale.getDefault()),
                 LoginStatus.MILESTONE_DATE_NOT_ADDED.name.lowercase(Locale.getDefault()),
-                LoginStatus.ON_BOARDING.name.lowercase(Locale.getDefault()) -> {
+                LoginStatus.ON_BOARDING.name.lowercase(Locale.getDefault()),
+                -> {
                     mainActivity.startActivity(
                         Intent(
                             mainActivity,
@@ -418,7 +424,6 @@ private fun handleUserData(
             // show error message
             loginViewModel.isLoading = false
             Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
         }
     }
 }

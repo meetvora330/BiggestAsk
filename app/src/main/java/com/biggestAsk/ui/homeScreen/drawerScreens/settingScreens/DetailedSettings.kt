@@ -1,7 +1,6 @@
 package com.biggestAsk.ui.homeScreen.drawerScreens.settingScreens
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -30,7 +29,7 @@ import com.example.biggestAsk.R
 fun DetailedSettings(
     context: Context,
     homeActivity: HomeActivity,
-    detailedSettingsViewModel: DetailedSettingsViewModel
+    detailedSettingsViewModel: DetailedSettingsViewModel,
 ) {
     val provider = PreferenceProvider(context)
     val type = provider.getValue(Constants.TYPE, "")
@@ -40,7 +39,6 @@ fun DetailedSettings(
             userId = userId,
             type = type,
             homeActivity = homeActivity,
-            context = context,
             detailedSettingsViewModel = detailedSettingsViewModel
         )
     }
@@ -122,7 +120,6 @@ fun DetailedSettings(
                                 notificationStatusUpdate(
                                     homeActivity = homeActivity,
                                     detailedSettingsViewModel = detailedSettingsViewModel,
-                                    context = context,
                                     user_id = userId,
                                     type = type
                                 )
@@ -291,35 +288,34 @@ fun DetailedSettings(
 }
 
 
-private fun handleUserLogoutData(
-    result: NetworkResult<CommonResponse>,
-    detailedSettingsViewModel: DetailedSettingsViewModel,
-) {
-    when (result) {
-        is NetworkResult.Loading -> {
-            // show a progress bar
-            Log.e("TAG", "handleUserData() --> Loading  $result")
-            detailedSettingsViewModel.isNotificationStatusFetched = true
-        }
-        is NetworkResult.Success -> {
-            // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
-            detailedSettingsViewModel.isNotificationStatusFetched = false
-        }
-        is NetworkResult.Error -> {
-            // show error message
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
-            detailedSettingsViewModel.isNotificationStatusFetched = false
-        }
-    }
-}
+//private fun handleUserLogoutData(
+//    result: NetworkResult<CommonResponse>,
+//    detailedSettingsViewModel: DetailedSettingsViewModel,
+//) {
+//    when (result) {
+//        is NetworkResult.Loading -> {
+//            // show a progress bar
+//            Log.e("TAG", "handleUserData() --> Loading  $result")
+//            detailedSettingsViewModel.isNotificationStatusFetched = true
+//        }
+//        is NetworkResult.Success -> {
+//            // bind data to the view
+//            Log.e("TAG", "handleUserData() --> Success  $result")
+//            detailedSettingsViewModel.isNotificationStatusFetched = false
+//        }
+//        is NetworkResult.Error -> {
+//            // show error message
+//            Log.e("TAG", "handleUserData() --> Error ${result.message}")
+//            detailedSettingsViewModel.isNotificationStatusFetched = false
+//        }
+//    }
+//}
 
 fun getNotificationStatus(
     userId: Int,
     type: String?,
     homeActivity: HomeActivity,
-    context: Context,
-    detailedSettingsViewModel: DetailedSettingsViewModel
+    detailedSettingsViewModel: DetailedSettingsViewModel,
 ) {
     if (type != null) {
         detailedSettingsViewModel.getNotificationStatus(
@@ -344,19 +340,16 @@ private fun handleGetNotificationStatusData(
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
-            Log.e("TAG", "handleUserData() --> Loading  $result")
             detailedSettingsViewModel.isNotificationStatusFetched = true
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
             detailedSettingsViewModel.isNotificationStatusFetched = false
             detailedSettingsViewModel.checkedStateNotification =
-                if (result.data?.status == "active") true else if (result.data?.status == "inactive") false else false
+                if (result.data?.status == Constants.ACTIVE) true else if (result.data?.status == Constants.IN_ACTIVE) false else false
         }
         is NetworkResult.Error -> {
             // show error message
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
             detailedSettingsViewModel.isNotificationStatusFetched = false
         }
     }
@@ -365,12 +358,11 @@ private fun handleGetNotificationStatusData(
 fun notificationStatusUpdate(
     homeActivity: HomeActivity,
     detailedSettingsViewModel: DetailedSettingsViewModel,
-    context: Context,
     user_id: Int,
-    type: String
+    type: String,
 ) {
     val status =
-        if (detailedSettingsViewModel.checkedStateNotification) "active" else if (!detailedSettingsViewModel.checkedStateNotification) "inactive" else ""
+        if (detailedSettingsViewModel.checkedStateNotification) Constants.ACTIVE else if (!detailedSettingsViewModel.checkedStateNotification) Constants.IN_ACTIVE else ""
     detailedSettingsViewModel.notificationStatusUpdate(
         NotificationStatusUpdateRequest(
             type = type,
@@ -383,10 +375,6 @@ fun notificationStatusUpdate(
             handleNotificationStatusUpdateData(
                 result = it,
                 detailedSettingsViewModel = detailedSettingsViewModel,
-                context = context,
-                userId = user_id,
-                type = type,
-                homeActivity = homeActivity
             )
         }
     }
@@ -395,25 +383,18 @@ fun notificationStatusUpdate(
 private fun handleNotificationStatusUpdateData(
     result: NetworkResult<CommonResponse>,
     detailedSettingsViewModel: DetailedSettingsViewModel,
-    context: Context,
-    userId: Int,
-    type: String,
-    homeActivity: HomeActivity
 ) {
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
-            Log.e("TAG", "handleUserData() --> Loading  $result")
             detailedSettingsViewModel.isNotificationStatusUpdated = true
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
             detailedSettingsViewModel.isNotificationStatusUpdated = false
         }
         is NetworkResult.Error -> {
             // show error message
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
             detailedSettingsViewModel.isNotificationStatusUpdated = false
         }
     }

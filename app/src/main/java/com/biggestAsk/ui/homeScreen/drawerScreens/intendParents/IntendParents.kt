@@ -31,6 +31,7 @@ import com.biggestAsk.ui.homeScreen.drawerScreens.yourAccount.YourAccountParentS
 import com.biggestAsk.ui.homeScreen.drawerScreens.yourAccount.getAge
 import com.biggestAsk.ui.main.viewmodel.IntendedParentsViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
+import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 
@@ -38,10 +39,10 @@ import com.example.biggestAsk.R
 fun IntendParentsScreen(
     homeActivity: HomeActivity,
     context: Context,
-    intendedParentsViewModel: IntendedParentsViewModel
+    intendedParentsViewModel: IntendedParentsViewModel,
 ) {
-    val type = PreferenceProvider(context).getValue("type", "")
-    val userId = PreferenceProvider(context).getIntValue("user_id", 0)
+    val type = PreferenceProvider(context).getValue(Constants.TYPE, "")
+    val userId = PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
     LaunchedEffect(Unit) {
         if (type != null) {
             getIntendedProfile(
@@ -93,7 +94,7 @@ fun IntendParentsScreen(
                         painter = if (intendedParentsViewModel.imageFather != "") painterFather else painterResource(
                             id = R.drawable.ic_placeholder_your_account
                         ),
-                        contentDescription = "",
+                        contentDescription = stringResource(id = R.string.content_description),
                     )
                 }
                 Card(
@@ -115,7 +116,7 @@ fun IntendParentsScreen(
                         painter = if (intendedParentsViewModel.imageMother != "") painterMother else painterResource(
                             id = R.drawable.ic_placeholder_your_account
                         ),
-                        contentDescription = "",
+                        contentDescription = stringResource(id = R.string.content_description),
                     )
                 }
             }
@@ -129,7 +130,7 @@ fun IntendParentsScreen(
                     painter = painterResource(
                         id = R.drawable.ic_baseline_arrow_drop_up_24
                     ),
-                    contentDescription = "",
+                    contentDescription = stringResource(id = R.string.content_description),
                     alpha = if (!intendedParentsViewModel.isFatherClicked) 0f else 1f
                 )
                 Image(
@@ -137,7 +138,7 @@ fun IntendParentsScreen(
                     painter = painterResource(
                         id = R.drawable.ic_baseline_arrow_drop_up_24
                     ),
-                    contentDescription = "",
+                    contentDescription = stringResource(id = R.string.content_description),
                     alpha = if (intendedParentsViewModel.isMotherClicked) 1f else 0f
                 )
             }
@@ -215,7 +216,7 @@ fun IntendParentsScreen(
                             modifier = Modifier
                                 .padding(top = 10.dp),
                             painter = painterResource(id = R.drawable.ic_img_intended_parents_liner),
-                            contentDescription = ""
+                            contentDescription = stringResource(id = R.string.content_description),
                         )
                         if (intendedParentsViewModel.parentHomeAddress != "") {
                             Text(
@@ -329,7 +330,7 @@ fun IntendParentsScreen(
                             modifier = Modifier
                                 .padding(top = 10.dp),
                             painter = painterResource(id = R.drawable.ic_img_intended_parents_liner),
-                            contentDescription = ""
+                            contentDescription = stringResource(id = R.string.content_description),
                         )
                         if (intendedParentsViewModel.motherHomeAddress != "") {
                             Text(
@@ -413,8 +414,7 @@ fun IntendParentsScreen(
                                         fontWeight = FontWeight.W600,
                                         lineHeight = 24.sp
                                     ),
-
-                                    )
+                                )
                             }
                             Row {
                                 if (questionAn.user_name != "") {

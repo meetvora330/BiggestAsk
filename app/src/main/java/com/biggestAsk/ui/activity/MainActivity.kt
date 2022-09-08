@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
-import android.util.Log
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.compose.setContent
@@ -85,7 +84,10 @@ class MainActivity : BaseActivity() {
                 FirebaseMessaging.getInstance().token.addOnCompleteListener {
                     if (it.isComplete) {
                         val firebaseToken = it.result.toString()
-                        PreferenceProvider(this).setValue("notification_token", firebaseToken)
+                        PreferenceProvider(this).setValue(
+                            Constants.NOTIFICATION_TOKEN,
+                            firebaseToken
+                        )
                     }
                 }
                 ProvideWindowInsets(
@@ -113,7 +115,8 @@ class MainActivity : BaseActivity() {
                         when (provider.getValue(Constants.LOGIN_STATUS, "")) {
                             LoginStatus.PARTNER_NOT_ASSIGN.name.lowercase(Locale.getDefault()),
                             LoginStatus.MILESTONE_DATE_NOT_ADDED.name.lowercase(Locale.getDefault()),
-                            LoginStatus.ON_BOARDING.name.lowercase(Locale.getDefault()) -> {
+                            LoginStatus.ON_BOARDING.name.lowercase(Locale.getDefault()),
+                            -> {
                                 IntroLoader()
                             }
                             else -> {
@@ -148,7 +151,8 @@ class MainActivity : BaseActivity() {
                         when (provider.getValue(Constants.LOGIN_STATUS, "")) {
                             LoginStatus.PARTNER_NOT_ASSIGN.name.lowercase(Locale.getDefault()),
                             LoginStatus.MILESTONE_DATE_NOT_ADDED.name.lowercase(Locale.getDefault()),
-                            LoginStatus.ON_BOARDING.name.lowercase(Locale.getDefault()) -> {
+                            LoginStatus.ON_BOARDING.name.lowercase(Locale.getDefault()),
+                            -> {
                                 val intent = Intent(this, HomeActivity::class.java)
                                 startActivity(intent)
                                 finish()
@@ -185,13 +189,13 @@ class MainActivity : BaseActivity() {
                             .width(300.dp)
                             .height(300.dp),
                         painter = painterResource(id = R.drawable.icon_internet_not_available),
-                        contentDescription = ""
+                        contentDescription = stringResource(id = R.string.content_description)
                     )
                     Text(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 32.dp),
-                        text = "Whoops!!",
+                        text = stringResource(id = R.string.alert_whoops),
                         style = MaterialTheme.typography.body2.copy(
                             fontSize = 28.sp,
                             lineHeight = 32.sp,
@@ -203,7 +207,7 @@ class MainActivity : BaseActivity() {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(20.dp),
-                        text = "No Internet connection was found.Check your connection or try again.",
+                        text = stringResource(id = R.string.no_internet_found),
                         style = MaterialTheme.typography.body2.copy(
                             color = Color.Black,
                             fontWeight = FontWeight.W400,
@@ -238,7 +242,7 @@ class MainActivity : BaseActivity() {
                         )
                     ) {
                         Text(
-                            text = "Try again",
+                            text = stringResource(id = R.string.try_again),
                             color = Color.White,
                             style = MaterialTheme.typography.body2,
                             lineHeight = 28.sp,
@@ -265,7 +269,7 @@ class MainActivity : BaseActivity() {
                     .width(80.dp)
                     .height(80.dp),
                 painter = painterResource(id = R.drawable.ic_img_question_card_logo),
-                contentDescription = ""
+                contentDescription = stringResource(id = R.string.content_description)
             )
             Text(
                 text = stringResource(id = R.string.the_biggest_ask),
@@ -298,32 +302,24 @@ class MainActivity : BaseActivity() {
 private fun handleUserData(
     result: NetworkResult<IntroInfoResponse>,
     context: Context,
-    introViewModel: IntroViewModel
+    introViewModel: IntroViewModel,
 ) {
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
-            Log.e("TAG", "handleUserData() --> Loading  $result")
             introViewModel.isIntroDataLoaded = false
             introViewModel.isAPILoadingFailed = false
             introViewModel.isUserStatusDataLoaded = false
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
-            Log.d("TAG", "handleUserData: ${result.data?.data!![0].title}")
-            introViewModel.introInfoDetailList = result.data.data.toMutableList()
+            introViewModel.introInfoDetailList = result.data?.data?.toMutableList()!!
             introViewModel.isIntroDataLoaded = true
             introViewModel.isUserStatusDataLoaded = true
             introViewModel.isAPILoadingFailed = false
-            Log.d(
-                "TAG",
-                "handleUserData: from viewModel ${introViewModel.introInfoDetailList[0].title}"
-            )
         }
         is NetworkResult.Error -> {
             // show error message
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
             Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
             introViewModel.isIntroDataLoaded = false
             introViewModel.isAPILoadingFailed = true
@@ -358,19 +354,19 @@ private fun handleUpdatedStatusData(
             }
             result.data?.image.let {
                 if (it != null) {
-                    PreferenceProvider(context).setValue("updated_image", it)
+                    PreferenceProvider(context).setValue(Constants.UPDATED_IMAGE, it)
                     introViewModel.updatedImage = it
                 }
             }
             result.data?.pregnancy_milestone_status.let {
                 if (it != null) {
-                    PreferenceProvider(context).setValue("pregnancy_milestone_status", it)
+                    PreferenceProvider(context).setValue(Constants.PREGNANCY_MILESTONE_STATUS, it)
                     introViewModel.pregnancyMilestoneStatus = it
                 }
             }
             result.data?.user_name.let {
                 if (it != null) {
-                    PreferenceProvider(context).setValue("user_name", it)
+                    PreferenceProvider(context).setValue(Constants.USER_NAME, it)
                 }
             }
             introViewModel.isUserStatusDataLoaded = true

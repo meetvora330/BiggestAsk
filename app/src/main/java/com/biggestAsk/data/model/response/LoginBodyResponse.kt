@@ -10,4 +10,5 @@ data class LoginBodyResponse(
     val user_id: Int,
     val user_name: String,
     val image: String,
+    val pregnancy_milestone_status:String
 )

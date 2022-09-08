@@ -7,5 +7,5 @@ data class QuestionBank(
     val info_type: String,
     val screen: Any,
     val title: Any,
-    val updated_at: String
+    val updated_at: String,
 )

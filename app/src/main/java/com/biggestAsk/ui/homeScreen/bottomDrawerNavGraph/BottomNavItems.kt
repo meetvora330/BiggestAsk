@@ -8,7 +8,7 @@ sealed class BottomNavItems(
     val tittle: String,
     @DrawableRes val defaultIcon: Int,
     @DrawableRes val selectedIcon: Int,
-    val navRoute: String
+    val navRoute: String,
 ) {
     object Milestones : BottomNavItems(
         tittle = Constants.MILESTONE,

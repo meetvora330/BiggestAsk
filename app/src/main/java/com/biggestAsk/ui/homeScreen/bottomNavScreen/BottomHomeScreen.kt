@@ -37,7 +37,6 @@ import com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer.IntendedParentsShimm
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer.NearestMilestoneShimmerAnimation
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer.PregnancyMilestoneShimmerAnimation
 import com.biggestAsk.ui.main.viewmodel.BottomHomeViewModel
-import com.biggestAsk.ui.main.viewmodel.FrequencyViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.ET_Bg
 import com.biggestAsk.ui.ui.theme.Text_Color
@@ -55,7 +54,6 @@ fun BottomHomeScreen(
     context: Context,
     homeActivity: HomeActivity,
     bottomHomeViewModel: BottomHomeViewModel,
-    frequencyViewModel: FrequencyViewModel
 ) {
     val homeBottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
@@ -91,7 +89,7 @@ fun BottomHomeScreen(
                         .fillMaxWidth()
                         .padding(top = 20.dp),
                     painter = painterResource(id = R.drawable.ic_img_bottom_sheet_opener),
-                    contentDescription = ""
+                    contentDescription = stringResource(id = R.string.content_description),
                 )
                 Text(
                     modifier = Modifier
@@ -505,7 +503,7 @@ fun BottomHomeScreen(
                                                         end = 24.dp
                                                     ),
                                                 painter = painterResource(id = R.drawable.img_user_add_new_milestone),
-                                                contentDescription = "",
+                                                contentDescription = stringResource(id = R.string.content_description),
                                                 contentScale = ContentScale.FillBounds
                                             )
                                         } else {
@@ -519,7 +517,7 @@ fun BottomHomeScreen(
                                                     .width(180.dp)
                                                     .height(180.dp),
                                                 painter = painter,
-                                                contentDescription = ""
+                                                contentDescription = stringResource(id = R.string.content_description),
                                             )
                                         }
 
@@ -542,14 +540,15 @@ fun BottomHomeScreen(
                                                 bottom = 26.dp
                                             ),
                                             painter = painterResource(id = R.drawable.img_medical_calender_icon),
-                                            contentDescription = ""
+                                            contentDescription = stringResource(id = R.string.content_description),
                                         )
                                         Text(
                                             modifier = Modifier.padding(
                                                 start = 8.dp,
                                                 top = 17.dp
                                             ),
-                                            text = "${bottomHomeViewModel.nearestMilestoneDate} at ${bottomHomeViewModel.nearestMilestoneTime}",
+                                            text = bottomHomeViewModel.nearestMilestoneDate + stringResource(
+                                                id = R.string.date_time_concat) + bottomHomeViewModel.nearestMilestoneTime,
                                             color = Color(0xFF9F9D9B),
                                             style = MaterialTheme.typography.body2,
                                             fontWeight = FontWeight.W400,
@@ -754,7 +753,7 @@ fun updateHomeScreenData(
     userId: Int,
     type: String,
     homeActivity: HomeActivity,
-    partnerId: Int
+    partnerId: Int,
 ) {
     bottomHomeViewModel.getPregnancyMilestone(
         GetPregnancyMilestoneRequest(
@@ -811,7 +810,7 @@ fun getHomeScreenQuestion(
     user_id: Int,
     type: String,
     bottomHomeViewModel: BottomHomeViewModel,
-    homeActivity: HomeActivity
+    homeActivity: HomeActivity,
 ) {
     bottomHomeViewModel.getHomeScreenQuestion(
         GetPregnancyMilestoneRequest(
@@ -837,17 +836,15 @@ private fun handleStoreQuestionAnsData(
     bottomSheetScaffoldState: BottomSheetScaffoldState,
     user_id: Int,
     type: String,
-    homeActivity: HomeActivity
+    homeActivity: HomeActivity,
 ) {
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
-            Log.e("TAG", "handleUserData() --> Loading  $result")
             bottomHomeViewModel.isHomeScreenQuestionAnswered = true
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
             Log.i("TAG", result.message.toString())
             getHomeScreenQuestion(user_id, type, bottomHomeViewModel, homeActivity)
             coroutineScope.launch {
@@ -862,7 +859,6 @@ private fun handleStoreQuestionAnsData(
             coroutineScope.launch {
                 bottomSheetScaffoldState.bottomSheetState.expand()
             }
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
         }
     }
 }
@@ -879,13 +875,10 @@ private fun handleStoreAnsImportantQuestion(
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
-            Log.e("TAG", "handleUserData() --> Loading  $result")
             bottomHomeViewModel.isHomeScreenQuestionAnswered = true
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
-            Log.i("TAG", result.message.toString())
             bottomHomeViewModel.getPregnancyMilestone(
                 GetPregnancyMilestoneRequest(
                     user_id = userId,
@@ -905,7 +898,6 @@ private fun handleStoreAnsImportantQuestion(
                     bottomSheetScaffoldState.bottomSheetState.expand()
                 }
             }
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
         }
     }
 }
@@ -917,7 +909,6 @@ private fun handleGetImportantQuestionData(
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
-            Log.e("TAG", "handleUserData() --> Loading  $result")
             bottomHomeViewModel.isPregnancyDataLoaded = false
             bottomHomeViewModel.isAllDataLoaded = true
             bottomHomeViewModel.isErrorOccurred = false
@@ -925,7 +916,6 @@ private fun handleGetImportantQuestionData(
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
             Log.i("TAG", result.message.toString())
             if (result.data?.question == null) {
                 bottomHomeViewModel.isQuestionDataEmpty = true
@@ -952,7 +942,6 @@ private fun handleGetImportantQuestionData(
         }
         is NetworkResult.Error -> {
             // show error message
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
             bottomHomeViewModel.isAllDataLoaded = false
             bottomHomeViewModel.isErrorOccurred = true
             bottomHomeViewModel.isPregnancyDataLoaded = false
@@ -968,7 +957,6 @@ private fun handleHomeQuestionData(
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
-            Log.e("TAG", "handleUserData() --> Loading  $result")
             bottomHomeViewModel.isAllDataLoaded = true
             bottomHomeViewModel.isHomeScreenQuestionDataLoaded = false
             bottomHomeViewModel.isErrorOccurred = false
@@ -976,9 +964,6 @@ private fun handleHomeQuestionData(
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
-            Log.i("TAG", result.message.toString())
-            Log.d("TAG", "handleHomeQuestionData: ${result.data?.data?.question}")
             bottomHomeViewModel.isAllDataLoaded = false
             bottomHomeViewModel.isErrorOccurred = false
 
@@ -991,7 +976,7 @@ private fun handleHomeQuestionData(
                 bottomHomeViewModel.isHomeScreenQuestionDataLoaded = true
                 bottomHomeViewModel.homeScreenQuestionCategeryId = result.data.data.category_id
                 bottomHomeViewModel.homeScreenQuestionId = result.data.data.id
-                bottomHomeViewModel.homeScreenLatestQuestion = result.data.data.question.toString()
+                bottomHomeViewModel.homeScreenLatestQuestion = result.data.data.question
                 bottomHomeViewModel.homeScreenQuestionAns = ""
                 bottomHomeViewModel.parentList.clear()
                 result.data.user_name.forEach {
@@ -1002,7 +987,6 @@ private fun handleHomeQuestionData(
         }
         is NetworkResult.Error -> {
             // show error message
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
             bottomHomeViewModel.isErrorOccurred = true
             bottomHomeViewModel.isAllDataLoaded = false
             bottomHomeViewModel.isHomeScreenQuestionDataLoaded = false
@@ -1019,7 +1003,6 @@ private fun handleNearestMilestoneData(
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
-            Log.e("TAG", "handleUserData() --> Loading  $result")
             bottomHomeViewModel.isAllDataLoaded = true
             bottomHomeViewModel.isErrorOccurred = false
             bottomHomeViewModel.isNearestMilestoneDataLoaded = false
@@ -1027,7 +1010,6 @@ private fun handleNearestMilestoneData(
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
             Log.i("TAG", result.message.toString())
             bottomHomeViewModel.nearestMilestoneTittle = result.data?.title!!
             if (result.data.date.isEmpty())
@@ -1040,7 +1022,7 @@ private fun handleNearestMilestoneData(
             else
                 bottomHomeViewModel.nearestMilestoneTime = result.data.time
 
-            if (result.data.milestone_image==null)
+            if (result.data.milestone_image == null)
                 bottomHomeViewModel.nearestMilestoneImage = ""
             else
                 bottomHomeViewModel.nearestMilestoneImage = result.data.milestone_image
@@ -1050,7 +1032,6 @@ private fun handleNearestMilestoneData(
         }
         is NetworkResult.Error -> {
             // show error message
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
             bottomHomeViewModel.isErrorOccurred = true
             bottomHomeViewModel.isAllDataLoaded = false
             bottomHomeViewModel.isNearestMilestoneDataLoaded = false
@@ -1066,7 +1047,6 @@ private fun handleIntendedParentQuestionAnsData(
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
-            Log.e("TAG", "handleUserData() --> Loading  $result")
             bottomHomeViewModel.isAllDataLoaded = true
             bottomHomeViewModel.isErrorOccurred = false
             bottomHomeViewModel.isIntendedParentQuestionDataLoaded = false
@@ -1074,8 +1054,6 @@ private fun handleIntendedParentQuestionAnsData(
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
-            Log.i("TAG", result.message.toString())
             bottomHomeViewModel.intendedParentQuestion = result.data?.data?.question!!
             bottomHomeViewModel.intendedParentUserName = result.data.user_name
             bottomHomeViewModel.intendedParentAnswer = result.data.data.answer
@@ -1087,7 +1065,6 @@ private fun handleIntendedParentQuestionAnsData(
         }
         is NetworkResult.Error -> {
             // show error message
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
             bottomHomeViewModel.isAllDataLoaded = false
             bottomHomeViewModel.isErrorOccurred = true
             bottomHomeViewModel.isIntendedParentQuestionDataLoaded = false

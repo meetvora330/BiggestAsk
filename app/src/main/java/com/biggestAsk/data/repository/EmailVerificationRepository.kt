@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 @ActivityRetainedScoped
 class EmailVerificationRepository @Inject constructor(
-    private val apiService: ApiService, @ApplicationContext context: Context
+    private val apiService: ApiService, @ApplicationContext context: Context,
 ) : BaseApiResponse(context) {
     suspend fun sendOtp(sendOtpRequest: SendOtpRequest): Flow<NetworkResult<CommonResponse>> {
         return flow {

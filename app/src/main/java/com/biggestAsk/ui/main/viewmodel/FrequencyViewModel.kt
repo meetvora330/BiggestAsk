@@ -18,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class FrequencyViewModel @Inject constructor(
     private val homeRepository: HomeRepository,
-    application: Application
+    application: Application,
 ) : AndroidViewModel(application) {
 
     //Frequency Screen

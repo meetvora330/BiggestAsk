@@ -9,5 +9,5 @@ data class UpdateMilestoneAnsInfoRequest(
     val latitude: String,
     val user_id: Int,
     val type: String,
-    val milestone_id: Int
+    val milestone_id: Int,
 )

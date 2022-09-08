@@ -9,7 +9,6 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.text.TextUtils
-import android.util.Log
 import android.widget.DatePicker
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -50,7 +49,6 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.text.isDigitsOnly
-import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.biggestAsk.data.model.request.GetUserDetailsParentRequest
 import com.biggestAsk.data.model.request.GetUserDetailsSurrogateRequest
@@ -67,6 +65,7 @@ import com.biggestAsk.ui.main.viewmodel.YourAccountViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.ET_Bg
 import com.biggestAsk.ui.ui.theme.Text_Accept_Terms
+import com.biggestAsk.util.Constants
 import com.biggestAsk.util.Constants.PARENT
 import com.biggestAsk.util.Constants.SURROGATE
 import com.biggestAsk.util.PreferenceProvider
@@ -82,19 +81,17 @@ import java.util.*
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun YourAccountScreen(
-    navHostController: NavHostController,
     yourAccountViewModel: YourAccountViewModel,
     homeActivity: HomeActivity,
     context: Context,
-    logoutViewModel: LogoutViewModel
+    logoutViewModel: LogoutViewModel,
 ) {
-    val type = PreferenceProvider(context).getValue("type", "")
-    val userId = PreferenceProvider(context).getIntValue("user_id", 0)
+    val type = PreferenceProvider(context).getValue(Constants.TYPE, "")
+    val userId = PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
     val focusManager = LocalFocusManager.current
     val c = Calendar.getInstance()
     val year = c.get(Calendar.YEAR)
     val month = c.get(Calendar.MONTH)
-    val day = c.get(Calendar.DAY_OF_MONTH)
     val suggestions =
         listOf("male", "female", "other")
     LaunchedEffect(Unit) {
@@ -136,9 +133,6 @@ fun YourAccountScreen(
                 yourAccountViewModel.yourAccountFullNameEmpty = false
                 getUserDetailsParent(userId, type, homeActivity, yourAccountViewModel, context)
 
-            }
-            else -> {
-                Log.e("TAG", "YourAccountScreen: no surrogate no parent")
             }
         }
     }
@@ -225,7 +219,7 @@ fun YourAccountScreen(
                                                     ) {
                                                     },
                                                 bitmap = it.asImageBitmap(),
-                                                contentDescription = "",
+                                                contentDescription = stringResource(id = R.string.content_description),
                                                 contentScale = ContentScale.FillBounds
                                             )
                                         }
@@ -262,7 +256,7 @@ fun YourAccountScreen(
                                         }
                                     },
                                 painter = painterResource(id = R.drawable.ic_icon_camera_edit_img_your_account),
-                                contentDescription = "",
+                                contentDescription = stringResource(id = R.string.content_description),
                                 tint = Color.Black
                             )
                         }
@@ -310,7 +304,7 @@ fun YourAccountScreen(
                                 trailingIcon = {
                                     Icon(
                                         painter = painterResource(id = R.drawable.ic_icon_et_name_your_account),
-                                        "error",
+                                        contentDescription = stringResource(id = R.string.content_description),
                                     )
                                 }
                             )
@@ -319,7 +313,7 @@ fun YourAccountScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(start = 24.dp),
-                                    text = "Enter your name",
+                                    text = stringResource(id = R.string.enter_your_name),
                                     style = MaterialTheme.typography.caption,
                                     color = MaterialTheme.colors.error,
                                     fontSize = 12.sp
@@ -362,7 +356,7 @@ fun YourAccountScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(top = 16.dp, start = 24.dp),
-                                text = "Phone number",
+                                text = stringResource(id = R.string.phone_number),
                                 style = MaterialTheme.typography.body1,
                                 fontWeight = FontWeight.W400,
                                 fontSize = 14.sp,
@@ -406,7 +400,7 @@ fun YourAccountScreen(
                                 trailingIcon = {
                                     Icon(
                                         painter = painterResource(id = R.drawable.ic_icon_et_phone_your_account),
-                                        "error",
+                                        contentDescription = stringResource(id = R.string.content_description),
                                     )
                                 }
                             )
@@ -461,7 +455,7 @@ fun YourAccountScreen(
                                 trailingIcon = {
                                     Icon(
                                         painter = painterResource(id = R.drawable.ic_icon_et_email_your_account),
-                                        "error",
+                                        contentDescription = stringResource(id = R.string.content_description),
                                     )
                                 }
                             )
@@ -469,7 +463,7 @@ fun YourAccountScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(top = 16.dp, start = 24.dp),
-                                text = "Home address",
+                                text = stringResource(id = R.string.home_address),
                                 style = MaterialTheme.typography.body1,
                                 fontWeight = FontWeight.W400,
                                 fontSize = 14.sp,
@@ -506,7 +500,7 @@ fun YourAccountScreen(
                                 trailingIcon = {
                                     Icon(
                                         painter = painterResource(id = R.drawable.ic_icon_et_location_your_account),
-                                        "error",
+                                        contentDescription = stringResource(id = R.string.content_description),
                                     )
                                 }
                             )
@@ -514,7 +508,7 @@ fun YourAccountScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(top = 16.dp, start = 24.dp),
-                                text = "Your date of birth",
+                                text = stringResource(id = R.string.your_date_of_birth),
                                 style = MaterialTheme.typography.body1,
                                 fontWeight = FontWeight.W400,
                                 fontSize = 14.sp,
@@ -593,7 +587,7 @@ fun YourAccountScreen(
                                     unfocusedIndicatorColor = Color.Transparent
                                 ), readOnly = true, enabled = false, placeholder = {
                                     Text(
-                                        text = "Date of birth",
+                                        text = stringResource(id = R.string.date_of_birth),
                                         style = MaterialTheme.typography.body2.copy(Color(0xFF7F7D7C))
                                     )
                                 },
@@ -606,7 +600,6 @@ fun YourAccountScreen(
                                     when {
                                         TextUtils.isEmpty(yourAccountViewModel.surrogateFullName) -> {
                                             yourAccountViewModel.yourAccountFullNameEmpty = true
-                                            Log.i("TAG", "Full Name Empty")
                                         }
                                         TextUtils.isEmpty(yourAccountViewModel.surrogateGender) -> {
                                             yourAccountViewModel.isGenderSelected = true
@@ -691,7 +684,7 @@ fun YourAccountScreen(
                                 )
                             ) {
                                 Text(
-                                    text = "Save Editing",
+                                    text = stringResource(id = R.string.save_editing),
                                     color = Color.White,
                                     style = MaterialTheme.typography.body1,
                                     lineHeight = 28.sp,
@@ -797,7 +790,7 @@ fun YourAccountScreen(
                                 Image(
                                     modifier = Modifier.padding(top = 10.dp),
                                     painter = painterResource(id = R.drawable.ic_img_intended_parents_liner),
-                                    contentDescription = ""
+                                    contentDescription = stringResource(id = R.string.content_description),
                                 )
                                 if (yourAccountViewModel.surrogateHomeAddress != "") {
                                     Text(
@@ -939,20 +932,26 @@ fun YourAccountScreen(
                         TextButton(onClick = {
                             val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            val uri = Uri.fromParts("package", context.packageName, null)
+                            val uri = Uri.fromParts(Constants.PACKAGE, context.packageName, null)
                             intent.data = uri
                             context.startActivity(intent)
                         })
-                        { Text(text = "APP SETTINGS", color = Color.Red) }
+                        {
+                            Text(text = stringResource(id = R.string.app_settings),
+                                color = Color.Red)
+                        }
                     },
                     dismissButton = {
                         TextButton(onClick = {
                             yourAccountViewModel.isPermissionAllowed = false
                         })
-                        { Text(text = "CANCEL", color = Color.Red) }
+                        {
+                            Text(text = stringResource(id = R.string.cancel_dialog),
+                                color = Color.Red)
+                        }
                     },
-                    title = { Text(text = "Permission Denied") },
-                    text = { Text(text = "Permission is denied, Please allow permission from App Settings") }
+                    title = { Text(text = stringResource(id = R.string.permission_denied_dialog)) },
+                    text = { Text(text = stringResource(id = R.string.allow_permission_dialog)) }
                 )
             }
         }
@@ -993,7 +992,7 @@ fun YourAccountScreen(
                                     painter = if (yourAccountViewModel.parentImg1 != "") painter1 else painterResource(
                                         id = R.drawable.ic_placeholder_your_account
                                     ),
-                                    contentDescription = "",
+                                    contentDescription = stringResource(id = R.string.content_description),
                                 )
                             } else {
                                 yourAccountViewModel.bitmapImage1.value?.let {
@@ -1011,7 +1010,7 @@ fun YourAccountScreen(
                                                     false
                                             },
                                         bitmap = it.asImageBitmap(),
-                                        contentDescription = "",
+                                        contentDescription = stringResource(id = R.string.content_description),
                                     )
                                 }
                             }
@@ -1042,7 +1041,7 @@ fun YourAccountScreen(
                                             }
                                         },
                                     painter = painterResource(id = R.drawable.ic_icon_camera_edit_img_your_account),
-                                    contentDescription = "",
+                                    contentDescription = stringResource(id = R.string.content_description),
                                     tint = Color.Black
                                 )
                             }
@@ -1067,7 +1066,7 @@ fun YourAccountScreen(
                                     painter = if (yourAccountViewModel.parentImg2 != "") painter2 else painterResource(
                                         id = R.drawable.ic_placeholder_your_account
                                     ),
-                                    contentDescription = "",
+                                    contentDescription = stringResource(id = R.string.content_description),
                                 )
                             } else {
                                 yourAccountViewModel.bitmapImage2.value?.let {
@@ -1083,7 +1082,7 @@ fun YourAccountScreen(
                                                 yourAccountViewModel.isMotherClicked = true
                                             },
                                         bitmap = it.asImageBitmap(),
-                                        contentDescription = "",
+                                        contentDescription = stringResource(id = R.string.content_description),
                                     )
                                 }
                             }
@@ -1114,7 +1113,7 @@ fun YourAccountScreen(
                                             }
                                         },
                                     painter = painterResource(id = R.drawable.ic_icon_camera_edit_img_your_account),
-                                    contentDescription = "",
+                                    contentDescription = stringResource(id = R.string.content_description),
                                     tint = Color.Black
                                 )
                             }
@@ -1133,17 +1132,15 @@ fun YourAccountScreen(
                             painter = painterResource(
                                 id = R.drawable.ic_baseline_arrow_drop_up_24
                             ),
-                            contentDescription = "",
+                            contentDescription = stringResource(id = R.string.content_description),
                             alpha = if (!yourAccountViewModel.isParentClicked) 0f else 1f
                         )
-                        Image(
-                            modifier = Modifier,
+                        Image(modifier = Modifier,
                             painter = painterResource(
                                 id = R.drawable.ic_baseline_arrow_drop_up_24
                             ),
-                            contentDescription = "",
-                            alpha = if (yourAccountViewModel.isMotherClicked) 1f else 0f
-                        )
+                            contentDescription = stringResource(id = R.string.content_description),
+                            alpha = if (yourAccountViewModel.isMotherClicked) 1f else 0f)
                     }
                     if (!yourAccountViewModel.isEditable.value) {
                         Row(
@@ -1158,8 +1155,8 @@ fun YourAccountScreen(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 if (yourAccountViewModel.isParentClicked) {
-                                    var parentDateOfBirth: String? = null
-                                    var parentAge: Int? = null
+                                    var parentDateOfBirth: String?
+                                    var parentAge: Int?
                                     if (yourAccountViewModel.parentFullName != "") {
                                         Text(
                                             modifier = Modifier
@@ -1222,8 +1219,8 @@ fun YourAccountScreen(
                                         }
                                     }
                                 } else if (yourAccountViewModel.isMotherClicked) {
-                                    var parentPartnerDateOfBirth: String? = null
-                                    var parentPartnerAge: Int? = null
+                                    var parentPartnerDateOfBirth: String?
+                                    var parentPartnerAge: Int?
                                     if (yourAccountViewModel.parentPartnerName != "") {
                                         Text(
                                             modifier = Modifier
@@ -1478,7 +1475,7 @@ fun YourAccountScreen(
                                     trailingIcon = {
                                         Icon(
                                             painter = painterResource(id = R.drawable.ic_icon_et_name_your_account),
-                                            "error",
+                                            contentDescription = stringResource(id = R.string.content_description),
                                         )
                                     }
                                 )
@@ -1530,7 +1527,7 @@ fun YourAccountScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(top = 16.dp, start = 24.dp),
-                                    text = "Phone number",
+                                    text = stringResource(id = R.string.phone_number),
                                     style = MaterialTheme.typography.body1,
                                     fontWeight = FontWeight.W400,
                                     fontSize = 14.sp,
@@ -1575,7 +1572,7 @@ fun YourAccountScreen(
                                     trailingIcon = {
                                         Icon(
                                             painter = painterResource(id = R.drawable.ic_icon_et_phone_your_account),
-                                            "error",
+                                            contentDescription = stringResource(id = R.string.content_description),
                                         )
                                     }
                                 )
@@ -1630,7 +1627,7 @@ fun YourAccountScreen(
                                     trailingIcon = {
                                         Icon(
                                             painter = painterResource(id = R.drawable.ic_icon_et_email_your_account),
-                                            "error",
+                                            contentDescription = stringResource(id = R.string.content_description),
                                         )
                                     }
                                 )
@@ -1638,7 +1635,7 @@ fun YourAccountScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(top = 16.dp, start = 24.dp),
-                                    text = "Home address",
+                                    text = stringResource(id = R.string.home_address),
                                     style = MaterialTheme.typography.body1,
                                     fontWeight = FontWeight.W400,
                                     fontSize = 14.sp,
@@ -1673,7 +1670,7 @@ fun YourAccountScreen(
                                     trailingIcon = {
                                         Icon(
                                             painter = painterResource(id = R.drawable.ic_icon_et_location_your_account),
-                                            "error",
+                                            contentDescription = stringResource(id = R.string.content_description),
                                         )
                                     }
                                 )
@@ -1681,7 +1678,7 @@ fun YourAccountScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(top = 16.dp, start = 24.dp),
-                                    text = "Your date of birth",
+                                    text = stringResource(id = R.string.your_date_of_birth),
                                     style = MaterialTheme.typography.body1,
                                     fontWeight = FontWeight.W400,
                                     fontSize = 14.sp,
@@ -1767,7 +1764,7 @@ fun YourAccountScreen(
                                         unfocusedIndicatorColor = Color.Transparent
                                     ), readOnly = true, enabled = false, placeholder = {
                                         Text(
-                                            text = "Date of birth",
+                                            text = stringResource(id = R.string.date_of_birth),
                                             style = MaterialTheme.typography.body2.copy(
                                                 Color(
                                                     0xFF7F7D7C
@@ -1786,13 +1783,11 @@ fun YourAccountScreen(
                                                 TextUtils.isEmpty(yourAccountViewModel.parentFullName) -> {
                                                     yourAccountViewModel.yourAccountFullNameEmpty =
                                                         true
-                                                    Log.i("TAG", "Full Name Empty")
                                                 }
                                                 TextUtils.isEmpty(yourAccountViewModel.parentGender) -> {
                                                     yourAccountViewModel.isGenderSelected = true
                                                 }
                                                 yourAccountViewModel.phoneNumberMinimumValidate -> {
-
                                                 }
                                                 else -> {
                                                     val image =
@@ -1871,7 +1866,7 @@ fun YourAccountScreen(
                                         )
                                     ) {
                                         Text(
-                                            text = "Save Editing",
+                                            text = stringResource(id = R.string.save_editing),
                                             color = Color.White,
                                             style = MaterialTheme.typography.body1,
                                             lineHeight = 28.sp,
@@ -1924,7 +1919,7 @@ fun YourAccountScreen(
                                     trailingIcon = {
                                         Icon(
                                             painter = painterResource(id = R.drawable.ic_icon_et_name_your_account),
-                                            "error",
+                                            contentDescription = stringResource(id = R.string.content_description),
                                         )
                                     }
                                 )
@@ -1933,7 +1928,7 @@ fun YourAccountScreen(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(start = 24.dp),
-                                        text = "Enter your name",
+                                        text = stringResource(id = R.string.enter_your_name),
                                         style = MaterialTheme.typography.caption,
                                         color = MaterialTheme.colors.error,
                                         fontSize = 12.sp
@@ -1976,7 +1971,7 @@ fun YourAccountScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(top = 16.dp, start = 24.dp),
-                                    text = "Phone number",
+                                    text = stringResource(id = R.string.phone_number),
                                     style = MaterialTheme.typography.body1,
                                     fontWeight = FontWeight.W400,
                                     fontSize = 14.sp,
@@ -2021,7 +2016,7 @@ fun YourAccountScreen(
                                     trailingIcon = {
                                         Icon(
                                             painter = painterResource(id = R.drawable.ic_icon_et_phone_your_account),
-                                            "error",
+                                            contentDescription = stringResource(id = R.string.content_description),
                                         )
                                     }
                                 )
@@ -2076,7 +2071,7 @@ fun YourAccountScreen(
                                     trailingIcon = {
                                         Icon(
                                             painter = painterResource(id = R.drawable.ic_icon_et_email_your_account),
-                                            "error",
+                                            contentDescription = stringResource(id = R.string.content_description),
                                         )
                                     }
                                 )
@@ -2084,7 +2079,7 @@ fun YourAccountScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(top = 16.dp, start = 24.dp),
-                                    text = "Home address",
+                                    text = stringResource(id = R.string.home_address),
                                     style = MaterialTheme.typography.body1,
                                     fontWeight = FontWeight.W400,
                                     fontSize = 14.sp,
@@ -2119,7 +2114,7 @@ fun YourAccountScreen(
                                     trailingIcon = {
                                         Icon(
                                             painter = painterResource(id = R.drawable.ic_icon_et_location_your_account),
-                                            "error",
+                                            contentDescription = stringResource(id = R.string.content_description),
                                         )
                                     }
                                 )
@@ -2127,7 +2122,7 @@ fun YourAccountScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(top = 16.dp, start = 24.dp),
-                                    text = "Your date of birth",
+                                    text = stringResource(id = R.string.your_date_of_birth),
                                     style = MaterialTheme.typography.body1,
                                     fontWeight = FontWeight.W400,
                                     fontSize = 14.sp,
@@ -2213,7 +2208,7 @@ fun YourAccountScreen(
                                         unfocusedIndicatorColor = Color.Transparent
                                     ), readOnly = true, enabled = false, placeholder = {
                                         Text(
-                                            text = "Date of birth",
+                                            text = stringResource(id = R.string.date_of_birth),
                                             style = MaterialTheme.typography.body2.copy(
                                                 Color(
                                                     0xFF7F7D7C
@@ -2232,15 +2227,12 @@ fun YourAccountScreen(
                                                 TextUtils.isEmpty(yourAccountViewModel.parentPartnerName) -> {
                                                     yourAccountViewModel.yourAccountFullNameEmpty =
                                                         true
-                                                    Log.i("TAG", "Full Name Empty")
                                                 }
                                                 TextUtils.isEmpty(yourAccountViewModel.parentPartnerGender) -> {
                                                     yourAccountViewModel.isGenderSelected =
                                                         true
-                                                    Log.i("TAG", "Full Name Empty")
                                                 }
                                                 yourAccountViewModel.parentPartnerPhoneNumberMinimumValidate -> {
-
                                                 }
                                                 else -> {
                                                     val image =
@@ -2335,7 +2327,7 @@ fun YourAccountScreen(
                                         )
                                     ) {
                                         Text(
-                                            text = "Save Editing",
+                                            text = stringResource(id = R.string.save_editing),
                                             color = Color.White,
                                             style = MaterialTheme.typography.body1,
                                             lineHeight = 28.sp,
@@ -2450,20 +2442,26 @@ fun YourAccountScreen(
                         TextButton(onClick = {
                             val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            val uri = Uri.fromParts("package", context.packageName, null)
+                            val uri = Uri.fromParts(Constants.PACKAGE, context.packageName, null)
                             intent.data = uri
                             context.startActivity(intent)
                         })
-                        { Text(text = "APP SETTINGS", color = Color.Red) }
+                        {
+                            Text(text = stringResource(id = R.string.app_settings),
+                                color = Color.Red)
+                        }
                     },
                     dismissButton = {
                         TextButton(onClick = {
                             yourAccountViewModel.isPermissionAllowed = false
                         })
-                        { Text(text = "CANCEL", color = Color.Red) }
+                        {
+                            Text(text = stringResource(id = R.string.cancel_dialog),
+                                color = Color.Red)
+                        }
                     },
-                    title = { Text(text = "Permission Denied") },
-                    text = { Text(text = "Permission is denied, Please allow permission from App Settings") }
+                    title = { Text(text = stringResource(id = R.string.permission_denied_dialog)) },
+                    text = { Text(text = stringResource(id = R.string.allow_permission_dialog)) }
                 )
             }
         }
@@ -2485,9 +2483,6 @@ fun getAnsweredQuestionList(
                 handleQuestionAnsweredList(
                     result = it,
                     yourAccountViewModel = yourAccountViewModel,
-                    type = type,
-                    userId = userId,
-                    homeActivity = homeActivity
                 )
             }
         }
@@ -2497,19 +2492,14 @@ fun getAnsweredQuestionList(
 private fun handleQuestionAnsweredList(
     result: NetworkResult<GetAnsweredQuestionListResponse>,
     yourAccountViewModel: YourAccountViewModel,
-    type: String,
-    userId: Int,
-    homeActivity: HomeActivity
 ) {
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
-            Log.e("TAG", "handleUserData() --> Loading  $result")
             yourAccountViewModel.isAnsweredQuestionLoading = true
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
             yourAccountViewModel.isAnsweredQuestionLoading = false
             yourAccountViewModel.questionAnsweredList.clear()
             yourAccountViewModel.questionAnsweredDaysList.clear()
@@ -2523,7 +2513,6 @@ private fun handleQuestionAnsweredList(
         }
         is NetworkResult.Error -> {
             // show error message
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
             yourAccountViewModel.isAnsweredQuestionLoading = false
         }
     }
@@ -2534,7 +2523,7 @@ fun getUserDetailsParent(
     type: String,
     homeActivity: HomeActivity,
     yourAccountViewModel: YourAccountViewModel,
-    context: Context
+    context: Context,
 ) {
     yourAccountViewModel.getUserDetailsParent(GetUserDetailsParentRequest(userId, type))
     yourAccountViewModel.getUserDetailResponseParent.observe(homeActivity) {
@@ -2553,7 +2542,7 @@ fun getUserDetailsSurrogate(
     type: String,
     homeActivity: HomeActivity,
     yourAccountViewModel: YourAccountViewModel,
-    context: Context
+    context: Context,
 ) {
     yourAccountViewModel.getUserDetailsSurrogate(
         GetUserDetailsSurrogateRequest(
@@ -2698,26 +2687,24 @@ private fun handleUserUpdateData(
     context: Context,
     type: String,
     userId: Int,
-    homeActivity: HomeActivity
+    homeActivity: HomeActivity,
 ) {
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
-            Log.e("TAG", "handleUserData() --> Loading  $result")
             yourAccountViewModel.isSurrogateDataLoading = true
             yourAccountViewModel.isParentDataLoading = true
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
             yourAccountViewModel.isEditable.value = false
             yourAccountViewModel.isSurrogateDataLoading = false
             yourAccountViewModel.isParentDataLoading = false
             val provider = PreferenceProvider(context)
             when (type) {
                 SURROGATE -> {
-                    provider.setValue("user_name", yourAccountViewModel.surrogateFullName)
-                    provider.setValue("updated_image", yourAccountViewModel.surrogateImg)
+                    provider.setValue(Constants.USER_NAME, yourAccountViewModel.surrogateFullName)
+                    provider.setValue(Constants.UPDATED_IMAGE, yourAccountViewModel.surrogateImg)
                     getUserDetailsSurrogate(
                         userId = userId,
                         type = type,
@@ -2727,8 +2714,8 @@ private fun handleUserUpdateData(
                     )
                 }
                 PARENT -> {
-                    provider.setValue("user_name", yourAccountViewModel.parentFullName)
-                    provider.setValue("updated_image", yourAccountViewModel.parentImg1)
+                    provider.setValue(Constants.USER_NAME, yourAccountViewModel.parentFullName)
+                    provider.setValue(Constants.UPDATED_IMAGE, yourAccountViewModel.parentImg1)
                     getUserDetailsParent(
                         userId = userId,
                         homeActivity = homeActivity,
@@ -2748,7 +2735,6 @@ private fun handleUserUpdateData(
         }
         is NetworkResult.Error -> {
             // show error message
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
             yourAccountViewModel.isEditable.value = true
             yourAccountViewModel.isSurrogateDataLoading = false
             yourAccountViewModel.isParentDataLoading = false

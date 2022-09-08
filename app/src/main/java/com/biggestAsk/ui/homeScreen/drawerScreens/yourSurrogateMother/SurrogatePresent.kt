@@ -48,7 +48,7 @@ fun SurrogateMotherPresent() {
                         end.linkTo(parent.end)
                     },
                 painter = painterResource(id = R.drawable.ic_empty_icon_surrogate_mother),
-                contentDescription = "",
+                contentDescription = stringResource(id = R.string.content_description),
             )
             Image(
                 modifier = Modifier
@@ -63,7 +63,7 @@ fun SurrogateMotherPresent() {
                         )
                     },
                 painter = painterResource(id = R.drawable.ic_img_invitation_send_your_surrogate_mother),
-                contentDescription = "",
+                contentDescription = stringResource(id = R.string.content_description),
                 contentScale = ContentScale.FillBounds
             )
             Text(
@@ -113,7 +113,7 @@ fun SurrogateMotherPresent() {
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_img_your_surrogate_mother_add_btn),
-                    contentDescription = ""
+                    contentDescription = stringResource(id = R.string.content_description),
                 )
                 Text(
                     modifier = Modifier.padding(start = 12.dp),

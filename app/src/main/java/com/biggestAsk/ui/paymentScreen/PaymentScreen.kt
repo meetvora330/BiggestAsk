@@ -22,7 +22,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -43,7 +42,6 @@ import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -53,7 +51,7 @@ fun PaymentScreen(
     navHostController: NavHostController,
     mainActivity: MainActivity,
     homeViewModel: HomeViewModel,
-    context: Context
+    context: Context,
 ) {
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
@@ -73,7 +71,7 @@ fun PaymentScreen(
             Image(
                 modifier = Modifier.fillMaxSize(),
                 painter = painterResource(id = R.drawable.img_login_bg),
-                contentDescription = "",
+                contentDescription = stringResource(id = R.string.content_description),
                 contentScale = ContentScale.FillBounds
             )
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
@@ -83,7 +81,7 @@ fun PaymentScreen(
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.img_login_tittle),
-                        contentDescription = "",
+                        contentDescription = stringResource(id = R.string.content_description),
                         modifier = Modifier
                             .padding(top = 52.dp)
                             .width(92.dp)
@@ -199,8 +197,10 @@ fun PaymentScreen(
 
                                                 billingClient.queryProductDetailsAsync(
                                                     queryProductDetailsParams
-                                                ) { billingResult,
-                                                    productDetailsList ->
+                                                ) {
+                                                        billingResult,
+                                                        productDetailsList,
+                                                    ->
                                                     Log.e("aa", "queryProductDetailsAsync")
                                                     // check billingResult
                                                     // process returned productDetailsList
@@ -219,7 +219,7 @@ fun PaymentScreen(
                                                         )
                                                         .build()
 
-// Launch the billing flow
+                                                    // Launch the billing flow
                                                     val billingResult =
                                                         billingClient.launchBillingFlow(
                                                             mainActivity,
@@ -302,11 +302,6 @@ fun PaymentScreen(
     }
 }
 
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun PaymentPreview() {
-//    PaymentScreen(navHostController = rememberNavController())
-}
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -314,7 +309,7 @@ fun PaymentScreenBottomSheet(
     bottomSheetScaffoldState: BottomSheetScaffoldState,
     coroutineScope: CoroutineScope,
     navHostController: NavHostController,
-    context: Context
+    context: Context,
 ) {
     Column(
         modifier = Modifier
@@ -327,7 +322,7 @@ fun PaymentScreenBottomSheet(
                 .fillMaxWidth()
                 .padding(top = 20.dp),
             painter = painterResource(id = R.drawable.ic_img_bottom_sheet_opener),
-            contentDescription = ""
+            contentDescription = stringResource(id = R.string.content_description),
         )
         Row(
             modifier = Modifier
@@ -378,7 +373,7 @@ fun PaymentScreenBottomSheet(
                     .wrapContentHeight()
                     .padding(start = 31.dp),
                 painter = painterResource(id = R.drawable.ic_img_bottom_sheet_icon),
-                contentDescription = ""
+                contentDescription = stringResource(id = R.string.content_description),
             )
             Column {
                 Text(
@@ -498,7 +493,7 @@ private fun changePaymentStatusApi(
     context: Context,
     homeViewModel: HomeViewModel,
     mainActivity: MainActivity,
-    navHostController: NavHostController
+    navHostController: NavHostController,
 ) {
     val provider = PreferenceProvider(context)
     val userId = provider.getIntValue(Constants.USER_ID, 0)
@@ -519,7 +514,6 @@ private fun changePaymentStatusApi(
     }
 }
 
-@OptIn(DelicateCoroutinesApi::class)
 private fun handlePaymentStatusData(
     result: NetworkResult<CommonResponse>,
     homeViewModel: HomeViewModel,

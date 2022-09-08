@@ -16,7 +16,7 @@ interface ApiService {
     suspend fun getUpdatedStatus(
         @Query(Constants.USER_ID) user_id: Int,
         @Query(Constants.TYPE) type: String,
-        @Query(Constants.FCM_TOKEN)fcm_token : String
+        @Query(Constants.FCM_TOKEN) fcm_token: String,
     ): Response<UpdatedStatusResponse>
 
     @POST(Constants.SEND_OTP)
@@ -107,7 +107,7 @@ interface ApiService {
     @GET(Constants.GET_INTENDED_PROFILE)
     suspend fun getIntendedParentProfile(
         @Query("type") type: String,
-        @Query("user_id") user_id: Int
+        @Query("user_id") user_id: Int,
     ): Response<GetIntendedProfileResponse>
 
     @Multipart
@@ -203,13 +203,13 @@ interface ApiService {
     @GET(Constants.GET_QUESTION_SCREEN_QUESTION)
     suspend fun getYourAccountAnsweredQuestionList(
         @Query("type") type: String,
-        @Query("user_id") user_id: Int
+        @Query("user_id") user_id: Int,
     ): Response<GetAnsweredQuestionListResponse>
 
     @GET(Constants.GET_FREQUENCY)
     suspend fun getFrequency(
         @Query("user_id") user_id: Int,
-        @Query("type") type: String
+        @Query("type") type: String,
     ): Response<GetFrequencyResponse>
 
     @GET(Constants.GET_QUESTION_BANK_CONTENT)
@@ -226,29 +226,29 @@ interface ApiService {
 
     @POST(Constants.GET_PREGNANCY_STATUS)
     suspend fun getPregnancyStatus(
-        @Body getNotificationRequest: GetNotificationRequest
+        @Body getNotificationRequest: GetNotificationRequest,
     ): Response<GetPregnancyMilestoneStatusResponse>
 
     @GET(Constants.GET_NOTIFICATION_COUNT)
     suspend fun getNotificationCount(
         @Query("type") type: String,
-        @Query("user_id") user_id: Int
+        @Query("user_id") user_id: Int,
     ): Response<GetNotificationCountResponse>
 
     @POST(Constants.NOTIFICATION_STATUS_UPDATE)
     suspend fun notificationStatusUpdate(
-        @Body notificationStatusUpdateRequest: NotificationStatusUpdateRequest
+        @Body notificationStatusUpdateRequest: NotificationStatusUpdateRequest,
     ): Response<CommonResponse>
 
     @GET(Constants.GET_NOTIFICATION_STATUS)
     suspend fun getNotificationStatus(
         @Query("type") type: String,
-        @Query("user_id") user_id: Int
+        @Query("user_id") user_id: Int,
     ): Response<GetNotificationStatusResponse>
 
     @GET(Constants.LOGOUT)
     suspend fun logOut(
         @Query("type") type: String,
-        @Query("user_id") user_id: Int
+        @Query("user_id") user_id: Int,
     ): Response<LogoutResponse>
 }

@@ -85,7 +85,7 @@ fun FragmentActivity.addReplaceFragment(
     @IdRes container: Int,
     fragment: Fragment,
     addFragment: Boolean,
-    addToBackStack: Boolean
+    addToBackStack: Boolean,
 ) {
     val transaction: FragmentTransaction? = supportFragmentManager.beginTransaction()
     if (addFragment) {
@@ -114,7 +114,7 @@ fun FragmentActivity.addReplaceFragmentWithAnimation(
     addFragment: Boolean,
     addToBackStack: Boolean,
     enterAnimation: Int,
-    exitAnimation: Int
+    exitAnimation: Int,
 ) {
     val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
     transaction.setCustomAnimations(enterAnimation, exitAnimation)

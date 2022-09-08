@@ -18,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val loginRepository: LoginRepository,
-    application: Application
+    application: Application,
 ) : AndroidViewModel(application) {
 
     var loginTextEmail: String by mutableStateOf("")

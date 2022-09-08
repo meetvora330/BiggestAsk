@@ -21,7 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val homeRepository: HomeRepository,
-    application: Application
+    application: Application,
 ) : AndroidViewModel(application) {
 
     //Globally Used Variable

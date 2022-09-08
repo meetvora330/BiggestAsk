@@ -2,7 +2,6 @@ package com.biggestAsk.ui.homeScreen.drawerScreens.yourAccount
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -29,6 +28,7 @@ import com.biggestAsk.ui.activity.HomeActivity
 import com.biggestAsk.ui.activity.MainActivity
 import com.biggestAsk.ui.introScreen.findActivity
 import com.biggestAsk.ui.main.viewmodel.LogoutViewModel
+import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 
@@ -38,8 +38,8 @@ fun LogoutDialog(
     homeActivity: HomeActivity,
     logoutViewModel: LogoutViewModel,
 ) {
-    val type = PreferenceProvider(context).getValue("type", "")
-    val userId = PreferenceProvider(context).getIntValue("user_id", 0)
+    val type = PreferenceProvider(context).getValue(Constants.TYPE, "")
+    val userId = PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
     Column(modifier = Modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -51,7 +51,7 @@ fun LogoutDialog(
                     .height(59.dp)
                     .padding(top = 16.dp),
                 painter = painterResource(id = R.drawable.logo_setting_delete_dialog),
-                contentDescription = ""
+                contentDescription = stringResource(id = R.string.content_description),
             )
             Text(
                 modifier = Modifier
@@ -161,8 +161,6 @@ fun logOutUser(
                 context = context,
                 homeActivity = homeActivity
             )
-        } else {
-            Log.e("TAG", "LogoutResponse null: ")
         }
     }
 }
@@ -183,16 +181,16 @@ private fun handleLogOutApi(
             // bind data to the view
             logoutViewModel.isLoading = false
             logoutViewModel.logOutSuccessMessage = result.data!!.message
-            PreferenceProvider(context).setValue("user_logout", true)
+            PreferenceProvider(context).setValue(Constants.USER_LOGOUT, true)
             val intent = Intent(homeActivity, MainActivity::class.java)
             context.startActivity(intent)
             context
                 .findActivity()
                 ?.finish()
             PreferenceProvider(context).clear()
-            PreferenceProvider(context).setValue("isIntroDone", true)
+            PreferenceProvider(context).setValue(Constants.IS_INTRO_DONE, true)
             PreferenceProvider(appContext = context).setValue(
-                "notification_count",
+                Constants.NOTIFICATION_COUNT,
                 "0"
             )
         }
@@ -203,55 +201,3 @@ private fun handleLogOutApi(
         }
     }
 }
-
-//@Composable
-//fun TempLogoutDialog() {
-//    ConstraintLayout(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .padding(top = 16.dp)
-//    ) {
-//        val (img_dialog, tv_tittle, tv_negative, tv_positive, horizontal_line, vertical_line) = createRefs()
-//
-//        Image(
-//            modifier = Modifier
-//                .width(54.dp)
-//                .height(59.dp)
-//                .constrainAs(img_dialog) {
-//                    start.linkTo(parent.start)
-//                    end.linkTo(parent.end)
-//                    top.linkTo(parent.top)
-//                },
-//            painter = painterResource(id = R.drawable.logo_setting_delete_dialog),
-//            contentDescription = ""
-//        )
-//        Text(
-//            modifier = Modifier
-//                .padding(top = 10.dp)
-//                .constrainAs(),
-//            text = stringResource(id = R.string.are_you_sure_you_want_to_logout),
-//            style = MaterialTheme.typography.body1.copy(
-//                color = Color.Black,
-//                fontSize = 14.sp,
-//                fontWeight = FontWeight.W400,
-//                lineHeight = 24.sp,
-//                textAlign = TextAlign.Center,
-//                letterSpacing = (-0.08).sp
-//            )
-//        )
-//        Divider(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(top = 10.dp),
-//            color = Color(0xFFC7C7CC),
-//            thickness = 0.5.dp
-//        )
-//
-//    }
-//}
-//
-//@Preview(showBackground = true, showSystemUi = true)
-//@Composable
-//fun TempLogoutDialogPreview() {
-//    TempLogoutDialog()
-//}

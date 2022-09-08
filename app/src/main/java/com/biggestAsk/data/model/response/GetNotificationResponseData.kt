@@ -4,5 +4,5 @@ data class GetNotificationResponseData(
     val date: String,
     val id: Int,
     val notification: String,
-    val title: String
+    val title: String,
 )

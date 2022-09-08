@@ -1,7 +1,6 @@
 package com.biggestAsk.ui.homeScreen.drawerScreens.yourSurrogateMother
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -16,7 +15,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -32,7 +30,6 @@ import com.biggestAsk.ui.homeScreen.drawerScreens.notification.advancedShadow
 import com.biggestAsk.ui.homeScreen.drawerScreens.yourAccount.YourAccountSurrogateShimmerAnimation
 import com.biggestAsk.ui.homeScreen.drawerScreens.yourAccount.getAge
 import com.biggestAsk.ui.main.viewmodel.YourSurrogateMotherViewModel
-import com.biggestAsk.ui.main.viewmodel.YourSurrogateViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
@@ -42,7 +39,7 @@ import com.example.biggestAsk.R
 fun YourSurrogateMother(
     homeActivity: HomeActivity,
     yourSurrogateMotherViewModel: YourSurrogateMotherViewModel,
-    context: Context
+    context: Context,
 ) {
     val type = PreferenceProvider(context).getValue(Constants.TYPE, "")
     val userId = PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
@@ -328,60 +325,11 @@ fun YourSurrogateMother(
 }
 
 
-@Composable
-fun NoSurrogateAssigned(surrogateViewModel: YourSurrogateViewModel) {
-    ConstraintLayout(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .padding(bottom = 60.dp)
-    ) {
-        val (tv_tittle_your_surrogate_mother, img_main_your_surrogate_mother) = createRefs()
-        Image(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .constrainAs(img_main_your_surrogate_mother) {
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    top.linkTo(
-                        if (surrogateViewModel.invitationSend.value) parent.top else tv_tittle_your_surrogate_mother.top,
-                        margin = if (surrogateViewModel.invitationSend.value) 40.dp else 0.dp
-                    )
-                    bottom.linkTo(parent.bottom)
-                },
-            painter = painterResource(id = if (surrogateViewModel.invitationSend.value) R.drawable.ic_img_invitation_send_your_surrogate_mother else R.drawable.ic_img_add_your_surrogate_mother),
-            contentDescription = "",
-            contentScale = ContentScale.FillBounds
-        )
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = if (surrogateViewModel.invitationSend.value) 60.dp else 22.dp)
-                .constrainAs(tv_tittle_your_surrogate_mother) {
-                    top.linkTo(parent.top)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                },
-            text = if (surrogateViewModel.invitationSend.value) stringResource(id = R.string.your_surrogate_mother_invitation_sent) else stringResource(
-                id = R.string.your_surrogate_mother_invitation_not_sent
-            ),
-            style = MaterialTheme.typography.body2.copy(
-                color = if (surrogateViewModel.invitationSend.value) Custom_Blue else Color.Black,
-                fontWeight = FontWeight.W900,
-                fontSize = 20.sp,
-                textAlign = TextAlign.Center,
-                lineHeight = 24.sp
-            )
-        )
-    }
-}
-
 fun getIntendedProfile(
     userId: Int,
     type: String,
     homeActivity: HomeActivity,
-    yourSurrogateMotherViewModel: YourSurrogateMotherViewModel
+    yourSurrogateMotherViewModel: YourSurrogateMotherViewModel,
 ) {
     yourSurrogateMotherViewModel.getIntendedParentProfile(type = type, userId = userId)
     yourSurrogateMotherViewModel.getIntendedProfileResponse.observe(homeActivity) {
@@ -396,7 +344,7 @@ fun getIntendedProfile(
 
 private fun handleGetIntendedProfileData(
     result: NetworkResult<GetIntendedProfileResponse>,
-    yourSurrogateMotherViewModel: YourSurrogateMotherViewModel
+    yourSurrogateMotherViewModel: YourSurrogateMotherViewModel,
 ) {
     when (result) {
         is NetworkResult.Loading -> {
@@ -450,14 +398,6 @@ private fun handleGetIntendedProfileData(
                     )
                 }
             }
-            Log.d(
-                "TAG",
-                "handleGetIntendedProfileData: ${yourSurrogateMotherViewModel.intendedProfileResponseQuestionList.size}"
-            )
-            Log.d(
-                "TAG",
-                "handleGetIntendedProfileData: ${yourSurrogateMotherViewModel.intendedProfileResponseDaysList.size}"
-            )
             result.data?.days.let {
                 if (it != null) {
                     yourSurrogateMotherViewModel.intendedProfileResponseDaysList.addAll(it)

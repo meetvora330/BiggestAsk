@@ -16,12 +16,12 @@ import javax.inject.Inject
 
 @ActivityRetainedScoped
 class InviteSurrogateRepository @Inject constructor(
-    private val apiService: ApiService, @ApplicationContext context: Context
+    private val apiService: ApiService, @ApplicationContext context: Context,
 ) : BaseApiResponse(context) {
 
     fun inviteSurrogate(
         userId: Int,
-        inviteSurrogateRequest: InviteSurrogateRequest
+        inviteSurrogateRequest: InviteSurrogateRequest,
     ): Flow<NetworkResult<InviteSurrogateResponse>> {
         return flow {
             emit(safeApiCall {

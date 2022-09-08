@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 @ActivityRetainedScoped
 class LoginRepository @Inject constructor(
-    private val apiService: ApiService, @ApplicationContext context: Context
+    private val apiService: ApiService, @ApplicationContext context: Context,
 ) : BaseApiResponse(context) {
     suspend fun login(loginBodyRequest: LoginBodyRequest): Flow<NetworkResult<LoginBodyResponse>> {
         return flow {

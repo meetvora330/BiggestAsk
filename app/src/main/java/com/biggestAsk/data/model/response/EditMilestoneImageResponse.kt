@@ -12,5 +12,5 @@ data class EditMilestoneImageResponse(
     val user_id: Int,
     var uriPath: String? = null,
     var imageUri: Uri? = null,
-    var is_need_to_upload: Boolean = false
+    var is_need_to_upload: Boolean = false,
 )

@@ -20,7 +20,7 @@ class YourSurrogateMotherRepository @Inject constructor(
 
     suspend fun getIntendedParentProfile(
         type: String,
-        user_id: Int
+        user_id: Int,
     ): Flow<NetworkResult<GetIntendedProfileResponse>> {
         return flow<NetworkResult<GetIntendedProfileResponse>> {
             emit(safeApiCall {

@@ -18,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingViewModel @Inject constructor(
     private val settingRepository: SettingRepository,
-    application: Application
+    application: Application,
 ) : AndroidViewModel(application) {
     var openDialogDeleteSetting: Boolean by mutableStateOf(false)
     var isAllMilestoneReset: Boolean by mutableStateOf(false)

@@ -19,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class VerifyOtpViewModel @Inject constructor(
     private val verifyOtpRepository: VerifyOtpRepository,
-    application: Application
+    application: Application,
 ) : AndroidViewModel(application) {
 
     var isOtpValueVerified: Boolean by mutableStateOf(false)

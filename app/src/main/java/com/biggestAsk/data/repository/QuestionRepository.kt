@@ -21,7 +21,7 @@ import javax.inject.Inject
 
 @ActivityRetainedScoped
 class QuestionRepository @Inject constructor(
-    private val apiService: ApiService, @ApplicationContext context: Context
+    private val apiService: ApiService, @ApplicationContext context: Context,
 ) : BaseApiResponse(context) {
     suspend fun getHomeScreenQuestion(getPregnancyMilestoneRequest: GetPregnancyMilestoneRequest): Flow<NetworkResult<GetHomeScreenQuestionResponse>> {
         return flow {
@@ -36,7 +36,7 @@ class QuestionRepository @Inject constructor(
 
     suspend fun getFrequency(
         user_id: Int,
-        type: String
+        type: String,
     ): Flow<NetworkResult<GetFrequencyResponse>> {
         return flow {
             emit(safeApiCall {
@@ -46,7 +46,7 @@ class QuestionRepository @Inject constructor(
     }
 
     suspend fun storeAnsQuestionScreen(
-        storeBaseScreenQuestionAnsRequest: StoreBaseScreenQuestionAnsRequest
+        storeBaseScreenQuestionAnsRequest: StoreBaseScreenQuestionAnsRequest,
     ): Flow<NetworkResult<CommonResponse>> {
         return flow {
             emit(safeApiCall {

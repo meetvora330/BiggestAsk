@@ -22,7 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class BottomQuestionViewModel @Inject constructor(
     private val questionRepository: QuestionRepository,
-    application: Application
+    application: Application,
 ) : AndroidViewModel(application) {
 
     var isAnsweredQuestionLoading: Boolean by mutableStateOf(false)

@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -46,7 +45,7 @@ fun Settings(
     navHostController: NavHostController,
     settingViewModel: SettingViewModel,
     homeActivity: HomeActivity,
-    context: Context
+    context: Context,
 ) {
     if (settingViewModel.isAllMilestoneReset) {
         ProgressBarTransparentBackground(loadingText = "Resetting milestones...")
@@ -127,7 +126,7 @@ fun Settings(
                         Image(
                             modifier = Modifier.padding(start = 29.dp),
                             painter = painterResource(id = item.icon),
-                            contentDescription = ""
+                            contentDescription = stringResource(id = R.string.content_description),
                         )
                         Text(
                             text = item.title, modifier = Modifier
@@ -204,7 +203,7 @@ fun SettingDialogDelete(
     negative_btn_text: String,
     homeActivity: HomeActivity,
     settingViewModel: SettingViewModel,
-    context: Context
+    context: Context,
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -216,7 +215,7 @@ fun SettingDialogDelete(
                 .height(59.dp)
                 .padding(top = 16.dp),
             painter = painterResource(id = R.drawable.logo_setting_delete_dialog),
-            contentDescription = ""
+            contentDescription = stringResource(id = R.string.content_description),
         )
         Text(
             modifier = Modifier
@@ -291,15 +290,15 @@ fun SettingDialogDelete(
 fun resetMilestone(
     homeActivity: HomeActivity,
     context: Context,
-    settingViewModel: SettingViewModel
+    settingViewModel: SettingViewModel,
 ) {
     val provider = PreferenceProvider(context)
-    val userId = provider.getIntValue("user_id", 0)
-    val type = provider.getValue("type", "")
+    val userId = provider.getIntValue(Constants.USER_ID, 0)
+    val type = provider.getValue(Constants.TYPE, "")
     if (type != null) {
         settingViewModel.resetMilestone(
             ResetMilestoneRequest(
-                milestone_id = mutableListOf<Int>(),
+                milestone_id = mutableListOf(),
                 type = type,
                 user_id = userId
             )
@@ -324,7 +323,6 @@ private fun handleResetMilestoneData(
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
-            Log.e("TAG", "handleUserData() --> Loading  $result")
             settingViewModel.isAllMilestoneReset = true
         }
         is NetworkResult.Success -> {

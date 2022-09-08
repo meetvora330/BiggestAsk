@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 @ActivityRetainedScoped
 class RegisterRepository @Inject constructor(
-    private val apiService: ApiService, @ApplicationContext context: Context
+    private val apiService: ApiService, @ApplicationContext context: Context,
 ) : BaseApiResponse(context) {
     suspend fun registration(registrationBodyRequest: RegistrationBodyRequest): Flow<NetworkResult<CommonResponse>> {
         return flow {

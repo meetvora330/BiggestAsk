@@ -3,7 +3,7 @@ package com.biggestAsk.ui.homeScreen.drawerScreens.settingScreens
 import com.example.biggestAsk.R
 
 data class AboutAppImageItem(
-    val img: Int
+    val img: Int,
 )
 
 val listAboutAppImageItem = mutableListOf(

@@ -21,5 +21,5 @@ data class GetUserDetailsParentResponse(
     val parent_password: String,
     val parent_status: String,
     val parent_version: Any,
-    val updated_at: String
+    val updated_at: String,
 )

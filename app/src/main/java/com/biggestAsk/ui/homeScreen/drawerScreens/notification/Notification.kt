@@ -1,7 +1,6 @@
 package com.biggestAsk.ui.homeScreen.drawerScreens.notification
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -46,7 +45,7 @@ fun Notification(
     navHostController: NavHostController,
     notificationViewModel: NotificationViewModel,
     homeActivity: HomeActivity,
-    context: Context
+    context: Context,
 ) {
     Column(
         modifier = Modifier
@@ -59,7 +58,6 @@ fun Notification(
         val userId = PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
         LaunchedEffect(Unit) {
             if (isInternetAvailable(context)) {
-                //                getUpdatedNotification("surrogate", 2, notificationViewModel, homeActivity)
                 type?.let {
                     getUpdatedNotification(
                         it,
@@ -108,15 +106,6 @@ fun Notification(
                             offsetX = 0.dp,
                             offsetY = 4.dp
                         )
-                    //                        .placeholder(
-                    //                            visible = notificationViewModel.isLoading,
-                    //                            color = Color.LightGray,
-                    //                            // optional, defaults to RectangleShape
-                    //                            shape = RoundedCornerShape(14.dp),
-                    //                            highlight = PlaceholderHighlight.shimmer(
-                    //                                highlightColor = Color.White,
-                    //                            ),
-                    //                        )
                 ) {
                     Column {
                         Row(
@@ -227,7 +216,7 @@ fun getUpdatedNotification(
     user_id: Int,
     notificationViewModel: NotificationViewModel,
     homeActivity: HomeActivity,
-    context: Context
+    context: Context,
 ) {
     notificationViewModel.getNotification(
         getNotificationRequest = GetNotificationRequest(
@@ -243,8 +232,6 @@ fun getUpdatedNotification(
                 notificationViewModel = notificationViewModel,
                 context = context
             )
-        } else {
-            Log.e("TAG", "GetContactData is null: ")
         }
     }
 }
@@ -252,7 +239,7 @@ fun getUpdatedNotification(
 private fun handleGetNotificationApi(
     result: NetworkResult<GetNotificationResponse>,
     notificationViewModel: NotificationViewModel,
-    context: Context
+    context: Context,
 ) {
     when (result) {
         is NetworkResult.Loading -> {
@@ -271,7 +258,7 @@ private fun handleGetNotificationApi(
             notificationViewModel.notificationDaysList.clear()
             result.data?.let { notificationViewModel.notificationDaysList.addAll(it.days) }
             PreferenceProvider(appContext = context).setValue(
-                "notification_count",
+                Constants.NOTIFICATION_COUNT,
                 "0"
             )
             notificationViewModel.isDataNull = notificationViewModel.notificationList.isEmpty()
@@ -282,9 +269,3 @@ private fun handleGetNotificationApi(
         }
     }
 }
-
-//@Preview(showBackground = true, showSystemUi = true)
-//@Composable
-//fun NotificationPreview() {
-//    Notification(navHostController = rememberNavController())
-//}

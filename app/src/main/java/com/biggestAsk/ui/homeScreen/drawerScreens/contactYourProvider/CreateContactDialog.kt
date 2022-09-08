@@ -174,7 +174,7 @@ fun CreateContactDialog(
                         contactYourProviderViewModel.phoneErrorVisible = false
                     },
                 imageVector = Icons.Default.Close,
-                contentDescription = ""
+                contentDescription = stringResource(id = R.string.content_description),
             )
         }
         Column(
@@ -424,7 +424,7 @@ fun CreateContactDialog(
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_icon_attachment_community_add_logo),
-                    contentDescription = ""
+                    contentDescription = stringResource(id = R.string.content_description),
                 )
                 Text(
                     modifier = Modifier
@@ -466,7 +466,7 @@ fun CreateContactDialog(
                             ) {
                             },
                         bitmap = it.asImageBitmap(),
-                        contentDescription = "",
+                        contentDescription = stringResource(id = R.string.content_description),
                         contentScale = ContentScale.FillBounds
                     )
                 }
@@ -608,7 +608,7 @@ fun CreateContactDialog(
                 TextButton(onClick = {
                     val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    val uri = Uri.fromParts("package", context.packageName, null)
+                    val uri = Uri.fromParts(Constants.PACKAGE, context.packageName, null)
                     intent.data = uri
                     context.startActivity(intent)
                 })
@@ -626,7 +626,7 @@ fun CreateContactDialog(
     }
 }
 
-private fun convertImageMultiPart(imagePath: String): MultipartBody.Part? {
+private fun convertImageMultiPart(imagePath: String): MultipartBody.Part {
     val file = File(imagePath)
     return MultipartBody.Part.createFormData(
         Constants.IMAGE,
@@ -663,7 +663,7 @@ private fun handleCreateContactData(
             tf_text_fourth.value = ""
             contactYourProviderViewModel.bitmap.value = null
             Toast.makeText(context, result.data!!.message, Toast.LENGTH_SHORT).show()
-            if (!openDialogCustom.value){
+            if (!openDialogCustom.value) {
                 getUpdatedContact(type = type,
                     user_id = user_id,
                     contactYourProviderViewModel = contactYourProviderViewModel,

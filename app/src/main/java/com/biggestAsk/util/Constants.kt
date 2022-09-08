@@ -72,7 +72,9 @@ object Constants {
 
     //login user type
     const val PARENT = "parent"
+    const val PARENTS = "Parents"
     const val SURROGATE = "surrogate"
+    const val SURROGATE_MOTHER = "Surrogate Mother"
 
     // error body
     const val ERROR_BODY_MESSAGE = "message"
@@ -138,6 +140,13 @@ object Constants {
     const val ROUTE_TERMS_OF_SERVICE = "terms_of_service"
     const val ROUTE_DETAILED_SETTINGS = "detailed_setting"
     const val PLEASE_ADD_LOGO = "Please Add Logo"
+    const val UPDATED_IMAGE = "updated_image"
+    const val PREGNANCY_MILESTONE_STATUS = "pregnancy_milestone_status"
+    const val USER_NAME = "user_name"
+    const val PACKAGE = "package"
+    const val NOTIFICATION_COUNT = "notification_count"
+    const val ACTIVE = "active"
+    const val IN_ACTIVE = "inactive"
 
 
     //EditMileStone Screen
@@ -162,6 +171,7 @@ object Constants {
     const val INST_LINK = "insta_link"
     const val FORUM_LINK = "forum_link"
     const val DESCRIPTION = "description"
+
 
 }
 

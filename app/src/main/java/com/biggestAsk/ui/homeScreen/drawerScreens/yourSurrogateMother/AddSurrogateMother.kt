@@ -2,7 +2,6 @@ package com.biggestAsk.ui.homeScreen.drawerScreens.yourSurrogateMother
 
 import android.content.Context
 import android.text.TextUtils
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -57,11 +56,11 @@ fun AddSurrogateMother(
     surrogateViewModel: YourSurrogateViewModel,
     context: Context,
     homeActivity: HomeActivity,
-    navHostController: NavHostController
+    navHostController: NavHostController,
 ) {
     val openDialogSurrogateMother = remember { mutableStateOf(false) }
     val isSurrogateConnected =
-        PreferenceProvider(context).getBooleanValue("is_surrogate_connected", false)
+        PreferenceProvider(context).getBooleanValue(Constants.IS_SURROGATE_CONNECTED, false)
     surrogateViewModel.invitationSend.value = isSurrogateConnected
     ConstraintLayout(
         modifier = Modifier
@@ -84,7 +83,7 @@ fun AddSurrogateMother(
                     bottom.linkTo(parent.bottom)
                 },
             painter = painterResource(id = if (surrogateViewModel.invitationSend.value) R.drawable.ic_img_invitation_send_your_surrogate_mother else R.drawable.ic_img_add_your_surrogate_mother),
-            contentDescription = "",
+            contentDescription = stringResource(id = R.string.content_description),
             contentScale = ContentScale.FillBounds
         )
         Text(
@@ -184,7 +183,7 @@ fun YourSurrogateDialog(
     openDialogCustom: MutableState<Boolean>,
     context: Context,
     homeActivity: HomeActivity,
-    navHostController: NavHostController
+    navHostController: NavHostController,
 ) {
     val isPhoneEmpty = remember {
         mutableStateOf(false)
@@ -338,7 +337,7 @@ fun YourSurrogateDialog(
             )
         ) {
             Text(
-                text = "Send invitation",
+                text = stringResource(id = R.string.invite_surrogate_dialog_btn_text),
                 style = MaterialTheme.typography.body2.copy(
                     color = Color.White,
                     fontSize = 16.sp,
@@ -355,20 +354,18 @@ private fun handleUserData(
     surrogateViewModel: YourSurrogateViewModel,
     context: Context,
     openDialogCustom: MutableState<Boolean>,
-    navHostController: NavHostController
+    navHostController: NavHostController,
 ) {
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
-            Log.e("TAG", "handleUserData() --> Loading  $result")
             surrogateViewModel.isSurrogateInvited.value = true
         }
 
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.e("TAG", "handleUserData() --> Success  $result")
             Toast.makeText(context, result.data?.message, Toast.LENGTH_SHORT).show()
-            PreferenceProvider(context).setValue("is_surrogate_connected", true)
+            PreferenceProvider(context).setValue(Constants.IS_SURROGATE_CONNECTED, true)
             surrogateViewModel.invitationSend.value = true
             surrogateViewModel.isSurrogateInvited.value = false
             val provider = PreferenceProvider(context)
@@ -381,7 +378,6 @@ private fun handleUserData(
 
         is NetworkResult.Error -> {
             // show error message
-            Log.e("TAG", "handleUserData() --> Error ${result.message}")
             Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
             openDialogCustom.value = true
             surrogateViewModel.isSurrogateInvited.value = false

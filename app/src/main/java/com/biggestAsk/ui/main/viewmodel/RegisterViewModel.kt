@@ -18,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
     private val registerRepository: RegisterRepository,
-    application: Application
+    application: Application,
 ) : AndroidViewModel(application) {
     var textFullName: String by mutableStateOf("")
     var textPass: String by mutableStateOf("")

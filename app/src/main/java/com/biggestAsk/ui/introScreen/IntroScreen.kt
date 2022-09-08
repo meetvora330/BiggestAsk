@@ -2,7 +2,6 @@ package com.biggestAsk.ui.introScreen
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,7 +24,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.biggestAsk.data.model.response.DataXX
 import com.biggestAsk.navigation.Screen
-import com.biggestAsk.ui.activity.MainActivity
 import com.biggestAsk.ui.main.viewmodel.IntroViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.Light_Gray
@@ -49,7 +47,6 @@ fun Intro(
     modifierImg: Modifier = Modifier,
     modifier: Modifier = Modifier,
 ) {
-    Log.d("TAG", "Intro: ${detailsItem.size}")
     HorizontalPager(
         count = detailsItem.size,
         state = state,
@@ -65,7 +62,7 @@ fun Intro(
                     .fillMaxWidth(),
                 contentScale = ContentScale.FillBounds,
                 painter = painterResource(id = items[page].image),
-                contentDescription = "S"
+                contentDescription = stringResource(id = R.string.content_description),
             )
             Text(
                 modifier = modifier
@@ -108,12 +105,10 @@ fun IntroScreen(
     state: PagerState,
     items: List<SampleOnBoard>,
     modifierBox: Modifier = Modifier,
-    modifier_indicator: Modifier = Modifier,
     modifier: Modifier = Modifier,
     scope: CoroutineScope,
     modifier_img: Modifier = Modifier,
     context: Context,
-    mainActivity: MainActivity,
 ) {
 
     Box(
@@ -166,7 +161,6 @@ fun IntroScreen(
                                 state.currentPage + 1
                             )
                         } else {
-//                        homeViewModel.saveOnBoardingState(completed = true)
                             PreferenceProvider(context).setValue(Constants.IS_INTRO_DONE, true)
                             navController.popBackStack()
                             navController.navigate(route = Screen.VerifyEmail.route)

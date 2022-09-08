@@ -21,7 +21,7 @@ class DetailedSettingsRepository @Inject constructor(
 ) : BaseApiResponse(context) {
 
     suspend fun notificationStatusUpdate(
-        notificationStatusUpdateRequest: NotificationStatusUpdateRequest
+        notificationStatusUpdateRequest: NotificationStatusUpdateRequest,
     ): Flow<NetworkResult<CommonResponse>> {
         return flow {
             emit(safeApiCall {
@@ -34,7 +34,7 @@ class DetailedSettingsRepository @Inject constructor(
 
     suspend fun getNotificationStatus(
         type: String,
-        userId: Int
+        userId: Int,
     ): Flow<NetworkResult<GetNotificationStatusResponse>> {
         return flow {
             emit(safeApiCall {
@@ -47,7 +47,7 @@ class DetailedSettingsRepository @Inject constructor(
     }
 
     suspend fun resetMilestone(
-        resetMilestoneRequest: ResetMilestoneRequest
+        resetMilestoneRequest: ResetMilestoneRequest,
     ): Flow<NetworkResult<ResetMilestoneResponse>> {
         return flow {
             emit(safeApiCall {

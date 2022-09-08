@@ -43,7 +43,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 fun QuestionScreen(
     navHostController: NavHostController,
     homeViewModel: HomeViewModel,
-    mainActivity: MainActivity
+    mainActivity: MainActivity,
 ) {
     val viewModel = MainViewModel()
     val systemUiController = rememberSystemUiController()
@@ -216,7 +216,7 @@ fun QuestionScreen(
 fun QuestionList(
     viewModel: MainViewModel,
     index: Int,
-    homeViewModel: HomeViewModel
+    homeViewModel: HomeViewModel,
 ) {
     val focusManager = LocalFocusManager.current
     var answer by remember { mutableStateOf(homeViewModel.valueStateList[index].answer) }

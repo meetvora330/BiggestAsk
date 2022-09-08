@@ -14,5 +14,5 @@ data class GetUserDetailsSurrogateResponse(
     val status: String? = null,
     val updated_at: String? = null,
     val version: String? = null,
-    val gender: String? = null
+    val gender: String? = null,
 )

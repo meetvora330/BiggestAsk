@@ -98,10 +98,10 @@ class HomeActivity : BaseActivity() {
             }
             BasicStructureTheme {
                 LockScreenOrientation(orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
-                val type = PreferenceProvider(this).getValue("type", "")
-                val updatedImage = PreferenceProvider(this).getValue("updated_image", "")
+                val type = PreferenceProvider(this).getValue(Constants.TYPE, "")
+                val updatedImage = PreferenceProvider(this).getValue(Constants.UPDATED_IMAGE, "")
                 if (updatedImage != null) {
-                    if (type == "parent") {
+                    if (type == Constants.PARENT) {
                         yourAccountViewModel.parentImg1 = updatedImage
                     } else {
                         yourAccountViewModel.surrogateImg = updatedImage

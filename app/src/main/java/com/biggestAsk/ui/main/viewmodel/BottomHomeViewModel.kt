@@ -20,7 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class BottomHomeViewModel @Inject constructor(
     private val homeRepository: HomeRepository,
-    application: Application
+    application: Application,
 ) : AndroidViewModel(application) {
 
     var pregnancyTittle: String by mutableStateOf("")
