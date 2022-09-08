@@ -90,7 +90,7 @@ fun AddCommunityDialog(
     val tfTextFourthEmpty = remember {
         mutableStateOf(false)
     }
-    val validUrlRegex = "^((https?|ftp|smtp)://)?(www.)?[a-z0-9]+\\.[a-z]{2}+(/[a-zA-Z0-9#]+/?)*\$"
+    val validUrlRegex = "^((https?|ftp|smtp)://)?(www.)?[a-z0-9]+\\.[a-z]{2,8}+(/[a-zA-Z0-9#]+/?)*\$"
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
 
@@ -560,7 +560,7 @@ fun AddCommunityDialog(
             }
         }
     }
-    if (communityViewModel.isLoading) {
+    if (communityViewModel.isLoading && !openDialogCustom.value) {
         ProgressBarTransparentBackground(stringResource(id = R.string.please_wait))
     }
     if (communityViewModel.isPermissionAllowed) {

@@ -396,7 +396,12 @@ fun HomeScreen(
                     dismissOnBackPress = true,
                     dismissOnClickOutside = false,
                     usePlatformDefaultWidth = true,
-                ), onDismissRequest = { openDialogCustomCommunity.value = false }) {
+                ), onDismissRequest = {
+                    openDialogCustomCommunity.value = false
+                    communityViewModel.bitmap.value = null
+                    communityViewModel.isValidInstagramUrl.value = false
+                    tfTextFourthCommunity.value = ""
+                }) {
                     Surface(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -430,7 +435,12 @@ fun HomeScreen(
                     dismissOnClickOutside = false,
                     usePlatformDefaultWidth = true,
                 ),
-                    onDismissRequest = { openDialogCustomContact.value = false }) {
+                    onDismissRequest = {
+                        openDialogCustomContact.value = false
+                        contactYourProviderViewModel.bitmap.value = null
+                        contactYourProviderViewModel.phoneErrorVisible = false
+                        tfTextFourthContact.value = ""
+                    }) {
                     Surface(
                         modifier = Modifier
                             .fillMaxWidth()
