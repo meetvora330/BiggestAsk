@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.Settings
 import android.text.TextUtils
+import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -90,6 +91,8 @@ fun AddCommunityDialog(
         mutableStateOf(false)
     }
 
+    val validUrlRegex =
+        "^((https?|ftp|smtp)://)?(www.)?[a-z0-9]+\\.[a-z]{2,8}+(/[a-zA-Z0-9#]+/?)*\$"
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
 
@@ -449,6 +452,7 @@ fun AddCommunityDialog(
                     )
                 }
             }
+
             Button(
                 onClick = {
                     when {
@@ -484,15 +488,18 @@ fun AddCommunityDialog(
                             Toast.makeText(context, Constants.PLEASE_ADD_LOGO, Toast.LENGTH_SHORT)
                                 .show()
                         }
+
                         communityViewModel.isImagePresent.value && !TextUtils.isEmpty(tf_text_first.value) &&
                                 !TextUtils.isEmpty(tf_text_second.value) &&
                                 !TextUtils.isEmpty(tf_text_third.value) &&
-                                !TextUtils.isEmpty(tf_text_fourth.value) && !communityViewModel.isValidInstagramUrl.value && Patterns.WEB_URL.matcher(
-                            tf_text_fourth.value).matches() -> {
+                                !TextUtils.isEmpty(tf_text_fourth.value) && !communityViewModel.isValidInstagramUrl.value && Pattern.compile(
+                            validUrlRegex)
+                            .matcher(tf_text_fourth.value).matches() -> {
 
 
                             val image =
                                 communityViewModel.uriPath?.let { convertImageMultiPart(it) }
+                            Log.e(Constants.IMAGE, "AddCommunityDialog: $image")
                             communityViewModel.createCommunity(
                                 MultipartBody.Part.createFormData(Constants.TITLE,
                                     tf_text_first.value),
@@ -567,7 +574,7 @@ fun AddCommunityDialog(
                 TextButton(onClick = {
                     val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    val uri = Uri.fromParts(Constants.PACKAGE, context.packageName, null)
+                    val uri = Uri.fromParts("package", context.packageName, null)
                     intent.data = uri
                     context.startActivity(intent)
                 })
