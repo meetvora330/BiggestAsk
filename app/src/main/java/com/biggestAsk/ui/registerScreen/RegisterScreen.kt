@@ -582,6 +582,7 @@ private fun handleUserData(
             navHostController.navigate(
                 Screen.Login.route
             )
+            navHostController.popBackStack(Screen.Register.route, true)
             emailVerificationViewModel.textEmailVerify = ""
         }
         is NetworkResult.Error -> {
