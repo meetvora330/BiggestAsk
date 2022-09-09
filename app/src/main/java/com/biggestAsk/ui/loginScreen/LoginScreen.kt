@@ -386,11 +386,20 @@ private fun handleUserData(
             GlobalScope.launch {
                 result.data?.let {
                     val provider = PreferenceProvider(context)
-                    provider.setValue(Constants.USER_ID, result.data.user_id)
-                    provider.setValue(Constants.TYPE, result.data.type)
-                    provider.setValue(Constants.PARTNER_ID, result.data.partner_id)
-                    provider.setValue(Constants.LOGIN_STATUS, result.data.status)
-                    provider.setValue(Constants.USER_NAME, result.data.user_name)
+                    result.data.user_id?.let { it1 -> provider.setValue(Constants.USER_ID, it1) }
+                    result.data.type?.let { it1 -> provider.setValue(Constants.TYPE, it1) }
+                    result.data.partner_id?.let { it1 ->
+                        provider.setValue(Constants.PARTNER_ID,
+                            it1)
+                    }
+                    result.data.status?.let { it1 ->
+                        provider.setValue(Constants.LOGIN_STATUS,
+                            it1)
+                    }
+                    result.data.user_name?.let { it1 ->
+                        provider.setValue(Constants.USER_NAME,
+                            it1)
+                    }
                     if (result.data.pregnancy_milestone_status != null) {
                         provider.setValue(Constants.PREGNANCY_MILESTONE_STATUS,
                             result.data.pregnancy_milestone_status)

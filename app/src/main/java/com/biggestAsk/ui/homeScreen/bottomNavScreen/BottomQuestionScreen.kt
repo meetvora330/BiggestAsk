@@ -205,7 +205,8 @@ fun BottomQuestionScreen(
                                 questionViewModel.answerList.add(
                                     Answer(
                                         answer = questionViewModel.questionScreenQuestionAnswer,
-                                        question_id = questionViewModel.questionScreenQuestionId
+                                        question_id = questionViewModel.questionScreenQuestionId,
+                                        user_name = provider.getValue(Constants.USER_NAME,"").toString()
                                     )
                                 )
                                 questionViewModel.storeQuestionScreenAnswer(

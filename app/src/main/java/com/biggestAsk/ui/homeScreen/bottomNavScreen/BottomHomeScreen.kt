@@ -206,11 +206,12 @@ fun BottomHomeScreen(
                                 bottomHomeViewModel.isHomeScreenQuestionAnsEmpty = true
                             } else {
                                 if (bottomHomeViewModel.upperQuestion) {
+                                    val userName = provider.getValue(Constants.USER_NAME,"")
                                     bottomHomeViewModel.storeAnsImportantQuestion(
                                         StoreAnsImportantQuestionRequest(
                                             question_id = bottomHomeViewModel.homeScreenImportantQuestionId,
                                             answer = bottomHomeViewModel.homeScreenQuestionAns,
-                                            user_name = if (type == Constants.PARENT) selectedText.value else bottomHomeViewModel.parentList[0]
+                                            user_name = (if (type == Constants.PARENT) selectedText.value else userName).toString()
                                         )
                                     )
                                     coroutineScope.launch {
@@ -234,7 +235,8 @@ fun BottomHomeScreen(
                                     bottomHomeViewModel.answerList.add(
                                         Answer(
                                             answer = bottomHomeViewModel.homeScreenQuestionAns,
-                                            question_id = bottomHomeViewModel.homeScreenQuestionId
+                                            question_id = bottomHomeViewModel.homeScreenQuestionId,
+                                            user_name = provider.getValue(Constants.USER_NAME,"").toString()
                                         )
                                     )
                                     bottomHomeViewModel.storeBaseScreenQuestionAns(
