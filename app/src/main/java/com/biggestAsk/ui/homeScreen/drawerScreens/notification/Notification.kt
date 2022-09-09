@@ -57,6 +57,7 @@ fun Notification(
         val type = PreferenceProvider(context).getValue(Constants.TYPE, "")
         val userId = PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
         LaunchedEffect(Unit) {
+            notificationViewModel.isNotificationScreenVisible.value = true
             if (isInternetAvailable(context)) {
                 type?.let {
                     getUpdatedNotification(

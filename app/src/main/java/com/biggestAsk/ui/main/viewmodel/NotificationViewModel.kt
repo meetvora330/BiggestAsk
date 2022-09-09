@@ -30,6 +30,7 @@ class NotificationViewModel @Inject constructor(
     var getNotificationResponse: MutableLiveData<NetworkResult<GetNotificationResponse>> =
         MutableLiveData()
     val isNotificationScreen: MutableLiveData<Boolean> = MutableLiveData(false)
+    val isNotificationScreenVisible: MutableLiveData<Boolean> = MutableLiveData(false)
     val isNotificationDetailsScreen: MutableState<Boolean> = mutableStateOf(false)
     var isSearchClicked: MutableState<Boolean> = mutableStateOf(false)
     var updatedList = mutableStateListOf<GetNotificationResponseData>()

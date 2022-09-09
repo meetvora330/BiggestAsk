@@ -341,8 +341,10 @@ fun HomeScreen(
                                     notificationViewModel.searchText = ""
                                 }
                             } else {
-                                notificationViewModel.isNotificationScreen.value = true
-                                notificationViewModel.isSearchClicked.value = false
+                                if (notificationViewModel.isNotificationScreenVisible.value == true) {
+                                    notificationViewModel.isNotificationScreen.value = true
+                                    notificationViewModel.isSearchClicked.value = false
+                                }
                             }
                         },
                     painter = painterResource(
@@ -513,6 +515,7 @@ fun currentRoute(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     when (navController.currentDestination?.route) {
         BottomNavItems.Home.navRoute -> {
+            notificationViewModel.isNotificationScreenVisible.value = false
             notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.text_home_bottom_nav_home)
             communityViewModel.isCommunityScreen.value = false
@@ -529,6 +532,7 @@ fun currentRoute(
             viewModel.isSettingSubPrivacyPolicyScreen.value = false
         }
         BottomNavItems.Questions.navRoute -> {
+            notificationViewModel.isNotificationScreenVisible.value = false
             notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.text_home_bottom_nav_question)
             communityViewModel.isCommunityScreen.value = false
@@ -546,6 +550,7 @@ fun currentRoute(
             viewModel.isSettingSubPrivacyPolicyScreen.value = false
         }
         BottomNavItems.Milestones.navRoute -> {
+            notificationViewModel.isNotificationScreenVisible.value = false
             notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.text_home_bottom_nav_milestone)
             communityViewModel.isCommunityScreen.value = false
@@ -563,6 +568,7 @@ fun currentRoute(
             viewModel.isSettingSubPrivacyPolicyScreen.value = false
         }
         NavDrawerItem.YourSurrogateMother.route -> {
+            notificationViewModel.isNotificationScreenVisible.value = false
             notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.your_surrogate_mother)
             communityViewModel.isCommunityScreen.value = false
@@ -580,6 +586,7 @@ fun currentRoute(
             viewModel.isSettingSubPrivacyPolicyScreen.value = false
         }
         NavDrawerItem.IntendedParents.route -> {
+            notificationViewModel.isNotificationScreenVisible.value = false
             notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.intended_parents)
             communityViewModel.isCommunityScreen.value = false
@@ -597,6 +604,7 @@ fun currentRoute(
             viewModel.isSettingSubDetailedSettingScreen.value = false
         }
         NavDrawerItem.Community.route -> {
+            notificationViewModel.isNotificationScreenVisible.value = false
             notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.community)
             contactYourProviderViewModel.isContactProvidersScreen.value = false
@@ -614,6 +622,7 @@ fun currentRoute(
             communityViewModel.isCommunityScreen.value = true
         }
         NavDrawerItem.ContactYourProviders.route -> {
+            notificationViewModel.isNotificationScreenVisible.value = false
             notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.contact_your_providers)
             communityViewModel.isCommunityScreen.value = false
@@ -649,6 +658,7 @@ fun currentRoute(
             notificationViewModel.isNotificationScreen.value = true
         }
         NavDrawerItem.Settings.route -> {
+            notificationViewModel.isNotificationScreenVisible.value = false
             notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.settings)
             communityViewModel.isCommunityScreen.value = false
@@ -666,6 +676,7 @@ fun currentRoute(
             viewModel.isSettingSubPrivacyPolicyScreen.value = false
         }
         MyAccount.MyAccountScreen.route -> {
+            notificationViewModel.isNotificationScreenVisible.value = false
             notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.your_account)
             communityViewModel.isCommunityScreen.value = false
@@ -682,6 +693,7 @@ fun currentRoute(
             yourAccountViewModel.isYourAccountScreen.value = true
         }
         BottomNavScreen.AddNewMileStones.route -> {
+            notificationViewModel.isNotificationScreenVisible.value = false
             notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.edit_milestone)
             yourAccountViewModel.isYourAccountScreen.value = false
@@ -699,6 +711,7 @@ fun currentRoute(
             viewModel.isAddMilestoneScreen.value = true
         }
         NotificationDetailScreenRoute.NotificationDetails.route -> {
+            notificationViewModel.isNotificationScreenVisible.value = false
             notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.notifications)
             communityViewModel.isCommunityScreen.value = false
@@ -716,6 +729,7 @@ fun currentRoute(
             viewModel.isSettingSubPrivacyPolicyScreen.value = false
         }
         SettingSubScreen.AboutApp.route -> {
+            notificationViewModel.isNotificationScreenVisible.value = false
             notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.about_app)
             communityViewModel.isCommunityScreen.value = false
@@ -732,6 +746,7 @@ fun currentRoute(
             viewModel.isSettingSubDetailedSettingScreen.value = false
         }
         SettingSubScreen.DetailedSetting.route -> {
+            notificationViewModel.isNotificationScreenVisible.value = false
             notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.detailed_settings)
             communityViewModel.isCommunityScreen.value = false
@@ -748,6 +763,7 @@ fun currentRoute(
             viewModel.isSettingSubDetailedSettingScreen.value = true
         }
         SettingSubScreen.PrivacyPolicy.route -> {
+            notificationViewModel.isNotificationScreenVisible.value = false
             notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.privacy_policy)
             communityViewModel.isCommunityScreen.value = false
@@ -764,6 +780,7 @@ fun currentRoute(
             viewModel.isSettingSubPrivacyPolicyScreen.value = true
         }
         SettingSubScreen.TermsOfService.route -> {
+            notificationViewModel.isNotificationScreenVisible.value = false
             notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.terms_of_service)
             communityViewModel.isCommunityScreen.value = false
@@ -954,12 +971,14 @@ fun NavigationDrawerContent(
                     }
                 }
             }
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 64.dp)
             ) {
-                val getPregnancyStatus = provider.getValue(Constants.PREGNANCY_MILESTONE_STATUS, "")
+                val getPregnancyStatus =
+                    provider.getValue(Constants.PREGNANCY_MILESTONE_STATUS, "")
                 homeViewModel.getPregnancyStatus =
                     if (getPregnancyStatus == Constants.ACTIVE) true else if (getPregnancyStatus == Constants.IN_ACTIVE) false else false
                 Text(
@@ -982,7 +1001,9 @@ fun NavigationDrawerContent(
                             bottomHomeViewModel = homeViewModel,
                             context = context
                         )
-                    }, enabled = !homeViewModel.isPregnancyStatusLoaded,
+                    },
+                    enabled = !homeViewModel.isPregnancyStatusLoaded && provider.getValue(Constants.LOGIN_STATUS,
+                        "") == "on_boarding",
                     colors = SwitchDefaults.colors(
                         checkedThumbColor = Color.White,
                         checkedTrackColor = Custom_Blue,

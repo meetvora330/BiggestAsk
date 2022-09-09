@@ -7,7 +7,6 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.Settings
 import android.text.TextUtils
-import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -500,7 +499,6 @@ fun AddCommunityDialog(
 
                             val image =
                                 communityViewModel.uriPath?.let { convertImageMultiPart(it) }
-                            Log.e(Constants.IMAGE, "AddCommunityDialog: $image")
                             communityViewModel.createCommunity(
                                 MultipartBody.Part.createFormData(Constants.TITLE,
                                     tf_text_first.value),

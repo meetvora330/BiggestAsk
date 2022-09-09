@@ -391,7 +391,10 @@ private fun handleUserData(
                     provider.setValue(Constants.PARTNER_ID, result.data.partner_id)
                     provider.setValue(Constants.LOGIN_STATUS, result.data.status)
                     provider.setValue(Constants.USER_NAME, result.data.user_name)
-                    provider.setValue(Constants.PREGNANCY_MILESTONE_STATUS, result.data.pregnancy_milestone_status)
+                    if (result.data.pregnancy_milestone_status != null) {
+                        provider.setValue(Constants.PREGNANCY_MILESTONE_STATUS,
+                            result.data.pregnancy_milestone_status)
+                    }
                     if (result.data.image != null) {
                         provider.setValue(Constants.UPDATED_IMAGE, result.data.image)
                     }

@@ -173,7 +173,7 @@ fun VerifyOtpScreen(
             modifier = modifier
                 .alpha(if (verifyOtpViewModel.ticks < 1) 0f else 1f)
                 .align(CenterHorizontally),
-            text = stringResource(id = R.string.resend_code_with0) + { verifyOtpViewModel.ticks },
+            text = "Resend Code: 0:${verifyOtpViewModel.ticks}",
             fontSize = 16.sp,
             fontStyle = FontStyle.Normal,
             color = Custom_Blue
