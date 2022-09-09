@@ -90,9 +90,12 @@ fun SetUpNavGraph(
                     items = onBoardItem,
                     scope = rememberCoroutineScope(),
                     modifier = Modifier.fillMaxWidth(),
+                    modifierBox = Modifier.padding(bottom = 56.dp),
+                    modifier_indicator = Modifier.padding(bottom = 80.dp),
                     modifier_img = Modifier.fillMaxHeight(0.6f),
                     navController = navHostController,
                     context = mainActivity.applicationContext,
+                    mainActivity = mainActivity
                 )
             } else {
                 IntroScreen(
@@ -101,9 +104,12 @@ fun SetUpNavGraph(
                     introViewModel = introViewModel,
                     scope = rememberCoroutineScope(),
                     modifier = Modifier.fillMaxWidth(),
+                    modifierBox = Modifier.padding(bottom = 50.dp),
+                    modifier_indicator = Modifier.padding(bottom = 70.dp),
                     modifier_img = Modifier.fillMaxHeight(0.5f),
                     navController = navHostController,
                     context = mainActivity.applicationContext,
+                    mainActivity = mainActivity
                 )
             }
         }
