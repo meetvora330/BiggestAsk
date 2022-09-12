@@ -171,7 +171,7 @@ fun AddSurrogateMother(
         }
     }
     if (surrogateViewModel.isSurrogateInvited.value) {
-        ProgressBarTransparentBackground(loadingText = "Adding...")
+        ProgressBarTransparentBackground(loadingText = stringResource(id = R.string.adding))
     }
 
 }

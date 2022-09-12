@@ -844,7 +844,7 @@ fun NavigationDrawerContent(
     Box {
         if (homeViewModel.isPregnancyStatusLoaded) {
             ProgressBarTransparentBackground(
-                loadingText = "Updating....",
+                loadingText = stringResource(id = R.string.updating),
                 id = R.color.transparent
             )
         }

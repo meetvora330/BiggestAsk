@@ -39,7 +39,6 @@ import java.util.*
 @Composable
 fun SetUpNavGraph(
     navHostController: NavHostController,
-    viewModel: MainViewModel,
     homeViewModel: HomeViewModel,
     mainActivity: MainActivity,
     introViewModel: IntroViewModel,

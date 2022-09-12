@@ -48,7 +48,7 @@ fun Settings(
     context: Context,
 ) {
     if (settingViewModel.isAllMilestoneReset) {
-        ProgressBarTransparentBackground(loadingText = "Resetting milestones...")
+        ProgressBarTransparentBackground(loadingText = stringResource(id = R.string.resetting_milestone))
     } else {
         Column(
             modifier = Modifier

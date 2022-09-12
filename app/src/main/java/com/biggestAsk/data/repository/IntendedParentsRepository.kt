@@ -21,7 +21,7 @@ class IntendedParentsRepository @Inject constructor(
         type: String,
         user_id: Int,
     ): Flow<NetworkResult<GetIntendedProfileResponse>> {
-        return flow<NetworkResult<GetIntendedProfileResponse>> {
+        return flow {
             emit(safeApiCall {
                 apiService.getIntendedParentProfile(type = type, user_id = user_id)
             })

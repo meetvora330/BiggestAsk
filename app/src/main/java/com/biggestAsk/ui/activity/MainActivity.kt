@@ -49,7 +49,6 @@ import java.util.*
 
 class MainActivity : BaseActivity() {
     private val homeViewModel: HomeViewModel by viewModels()
-    private val viewModel: MainViewModel by viewModels()
     private val introViewModel: IntroViewModel by viewModels()
     private val loginViewModel: LoginViewModel by viewModels()
     private val registerViewModel: RegisterViewModel by viewModels()
@@ -163,7 +162,6 @@ class MainActivity : BaseActivity() {
                                     focusManager.clearFocus()
                                     SetUpNavGraph(
                                         navHostController = navController,
-                                        viewModel = viewModel,
                                         homeViewModel = homeViewModel,
                                         this,
                                         introViewModel = introViewModel,

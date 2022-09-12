@@ -590,7 +590,7 @@ fun MilestonesScreen(
                     }
                 }
                 if (milestoneViewModel.isNewMilestoneAdded.value) {
-                    ProgressBarTransparentBackground(loadingText = "Adding...")
+                    ProgressBarTransparentBackground(loadingText = stringResource(id = R.string.adding))
                 } else {
                     LazyColumn(
                         modifier = Modifier
