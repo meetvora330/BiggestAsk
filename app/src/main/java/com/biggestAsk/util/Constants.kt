@@ -172,6 +172,12 @@ object Constants {
     const val FORUM_LINK = "forum_link"
     const val DESCRIPTION = "description"
 
+    //Date and time
+    const val SIMPLE_DATE_FORMAT = "yyyy/MM/dd"
+    const val SIMPLE_TIME_FORMAT = "HH:mm a"
+    const val DATE_FORMAT_LOCAL = "yyyy/MM/dd HH:mm a"
+    const val DATE_FORMAT_UTC = "yyyy/MM/dd'T'HH:mm:ss.SSS'Z'"
+
 
 }
 

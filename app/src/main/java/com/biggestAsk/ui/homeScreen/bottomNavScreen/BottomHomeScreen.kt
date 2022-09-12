@@ -40,8 +40,7 @@ import com.biggestAsk.ui.main.viewmodel.BottomHomeViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.ET_Bg
 import com.biggestAsk.ui.ui.theme.Text_Color
-import com.biggestAsk.util.Constants
-import com.biggestAsk.util.PreferenceProvider
+import com.biggestAsk.util.*
 import com.example.biggestAsk.R
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.CoroutineScope
@@ -206,7 +205,7 @@ fun BottomHomeScreen(
                                 bottomHomeViewModel.isHomeScreenQuestionAnsEmpty = true
                             } else {
                                 if (bottomHomeViewModel.upperQuestion) {
-                                    val userName = provider.getValue(Constants.USER_NAME,"")
+                                    val userName = provider.getValue(Constants.USER_NAME, "")
                                     bottomHomeViewModel.storeAnsImportantQuestion(
                                         StoreAnsImportantQuestionRequest(
                                             question_id = bottomHomeViewModel.homeScreenImportantQuestionId,
@@ -236,7 +235,8 @@ fun BottomHomeScreen(
                                         Answer(
                                             answer = bottomHomeViewModel.homeScreenQuestionAns,
                                             question_id = bottomHomeViewModel.homeScreenQuestionId,
-                                            user_name = provider.getValue(Constants.USER_NAME,"").toString()
+                                            user_name = provider.getValue(Constants.USER_NAME, "")
+                                                .toString()
                                         )
                                     )
                                     bottomHomeViewModel.storeBaseScreenQuestionAns(
@@ -1014,16 +1014,23 @@ private fun handleNearestMilestoneData(
             // bind data to the view
             Log.i("TAG", result.message.toString())
             bottomHomeViewModel.nearestMilestoneTittle = result.data?.title!!
-            if (result.data.date.isEmpty())
+            if (result.data.date.isEmpty()) {
                 bottomHomeViewModel.nearestMilestoneDate = ""
-            else
-                bottomHomeViewModel.nearestMilestoneDate = result.data.date
-
-            if (result.data.time.isEmpty())
-                bottomHomeViewModel.nearestMilestoneTime = ""
-            else
-                bottomHomeViewModel.nearestMilestoneTime = result.data.time
-
+            } else {
+                val dateTime = changeLocalFormat(result.data.date)?.trim()
+                val localDate = dateTime?.let { changeLocalDateFormat(it.trim()) }
+                val localTime = dateTime?.let { changeLocalTimeFormat(it.trim()) }
+                if (localDate != null) {
+                    bottomHomeViewModel.nearestMilestoneDate = localDate
+                } else {
+                    bottomHomeViewModel.nearestMilestoneDate = ""
+                }
+                if (localTime != null) {
+                    bottomHomeViewModel.nearestMilestoneTime = localTime
+                } else {
+                    bottomHomeViewModel.nearestMilestoneTime = ""
+                }
+            }
             if (result.data.milestone_image == null)
                 bottomHomeViewModel.nearestMilestoneImage = ""
             else

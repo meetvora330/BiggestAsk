@@ -5,6 +5,7 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.text.TextUtils
+import android.util.Log
 import android.widget.DatePicker
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -56,11 +57,12 @@ import com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph.BottomNavScreen
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer.MilestoneScreenShimmerAnimation
 import com.biggestAsk.ui.main.viewmodel.BottomMilestoneViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
-import com.biggestAsk.util.Constants
-import com.biggestAsk.util.PreferenceProvider
+import com.biggestAsk.util.*
 import com.example.biggestAsk.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.text.ParseException
+import java.text.SimpleDateFormat
 import java.util.*
 
 @OptIn(
@@ -120,7 +122,6 @@ fun MilestonesScreen(
             back.value = false
         }
     }
-
     if (milestoneViewModel.isAnyErrorOccurred) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -472,6 +473,7 @@ fun MilestonesScreen(
                                 fontSize = 12.sp
                             )
                         }
+
                         Button(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -519,24 +521,27 @@ fun MilestonesScreen(
                                                 Constants.USER_ID,
                                                 0
                                             )
-                                        val createMilestoneRequest = CreateMilestoneRequest(
-                                            milestone = milestoneViewModel.addNewMilestoneTittle.value,
-                                            user_type = type!!,
-                                            user_id = userId,
-                                            date = milestoneViewModel.addNewMilestoneDate.value,
-                                            time = milestoneViewModel.addNewMilestoneTime.value,
-                                            location = milestoneViewModel.addNewMilestoneLocationB.value,
-                                            longitude = "",
-                                            latitude = ""
-                                        )
-                                        milestoneViewModel.createMilestone(createMilestoneRequest)
+                                        val localDateTime =
+                                            "${milestoneViewModel.addNewMilestoneDate.value} ${milestoneViewModel.addNewMilestoneTime.value}"
+                                        if (localDateTime.trim().isNotEmpty()) {
+                                            val createMilestoneRequest = CreateMilestoneRequest(
+                                                milestone = milestoneViewModel.addNewMilestoneTittle.value,
+                                                user_type = type!!,
+                                                user_id = userId,
+                                                date = changeDateFormat(localDateTime.trim()),
+                                                location = milestoneViewModel.addNewMilestoneLocationB.value,
+                                                longitude = "",
+                                                latitude = ""
+                                            )
+                                            milestoneViewModel.createMilestone(
+                                                createMilestoneRequest)
+                                        }
                                         milestoneViewModel.createMilestoneResponse.observe(
                                             homeActivity
                                         ) {
                                             if (it != null) {
                                                 handleCreatedMilestoneData(
                                                     homeActivity = homeActivity,
-                                                    navHostController,
                                                     result = it,
                                                     context = context,
                                                     milestoneViewModel = milestoneViewModel,
@@ -846,12 +851,24 @@ fun MilestonesScreen(
                                                             painter = painterResource(id = R.drawable.img_medical_calender_icon),
                                                             contentDescription = stringResource(id = R.string.content_description),
                                                         )
+                                                        var localDate:String?=null
+                                                        var localTime:String?=null
+                                                        if (milestoneViewModel.milestoneList[index].date?.isNotEmpty() == true) {
+                                                            val dateTime =
+                                                                milestoneViewModel.milestoneList[index].date?.let { it1 ->
+                                                                    changeLocalFormat(it1)?.trim()
+                                                                }
+                                                            Log.d("TAG", "handleEditMilestoneData: main Date$dateTime")
+                                                            localDate= dateTime?.let { changeLocalDateFormat(it.trim()) }
+                                                            localTime= dateTime?.let { changeLocalTimeFormat(it.trim()) }
+                                                            Log.d("TAG", "handleEditMilestoneData:final date $localDate")
+                                                        }
                                                         Text(
                                                             modifier = Modifier.padding(
                                                                 start = 8.dp,
                                                                 top = 35.dp
                                                             ),
-                                                            text = if (milestoneViewModel.milestoneList[index].date != null && milestoneViewModel.milestoneList[index].time != null && milestoneViewModel.milestoneList[index].date != "" && milestoneViewModel.milestoneList[index].time != "") "${milestoneViewModel.milestoneList[index].date} at ${milestoneViewModel.milestoneList[index].time}" else "N/A",
+                                                            text = if (milestoneViewModel.milestoneList[index].date != null && milestoneViewModel.milestoneList[index].date != "") "$localDate at $localTime" else "N/A",
                                                             style = MaterialTheme.typography.body2,
                                                             color = Color(0xFF9F9D9B),
                                                             fontSize = 13.sp,
@@ -1196,7 +1213,6 @@ private fun handleGetMilestoneData(
 @OptIn(ExperimentalMaterialApi::class)
 private fun handleCreatedMilestoneData(
     homeActivity: HomeActivity,
-    navHostController: NavHostController,
     result: NetworkResult<CommonResponse>,
     context: Context,
     milestoneViewModel: BottomMilestoneViewModel,
@@ -1260,3 +1276,5 @@ fun BackHandler(enabled: Boolean = true, onBack: () -> Unit) {
         }
     }
 }
+
+

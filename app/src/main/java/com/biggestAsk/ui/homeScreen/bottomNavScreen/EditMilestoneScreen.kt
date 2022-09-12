@@ -12,6 +12,7 @@ import android.os.Build
 import android.provider.MediaStore
 import android.provider.Settings
 import android.text.TextUtils
+import android.util.Log
 import android.view.Gravity
 import android.widget.DatePicker
 import android.widget.Toast
@@ -72,9 +73,7 @@ import com.biggestAsk.ui.ui.theme.CheckBox_Check
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.ET_Bg
 import com.biggestAsk.ui.ui.theme.Text_Color
-import com.biggestAsk.util.Constants
-import com.biggestAsk.util.PathUtil
-import com.biggestAsk.util.PreferenceProvider
+import com.biggestAsk.util.*
 import com.example.biggestAsk.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -565,21 +564,25 @@ fun EditMilestoneScreen(
                                                 Constants.USER_ID,
                                                 0
                                             )
-                                        val updateMilestoneAnsInfoRequest =
-                                            UpdateMilestoneAnsInfoRequest(
-                                                title = editMilestoneViewModel.editMilestoneTittle.value,
-                                                time = editMilestoneViewModel.editMilestoneTime.value,
-                                                date = editMilestoneViewModel.editMilestoneDate.value,
-                                                location = editMilestoneViewModel.editMilestoneLocationB.value,
-                                                longitude = Constants.LONGITUDE,
-                                                latitude = Constants.LATITUDE,
-                                                user_id = userId,
-                                                type = type!!,
-                                                milestone_id = editMilestoneViewModel.milestoneId.value
+                                        val localDateTime =
+                                            "${editMilestoneViewModel.editMilestoneDate.value} ${editMilestoneViewModel.editMilestoneTime.value}"
+                                        Log.d("TAG", "MilestonesScreen: ${localDateTime.trim()}")
+                                        if (localDateTime.trim().isNotEmpty()) {
+                                            val updateMilestoneAnsInfoRequest =
+                                                UpdateMilestoneAnsInfoRequest(
+                                                    title = editMilestoneViewModel.editMilestoneTittle.value,
+                                                    date = changeDateFormat(localDateTime.trim()),
+                                                    location = editMilestoneViewModel.editMilestoneLocationB.value,
+                                                    longitude = Constants.LONGITUDE,
+                                                    latitude = Constants.LATITUDE,
+                                                    user_id = userId,
+                                                    type = type!!,
+                                                    milestone_id = editMilestoneViewModel.milestoneId.value
+                                                )
+                                            editMilestoneViewModel.updateMilestoneAnsInfo(
+                                                updateMilestoneAnsInfoRequest = updateMilestoneAnsInfoRequest
                                             )
-                                        editMilestoneViewModel.updateMilestoneAnsInfo(
-                                            updateMilestoneAnsInfoRequest = updateMilestoneAnsInfoRequest
-                                        )
+                                        }
                                         editMilestoneViewModel.updateMilestoneAnsInfoResponse.observe(
                                             homeActivity
                                         ) {
@@ -2017,17 +2020,27 @@ private fun handleEditMilestoneData(
             val type = PreferenceProvider(context).getValue(Constants.TYPE, "")
             editMilestoneViewModel.editMilestoneTittle.value =
                 result.data?.milestone?.get(0)?.title!!
-            if (result.data.milestone[0].date == null) {
-                editMilestoneViewModel.editMilestoneDate.value = ""
-            } else {
-                editMilestoneViewModel.editMilestoneDate.value = result.data.milestone[0].date
+            if (result.data.milestone[0].date!=null){
+                if (result.data.milestone[0].date.isNotEmpty()) {
+                    val dateTime = changeLocalFormat(result.data.milestone[0].date)?.trim()
+                    val localDate = dateTime?.let { changeLocalDateFormat(it.trim()) }
+                    val localTime = dateTime?.let { changeLocalTimeFormat(it.trim()) }
+                    if (localDate != null) {
+                        editMilestoneViewModel.editMilestoneDate.value = localDate
+                    } else {
+                        editMilestoneViewModel.editMilestoneDate.value = ""
+                    }
+                    if (localTime != null) {
+                        editMilestoneViewModel.editMilestoneTime.value = localTime
+                    } else {
+                        editMilestoneViewModel.editMilestoneTime.value = ""
+                    }
+                } else {
+                    editMilestoneViewModel.editMilestoneDate.value = ""
+                    editMilestoneViewModel.editMilestoneTime.value = ""
+                }
             }
-            if (result.data.milestone[0].time == null) {
-                editMilestoneViewModel.editMilestoneTime.value = ""
-            } else {
-                editMilestoneViewModel.editMilestoneTime.value = result.data.milestone[0].time
-            }
-            if (!result.data.milestone[0].milestone_image.isNullOrEmpty()) {
+            if (result.data.milestone[0].milestone_image.isNotEmpty()) {
                 editMilestoneViewModel.editMilestoneTitleImage.value =
                     result.data.milestone[0].milestone_image
             } else {
