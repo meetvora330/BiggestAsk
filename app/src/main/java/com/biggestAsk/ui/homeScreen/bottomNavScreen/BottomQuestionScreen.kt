@@ -67,7 +67,6 @@ fun BottomQuestionScreen(
     val selectedText = remember { mutableStateOf("") }
     val selectedUser = remember { mutableStateOf("") }
     val partnerId = provider.getIntValue(Constants.PARTNER_ID, 0)
-
     LaunchedEffect(Unit) {
         updateQuestionScreen(
             userId = userId,
@@ -264,7 +263,7 @@ fun BottomQuestionScreen(
         }
     }, content = {
         if (questionBottomSheetScaffoldState.bottomSheetState.isCollapsed) {
-            hideKeyboard(homeActivity)
+            HideKeyboard(homeActivity)
         }
         BackHandler(questionBottomSheetScaffoldState.bottomSheetState.isExpanded) {
             coroutineScope.launch {
@@ -381,6 +380,7 @@ fun BottomQuestionScreen(
                                     onClick = {
                                         questionViewModel.isBottomSheetOpened = true
                                         coroutineScope.launch {
+                                            questionViewModel.questionScreenQuestionAnswer = ""
                                             questionViewModel.isAnswerEmpty = false
                                             if (questionBottomSheetScaffoldState.bottomSheetState.isExpanded) {
                                                 questionBottomSheetScaffoldState.bottomSheetState.collapse()

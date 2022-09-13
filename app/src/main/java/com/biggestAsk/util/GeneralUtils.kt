@@ -96,7 +96,7 @@ fun FragmentActivity.addReplaceFragment(
     if (addToBackStack) {
         transaction?.addToBackStack(fragment.tag)
     }
-    hideKeyboard()
+    HideKeyboard()
     transaction?.commit()
 }
 
@@ -126,7 +126,7 @@ fun FragmentActivity.addReplaceFragmentWithAnimation(
     if (addToBackStack) {
         transaction.addToBackStack(fragment.tag)
     }
-    hideKeyboard()
+    HideKeyboard()
     transaction.commit()
 }
 
@@ -192,7 +192,7 @@ fun Activity.statusBarDarkIcons(color: Int? = null, isLightStatusBar: Boolean = 
 }
 
 //hide the keyboard
-fun Activity.hideKeyboard() {
+fun Activity.HideKeyboard() {
     val imm: InputMethodManager =
         getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
     var view = currentFocus
@@ -278,7 +278,7 @@ fun Activity.getHeightOfNavigationBar(): Int {
     return navigationBarHeight
 }
 
-fun Context.hideKeyboard(view: View) {
+fun Context.HideKeyboard(view: View) {
     val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as
             InputMethodManager
     inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)

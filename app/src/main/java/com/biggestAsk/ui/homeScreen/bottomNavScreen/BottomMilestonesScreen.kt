@@ -1,6 +1,5 @@
 package com.biggestAsk.ui.homeScreen.bottomNavScreen
 
-//import com.biggestAsk.ui.homeScreen.ClearRippleTheme
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
@@ -577,7 +576,7 @@ fun MilestonesScreen(
             }, sheetPeekHeight = 40.dp,
             content = {
                 if (addNewMilestoneBottomSheetState.bottomSheetState.isCollapsed) {
-                    hideKeyboard(activity = homeActivity)
+                    HideKeyboard(activity = homeActivity)
                 }
                 BackHandler(addNewMilestoneBottomSheetState.bottomSheetState.isExpanded) {
                     coroutineScope.launch {

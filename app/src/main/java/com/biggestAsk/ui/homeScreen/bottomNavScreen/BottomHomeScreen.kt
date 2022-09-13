@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -29,6 +30,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import coil.compose.rememberImagePainter
 import com.biggestAsk.data.model.request.*
 import com.biggestAsk.data.model.request.Answer
@@ -299,7 +302,7 @@ fun BottomHomeScreen(
         },
         content = {
             if (homeBottomSheetScaffoldState.bottomSheetState.isCollapsed) {
-                hideKeyboard(homeActivity)
+                HideKeyboard(homeActivity)
             }
             BackHandler(homeBottomSheetScaffoldState.bottomSheetState.isExpanded) {
                 coroutineScope.launch {
@@ -759,15 +762,29 @@ fun BottomHomeScreen(
         sheetShape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp)
     )
 }
-
-fun hideKeyboard(activity: Activity) {
-    val imm: InputMethodManager =
-        activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-    var view = activity.currentFocus
-    if (view == null) {
-        view = View(activity)
-    }
-    imm.hideSoftInputFromWindow(view.windowToken, 0)
+@Composable
+fun HideKeyboard(activity: Activity) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(
+        key1 = lifecycleOwner,
+        effect = {
+            val observer = LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_RESUME) {
+                    val imm: InputMethodManager =
+                        activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+                    var view = activity.currentFocus
+                    if (view == null) {
+                        view = View(activity)
+                    }
+                    imm.hideSoftInputFromWindow(view.windowToken, 0)
+                }
+            }
+            lifecycleOwner.lifecycle.addObserver(observer)
+            onDispose {
+                lifecycleOwner.lifecycle.removeObserver(observer)
+            }
+        }
+    )
 }
 
 fun updateHomeScreenData(
