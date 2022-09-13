@@ -762,6 +762,7 @@ fun BottomHomeScreen(
         sheetShape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp)
     )
 }
+
 @Composable
 fun HideKeyboard(activity: Activity) {
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -769,7 +770,7 @@ fun HideKeyboard(activity: Activity) {
         key1 = lifecycleOwner,
         effect = {
             val observer = LifecycleEventObserver { _, event ->
-                if (event == Lifecycle.Event.ON_RESUME) {
+                if (event == Lifecycle.Event.ON_RESUME || event == Lifecycle.Event.ON_PAUSE) {
                     val imm: InputMethodManager =
                         activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
                     var view = activity.currentFocus
