@@ -1,9 +1,12 @@
 package com.biggestAsk.ui.homeScreen.bottomNavScreen
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.text.TextUtils
 import android.util.Log
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -235,8 +238,6 @@ fun BottomHomeScreen(
                                         Answer(
                                             answer = bottomHomeViewModel.homeScreenQuestionAns,
                                             question_id = bottomHomeViewModel.homeScreenQuestionId,
-                                            user_name = provider.getValue(Constants.USER_NAME, "")
-                                                .toString()
                                         )
                                     )
                                     bottomHomeViewModel.storeBaseScreenQuestionAns(
@@ -245,7 +246,9 @@ fun BottomHomeScreen(
                                             category_id = bottomHomeViewModel.homeScreenQuestionCategeryId,
                                             partner_id = partnerId.toString(),
                                             type = type!!,
-                                            user_id = userId
+                                            user_id = userId,
+                                            user_name = provider.getValue(Constants.USER_NAME, "")
+                                                .toString()
                                         )
                                     )
                                     coroutineScope.launch {
@@ -295,6 +298,9 @@ fun BottomHomeScreen(
             }
         },
         content = {
+            if (homeBottomSheetScaffoldState.bottomSheetState.isCollapsed) {
+                hideKeyboard(homeActivity)
+            }
             BackHandler(homeBottomSheetScaffoldState.bottomSheetState.isExpanded) {
                 coroutineScope.launch {
                     if (bottomHomeViewModel.isBottomSheetOpen) {
@@ -416,6 +422,8 @@ fun BottomHomeScreen(
                                                 bottomHomeViewModel.upperQuestion = true
                                                 bottomHomeViewModel.isBottomSheetOpen = true
                                                 coroutineScope.launch {
+                                                    bottomHomeViewModel.isHomeScreenQuestionAnsEmpty =
+                                                        false
                                                     if (homeBottomSheetScaffoldState.bottomSheetState.isExpanded) {
                                                         homeBottomSheetScaffoldState.bottomSheetState.collapse()
                                                         bottomHomeViewModel.isBottomSheetOpen = true
@@ -549,8 +557,8 @@ fun BottomHomeScreen(
                                                 start = 8.dp,
                                                 top = 17.dp
                                             ),
-                                            text = bottomHomeViewModel.nearestMilestoneDate + stringResource(
-                                                id = R.string.date_time_concat) + bottomHomeViewModel.nearestMilestoneTime,
+                                            text = bottomHomeViewModel.nearestMilestoneDate + " " + stringResource(
+                                                id = R.string.date_time_concat) + " " + bottomHomeViewModel.nearestMilestoneTime,
                                             color = Color(0xFF9F9D9B),
                                             style = MaterialTheme.typography.body2,
                                             fontWeight = FontWeight.W400,
@@ -620,6 +628,8 @@ fun BottomHomeScreen(
                                             bottomHomeViewModel.upperQuestion = false
                                             bottomHomeViewModel.isBottomSheetOpen = true
                                             coroutineScope.launch {
+                                                bottomHomeViewModel.isHomeScreenQuestionAnsEmpty =
+                                                    false
                                                 if (homeBottomSheetScaffoldState.bottomSheetState.isExpanded) {
                                                     homeBottomSheetScaffoldState.bottomSheetState.collapse()
                                                     bottomHomeViewModel.isBottomSheetOpen = true
@@ -748,6 +758,16 @@ fun BottomHomeScreen(
         },
         sheetShape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp)
     )
+}
+
+fun hideKeyboard(activity: Activity) {
+    val imm: InputMethodManager =
+        activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+    var view = activity.currentFocus
+    if (view == null) {
+        view = View(activity)
+    }
+    imm.hideSoftInputFromWindow(view.windowToken, 0)
 }
 
 fun updateHomeScreenData(
@@ -1014,10 +1034,10 @@ private fun handleNearestMilestoneData(
             // bind data to the view
             Log.i("TAG", result.message.toString())
             bottomHomeViewModel.nearestMilestoneTittle = result.data?.title!!
-            if (result.data.date.isEmpty()) {
-                bottomHomeViewModel.nearestMilestoneDate = ""
-            } else {
-                val dateTime = changeLocalFormat(result.data.date)?.trim()
+            Log.d("TAG", "d: ${result.data.date}")
+            if (result.data.date.isNotEmpty()) {
+                val dateTime = changeLocalFormat(result.data.date)
+                Log.d("TAG", "handleNearestMilestoneData: $dateTime")
                 val localDate = dateTime?.let { changeLocalDateFormat(it.trim()) }
                 val localTime = dateTime?.let { changeLocalTimeFormat(it.trim()) }
                 if (localDate != null) {

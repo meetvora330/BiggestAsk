@@ -8,10 +8,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.biggestAsk.data.model.request.*
 import com.biggestAsk.data.model.request.Answer
-import com.biggestAsk.data.model.request.GetPregnancyMilestoneRequest
-import com.biggestAsk.data.model.request.ScreenQuestionStatusRequest
-import com.biggestAsk.data.model.request.StoreBaseScreenQuestionAnsRequest
 import com.biggestAsk.data.model.response.*
 import com.biggestAsk.data.repository.QuestionRepository
 import com.biggestAsk.data.source.network.NetworkResult
@@ -46,7 +44,6 @@ class BottomQuestionViewModel @Inject constructor(
     var questionParentList = mutableStateListOf<String>()
     var frequency: String by mutableStateOf("")
     var answerList = mutableStateListOf<Answer>()
-    var parentList = mutableStateListOf<String>("Advin Dao")
     var questionBankInfo: String by mutableStateOf("")
     var getHomeScreenQuestionResponse: MutableLiveData<NetworkResult<GetHomeScreenQuestionResponse>> =
         MutableLiveData()
@@ -84,6 +81,15 @@ class BottomQuestionViewModel @Inject constructor(
                 .collect {
                     storeAnsImportantQuestionResponse.value = it
                 }
+        }
+    }
+
+    fun storeAnsImportantQuestion(storeAnsImportantQuestionRequest: StoreAnsImportantQuestionRequest) {
+        storeAnsImportantQuestionResponse.value = NetworkResult.Loading()
+        viewModelScope.launch {
+            questionRepository.storeAnsImportantQuestion(storeAnsImportantQuestionRequest).collect {
+                storeAnsImportantQuestionResponse.value = it
+            }
         }
     }
 

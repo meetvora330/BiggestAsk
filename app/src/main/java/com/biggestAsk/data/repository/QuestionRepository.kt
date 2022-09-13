@@ -3,6 +3,7 @@ package com.biggestAsk.data.repository
 import android.content.Context
 import com.biggestAsk.data.model.request.GetPregnancyMilestoneRequest
 import com.biggestAsk.data.model.request.ScreenQuestionStatusRequest
+import com.biggestAsk.data.model.request.StoreAnsImportantQuestionRequest
 import com.biggestAsk.data.model.request.StoreBaseScreenQuestionAnsRequest
 import com.biggestAsk.data.model.response.CommonResponse
 import com.biggestAsk.data.model.response.GetFrequencyResponse
@@ -70,5 +71,14 @@ class QuestionRepository @Inject constructor(
             emit(safeApiCall { apiService.screenQuestionStatus(screenQuestionStatusRequest) })
         }.flowOn(Dispatchers.IO)
     }
+
+    suspend fun storeAnsImportantQuestion(
+        storeAnsImportantQuestionRequest: StoreAnsImportantQuestionRequest,
+    ): Flow<NetworkResult<CommonResponse>> {
+        return flow {
+            emit(safeApiCall { apiService.storeAnsImportantQuestion(storeAnsImportantQuestionRequest) })
+        }.flowOn(Dispatchers.IO)
+    }
+
 
 }

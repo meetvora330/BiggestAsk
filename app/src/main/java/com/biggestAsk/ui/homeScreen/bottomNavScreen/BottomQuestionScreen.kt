@@ -55,7 +55,7 @@ fun BottomQuestionScreen(
     frequencyViewModel: FrequencyViewModel,
 ) {
     val suggestions =
-        listOf("Every day", "Every 3 days", "Every week")
+        listOf("every day", "every 3 days", "every week")
     val questionBottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
     )
@@ -65,6 +65,7 @@ fun BottomQuestionScreen(
     val userId = provider.getIntValue(Constants.USER_ID, 0)
     val type = provider.getValue(Constants.TYPE, "")
     val selectedText = remember { mutableStateOf("") }
+    val selectedUser = remember { mutableStateOf("") }
     val partnerId = provider.getIntValue(Constants.PARTNER_ID, 0)
 
     LaunchedEffect(Unit) {
@@ -180,8 +181,8 @@ fun BottomQuestionScreen(
                     color = Color.Black,
                     fontWeight = FontWeight.W800
                 )
-                selectedText.value = SimpleDropDown(
-                    suggestions = questionViewModel.parentList,
+                selectedUser.value = SimpleDropDown(
+                    suggestions = questionViewModel.questionParentList,
                     hint = stringResource(id = R.string.hint_drop_down),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -206,7 +207,6 @@ fun BottomQuestionScreen(
                                     Answer(
                                         answer = questionViewModel.questionScreenQuestionAnswer,
                                         question_id = questionViewModel.questionScreenQuestionId,
-                                        user_name = provider.getValue(Constants.USER_NAME,"").toString()
                                     )
                                 )
                                 questionViewModel.storeQuestionScreenAnswer(
@@ -215,7 +215,8 @@ fun BottomQuestionScreen(
                                         category_id = questionViewModel.questionScreenQuestionCategeryId,
                                         partner_id = partnerId.toString(),
                                         type = type!!,
-                                        user_id = userId
+                                        user_id = userId,
+                                        user_name = selectedUser.value
                                     )
                                 )
                                 questionViewModel.storeAnsImportantQuestionResponse.observe(
@@ -262,6 +263,9 @@ fun BottomQuestionScreen(
             }
         }
     }, content = {
+        if (questionBottomSheetScaffoldState.bottomSheetState.isCollapsed) {
+            hideKeyboard(homeActivity)
+        }
         BackHandler(questionBottomSheetScaffoldState.bottomSheetState.isExpanded) {
             coroutineScope.launch {
                 if (questionViewModel.isBottomSheetOpened) {
@@ -377,6 +381,7 @@ fun BottomQuestionScreen(
                                     onClick = {
                                         questionViewModel.isBottomSheetOpened = true
                                         coroutineScope.launch {
+                                            questionViewModel.isAnswerEmpty = false
                                             if (questionBottomSheetScaffoldState.bottomSheetState.isExpanded) {
                                                 questionBottomSheetScaffoldState.bottomSheetState.collapse()
                                                 questionViewModel.isBottomSheetOpened = true
@@ -605,6 +610,12 @@ private fun handleStoreAnsImportantQuestion(
         }
         is NetworkResult.Success -> {
             // bind data to the view
+            coroutineScope.launch {
+                bottomSheetScaffoldState.bottomSheetState.collapse()
+            }
+            questionViewModel.questionScreenQuestionAnswer = ""
+            questionViewModel.answerList.clear()
+            questionViewModel.isQuestionScreenQuestionAnswered = false
             updateQuestionScreen(
                 userId = userId,
                 yourAccountViewModel = yourAccountViewModel,
@@ -612,12 +623,6 @@ private fun handleStoreAnsImportantQuestion(
                 questionViewModel = questionViewModel,
                 homeActivity = homeActivity
             )
-            coroutineScope.launch {
-                bottomSheetScaffoldState.bottomSheetState.collapse()
-            }
-            questionViewModel.questionScreenQuestionAnswer = ""
-            questionViewModel.answerList.clear()
-            questionViewModel.isQuestionScreenQuestionAnswered = false
         }
         is NetworkResult.Error -> {
             // show error message
@@ -678,15 +683,11 @@ private fun handleQuestionData(
                 questionViewModel.questionScreenQuestionCategeryId = result.data.data.category_id
                 questionViewModel.questionScreenQuestionId = result.data.data.id
                 questionViewModel.questionScreenLatestQuestion = result.data.data.question
-                questionViewModel.dropDownItemParentsName.clear()
+                questionViewModel.questionParentList.clear()
                 if (result.data.user_name.isNotEmpty()) {
-                    questionViewModel.dropDownItemParentsName.addAll(result.data.user_name)
+                    questionViewModel.questionParentList.addAll(result.data.user_name)
                 }
                 questionViewModel.questionScreenQuestionAns = ""
-                questionViewModel.questionParentList.clear()
-                result.data.user_name.forEach {
-                    questionViewModel.questionParentList.add(it)
-                }
             }
         }
         is NetworkResult.Error -> {

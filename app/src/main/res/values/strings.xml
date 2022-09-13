@@ -126,7 +126,7 @@
     <string name="url">URL</string>
     <string name="accept">Accept  </string>
     <string name="url_string">https://thebiggestask.com/</string>
-    <string name="date_time_concat">at</string>
+    <string name="date_time_concat"> at </string>
     <string name="days_concat"> Day ago</string>
     <string name="hint_drop_down">Parents</string>
     <string name="search">Search </string>

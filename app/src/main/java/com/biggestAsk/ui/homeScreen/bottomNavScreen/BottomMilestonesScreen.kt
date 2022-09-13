@@ -5,7 +5,6 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.text.TextUtils
-import android.util.Log
 import android.widget.DatePicker
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -61,8 +60,6 @@ import com.biggestAsk.util.*
 import com.example.biggestAsk.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import java.text.ParseException
-import java.text.SimpleDateFormat
 import java.util.*
 
 @OptIn(
@@ -579,6 +576,9 @@ fun MilestonesScreen(
                 }
             }, sheetPeekHeight = 40.dp,
             content = {
+                if (addNewMilestoneBottomSheetState.bottomSheetState.isCollapsed) {
+                    hideKeyboard(activity = homeActivity)
+                }
                 BackHandler(addNewMilestoneBottomSheetState.bottomSheetState.isExpanded) {
                     coroutineScope.launch {
                         if (milestoneViewModel.isBottomSheetOpen.value) {
@@ -851,17 +851,19 @@ fun MilestonesScreen(
                                                             painter = painterResource(id = R.drawable.img_medical_calender_icon),
                                                             contentDescription = stringResource(id = R.string.content_description),
                                                         )
-                                                        var localDate:String?=null
-                                                        var localTime:String?=null
+                                                        var localDate: String? = null
+                                                        var localTime: String? = null
                                                         if (milestoneViewModel.milestoneList[index].date?.isNotEmpty() == true) {
                                                             val dateTime =
                                                                 milestoneViewModel.milestoneList[index].date?.let { it1 ->
                                                                     changeLocalFormat(it1)?.trim()
                                                                 }
-                                                            Log.d("TAG", "handleEditMilestoneData: main Date$dateTime")
-                                                            localDate= dateTime?.let { changeLocalDateFormat(it.trim()) }
-                                                            localTime= dateTime?.let { changeLocalTimeFormat(it.trim()) }
-                                                            Log.d("TAG", "handleEditMilestoneData:final date $localDate")
+                                                            localDate = dateTime?.let {
+                                                                changeLocalDateFormat(it.trim())
+                                                            }
+                                                            localTime = dateTime?.let {
+                                                                changeLocalTimeFormat(it.trim())
+                                                            }
                                                         }
                                                         Text(
                                                             modifier = Modifier.padding(
