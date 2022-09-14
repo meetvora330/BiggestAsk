@@ -163,13 +163,6 @@ fun BottomNavigationDrawerGraph(
                         navHostController
                     )
                 }
-                LoginStatus.MILESTONE_DATE_NOT_ADDED.name.lowercase(Locale.getDefault()) -> {
-                    YourSurrogateMother(
-                        homeActivity = homeActivity,
-                        yourSurrogateMotherViewModel = yourSurrogateMotherViewModel,
-                        context = context
-                    )
-                }
                 else -> {
                     YourSurrogateMother(
                         homeActivity = homeActivity,

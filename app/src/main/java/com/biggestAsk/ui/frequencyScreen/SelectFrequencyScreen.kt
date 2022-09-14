@@ -49,7 +49,7 @@ fun SelectFrequencyScreen(
 ) {
     val context = LocalContext.current
     val suggestions =
-        listOf("Every day", "Every 3 days", "Every week")
+        listOf("every day", "every 3 days", "every week")
     var selectedText by remember { mutableStateOf("") }
     Box(
         modifier = Modifier
