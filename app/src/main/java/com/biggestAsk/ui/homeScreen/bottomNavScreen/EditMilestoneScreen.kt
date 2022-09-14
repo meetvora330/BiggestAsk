@@ -2020,7 +2020,7 @@ private fun handleEditMilestoneData(
             val type = PreferenceProvider(context).getValue(Constants.TYPE, "")
             editMilestoneViewModel.editMilestoneTittle.value =
                 result.data?.milestone?.get(0)?.title!!
-            if (result.data.milestone[0].date!=null) {
+            if (result.data.milestone[0].date!=null && result.data.milestone[0].date!="") {
                 val dateTime = changeLocalFormat(result.data.milestone[0].date)?.trim()
                 val localDate = dateTime?.let { changeLocalDateFormat(it.trim()) }
                 val localTime = dateTime?.let { changeLocalTimeFormat(it.trim()) }

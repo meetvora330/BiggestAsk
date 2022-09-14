@@ -610,7 +610,7 @@ fun YourAccountScreen(
                                         else -> {
                                             yourAccountViewModel.isEditable.value = false
                                             val image = yourAccountViewModel.uriPathParent?.let {
-                                                convertImageMultiPart(it)
+                                                convertImageMultiPart(it,"image1")
                                             }
                                             yourAccountViewModel.updateUserProfile(
                                                 userId = userId,
@@ -643,6 +643,10 @@ fun YourAccountScreen(
                                                 gender = MultipartBody.Part.createFormData(
                                                     "gender",
                                                     yourAccountViewModel.surrogateGender
+                                                ),
+                                                partner_type = MultipartBody.Part.createFormData(
+                                                    "partner_type",
+                                                    "false"
                                                 )
                                             )
                                             yourAccountViewModel.updateUserProfileResponse.observe(
@@ -1792,7 +1796,7 @@ fun YourAccountScreen(
                                                 else -> {
                                                     val image =
                                                         yourAccountViewModel.uriPathParent?.let {
-                                                            convertImageMultiPart(it)
+                                                            convertImageMultiPart(it,"image1")
                                                         }
                                                     yourAccountViewModel.updateUserProfile(
                                                         userId = userId,
@@ -1826,6 +1830,10 @@ fun YourAccountScreen(
                                                             "gender",
                                                             yourAccountViewModel.parentGender
                                                         ),
+                                                        partner_type = MultipartBody.Part.createFormData(
+                                                            "partner_type",
+                                                            "true"
+                                                        )
                                                     )
                                                     yourAccountViewModel.updateUserProfileResponse.observe(
                                                         homeActivity
@@ -2237,31 +2245,14 @@ fun YourAccountScreen(
                                                 else -> {
                                                     val image =
                                                         yourAccountViewModel.uriPathMother?.let {
-                                                            convertImageMultiPart(it)
+                                                            convertImageMultiPart(it,"image2")
                                                         }
                                                     yourAccountViewModel.updateUserProfile(
                                                         userId = userId,
-                                                        name = MultipartBody.Part.createFormData(
-                                                            "name",
-                                                            yourAccountViewModel.parentFullName
-                                                        ),
                                                         email = MultipartBody.Part.createFormData(
                                                             "email",
                                                             yourAccountViewModel.parentEmail
                                                         ),
-                                                        number = MultipartBody.Part.createFormData(
-                                                            "number",
-                                                            yourAccountViewModel.parentPhoneNumber
-                                                        ),
-                                                        address = MultipartBody.Part.createFormData(
-                                                            "address",
-                                                            yourAccountViewModel.parentHomeAddress
-                                                        ),
-                                                        dateOfBirth = MultipartBody.Part.createFormData(
-                                                            "date_of_birth",
-                                                            yourAccountViewModel.parentDateOfBirth
-                                                        ),
-                                                        imgFileName1 = null,
                                                         imgFileName2 = image,
                                                         type = MultipartBody.Part.createFormData(
                                                             "type",
@@ -2287,6 +2278,10 @@ fun YourAccountScreen(
                                                             "partner_gender",
                                                             yourAccountViewModel.parentPartnerGender
                                                         ),
+                                                        partner_type = MultipartBody.Part.createFormData(
+                                                            "partner_type",
+                                                            "false"
+                                                        )
                                                     )
                                                     yourAccountViewModel.updateUserProfileResponse.observe(
                                                         homeActivity
@@ -2753,10 +2748,10 @@ fun getAge(year: Int, month: Int, dayOfMonth: Int): Int {
     }
 }
 
-private fun convertImageMultiPart(imagePath: String): MultipartBody.Part {
+private fun convertImageMultiPart(imagePath: String, key: String): MultipartBody.Part {
     val file = File(imagePath)
     return MultipartBody.Part.createFormData(
-        "image1",
+        key,
         file.name,
         file.asRequestBody("image/*".toMediaTypeOrNull())
     )

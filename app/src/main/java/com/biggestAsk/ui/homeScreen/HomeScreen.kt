@@ -332,6 +332,7 @@ fun HomeScreen(
                             if (yourAccountViewModel.isYourAccountScreen.value == true) {
                                 yourAccountViewModel.isEditable.value =
                                     yourAccountViewModel.isEditable.value != true
+
                             }
                             if (notificationViewModel.isNotificationScreen.value == true) {
                                 notificationViewModel.isSearchClicked.value =
