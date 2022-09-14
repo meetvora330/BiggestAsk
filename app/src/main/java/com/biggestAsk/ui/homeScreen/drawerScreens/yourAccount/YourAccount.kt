@@ -1264,7 +1264,7 @@ fun YourAccountScreen(
                                                     modifier = Modifier
                                                         .wrapContentWidth()
                                                         .padding(end = 2.dp),
-                                                    text = yourAccountViewModel.parentDateOfBirth,
+                                                    text = yourAccountViewModel.parentPartnerDateOfBirth,
                                                     style = MaterialTheme.typography.body2.copy(
                                                         color = Color(0xFF7F7D7C),
                                                         fontSize = 14.sp,
@@ -2637,11 +2637,11 @@ private fun handleUserDataParent(
                 yourAccountViewModel.parentDateOfBirth = result.data.parent_date_of_birth
             }
             if (result.data?.parent_image1 != null) {
-                yourAccountViewModel.bitmapImage1.value=null
+                yourAccountViewModel.bitmapImage1.value = null
                 yourAccountViewModel.parentImg1 = result.data.parent_image1
             }
             if (result.data?.parent_image2 != null) {
-                yourAccountViewModel.bitmapImage2.value=null
+                yourAccountViewModel.bitmapImage2.value = null
                 yourAccountViewModel.parentImg2 = result.data.parent_image2
             }
             if (result.data?.parent_partner_address != null) {
@@ -2649,8 +2649,6 @@ private fun handleUserDataParent(
             }
             if (result.data?.parent_partner_dob != null) {
                 yourAccountViewModel.parentPartnerDateOfBirth = result.data.parent_partner_dob
-            } else {
-                yourAccountViewModel.parentPartnerDateOfBirth = ""
             }
             if (result.data?.parent_gender != null) {
                 yourAccountViewModel.parentGender = result.data.parent_gender
