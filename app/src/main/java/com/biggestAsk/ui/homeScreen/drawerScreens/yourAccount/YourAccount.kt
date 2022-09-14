@@ -610,7 +610,7 @@ fun YourAccountScreen(
                                         else -> {
                                             yourAccountViewModel.isEditable.value = false
                                             val image = yourAccountViewModel.uriPathParent?.let {
-                                                convertImageMultiPart(it,"image1")
+                                                convertImageMultiPart(it, "image1")
                                             }
                                             yourAccountViewModel.updateUserProfile(
                                                 userId = userId,
@@ -1796,7 +1796,7 @@ fun YourAccountScreen(
                                                 else -> {
                                                     val image =
                                                         yourAccountViewModel.uriPathParent?.let {
-                                                            convertImageMultiPart(it,"image1")
+                                                            convertImageMultiPart(it, "image1")
                                                         }
                                                     yourAccountViewModel.updateUserProfile(
                                                         userId = userId,
@@ -2245,7 +2245,7 @@ fun YourAccountScreen(
                                                 else -> {
                                                     val image =
                                                         yourAccountViewModel.uriPathMother?.let {
-                                                            convertImageMultiPart(it,"image2")
+                                                            convertImageMultiPart(it, "image2")
                                                         }
                                                     yourAccountViewModel.updateUserProfile(
                                                         userId = userId,
@@ -2637,9 +2637,11 @@ private fun handleUserDataParent(
                 yourAccountViewModel.parentDateOfBirth = result.data.parent_date_of_birth
             }
             if (result.data?.parent_image1 != null) {
+                yourAccountViewModel.bitmapImage1.value=null
                 yourAccountViewModel.parentImg1 = result.data.parent_image1
             }
             if (result.data?.parent_image2 != null) {
+                yourAccountViewModel.bitmapImage2.value=null
                 yourAccountViewModel.parentImg2 = result.data.parent_image2
             }
             if (result.data?.parent_partner_address != null) {
