@@ -384,6 +384,9 @@ fun HomeScreen(
                     communityViewModel.bitmap.value = null
                     communityViewModel.isValidInstagramUrl.value = false
                     tfTextFourthCommunity.value = ""
+                    tfTextThirdCommunity.value = ""
+                    tfTextSecondCommunity.value = ""
+                    tfTextFirstCommunity.value = ""
                 }) {
                     Surface(
                         modifier = Modifier
@@ -422,6 +425,9 @@ fun HomeScreen(
                         openDialogCustomContact.value = false
                         contactYourProviderViewModel.bitmap.value = null
                         contactYourProviderViewModel.phoneErrorVisible = false
+                        tfTextFirstContact.value = ""
+                        tfTextSecondContact.value = ""
+                        tfTextThirdContact.value = ""
                         tfTextFourthContact.value = ""
                     }) {
                     Surface(
