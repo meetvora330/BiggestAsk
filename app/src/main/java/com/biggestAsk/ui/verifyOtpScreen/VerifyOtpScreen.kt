@@ -50,10 +50,12 @@ import com.biggestAsk.ui.main.viewmodel.VerifyOtpViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.example.biggestAsk.R
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
+var ticker: Job? = null
 
 @Composable
 fun VerifyOtpScreen(
@@ -61,7 +63,7 @@ fun VerifyOtpScreen(
     navHostController: NavHostController,
     modifier: Modifier,
     mainActivity: MainActivity,
-    verifyOtpViewModel: VerifyOtpViewModel,
+    verifyOtpViewModel: VerifyOtpViewModel
 ) {
     var otpValue by remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
@@ -86,7 +88,7 @@ fun VerifyOtpScreen(
             modifier = Modifier.fillMaxWidth(6f),
             painter = painterResource(id = R.drawable.img_verify_screen),
             contentDescription = stringResource(id = R.string.content_description),
-            contentScale = ContentScale.Fit,
+            contentScale = ContentScale.Fit
         )
         Text(
             modifier = Modifier
@@ -131,9 +133,11 @@ fun VerifyOtpScreen(
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Done
-                ), keyboardActions = KeyboardActions(onDone = {
+                ),
+                keyboardActions = KeyboardActions(onDone = {
                     focusManager.clearFocus()
-                }), textStyle = MaterialTheme.typography.body2.copy(
+                }),
+                textStyle = MaterialTheme.typography.body2.copy(
                     fontSize = 32.sp,
                     fontWeight = FontWeight.W400,
                     lineHeight = 40.sp
@@ -150,7 +154,7 @@ fun VerifyOtpScreen(
                             containerSize = 40.dp,
                             charBackground = Color.Transparent,
                             password = false,
-                            passwordChar = "",
+                            passwordChar = ""
                         )
                         Spacer(modifier = Modifier.width(2.dp))
                     }
@@ -165,16 +169,17 @@ fun VerifyOtpScreen(
                 color = MaterialTheme.colors.error,
                 style = MaterialTheme.typography.body2.copy(
                     fontSize = 14.sp,
-                    textAlign = TextAlign.Center,
-                ),
+                    textAlign = TextAlign.Center
+                )
             )
         }
         Text(
             modifier = modifier
-                .alpha(if (verifyOtpViewModel.ticks < 1) 0f else 1f)
+                .alpha(if (verifyOtpViewModel.ticks < 1) 0f else 1f).width(200.dp)
                 .align(CenterHorizontally),
             text = "Resend Code: 0:${verifyOtpViewModel.ticks}",
             fontSize = 16.sp,
+            textAlign = TextAlign.Center,
             fontStyle = FontStyle.Normal,
             color = Custom_Blue
         )
@@ -201,14 +206,15 @@ fun VerifyOtpScreen(
                                 if (it != null) {
                                     handleUserResendOtp(
                                         result = it,
-                                        verifyOtpViewModel, context, coroutineScope
+                                        verifyOtpViewModel,
+                                        context,
+                                        coroutineScope
                                     )
                                 }
                             }
                             loadingText = context.getString(R.string.resending_otp)
                             verifyOtpViewModel.ticks = 60
                         }
-
                     } else if (verifyOtpViewModel.ticks <= 0) {
                         verifyOtpViewModel.resendOtp(SendOtpRequest(email = email))
                         otpValue = ""
@@ -216,7 +222,9 @@ fun VerifyOtpScreen(
                             if (it != null) {
                                 handleUserResendOtp(
                                     result = it,
-                                    verifyOtpViewModel, context, coroutineScope
+                                    verifyOtpViewModel,
+                                    context,
+                                    coroutineScope
                                 )
                             }
                         }
@@ -247,7 +255,7 @@ fun VerifyOtpScreen(
                 ),
                 shape = RoundedCornerShape(30),
                 colors = ButtonDefaults.buttonColors(
-                    backgroundColor = Custom_Blue,
+                    backgroundColor = Custom_Blue
                 )
             ) {
                 Text(
@@ -271,7 +279,7 @@ private fun handleUserResendOtp(
     result: NetworkResult<CommonResponse>,
     verifyOtpViewModel: VerifyOtpViewModel,
     context: Context,
-    coroutineScope: CoroutineScope,
+    coroutineScope: CoroutineScope
 ) {
     when (result) {
         is NetworkResult.Loading -> {
@@ -288,7 +296,8 @@ private fun handleUserResendOtp(
                     Toast.LENGTH_SHORT
                 )
                 .show()
-            coroutineScope.launch {
+            ticker?.cancel()
+            ticker = coroutineScope.launch {
                 while (verifyOtpViewModel.ticks != 0) {
                     delay(1.seconds)
                     verifyOtpViewModel.ticks--
@@ -311,7 +320,7 @@ private fun handleUserData(
     result: NetworkResult<CommonResponse>,
     email: String,
     verifyOtpViewModel: VerifyOtpViewModel,
-    context: Context,
+    context: Context
 ) {
     when (result) {
         is NetworkResult.Loading -> {
@@ -343,7 +352,7 @@ private fun CharView(
     containerSize: Dp,
     charBackground: Color = Color.Transparent,
     password: Boolean = false,
-    passwordChar: String = "",
+    passwordChar: String = ""
 ) {
     val modifier = Modifier
         .width(containerSize)
@@ -351,7 +360,7 @@ private fun CharView(
 
     Column(
         horizontalAlignment = CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.Center
     ) {
         val char = when {
             index >= text.length -> "*"
@@ -368,7 +377,7 @@ private fun CharView(
                 lineHeight = 40.sp
             ),
             fontSize = charSize,
-            textAlign = TextAlign.Center,
+            textAlign = TextAlign.Center
         )
     }
 }
