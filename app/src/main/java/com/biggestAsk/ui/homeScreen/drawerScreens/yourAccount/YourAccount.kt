@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.text.TextUtils
+import android.util.Log
 import android.widget.DatePicker
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -131,8 +132,45 @@ fun YourAccountScreen(
                 yourAccountViewModel.isParentClicked = true
                 yourAccountViewModel.isGenderSelected = false
                 yourAccountViewModel.yourAccountFullNameEmpty = false
+                Log.e("TAG", "handleUserUpdateData: First", )
                 getUserDetailsParent(userId, type, homeActivity, yourAccountViewModel, context)
-
+            }
+        }
+        yourAccountViewModel.updateUserProfileResponse.observe(
+            homeActivity
+        ) {
+            if (it != null) {
+                type?.let { it1 ->
+                    Log.e("TAG", "updateUserProfileResponse: response", )
+                    handleUserUpdateData(
+                        result = it,
+                        yourAccountViewModel = yourAccountViewModel,
+                        context = context,
+                        type = it1,
+                        userId = userId,
+                        homeActivity = homeActivity
+                    )
+                }
+            }
+        }
+        yourAccountViewModel.getUserDetailResponseParent.observe(homeActivity) {
+            if (it != null) {
+                Log.e("TAG", "getUserDetailsParent: res", )
+                handleUserDataParent(
+                    result = it,
+                    yourAccountViewModel = yourAccountViewModel,
+                    context = context
+                )
+            }
+        }
+        yourAccountViewModel.getUserDetailResponseSurrogate.observe(homeActivity) {
+            if (it != null) {
+                Log.e("TAG", "getUserDetailsSurrogate: res", )
+                handleUserDataSurrogate(
+                    result = it,
+                    yourAccountViewModel = yourAccountViewModel,
+                    context = context
+                )
             }
         }
     }
@@ -649,20 +687,6 @@ fun YourAccountScreen(
                                                     "false"
                                                 )
                                             )
-                                            yourAccountViewModel.updateUserProfileResponse.observe(
-                                                homeActivity
-                                            ) {
-                                                if (it != null) {
-                                                    handleUserUpdateData(
-                                                        result = it,
-                                                        yourAccountViewModel = yourAccountViewModel,
-                                                        context = context,
-                                                        type = type,
-                                                        userId = userId,
-                                                        homeActivity = homeActivity
-                                                    )
-                                                }
-                                            }
                                         }
                                     }
                                 },
@@ -1159,8 +1183,8 @@ fun YourAccountScreen(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 if (yourAccountViewModel.isParentClicked) {
-                                    var parentDateOfBirth: String?
-                                    var parentAge: Int?
+                                    val parentDateOfBirth: String?
+                                    val parentAge: Int?
                                     if (yourAccountViewModel.parentFullName != "") {
                                         Text(
                                             modifier = Modifier
@@ -1223,8 +1247,8 @@ fun YourAccountScreen(
                                         }
                                     }
                                 } else if (yourAccountViewModel.isMotherClicked) {
-                                    var parentPartnerDateOfBirth: String?
-                                    var parentPartnerAge: Int?
+                                    val parentPartnerDateOfBirth: String?
+                                    val parentPartnerAge: Int?
                                     if (yourAccountViewModel.parentPartnerName != "") {
                                         Text(
                                             modifier = Modifier
@@ -1794,10 +1818,13 @@ fun YourAccountScreen(
                                                 yourAccountViewModel.phoneNumberMinimumValidate -> {
                                                 }
                                                 else -> {
-                                                    val image =
+                                                    val image = if (yourAccountViewModel.uriPathParent.isNullOrEmpty()){
+                                                        null
+                                                    }else{
                                                         yourAccountViewModel.uriPathParent?.let {
                                                             convertImageMultiPart(it, "image1")
                                                         }
+                                                    }
                                                     yourAccountViewModel.updateUserProfile(
                                                         userId = userId,
                                                         name = MultipartBody.Part.createFormData(
@@ -1835,20 +1862,6 @@ fun YourAccountScreen(
                                                             "true"
                                                         )
                                                     )
-                                                    yourAccountViewModel.updateUserProfileResponse.observe(
-                                                        homeActivity
-                                                    ) {
-                                                        if (it != null) {
-                                                            handleUserUpdateData(
-                                                                result = it,
-                                                                yourAccountViewModel = yourAccountViewModel,
-                                                                context = context,
-                                                                type = type,
-                                                                userId = userId,
-                                                                homeActivity = homeActivity
-                                                            )
-                                                        }
-                                                    }
                                                 }
                                             }
                                         },
@@ -2243,10 +2256,13 @@ fun YourAccountScreen(
                                                 yourAccountViewModel.parentPartnerPhoneNumberMinimumValidate -> {
                                                 }
                                                 else -> {
-                                                    val image =
+                                                    val image = if (yourAccountViewModel.uriPathMother.isNullOrEmpty()){
+                                                        null
+                                                    }else{
                                                         yourAccountViewModel.uriPathMother?.let {
                                                             convertImageMultiPart(it, "image2")
                                                         }
+                                                    }
                                                     yourAccountViewModel.updateUserProfile(
                                                         userId = userId,
                                                         email = MultipartBody.Part.createFormData(
@@ -2271,7 +2287,7 @@ fun YourAccountScreen(
                                                             yourAccountViewModel.parentPartnerDateOfBirth
                                                         ),
                                                         partner_address = MultipartBody.Part.createFormData(
-                                                            "parent_address",
+                                                            "parent_partner_address",
                                                             yourAccountViewModel.parentPartnerHomeAddress
                                                         ),
                                                         partner_gender = MultipartBody.Part.createFormData(
@@ -2283,20 +2299,6 @@ fun YourAccountScreen(
                                                             "false"
                                                         )
                                                     )
-                                                    yourAccountViewModel.updateUserProfileResponse.observe(
-                                                        homeActivity
-                                                    ) {
-                                                        if (it != null) {
-                                                            handleUserUpdateData(
-                                                                result = it,
-                                                                yourAccountViewModel = yourAccountViewModel,
-                                                                context = context,
-                                                                type = type,
-                                                                userId = userId,
-                                                                homeActivity = homeActivity
-                                                            )
-                                                        }
-                                                    }
                                                 }
                                             }
                                         },
@@ -2520,16 +2522,8 @@ fun getUserDetailsParent(
     yourAccountViewModel: YourAccountViewModel,
     context: Context,
 ) {
+    Log.e("TAG", "getUserDetailsParent: api call", )
     yourAccountViewModel.getUserDetailsParent(GetUserDetailsParentRequest(userId, type))
-    yourAccountViewModel.getUserDetailResponseParent.observe(homeActivity) {
-        if (it != null) {
-            handleUserDataParent(
-                result = it,
-                yourAccountViewModel = yourAccountViewModel,
-                context = context
-            )
-        }
-    }
 }
 
 fun getUserDetailsSurrogate(
@@ -2545,15 +2539,6 @@ fun getUserDetailsSurrogate(
             type
         )
     )
-    yourAccountViewModel.getUserDetailResponseSurrogate.observe(homeActivity) {
-        if (it != null) {
-            handleUserDataSurrogate(
-                result = it,
-                yourAccountViewModel = yourAccountViewModel,
-                context = context
-            )
-        }
-    }
 }
 
 
@@ -2631,6 +2616,7 @@ private fun handleUserDataParent(
                 yourAccountViewModel.parentEmail = result.data.parent_email
             }
             if (result.data?.parent_address != null) {
+                yourAccountViewModel.parentHomeAddress = ""
                 yourAccountViewModel.parentHomeAddress = result.data.parent_address
             }
             if (result.data?.parent_date_of_birth != null) {
@@ -2645,6 +2631,7 @@ private fun handleUserDataParent(
                 yourAccountViewModel.parentImg2 = result.data.parent_image2
             }
             if (result.data?.parent_partner_address != null) {
+                yourAccountViewModel.parentPartnerHomeAddress = ""
                 yourAccountViewModel.parentPartnerHomeAddress = result.data.parent_partner_address
             }
             if (result.data?.parent_partner_dob != null) {
@@ -2711,6 +2698,8 @@ private fun handleUserUpdateData(
                 PARENT -> {
                     provider.setValue(Constants.USER_NAME, yourAccountViewModel.parentFullName)
                     provider.setValue(Constants.UPDATED_IMAGE, yourAccountViewModel.parentImg1)
+                    clearAll(yourAccountViewModel)
+                    Log.e("TAG", "handleUserUpdateData: after edit" )
                     getUserDetailsParent(
                         userId = userId,
                         homeActivity = homeActivity,
@@ -2735,6 +2724,34 @@ private fun handleUserUpdateData(
             yourAccountViewModel.isParentDataLoading = false
         }
     }
+}
+
+fun clearAll(yourAccountViewModel: YourAccountViewModel) {
+    yourAccountViewModel.isParentApiCalled = true
+    yourAccountViewModel.isMotherClicked = false
+    yourAccountViewModel.parentFullName = ""
+    yourAccountViewModel.parentPhoneNumber = ""
+    yourAccountViewModel.parentEmail = ""
+    yourAccountViewModel.parentHomeAddress = ""
+    yourAccountViewModel.parentDateOfBirth = ""
+    yourAccountViewModel.parentImg1 = ""
+    yourAccountViewModel.parentImg2 = ""
+    yourAccountViewModel.uriPathParent = ""
+    yourAccountViewModel.uriPathMother = ""
+    yourAccountViewModel.parentPartnerHomeAddress = ""
+    yourAccountViewModel.parentPartnerDateOfBirth = ""
+    yourAccountViewModel.parentPartnerPhoneNumber = ""
+    yourAccountViewModel.parentPartnerName = ""
+    yourAccountViewModel.isParentClicked = true
+    yourAccountViewModel.isGenderSelected = false
+    yourAccountViewModel.yourAccountFullNameEmpty = false
+//    if (yourAccountViewModel.isParentClicked) {
+   // yourAccountViewModel.bitmapImage1.value = null
+   // yourAccountViewModel.uriPathParent = ""
+//    } else if (yourAccountViewModel.isMotherClicked) {
+//        yourAccountViewModel.bitmapImage2.value = null
+//        yourAccountViewModel.uriPathMother = ""
+//    }
 }
 
 fun getAge(year: Int, month: Int, dayOfMonth: Int): Int {

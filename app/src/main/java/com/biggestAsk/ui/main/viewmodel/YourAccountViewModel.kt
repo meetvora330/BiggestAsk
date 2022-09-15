@@ -35,9 +35,7 @@ class YourAccountViewModel @Inject constructor(
     var isSurrogateDataLoading: Boolean by mutableStateOf(false)
     var isParentDataLoading: Boolean by mutableStateOf(false)
     var isAnsweredQuestionLoading: Boolean by mutableStateOf(false)
-    var isIntendedProfileDataLoading: Boolean by mutableStateOf(false)
     var isPermissionAllowed: Boolean by mutableStateOf(false)
-    var isRational: Boolean by mutableStateOf(false)
     var isEditable: MutableState<Boolean> = mutableStateOf(false)
     val isYourAccountScreen: MutableLiveData<Boolean> = MutableLiveData(false)
     val bitmapImage1 = mutableStateOf<Bitmap?>(null)
@@ -100,6 +98,7 @@ class YourAccountViewModel @Inject constructor(
         getUserDetailResponseSurrogate.value = NetworkResult.Loading()
         viewModelScope.launch {
             yourAccountRepository.getUserDetailsSurrogate(getUserDetailsRequestSurrogate).collect {
+                Log.e("TAG", "getUserDetailsSurrogate: collect", )
                 getUserDetailResponseSurrogate.value = it
             }
         }
@@ -109,6 +108,7 @@ class YourAccountViewModel @Inject constructor(
         getUserDetailResponseParent.value = NetworkResult.Loading()
         viewModelScope.launch {
             yourAccountRepository.getUserDetailsParent(getUserDetailsRequestParent).collect {
+                Log.e("TAG", "getUserDetailsParent: collect", )
                 getUserDetailResponseParent.value = it
             }
         }
