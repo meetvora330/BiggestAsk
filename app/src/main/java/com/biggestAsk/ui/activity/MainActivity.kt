@@ -362,7 +362,7 @@ private fun handleUpdatedStatusData(
                     introViewModel.pregnancyMilestoneStatus = it
                 }
             }
-            result.data?.user_name.let {
+            result.data?.name.let {
                 if (it != null) {
                     PreferenceProvider(context).setValue(Constants.USER_NAME, it)
                 }

@@ -651,8 +651,12 @@ fun YourAccountScreen(
                                         }
                                         else -> {
                                             yourAccountViewModel.isEditable.value = false
-                                            val image = yourAccountViewModel.uriPathParent?.let {
-                                                convertImageMultiPart(it, "image1")
+                                            val image = if (yourAccountViewModel.uriPathParent.isNullOrEmpty()) {
+                                                null
+                                            } else {
+                                                yourAccountViewModel.uriPathParent?.let {
+                                                    convertImageMultiPart(it, "image1")
+                                                }
                                             }
                                             yourAccountViewModel.updateUserProfile(
                                                 userId = userId,
@@ -2555,10 +2559,10 @@ private fun handleUserDataSurrogate(
         }
         is NetworkResult.Success -> {
             // bind data to the view
-
             yourAccountViewModel.isSurrogateDataLoading = false
             if ((result.data?.name != null)) {
                 yourAccountViewModel.surrogateFullName = result.data.name
+                PreferenceProvider(context).setValue(Constants.USER_NAME, yourAccountViewModel.surrogateFullName)
             }
             if ((result.data?.number != null)) {
                 yourAccountViewModel.surrogatePhoneNumber = result.data.number
@@ -2687,6 +2691,7 @@ private fun handleUserUpdateData(
             val provider = PreferenceProvider(context)
             when (type) {
                 SURROGATE -> {
+                    Log.d("TAG", "handleUserUpdateData: ${yourAccountViewModel.surrogateFullName}")
                     provider.setValue(Constants.USER_NAME, yourAccountViewModel.surrogateFullName)
                     provider.setValue(Constants.UPDATED_IMAGE, yourAccountViewModel.surrogateImg)
                     clearSurrogateDetails(yourAccountViewModel)

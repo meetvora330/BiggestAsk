@@ -7,7 +7,6 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.Settings
 import android.text.TextUtils
-import android.util.Patterns
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -352,8 +351,8 @@ fun AddCommunityDialog(
                     tf_text_fourth.value = it.trim()
                     tfTextFourthEmpty.value = false
                     communityViewModel.isValidInstagramUrl.value =
-                        tf_text_fourth.value.isNotEmpty() && !Patterns.WEB_URL.matcher(
-                            tf_text_fourth.value).matches()
+                        tf_text_fourth.value.isNotEmpty() && !Pattern.compile(validUrlRegex)
+                            .matcher(tf_text_fourth.value).matches()
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text, imeAction = ImeAction.Done

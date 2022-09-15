@@ -5,5 +5,5 @@ data class UpdatedStatusResponse(
     val partner_id: Int,
     val image: String? = "",
     val pregnancy_milestone_status: String? = "",
-    val user_name: String,
+    val name: String,
 )
