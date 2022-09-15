@@ -171,7 +171,6 @@ private fun handleFrequencyChangedData(
                 userId = user_id,
                 questionViewModel = questionViewModel,
                 type = type,
-                homeActivity = homeActivity
             )
             frequencyViewModel.isLoading = false
         }

@@ -115,7 +115,7 @@ fun YourAccountScreen(
                 yourAccountViewModel.isParentClicked = true
                 yourAccountViewModel.isMotherClicked = false
                 yourAccountViewModel.isGenderSelected = false
-                getUserDetailsSurrogate(userId, type, homeActivity, yourAccountViewModel, context)
+                getUserDetailsSurrogate(userId, type, yourAccountViewModel)
             }
             PARENT -> {
                 yourAccountViewModel.isParentApiCalled = true
@@ -2532,9 +2532,7 @@ fun getUserDetailsParent(
 fun getUserDetailsSurrogate(
     userId: Int,
     type: String,
-    homeActivity: HomeActivity,
     yourAccountViewModel: YourAccountViewModel,
-    context: Context,
 ) {
     yourAccountViewModel.getUserDetailsSurrogate(
         GetUserDetailsSurrogateRequest(
@@ -2695,9 +2693,7 @@ private fun handleUserUpdateData(
                     getUserDetailsSurrogate(
                         userId = userId,
                         type = type,
-                        homeActivity = homeActivity,
                         yourAccountViewModel = yourAccountViewModel,
-                        context = context
                     )
                 }
                 PARENT -> {

@@ -68,6 +68,29 @@ fun BottomQuestionScreen(
     val selectedUser = remember { mutableStateOf("") }
     val partnerId = provider.getIntValue(Constants.PARTNER_ID, 0)
     LaunchedEffect(Unit) {
+        yourAccountViewModel.getAnsweredQuestionListResponse.observe(homeActivity) {
+            if (it != null) {
+                handleQuestionAnswerList(
+                    result = it,
+                    questionViewModel = questionViewModel
+                )
+            }
+        }
+        questionViewModel.getHomeScreenQuestionResponse.observe(homeActivity) {
+            if (it != null) {
+                handleQuestionData(result = it, questionViewModel = questionViewModel)
+            }
+        }
+        questionViewModel.questionBankContentResponse.observe(homeActivity) {
+            if (it != null) {
+                handleQuestionBankContentData(result = it, questionViewModel = questionViewModel)
+            }
+        }
+        questionViewModel.getFrequencyResponse.observe(homeActivity) {
+            if (it != null) {
+                handleFrequencyData(result = it, questionViewModel = questionViewModel)
+            }
+        }
         updateQuestionScreen(
             userId = userId,
             type = type,
@@ -75,6 +98,7 @@ fun BottomQuestionScreen(
             questionViewModel = questionViewModel,
             homeActivity = homeActivity
         )
+
     }
     BottomSheetScaffold(scaffoldState = questionBottomSheetScaffoldState, sheetContent = {
         Column(
@@ -526,45 +550,22 @@ fun updateQuestionScreen(
             type = type
         )
     )
-    yourAccountViewModel.getAnsweredQuestionListResponse.observe(homeActivity) {
-        if (it != null) {
-            handleQuestionAnswerList(
-                result = it,
-                questionViewModel = questionViewModel
-            )
-        }
-    }
-    questionViewModel.getHomeScreenQuestionResponse.observe(homeActivity) {
-        if (it != null) {
-            handleQuestionData(result = it, questionViewModel = questionViewModel)
-        }
-    }
     updateFrequency(
         userId = userId,
         type = type,
         questionViewModel = questionViewModel,
-        homeActivity = homeActivity
     )
     questionViewModel.getQuestionBankContent()
-    questionViewModel.questionBankContentResponse.observe(homeActivity) {
-        if (it != null) {
-            handleQuestionBankContentData(result = it, questionViewModel = questionViewModel)
-        }
-    }
+
 }
 
 fun updateFrequency(
     userId: Int,
     type: String,
     questionViewModel: BottomQuestionViewModel,
-    homeActivity: HomeActivity,
 ) {
     questionViewModel.getFrequency(user_id = userId, type = type)
-    questionViewModel.getFrequencyResponse.observe(homeActivity) {
-        if (it != null) {
-            handleFrequencyData(result = it, questionViewModel = questionViewModel)
-        }
-    }
+
 }
 
 fun handleQuestionBankContentData(
@@ -614,6 +615,7 @@ private fun handleStoreAnsImportantQuestion(
                 bottomSheetScaffoldState.bottomSheetState.collapse()
             }
             questionViewModel.questionScreenQuestionAnswer = ""
+            questionViewModel.questionScreenLatestQuestion = ""
             questionViewModel.answerList.clear()
             questionViewModel.isQuestionScreenQuestionAnswered = false
             updateQuestionScreen(
@@ -674,6 +676,7 @@ private fun handleQuestionData(
         is NetworkResult.Success -> {
             // bind data to the view
             if (result.data?.data?.category_id == null || result.data.data.question == "") {
+                questionViewModel.questionScreenLatestQuestion = ""
                 questionViewModel.questionScreenQuestionCategeryId = 0
                 questionViewModel.questionScreenQuestionId = 0
                 questionViewModel.isQuestionScreenQuestionDataLoaded = false
@@ -687,7 +690,6 @@ private fun handleQuestionData(
                 if (result.data.user_name.isNotEmpty()) {
                     questionViewModel.questionParentList.addAll(result.data.user_name)
                 }
-                questionViewModel.questionScreenQuestionAns = ""
             }
         }
         is NetworkResult.Error -> {

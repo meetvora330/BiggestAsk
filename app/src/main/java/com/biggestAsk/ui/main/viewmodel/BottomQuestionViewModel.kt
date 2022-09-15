@@ -29,7 +29,6 @@ class BottomQuestionViewModel @Inject constructor(
     var isAnswerEmpty: Boolean by mutableStateOf(false)
     var isErrorOccurredInQuestionLoading: Boolean by mutableStateOf(false)
     var isQuestionScreenQuestionDataLoaded: Boolean by mutableStateOf(false)
-    var dropDownItemParentsName = mutableStateListOf<String>()
     var isErrorOccurredQuestionScreenQuestion: Boolean by mutableStateOf(false)
     var isQuestionBankContentLoaded: Boolean by mutableStateOf(false)
     var isErrorOccurredQuestionBankContent: Boolean by mutableStateOf(false)
