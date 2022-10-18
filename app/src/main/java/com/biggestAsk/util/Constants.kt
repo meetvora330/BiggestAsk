@@ -178,6 +178,10 @@ object Constants {
     const val DATE_FORMAT_LOCAL = "yyyy/MM/dd HH:mm a"
     const val DATE_FORMAT_UTC = "yyyy/MM/dd'T'HH:mm:ss.SSS'Z'"
 
+    //Links
+    const val BIGGEST_ASK_INSTA_LINK = "Instagram.com/thebiggestask"
+    const val BIGGEST_ASK_FORUM_LINK = "thebiggestask.com/forums/"
+
 
 }
 

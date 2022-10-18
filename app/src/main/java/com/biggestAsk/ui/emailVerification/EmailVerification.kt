@@ -70,7 +70,7 @@ fun EmailVerification(
                 .clickable(indication = null,
                     interactionSource = remember { MutableInteractionSource() }) {
                     navHostController.popBackStack()
-                    navHostController.navigate(Screen.Login.route)
+                    navHostController.navigate(Screen.Login.login(email = " "))
                 },
             text = stringResource(id = R.string.email_verification_text_login),
             style = MaterialTheme.typography.body2,

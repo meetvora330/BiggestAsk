@@ -48,6 +48,7 @@ import com.biggestAsk.data.model.response.CreateContactResponse
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.ui.activity.HomeActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
+import com.biggestAsk.ui.homeScreen.bottomNavScreen.SimpleDropDown
 import com.biggestAsk.ui.main.viewmodel.ContactYourProviderViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.Text_Accept_Terms
@@ -129,6 +130,8 @@ fun CreateContactDialog(
 
     val type = PreferenceProvider(context).getValue(Constants.TYPE, "")
     val userId = PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
+    val tittleSuggestion =
+        listOf("Fertility Doctor", "Agency Case Manager", "Surrogacy Lawyer", "ObGyn")
 
     Column(
         modifier = Modifier
@@ -193,35 +196,48 @@ fun CreateContactDialog(
                 fontWeight = FontWeight.W900,
                 letterSpacing = (-0.24).sp
             )
-            TextField(
-                shape = RoundedCornerShape(9.dp),
+            tf_text_first.value = SimpleDropDown(suggestions = tittleSuggestion,
+                hint = "The Happy Contact",
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 12.dp),
-                value = tf_text_first.value,
-                onValueChange = {
-                    tf_text_first.value = it
-                    tfTextFirstEmpty.value = false
-                },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text, imeAction = ImeAction.Next
-                ),
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color(0xFFF2F2F7),
-                    cursorColor = Custom_Blue,
-                    focusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                ),
-                textStyle = MaterialTheme.typography.body2,
-                placeholder = {
-                    Text(
-                        text = tf_hint_tv1,
-                        color = Text_Accept_Terms
-                    )
-                },
-                maxLines = 1,
-            )
+                style = MaterialTheme.typography.body2.copy(
+                    fontWeight = FontWeight.W600,
+                    fontSize = 16.sp,
+                    color = Color.Black
+                ), text = tittleSuggestion[0])
+            if (tf_text_first.value.isNotBlank()) {
+                tfTextFirstEmpty.value = false
+            }
+//            TextField(
+//                shape = RoundedCornerShape(9.dp),
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(top = 12.dp),
+//                value = tf_text_first.value,
+//                onValueChange = {
+//                    tf_text_first.value = it
+//                    tfTextFirstEmpty.value = false
+//                },
+//                keyboardOptions = KeyboardOptions(
+//                    keyboardType = KeyboardType.Text, imeAction = ImeAction.Next
+//                ),
+//                colors = TextFieldDefaults.textFieldColors(
+//                    backgroundColor = Color(0xFFF2F2F7),
+//                    cursorColor = Custom_Blue,
+//                    focusedIndicatorColor = Color.Transparent,
+//                    disabledIndicatorColor = Color.Transparent,
+//                    unfocusedIndicatorColor = Color.Transparent,
+//                ),
+//                textStyle = MaterialTheme.typography.body2,
+//                placeholder = {
+//                    Text(
+//                        text = tf_hint_tv1,
+//                        color = Text_Accept_Terms
+//                    )
+//                },
+//                maxLines = 1,
+//            )
             if (tfTextFirstEmpty.value) {
                 Text(
                     modifier = Modifier
@@ -473,28 +489,29 @@ fun CreateContactDialog(
             }
             Button(
                 onClick = {
+                    var image: MultipartBody.Part? = null
                     when {
-                        TextUtils.isEmpty(tf_text_first.value) &&
+                        /*TextUtils.isEmpty(tf_text_first.value)*//* &&
                                 TextUtils.isEmpty(tf_text_second.value) &&
                                 TextUtils.isEmpty(tf_text_third.value) &&
-                                TextUtils.isEmpty(tf_text_fourth.value) -> {
-                            tfTextFirstEmpty.value = true
-                            tfTextSecondEmpty.value = true
-                            tfTextThirdEmpty.value = true
-                            tfTextFourthEmpty.value = true
-                            if (!contactYourProviderViewModel.isImagePresent.value) {
-                                Toast.makeText(
-                                    context,
-                                    Constants.PLEASE_ADD_LOGO,
-                                    Toast.LENGTH_SHORT
-                                )
-                                    .show()
-                            }
-                        }
+                                TextUtils.isEmpty(tf_text_fourth.value)*/ /*-> {
+                            tfTextFirstEmpty.value = true*/
+                        /*tfTextSecondEmpty.value = true
+                        tfTextThirdEmpty.value = true
+                        tfTextFourthEmpty.value = true
+                        if (!contactYourProviderViewModel.isImagePresent.value) {
+                            Toast.makeText(
+                                context,
+                                Constants.PLEASE_ADD_LOGO,
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
+                        }*/
+//                        }
                         TextUtils.isEmpty(tf_text_first.value) -> {
                             tfTextFirstEmpty.value = true
                         }
-                        TextUtils.isEmpty(tf_text_second.value) -> {
+                        /*TextUtils.isEmpty(tf_text_second.value) -> {
                             tfTextSecondEmpty.value = true
                         }
                         TextUtils.isEmpty(tf_text_third.value) -> {
@@ -502,25 +519,29 @@ fun CreateContactDialog(
                         }
                         TextUtils.isEmpty(tf_text_fourth.value) -> {
                             tfTextFourthEmpty.value = true
+                        }*/
+                        !TextUtils.isEmpty(tf_text_third.value) -> {
+                            if (!Patterns.EMAIL_ADDRESS.matcher(tf_text_third.value.trim())
+                                    .matches()
+                            ) {
+                                contactYourProviderViewModel.isLoginEmailValid = true
+                            }
                         }
-                        !Patterns.EMAIL_ADDRESS.matcher(tf_text_third.value.trim()).matches() -> {
-                            contactYourProviderViewModel.isLoginEmailValid = true
-                        }
-                        !contactYourProviderViewModel.isImagePresent.value -> {
+                        /*!contactYourProviderViewModel.isImagePresent.value -> {
                             Toast.makeText(context, Constants.PLEASE_ADD_LOGO, Toast.LENGTH_SHORT)
                                 .show()
-                        }
-
-                        !contactYourProviderViewModel.phoneErrorVisible && contactYourProviderViewModel.isImagePresent.value && !TextUtils.isEmpty(
+                        }*/
+                        !contactYourProviderViewModel.phoneErrorVisible/* && contactYourProviderViewModel.isImagePresent.value*/ && !TextUtils.isEmpty(
                             tf_text_first.value
-                        ) &&
+                        ) /*&&
                                 !TextUtils.isEmpty(tf_text_second.value) &&
                                 !TextUtils.isEmpty(tf_text_third.value) &&
-                                !TextUtils.isEmpty(tf_text_fourth.value) -> {
-
-                            val image =
+                                !TextUtils.isEmpty(tf_text_fourth.value)*/ -> {
+                            image = if (contactYourProviderViewModel.isImagePresent.value) {
                                 contactYourProviderViewModel.uriPath?.let { convertImageMultiPart(it) }
-
+                            } else {
+                                null
+                            }
                             contactYourProviderViewModel.createContact(
                                 MultipartBody.Part.createFormData(
                                     Constants.TITLE,
@@ -561,7 +582,6 @@ fun CreateContactDialog(
                                         homeActivity = homeActivity
                                     )
                                 }
-
                             }
                         }
                         else -> {

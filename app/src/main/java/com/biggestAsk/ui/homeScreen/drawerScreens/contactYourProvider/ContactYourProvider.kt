@@ -89,14 +89,16 @@ fun ContactYourProvider(
                             contentDescription = stringResource(id = R.string.content_description),
                         )
                         Column(modifier = Modifier.padding(start = 16.dp)) {
-                            Text(
-                                modifier = Modifier.padding(top = 16.dp),
-                                text = item.title,
-                                style = MaterialTheme.typography.body1,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.W600,
-                                color = Color.Black,
-                            )
+                            item.title?.let {
+                                Text(
+                                    modifier = Modifier.padding(top = 16.dp),
+                                    text = it,
+                                    style = MaterialTheme.typography.body1,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.W600,
+                                    color = Color.Black,
+                                )
+                            }
                             Text(
                                 modifier = Modifier.padding(top = 16.dp),
                                 text = stringResource(id = R.string.agency_rep_name),
@@ -104,15 +106,17 @@ fun ContactYourProvider(
                                 fontSize = 14.sp,
                                 color = Color(0xFF8995A3)
                             )
-                            Text(
-                                modifier = Modifier.padding(top = 3.dp),
-                                text = item.agency_name,
-                                style = MaterialTheme.typography.body1,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.W600,
-                                color = Color.Black,
-                                lineHeight = 22.sp
-                            )
+                            item.agency_name?.let {
+                                Text(
+                                    modifier = Modifier.padding(top = 3.dp),
+                                    text = it,
+                                    style = MaterialTheme.typography.body1,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.W600,
+                                    color = Color.Black,
+                                    lineHeight = 22.sp
+                                )
+                            }
                             Text(
                                 modifier = Modifier.padding(top = 16.dp),
                                 text = stringResource(id = R.string.agency_email),
@@ -120,15 +124,17 @@ fun ContactYourProvider(
                                 fontSize = 14.sp,
                                 color = Color(0xFF8995A3)
                             )
-                            Text(
-                                modifier = Modifier.padding(top = 3.dp),
-                                text = item.agency_email,
-                                style = MaterialTheme.typography.body1,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.W600,
-                                color = Color.Black,
-                                lineHeight = 22.sp
-                            )
+                            item.agency_email?.let {
+                                Text(
+                                    modifier = Modifier.padding(top = 3.dp),
+                                    text = it,
+                                    style = MaterialTheme.typography.body1,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.W600,
+                                    color = Color.Black,
+                                    lineHeight = 22.sp
+                                )
+                            }
                             Text(
                                 modifier = Modifier.padding(top = 16.dp),
                                 text = stringResource(id = R.string.agency_phone_number),
@@ -136,15 +142,17 @@ fun ContactYourProvider(
                                 fontSize = 14.sp,
                                 color = Color(0xFF8995A3)
                             )
-                            Text(
-                                modifier = Modifier.padding(top = 3.dp),
-                                text = item.agency_number,
-                                style = MaterialTheme.typography.body1,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.W600,
-                                color = Color.Black,
-                                lineHeight = 22.sp
-                            )
+                            item.agency_number?.let {
+                                Text(
+                                    modifier = Modifier.padding(top = 3.dp),
+                                    text = it,
+                                    style = MaterialTheme.typography.body1,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.W600,
+                                    color = Color.Black,
+                                    lineHeight = 22.sp
+                                )
+                            }
                         }
                     }
                     Divider(

@@ -812,7 +812,7 @@ fun YourAccountScreen(
                                             Text(
                                                 modifier = Modifier
                                                     .wrapContentWidth(),
-                                                text = "($age Year)",
+                                                text = "($age Years Old)",
                                                 style = MaterialTheme.typography.body2.copy(
                                                     color = Color.Black,
                                                     fontSize = 14.sp,
@@ -1243,7 +1243,7 @@ fun YourAccountScreen(
                                                 Text(
                                                     modifier = Modifier
                                                         .wrapContentWidth(),
-                                                    text = "($parentAge Year)",
+                                                    text = "($parentAge Years Old)",
                                                     style = MaterialTheme.typography.body2.copy(
                                                         color = Color.Black,
                                                         fontSize = 14.sp,
@@ -2562,7 +2562,8 @@ private fun handleUserDataSurrogate(
             yourAccountViewModel.isSurrogateDataLoading = false
             if ((result.data?.name != null)) {
                 yourAccountViewModel.surrogateFullName = result.data.name
-                PreferenceProvider(context).setValue(Constants.USER_NAME, yourAccountViewModel.surrogateFullName)
+                PreferenceProvider(context).setValue(Constants.USER_NAME,
+                    yourAccountViewModel.surrogateFullName)
             }
             if ((result.data?.number != null)) {
                 yourAccountViewModel.surrogatePhoneNumber = result.data.number

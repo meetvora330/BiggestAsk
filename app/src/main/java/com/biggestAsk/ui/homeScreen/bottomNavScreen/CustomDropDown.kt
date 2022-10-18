@@ -61,7 +61,7 @@ fun SimpleDropDown(
                     interactionSource = remember { MutableInteractionSource() }) {
                     expanded = !expanded
                 }, enabled = false, placeholder = {
-                Text(hint, style = MaterialTheme.typography.body2)
+                Text(hint)
             },
             trailingIcon = {
                 Icon(painter = painterResource(id = icon), "",

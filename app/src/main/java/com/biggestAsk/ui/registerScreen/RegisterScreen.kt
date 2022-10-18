@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.text.TextUtils
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -64,8 +65,7 @@ fun RegisterScreen(
     val useDarkIcons = MaterialTheme.colors.isLight
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
-    val suggestions =
-        listOf("male", "female", "other")
+    val suggestions = listOf("male", "female", "other")
     var selectedText by remember { mutableStateOf("") }
     LaunchedEffect(Unit) {
         registerViewModel.textFullName = ""
@@ -75,15 +75,11 @@ fun RegisterScreen(
     }
 
     SideEffect {
-        systemUiController.setSystemBarsColor(
-            color = Color.Transparent, darkIcons = useDarkIcons
-        )
+        systemUiController.setSystemBarsColor(color = Color.Transparent, darkIcons = useDarkIcons)
     }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-    ) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .verticalScroll(rememberScrollState())) {
         Column(modifier = Modifier.padding(top = 56.dp)) {
             Text(
                 text = stringResource(id = R.string.register_tittle),
@@ -107,74 +103,54 @@ fun RegisterScreen(
         }
         ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
             val (radio_btn_intended_parent, tv_intend_parent, radio_btn_surrogate_mother, tv_surrogate_mother) = createRefs()
-            RadioButton(
-                modifier = Modifier.constrainAs(radio_btn_intended_parent) {
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                },
-                selected = registerViewModel.selectedValueIntendParentRb.value,
-                onClick = {
-                    registerViewModel.selectedValueIntendParentRb.value = true
-                    registerViewModel.selectedValueSurrogateMotherRb.value = false
-                },
-                colors = RadioButtonDefaults.colors(
-                    selectedColor = Custom_Blue
-                )
-            )
+            RadioButton(modifier = Modifier.constrainAs(radio_btn_intended_parent) {
+                top.linkTo(parent.top)
+                bottom.linkTo(parent.bottom)
+            }, selected = registerViewModel.selectedValueIntendParentRb.value, onClick = {
+                registerViewModel.selectedValueIntendParentRb.value = true
+                registerViewModel.selectedValueSurrogateMotherRb.value = false
+            }, colors = RadioButtonDefaults.colors(selectedColor = Custom_Blue))
             Text(modifier = Modifier.constrainAs(tv_intend_parent) {
                 top.linkTo(parent.top)
                 bottom.linkTo(parent.bottom)
             }, text = stringResource(id = R.string.register_radio_btn_intend_parents_text))
-            RadioButton(
-                modifier = Modifier.constrainAs(radio_btn_surrogate_mother) {
+            RadioButton(modifier = Modifier.constrainAs(radio_btn_surrogate_mother) {
+                top.linkTo(parent.top)
+                bottom.linkTo(parent.bottom)
+            }, selected = registerViewModel.selectedValueSurrogateMotherRb.value, onClick = {
+                registerViewModel.selectedValueIntendParentRb.value = false
+                registerViewModel.selectedValueSurrogateMotherRb.value = true
+            }, colors = RadioButtonDefaults.colors(selectedColor = Custom_Blue))
+            Text(modifier = Modifier
+                .padding(end = 8.dp)
+                .constrainAs(tv_surrogate_mother) {
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
-                },
-                selected = registerViewModel.selectedValueSurrogateMotherRb.value,
-                onClick = {
-                    registerViewModel.selectedValueIntendParentRb.value = false
-                    registerViewModel.selectedValueSurrogateMotherRb.value = true
-                },
-                colors = RadioButtonDefaults.colors(
-                    selectedColor = Custom_Blue
-                )
-            )
-            Text(
-                modifier = Modifier
-                    .padding(end = 8.dp)
-                    .constrainAs(tv_surrogate_mother) {
-                        top.linkTo(parent.top)
-                        bottom.linkTo(parent.bottom)
-                    }, text = stringResource(id = R.string.register_radio_btn_surrogate_mother_text)
-            )
-            createHorizontalChain(
-                radio_btn_intended_parent,
+                }, text = stringResource(id = R.string.register_radio_btn_surrogate_mother_text))
+            createHorizontalChain(radio_btn_intended_parent,
                 tv_intend_parent,
                 radio_btn_surrogate_mother,
                 tv_surrogate_mother,
-                chainStyle = ChainStyle.Packed
-            )
+                chainStyle = ChainStyle.Packed)
         }
         ConstraintLayout {
             val (tvFullName, et_fullName, tv_gender, drop_down_gender, nameError, tv_email, et_email, genderError, tv_password, et_password, passError, tv_re_enter_pass, et_re_enter_pass, re_enter_pass_error, row_cb_term, btn_signUp) = createRefs()
-            Text(
-                text = stringResource(id = R.string.register_tv_name),
+            Text(text = stringResource(id = R.string.register_tv_name),
                 modifier = Modifier
                     .padding(top = 32.dp, start = 24.dp)
                     .constrainAs(tvFullName) {
                         top.linkTo(parent.top)
                         start.linkTo(parent.start)
-                    }, color = Color.Black
-            )
+                    },
+                color = Color.Black)
             TextField(
                 value = registerViewModel.textFullName,
                 onValueChange = {
                     registerViewModel.textFullName = it
                     registerViewModel.isNameEmpty = false
                 },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text, imeAction = ImeAction.Next
-                ),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 4.dp)
@@ -188,32 +164,25 @@ fun RegisterScreen(
                 isError = registerViewModel.isNameEmpty,
                 trailingIcon = {
                     if (registerViewModel.isNameEmpty) {
-                        Icon(
-                            imageVector = Icons.Filled.Error,
+                        Icon(imageVector = Icons.Filled.Error,
                             contentDescription = stringResource(id = R.string.content_description),
-                            tint = MaterialTheme.colors.error
-                        )
+                            tint = MaterialTheme.colors.error)
                     }
                 },
                 placeholder = {
-                    Text(
-                        text = stringResource(id = R.string.register_et_hint_full_name),
-                        color = Text_Color
-                    )
+                    Text(text = stringResource(id = R.string.register_et_hint_full_name),
+                        color = Text_Color)
                 },
                 shape = RoundedCornerShape(8.dp),
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = ET_Bg,
+                colors = TextFieldDefaults.textFieldColors(backgroundColor = ET_Bg,
                     cursorColor = Custom_Blue,
                     focusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
-                ),
+                    unfocusedIndicatorColor = Color.Transparent),
                 maxLines = 1,
             )
             if (registerViewModel.isNameEmpty) {
-                Text(
-                    text = stringResource(id = R.string.register_error_text_name),
+                Text(text = stringResource(id = R.string.register_error_text_name),
                     color = MaterialTheme.colors.error,
                     style = MaterialTheme.typography.caption,
                     modifier = Modifier
@@ -222,20 +191,17 @@ fun RegisterScreen(
                             start.linkTo(et_fullName.start)
                             top.linkTo(et_fullName.bottom)
                         },
-                    fontSize = 12.sp
-                )
+                    fontSize = 12.sp)
             }
-            Text(
-                text = stringResource(id = R.string.select_gender),
+            Text(text = stringResource(id = R.string.select_gender),
                 modifier = Modifier
                     .padding(top = 20.dp, start = 24.dp)
                     .constrainAs(tv_gender) {
                         top.linkTo(et_fullName.bottom)
                         start.linkTo(parent.start)
-                    }, color = Color.Black
-            )
-            selectedText = SimpleDropDown(
-                suggestions = suggestions,
+                    },
+                color = Color.Black)
+            selectedText = SimpleDropDown(suggestions = suggestions,
                 hint = stringResource(id = R.string.select_gender),
                 modifier = Modifier
                     .padding(top = 12.dp, start = 24.dp, end = 24.dp)
@@ -243,15 +209,11 @@ fun RegisterScreen(
                         top.linkTo(tv_gender.bottom)
                         start.linkTo(parent.start)
                     },
-                style = MaterialTheme.typography.body2.copy(
-                    fontWeight = FontWeight.W600,
+                style = MaterialTheme.typography.body2.copy(fontWeight = FontWeight.W600,
                     fontSize = 16.sp,
-                    color = Color.Black
-                )
-            )
+                    color = Color.Black))
             if (selectedText == "" && registerViewModel.isGenderSelected) {
-                Text(
-                    text = stringResource(id = R.string.select_gender),
+                Text(text = stringResource(id = R.string.select_gender),
                     color = MaterialTheme.colors.error,
                     style = MaterialTheme.typography.caption,
                     modifier = Modifier
@@ -260,26 +222,23 @@ fun RegisterScreen(
                             start.linkTo(drop_down_gender.start)
                             top.linkTo(drop_down_gender.bottom)
                         },
-                    fontSize = 12.sp
-                )
+                    fontSize = 12.sp)
             }
-            Text(
-                text = stringResource(id = R.string.register_tv_email_text),
+            Text(text = stringResource(id = R.string.register_tv_email_text),
                 modifier = Modifier
                     .padding(top = 20.dp, start = 24.dp)
                     .constrainAs(tv_email) {
                         top.linkTo(drop_down_gender.bottom)
                         start.linkTo(parent.start)
-                    }, color = Color.Black
-            )
+                    },
+                color = Color.Black)
             TextField(
                 value = email,
                 onValueChange = {
                     email
                 },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Email, imeAction = ImeAction.Next
-                ),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 4.dp)
@@ -290,32 +249,27 @@ fun RegisterScreen(
                         end.linkTo(parent.end)
                     },
                 placeholder = {
-                    Text(
-                        text = stringResource(id = R.string.register_tv_email_text),
-                        color = Text_Color
-                    )
+                    Text(text = stringResource(id = R.string.register_tv_email_text),
+                        color = Text_Color)
                 },
                 readOnly = true,
                 textStyle = MaterialTheme.typography.body2,
                 shape = RoundedCornerShape(8.dp),
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = ET_Bg,
+                colors = TextFieldDefaults.textFieldColors(backgroundColor = ET_Bg,
                     cursorColor = Custom_Blue,
                     focusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
-                ),
+                    unfocusedIndicatorColor = Color.Transparent),
                 maxLines = 1,
             )
-            Text(
-                text = stringResource(id = R.string.register_tv_password_text),
+            Text(text = stringResource(id = R.string.register_tv_password_text),
                 modifier = Modifier
                     .padding(top = 20.dp, start = 24.dp)
                     .constrainAs(tv_password) {
                         top.linkTo(et_email.bottom)
                         start.linkTo(parent.start)
-                    }, color = Color.Black
-            )
+                    },
+                color = Color.Black)
             TextField(
                 value = registerViewModel.textPass,
                 onValueChange = {
@@ -334,37 +288,29 @@ fun RegisterScreen(
                 isError = registerViewModel.isPassEmpty,
                 trailingIcon = {
                     if (registerViewModel.isPassEmpty) {
-                        Icon(
-                            imageVector = Icons.Filled.Error,
+                        Icon(imageVector = Icons.Filled.Error,
                             contentDescription = stringResource(id = R.string.content_description),
-                            tint = MaterialTheme.colors.error
-                        )
+                            tint = MaterialTheme.colors.error)
                     }
                 },
                 textStyle = MaterialTheme.typography.body2,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Password, imeAction = ImeAction.Next
-                ),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Next),
                 visualTransformation = PasswordVisualTransformation(),
                 placeholder = {
-                    Text(
-                        text = stringResource(id = R.string.register_tv_password_text),
-                        color = Text_Color
-                    )
+                    Text(text = stringResource(id = R.string.register_tv_password_text),
+                        color = Text_Color)
                 },
                 maxLines = 1,
                 shape = RoundedCornerShape(8.dp),
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = ET_Bg,
+                colors = TextFieldDefaults.textFieldColors(backgroundColor = ET_Bg,
                     cursorColor = Custom_Blue,
                     focusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
-                ),
+                    unfocusedIndicatorColor = Color.Transparent),
             )
             if (registerViewModel.isPassEmpty) {
-                Text(
-                    text = stringResource(id = R.string.register_error_text_pass),
+                Text(text = stringResource(id = R.string.register_error_text_pass),
                     color = MaterialTheme.colors.error,
                     style = MaterialTheme.typography.caption,
                     modifier = Modifier
@@ -373,18 +319,16 @@ fun RegisterScreen(
                             start.linkTo(et_password.start)
                             top.linkTo(et_password.bottom)
                         },
-                    fontSize = 12.sp
-                )
+                    fontSize = 12.sp)
             }
-            Text(
-                text = stringResource(id = R.string.register_tv_re_password_text),
+            Text(text = stringResource(id = R.string.register_tv_re_password_text),
                 modifier = Modifier
                     .padding(top = 20.dp, start = 24.dp)
                     .constrainAs(tv_re_enter_pass) {
                         top.linkTo(et_password.bottom)
                         start.linkTo(parent.start)
-                    }, color = Color.Black
-            )
+                    },
+                color = Color.Black)
             TextField(
                 value = registerViewModel.textReEnterPass,
                 onValueChange = {
@@ -400,9 +344,8 @@ fun RegisterScreen(
                         top.linkTo(tv_re_enter_pass.bottom)
                         end.linkTo(parent.end)
                     },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Password, imeAction = ImeAction.Done
-                ),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = {
                     focusManager.clearFocus()
                 }),
@@ -410,33 +353,26 @@ fun RegisterScreen(
                 isError = registerViewModel.isRePassEmpty,
                 trailingIcon = {
                     if (registerViewModel.isRePassEmpty) {
-                        Icon(
-                            imageVector = Icons.Filled.Error,
+                        Icon(imageVector = Icons.Filled.Error,
                             contentDescription = stringResource(id = R.string.content_description),
-                            tint = MaterialTheme.colors.error
-                        )
+                            tint = MaterialTheme.colors.error)
                     }
                 },
                 visualTransformation = PasswordVisualTransformation(),
                 maxLines = 1,
                 placeholder = {
-                    Text(
-                        text = stringResource(id = R.string.register_tv_re_password_text),
-                        color = Text_Color
-                    )
+                    Text(text = stringResource(id = R.string.register_tv_re_password_text),
+                        color = Text_Color)
                 },
                 shape = RoundedCornerShape(8.dp),
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = ET_Bg,
+                colors = TextFieldDefaults.textFieldColors(backgroundColor = ET_Bg,
                     cursorColor = Custom_Blue,
                     focusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
-                ),
+                    unfocusedIndicatorColor = Color.Transparent),
             )
             if (registerViewModel.isRePassEmpty) {
-                Text(
-                    text = stringResource(id = R.string.register_error_text_re_enter_pass),
+                Text(text = stringResource(id = R.string.register_error_text_re_enter_pass),
                     color = MaterialTheme.colors.error,
                     style = MaterialTheme.typography.caption,
                     modifier = Modifier
@@ -445,8 +381,7 @@ fun RegisterScreen(
                             start.linkTo(et_re_enter_pass.start)
                             top.linkTo(et_re_enter_pass.bottom)
                         },
-                    fontSize = 12.sp
-                )
+                    fontSize = 12.sp)
             }
             Row(modifier = Modifier
                 .constrainAs(row_cb_term) {
@@ -456,13 +391,13 @@ fun RegisterScreen(
                 }
                 .padding(top = 25.dp)) {
                 CompositionLocalProvider(LocalMinimumTouchTargetEnforcement provides false) {
-                    Checkbox(modifier = Modifier.padding(
-                        start = 25.54.dp, top = 18.dp, bottom = 10.dp, end = 5.dp
-                    ),
+                    Checkbox(modifier = Modifier.padding(start = 25.54.dp,
+                        top = 18.dp,
+                        bottom = 10.dp,
+                        end = 5.dp),
                         checked = registerViewModel.termCheckedState,
-                        colors = CheckboxDefaults.colors(
-                            checkedColor = CheckBox_Check, uncheckedColor = Color.DarkGray
-                        ),
+                        colors = CheckboxDefaults.colors(checkedColor = CheckBox_Check,
+                            uncheckedColor = Color.DarkGray),
                         onCheckedChange = {
                             registerViewModel.termCheckedState = it
                         })
@@ -472,12 +407,8 @@ fun RegisterScreen(
             Button(onClick = {
                 when {
                     TextUtils.isEmpty(registerViewModel.textFullName) && TextUtils.isEmpty(
-                        selectedText
-                    ) && TextUtils.isEmpty(
-                        registerViewModel.textPass
-                    ) && TextUtils.isEmpty(
-                        registerViewModel.textReEnterPass
-                    ) -> {
+                        selectedText) && TextUtils.isEmpty(registerViewModel.textPass) && TextUtils.isEmpty(
+                        registerViewModel.textReEnterPass) -> {
                         registerViewModel.isNameEmpty = true
                         registerViewModel.isPassEmpty = true
                         registerViewModel.isRePassEmpty = true
@@ -496,21 +427,17 @@ fun RegisterScreen(
                         registerViewModel.isRePassEmpty = true
                     }
                     !registerViewModel.termCheckedState -> {
-                        Toast.makeText(
-                            context, R.string.accept_terms, Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(context, R.string.accept_terms, Toast.LENGTH_SHORT).show()
                     }
                     else -> {
                         if (registerViewModel.textPass == registerViewModel.textReEnterPass) {
                             val value =
                                 if (registerViewModel.selectedValueIntendParentRb.value) Constants.PARENT else Constants.SURROGATE
-                            val registrationBodyRequest = RegistrationBodyRequest(
-                                type = value,
+                            val registrationBodyRequest = RegistrationBodyRequest(type = value,
                                 name = registerViewModel.textFullName,
                                 email = email,
                                 password = registerViewModel.textPass,
-                                gender = selectedText.lowercase(Locale.ROOT)
-                            )
+                                gender = selectedText.lowercase(Locale.ROOT))
                             registerViewModel.registration(registrationBodyRequest = registrationBodyRequest)
                             registerViewModel.registerScreen.observe(mainActivity) {
                                 if (it != null) {
@@ -518,7 +445,8 @@ fun RegisterScreen(
                                         navHostController = navHostController,
                                         result = it,
                                         registerViewModel = registerViewModel,
-                                        emailVerificationViewModel = emailVerificationViewModel
+                                        emailVerificationViewModel = emailVerificationViewModel,
+                                        email = email
                                     )
                                 }
                             }
@@ -569,6 +497,7 @@ private fun handleUserData(
     result: NetworkResult<CommonResponse>,
     registerViewModel: RegisterViewModel,
     emailVerificationViewModel: EmailVerificationViewModel,
+    email: String,
 ) {
     when (result) {
         is NetworkResult.Loading -> {
@@ -579,9 +508,8 @@ private fun handleUserData(
             // bind data to the view
             registerViewModel.isLoading = false
             navHostController.popBackStack()
-            navHostController.navigate(
-                Screen.Login.route
-            )
+            Log.d("TAG", "handleUserData: $email")
+            navHostController.navigate(Screen.Login.login(email = email))
             navHostController.popBackStack(Screen.Register.route, true)
             emailVerificationViewModel.textEmailVerify = ""
         }

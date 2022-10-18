@@ -72,7 +72,6 @@ fun SetUpNavGraph(
 
 
     val pagerState = rememberPagerState()
-
     NavHost(
         navController = navHostController,
         startDestination = startDestination
@@ -157,13 +156,27 @@ fun SetUpNavGraph(
             }
         }
         composable(
-            Screen.Login.route
+            Screen.Login.route,
+            arguments = listOf(
+                navArgument(
+                    REGISTERED_EMAIL
+                ) {
+                    type = NavType.StringType
+                    defaultValue = ""
+                }
+            )
         ) {
+            val email :String = if (it.arguments?.get(REGISTERED_EMAIL).toString().equals(null)){
+                ""
+            }else{
+                it.arguments?.get(REGISTERED_EMAIL).toString()
+            }
             LoginScreen(
                 navHostController = navHostController,
                 mainActivity = mainActivity,
                 context = mainActivity.applicationContext,
-                loginViewModel = loginViewModel
+                loginViewModel = loginViewModel,
+                email = email
             )
         }
         composable(

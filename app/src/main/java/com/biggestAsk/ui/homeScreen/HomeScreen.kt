@@ -4,6 +4,7 @@ package com.biggestAsk.ui.homeScreen
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -44,6 +45,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.rememberImagePainter
 import com.biggestAsk.data.model.request.GetNotificationRequest
+import com.biggestAsk.data.model.request.GetPregnancyMilestoneRequest
 import com.biggestAsk.data.model.response.GetNotificationCountResponse
 import com.biggestAsk.data.model.response.GetPregnancyMilestoneStatusResponse
 import com.biggestAsk.data.source.network.NetworkResult
@@ -328,11 +330,11 @@ fun HomeScreen(
                             }
                             if (contactYourProviderViewModel.isContactProvidersScreen.value == true) {
                                 openDialogCustomContact.value = true
+                                contactYourProviderViewModel.isLoginEmailValid = false
                             }
                             if (yourAccountViewModel.isYourAccountScreen.value == true) {
                                 yourAccountViewModel.isEditable.value =
                                     yourAccountViewModel.isEditable.value != true
-
                             }
                             if (notificationViewModel.isNotificationScreen.value == true) {
                                 notificationViewModel.isSearchClicked.value =
@@ -443,10 +445,10 @@ fun HomeScreen(
                             tv_text_tittle = stringResource(id = R.string.create_contact),
                             tf_hint_tv1 = stringResource(id = R.string.the_happy_agency),
                             tf_hint_tv2 = stringResource(id = R.string.jane_doe),
-                            tv_text_second = stringResource(id = R.string.agency_rep_name),
-                            tv_text_third = stringResource(id = R.string.agency_email),
+                            tv_text_second = stringResource(id = R.string.contact_rep_name),
+                            tv_text_third = stringResource(id = R.string.contact_email),
                             tf_hint_tv3 = stringResource(id = R.string.agency_email_hint),
-                            tv_text_fourth = stringResource(id = R.string.agency_phone_number),
+                            tv_text_fourth = stringResource(id = R.string.contact_phone_number),
                             tf_hint_tv4 = stringResource(id = R.string.dialog_phone),
                             btn_text_add = stringResource(id = R.string.add_contact),
                             tf_text_first = tfTextFirstContact,
@@ -988,6 +990,14 @@ fun NavigationDrawerContent(
                     provider.getValue(Constants.PREGNANCY_MILESTONE_STATUS, "")
                 homeViewModel.getPregnancyStatus =
                     if (getPregnancyStatus == Constants.ACTIVE) true else if (getPregnancyStatus == Constants.IN_ACTIVE) false else false
+                if (getPregnancyStatus == Constants.ACTIVE){
+                    homeViewModel.getPregnancyMilestone(
+                        GetPregnancyMilestoneRequest(
+                            user_id = userId,
+                            type = type!!
+                        )
+                    )
+                }
                 Text(
                     text = stringResource(id = R.string.show_pregnancy_milestone),
                     style = MaterialTheme.typography.body1,

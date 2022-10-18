@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.biggestAsk.data.model.request.GetCommunityRequest
 import com.biggestAsk.data.model.response.GetCommunityResponse
+import com.biggestAsk.data.model.response.GetCommunityResponseData
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.data.source.network.isInternetAvailable
 import com.biggestAsk.ui.activity.HomeActivity
@@ -53,7 +54,6 @@ fun Community(
             )
         } else {
             communityViewModel.isDataNull = false
-            communityViewModel.communityList.clear()
             Toast.makeText(context, R.string.no_internet_available, Toast.LENGTH_SHORT).show()
         }
     }
@@ -103,21 +103,25 @@ fun Community(
                                 contentDescription = stringResource(id = R.string.content_description),
                             )
                             Column(modifier = Modifier.padding(start = 16.dp)) {
-                                Text(
-                                    modifier = Modifier.padding(top = 16.dp),
-                                    text = item.title,
-                                    style = MaterialTheme.typography.body1,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.W600,
-                                    color = Color.Black
-                                )
-                                Text(
-                                    modifier = Modifier.padding(top = 8.dp),
-                                    text = item.description,
-                                    style = MaterialTheme.typography.body1,
-                                    fontSize = 14.sp,
-                                    color = Color(0xFF8995A3)
-                                )
+                                item.title?.let {
+                                    Text(
+                                        modifier = Modifier.padding(top = 16.dp),
+                                        text = it,
+                                        style = MaterialTheme.typography.body1,
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.W600,
+                                        color = Color.Black
+                                    )
+                                }
+                                item.description?.let {
+                                    Text(
+                                        modifier = Modifier.padding(top = 8.dp),
+                                        text = it,
+                                        style = MaterialTheme.typography.body1,
+                                        fontSize = 14.sp,
+                                        color = Color(0xFF8995A3)
+                                    )
+                                }
                             }
                         }
                         Divider(
@@ -142,9 +146,9 @@ fun Community(
                                 border = BorderStroke(1.dp, Color(0xFFF4F4F4)),
                                 onClick = {
                                     try {
-                                        val instaLink = item.insta_link
-                                        if (instaLink.startsWith("https://") || instaLink.startsWith(
-                                                "http://")
+                                        val instaLink = "Instagram.com/thebiggestask"
+                                        if (instaLink?.startsWith("https://") == true || instaLink?.startsWith(
+                                                "http://") == true
                                         ) {
                                             val instagramIntent =
                                                 Intent(Intent.ACTION_VIEW, Uri.parse(instaLink))
@@ -189,7 +193,27 @@ fun Community(
                                     disabledElevation = 0.dp,
                                     focusedElevation = 0.dp
                                 ),
-                                onClick = { }, shape = RoundedCornerShape(12.dp),
+                                onClick = {
+                                    try {
+                                        val forumLink = "thebiggestask.com/forums/"
+                                        if (forumLink?.startsWith("https://") == true || forumLink?.startsWith(
+                                                "http://") == true
+                                        ) {
+                                            val instagramIntent =
+                                                Intent(Intent.ACTION_VIEW, Uri.parse(forumLink))
+                                            context.startActivity(instagramIntent)
+                                        } else {
+                                            val instagramIntent = Intent(Intent.ACTION_VIEW,
+                                                Uri.parse("https://$forumLink"))
+                                            context.startActivity(instagramIntent)
+                                        }
+                                    } catch (e: RuntimeException) {
+                                        e.printStackTrace()
+                                        Toast.makeText(context,
+                                            R.string.invalid_url,
+                                            Toast.LENGTH_SHORT).show()
+                                    }
+                                }, shape = RoundedCornerShape(12.dp),
                                 colors = ButtonDefaults.buttonColors(backgroundColor = Custom_Blue)
                             ) {
                                 Text(
@@ -238,7 +262,9 @@ fun getUpdatedCommunity(
         if (it != null) {
             handleGetCommunityApi(
                 result = it,
-                communityViewModel = communityViewModel
+                communityViewModel = communityViewModel,
+                user_id,
+                type
             )
         }
     }
@@ -247,10 +273,12 @@ fun getUpdatedCommunity(
 private fun handleGetCommunityApi(
     result: NetworkResult<GetCommunityResponse>,
     communityViewModel: CommunityViewModel,
+    user_id: Int,
+    type: String,
 ) {
     when (result) {
         is NetworkResult.Loading -> {
-            communityViewModel.communityList.clear()
+//            communityViewModel.communityList.clear()
             // show a progress bar
             communityViewModel.isLoading = true
             communityViewModel.isDataNull = false
@@ -258,7 +286,26 @@ private fun handleGetCommunityApi(
         is NetworkResult.Success -> {
             // bind data to the view
             communityViewModel.isLoading = false
-            communityViewModel.communityList = result.data!!.data.toMutableStateList()
+            if (result.data?.data?.isEmpty() == true) {
+                communityViewModel.communityList.clear()
+                communityViewModel.communityList.add(
+                    GetCommunityResponseData(
+                        created_at = "",
+                        description = "Your Surrogacy Community",
+                        forum_link = Constants.BIGGEST_ASK_FORUM_LINK,
+                        id = 0,
+                        image = "",
+                        insta_link = Constants.BIGGEST_ASK_INSTA_LINK,
+                        title = "Biggest Ask",
+                        type = type,
+                        updated_at = null,
+                        user_id = user_id
+                    )
+                )
+            } else {
+                communityViewModel.communityList.clear()
+                communityViewModel.communityList = result.data!!.data.toMutableStateList()
+            }
             communityViewModel.isDataNull = communityViewModel.communityList.isEmpty()
         }
         is NetworkResult.Error -> {

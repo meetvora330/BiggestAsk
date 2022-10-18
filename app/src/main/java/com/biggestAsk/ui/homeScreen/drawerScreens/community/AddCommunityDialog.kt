@@ -454,84 +454,87 @@ fun AddCommunityDialog(
 
             Button(
                 onClick = {
+                    var image: MultipartBody.Part? = null
                     when {
-                        TextUtils.isEmpty(tf_text_first.value) &&
+                        TextUtils.isEmpty(tf_text_first.value) /*&&
                                 TextUtils.isEmpty(tf_text_second.value) &&
                                 TextUtils.isEmpty(tf_text_third.value) &&
-                                TextUtils.isEmpty(tf_text_fourth.value) -> {
+                                TextUtils.isEmpty(tf_text_fourth.value)*/ -> {
                             tfTextFirstEmpty.value = true
-                            tfTextSecondEmpty.value = true
-                            tfTextThirdEmpty.value = true
-                            tfTextFourthEmpty.value = true
+//                            tfTextSecondEmpty.value = true
+//                            tfTextThirdEmpty.value = true
+//                            tfTextFourthEmpty.value = true
 
-                            if (!communityViewModel.isImagePresent.value) {
-                                Toast.makeText(context,
-                                    Constants.PLEASE_ADD_LOGO,
-                                    Toast.LENGTH_SHORT)
-                                    .show()
-                            }
+//                            if (!communityViewModel.isImagePresent.value) {
+//                                Toast.makeText(context,
+//                                    Constants.PLEASE_ADD_LOGO,
+//                                    Toast.LENGTH_SHORT)
+//                                    .show()
+//                            }
                         }
                         TextUtils.isEmpty(tf_text_first.value) -> {
                             tfTextFirstEmpty.value = true
                         }
-                        TextUtils.isEmpty(tf_text_second.value) -> {
-                            tfTextSecondEmpty.value = true
-                        }
-                        TextUtils.isEmpty(tf_text_third.value) -> {
-                            tfTextThirdEmpty.value = true
-                        }
-                        TextUtils.isEmpty(tf_text_fourth.value) -> {
-                            tfTextFourthEmpty.value = true
-                        }
-                        !communityViewModel.isImagePresent.value -> {
-                            Toast.makeText(context, Constants.PLEASE_ADD_LOGO, Toast.LENGTH_SHORT)
-                                .show()
-                        }
+//                        TextUtils.isEmpty(tf_text_second.value) -> {
+//                            tfTextSecondEmpty.value = true
+//                        }
+//                        TextUtils.isEmpty(tf_text_third.value) -> {
+//                            tfTextThirdEmpty.value = true
+//                        }
+//                        TextUtils.isEmpty(tf_text_fourth.value) -> {
+//                            tfTextFourthEmpty.value = true
+//                        }
+//                        !communityViewModel.isImagePresent.value -> {
+//                            Toast.makeText(context, Constants.PLEASE_ADD_LOGO, Toast.LENGTH_SHORT)
+//                                .show()
+//                        }
 
-                        communityViewModel.isImagePresent.value && !TextUtils.isEmpty(tf_text_first.value) &&
+
+                        /*communityViewModel.isImagePresent.value &&*/ !TextUtils.isEmpty(
+                        tf_text_first.value) /*&&
                                 !TextUtils.isEmpty(tf_text_second.value) &&
                                 !TextUtils.isEmpty(tf_text_third.value) &&
                                 !TextUtils.isEmpty(tf_text_fourth.value) && !communityViewModel.isValidInstagramUrl.value && Pattern.compile(
                             validUrlRegex)
-                            .matcher(tf_text_fourth.value).matches() -> {
-
-
-                            val image =
-                                communityViewModel.uriPath?.let { convertImageMultiPart(it) }
-                            communityViewModel.createCommunity(
-                                MultipartBody.Part.createFormData(Constants.TITLE,
-                                    tf_text_first.value),
-                                MultipartBody.Part.createFormData(Constants.DESCRIPTION,
-                                    tf_text_second.value),
-                                MultipartBody.Part.createFormData(Constants.FORUM_LINK,
-                                    tf_text_third.value),
-                                MultipartBody.Part.createFormData(Constants.INST_LINK,
-                                    tf_text_fourth.value),
-                                image,
-                                MultipartBody.Part.createFormData(Constants.USER_ID,
-                                    userId.toString()),
-                                MultipartBody.Part.createFormData(Constants.TYPE, type!!)
-                            )
-                            communityViewModel.createCommunityResponse.observe(homeActivity) {
-                                if (it != null) {
-                                    handleCreateCommunityApi(
-                                        result = it,
-                                        communityViewModel = communityViewModel,
-                                        context = context,
-                                        openDialogCustom,
-                                        tf_text_first,
-                                        tf_text_second,
-                                        tf_text_third,
-                                        tf_text_fourth,
-                                        type,
-                                        userId,
-                                        homeActivity
-                                    )
-                                }
+                            .matcher(tf_text_fourth.value).matches()*/ -> {
+                        image = if (communityViewModel.isImagePresent.value) {
+                            communityViewModel.uriPath?.let { convertImageMultiPart(it) }
+                        } else {
+                            null
+                        }
+                        communityViewModel.createCommunity(
+                            MultipartBody.Part.createFormData(Constants.TITLE,
+                                tf_text_first.value),
+                            MultipartBody.Part.createFormData(Constants.DESCRIPTION,
+                                tf_text_second.value),
+                            MultipartBody.Part.createFormData(Constants.FORUM_LINK,
+                                tf_text_third.value),
+                            MultipartBody.Part.createFormData(Constants.INST_LINK,
+                                tf_text_fourth.value),
+                            image,
+                            MultipartBody.Part.createFormData(Constants.USER_ID,
+                                userId.toString()),
+                            MultipartBody.Part.createFormData(Constants.TYPE, type!!)
+                        )
+                        communityViewModel.createCommunityResponse.observe(homeActivity) {
+                            if (it != null) {
+                                handleCreateCommunityApi(
+                                    result = it,
+                                    communityViewModel = communityViewModel,
+                                    context = context,
+                                    openDialogCustom,
+                                    tf_text_first,
+                                    tf_text_second,
+                                    tf_text_third,
+                                    tf_text_fourth,
+                                    type,
+                                    userId,
+                                    homeActivity
+                                )
                             }
                         }
                     }
-
+                    }
                 },
                 modifier = Modifier
                     .padding(top = 31.dp, bottom = 12.dp)

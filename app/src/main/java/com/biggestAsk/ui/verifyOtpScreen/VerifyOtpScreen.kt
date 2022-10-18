@@ -73,7 +73,7 @@ fun VerifyOtpScreen(
     }
     val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
-        verifyOtpViewModel.ticks = 60
+        verifyOtpViewModel.ticks = 120
         while (verifyOtpViewModel.ticks != 0) {
             delay(1.seconds)
             verifyOtpViewModel.ticks--
@@ -198,7 +198,7 @@ fun VerifyOtpScreen(
                     if (TextUtils.isEmpty(otpValue) || otpValue.length < 4) {
                         verifyOtpViewModel.isOtpValueVerified = true
                         if (verifyOtpViewModel.ticks <= 0) {
-                            verifyOtpViewModel.ticks = 60
+                            verifyOtpViewModel.ticks = 120
                             verifyOtpViewModel.isOtpValueVerified = false
                             verifyOtpViewModel.resendOtp(SendOtpRequest(email = email))
                             otpValue = ""
@@ -213,7 +213,7 @@ fun VerifyOtpScreen(
                                 }
                             }
                             loadingText = context.getString(R.string.resending_otp)
-                            verifyOtpViewModel.ticks = 60
+                            verifyOtpViewModel.ticks = 120
                         }
                     } else if (verifyOtpViewModel.ticks <= 0) {
                         verifyOtpViewModel.resendOtp(SendOtpRequest(email = email))
@@ -229,7 +229,7 @@ fun VerifyOtpScreen(
                             }
                         }
                         loadingText = context.getString(R.string.resending_otp)
-                        verifyOtpViewModel.ticks = 60
+                        verifyOtpViewModel.ticks = 120
                     } else {
                         verifyOtpViewModel.checkOtp(CheckOtpRequest(otp = otpValue, email = email))
                         verifyOtpViewModel.checkOtpResponse.observe(mainActivity) {

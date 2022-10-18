@@ -71,11 +71,11 @@ fun MilestonesScreen(
     milestoneViewModel: BottomMilestoneViewModel,
     homeActivity: HomeActivity,
     scaffoldState: ScaffoldState,
+    context: Context,
 ) {
     val addNewMilestoneBottomSheetState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
     )
-    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val c = Calendar.getInstance()
     val year = c.get(Calendar.YEAR)
@@ -85,6 +85,7 @@ fun MilestonesScreen(
     val mMinute = c[Calendar.MINUTE]
     val openDialogReset = remember { mutableStateOf(false) }
     val back = remember { mutableStateOf(true) }
+    val type = PreferenceProvider(context).getValue(Constants.TYPE, "")
 
     val focusManager = LocalFocusManager.current
     LaunchedEffect(Unit) {
@@ -608,8 +609,10 @@ fun MilestonesScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(start = 24.dp, end = 25.dp, top = 24.dp),
-                                    text = stringResource(id = R.string.tittle_bottom_milestone),
+                                    text = if (type == Constants.SURROGATE) stringResource(id = R.string.tittle_bottom_milestone_surrogate) else stringResource(
+                                        id = R.string.tittle_bottom_milestone_intend_parent),
                                     style = MaterialTheme.typography.body2,
+                                    textAlign = TextAlign.Center,
                                     color = Color(0xFF7F7D7C),
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Normal,

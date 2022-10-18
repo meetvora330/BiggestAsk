@@ -60,12 +60,14 @@ fun LoginScreen(
     loginViewModel: LoginViewModel,
     mainActivity: MainActivity,
     context: Context,
+    email: String,
 ) {
     val focusManager = LocalFocusManager.current
     LaunchedEffect(Unit) {
         loginViewModel.isLoginEmailEmpty = false
         loginViewModel.isLoginPassEmpty = false
     }
+    loginViewModel.loginTextEmail = email
     Image(
         modifier = Modifier.fillMaxSize(),
         painter = painterResource(id = R.drawable.img_login_bg),

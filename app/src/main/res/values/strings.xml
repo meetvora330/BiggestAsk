@@ -52,8 +52,7 @@
     <string name="referral_code">Referral Code</string>
     <string name="sign_in">Sign In</string>
     <string name="register_tittle">Get Started</string>
-    <string name="register_sub_tittle">Wait for client suggestions</string>
-    <string name="register_cb_surrogate_mother">I am surrogate Mother</string>
+    <string name="register_sub_tittle">Who are you in this surrogacy journey?</string>
     <string name="register_tv_name">Full name</string>
     <string name="register_et_hint_full_name">Full name</string>
     <string name="please_enter_name">Please enter name</string>
@@ -124,7 +123,7 @@
     <string name="verify_otp">Verifying OTP</string>
     <string name="otp_send_display_message">OTP Resend Successfully</string>
     <string name="url">URL</string>
-    <string name="accept">Accept  </string>
+    <string name="accept">Accept&#160;</string>
     <string name="url_string">https://thebiggestask.com/</string>
     <string name="date_time_concat"> at </string>
     <string name="days_concat"> Day ago</string>
@@ -158,20 +157,20 @@
     <string name="payment_bs_app_for">Applications for Surrogate Parents</string>
     <string name="payment_bs_tittle_account">Account</string>
     <string name="payment_bs_tittle_price">PRICE</string>
-    <string name="payment_tv_text_description">Lorem Ipsum is simply dummy text of the\nprinting and typesetting industry.Lorem \nIpsum has been the industry\'s standard\ndummy text ever since the 1500s.</string>
+    <string name="payment_tv_text_description">Please pick one of the two options below:</string><!--Changes done text of payment screen-->
     <string name="payment_tv_text_option1">Option 1</string>
     <string name="payment_tv_text_option1_trial">Trial free version</string>
     <string name="payment_tv_text_option1_use_app">You can use the app for 7 days</string>
     <string name="payment_tv_text_option2">Option 2</string>
-    <string name="payment_tv_text_option2_price">$3</string>
+    <string name="payment_tv_text_option2_price">$5</string><!--Changes done text-->
     <string name="kate_gorushenko_gmail_com">kate.gorushenko@gmail.com</string>
-    <string name="payment_tv_text_option2_12_subscription">12 month subscription</string>
+    <string name="payment_tv_text_option2_12_subscription">Monthly subscription</string><!--Changes done text-->
     <string name="payment_tv_text_option2_app_av_365">Application available 365 days</string>
     <string name="payment_bs_subscribe_btn_text">Subscribe</string>
 
     <!--   Register Screen  -->
-    <string name="register_radio_btn_surrogate_mother_text">Surrogate Mother</string>
-    <string name="register_radio_btn_intend_parents_text">Intend Parent</string>
+    <string name="register_radio_btn_surrogate_mother_text">Surrogate</string>
+    <string name="register_radio_btn_intend_parents_text">Intended Parent</string>
     <string name="please_enter_valid_email_address">Please enter valid email address</string>
     <string name="invalid_email_or_password">Invalid username or password</string>
     <string name="invalid_email">Invalid email</string>
@@ -195,7 +194,7 @@
 
     <!--  Verify Screen  -->
     <string name="tv_text_verify_screen_tittle">Verify your email address</string>
-    <string name="tv_text_verify_screen_sub_tittle">We have sent the code Verification to Your\nEmail Address</string>
+    <string name="tv_text_verify_screen_sub_tittle">We have sent the code verification to your\nemail address. Please make sure to check your Spam folder.</string>
     <string name="btn_text_verify_screen_continue">Continue</string>
     <string name="btn_text_verify_screen_resend">Resend Otp</string>
     <string name="verify_screen_valid_otp_text">Please enter valid OTP</string>
@@ -208,19 +207,20 @@
     <string name="bottom_home_screen_your_last_question">Your last questions</string>
     <string name="bottom_home_screen_latest_question_tittle">Your latest questions</string>
     <string name="bottom_home_screen_latest_question_sub_tittle">Do you like sports? \nIf so, who is your favorite sports team?</string>
-    <string name="bottom_home_screen_your_surrogate_mother">Your Surrogate Mother:</string>
+    <string name="bottom_home_screen_your_surrogate_mother">Your Surrogate:</string><!--Changes done mother removed-->
     <string name="bottom_home_screen_your_intended_parents">Your Intended Parents:</string>
-    <string name="text_home_bottom_nav_milestone">Milestones</string>
+    <string name="text_home_bottom_nav_milestone">Milestone</string>
     <string name="text_home_bottom_nav_home">Home</string>
     <string name="text_home_bottom_nav_question">Question Bank</string>
     <string name="select_user_name_hint">Select user name</string>
-    <string name="your_surrogate_mother">Your Surrogate Mother</string>
+    <string name="your_surrogate_mother">Your Surrogate</string><!--Changes done mother removed-->
     <string name="parents_hint">Parents</string>
     <string name="show_pregnancy_milestone">Show Pregnancy Milestone</string>
 
 
     <!-- Bottom Milestone Screen   -->
-    <string name="tittle_bottom_milestone">Euismod eget auctor eget risus tristique ipsum urna.</string>
+    <string name="tittle_bottom_milestone_surrogate">Enter the dates of the appointments so that your intended parents can follow along</string>
+    <string name="tittle_bottom_milestone_intend_parent">Check back as your surrogate updates her appointments along the surrogacy journey</string>
     <string name="add_new_milestone_bottom_sheet_tittle">Posuere faucibus laoreet vitae fermentum. Porttitor\nquis egestas porta arcu scelerisque sed sed turpis.</string>
 
     <!-- Bottom Question Screen    -->
@@ -268,14 +268,14 @@
 
     <!--  Your Surrogate Mother -->
     <string name="your_surrogate_mother_invitation_sent">Except Your\nSurrogate Mother</string>
-    <string name="your_surrogate_mother_invitation_not_sent">You don\'t have a surrogate\nmother yet.Add a Surrogate\nMother to your profile</string>
-    <string name="add_surrogate_mother">Add Surrogate Mother</string>
+    <string name="your_surrogate_mother_invitation_not_sent">You don\'t have a surrogate\ncurrently linked to this profile.Add a\nsurrogate profile below.</string><!--changes done text-->
+    <string name="add_surrogate_mother">Add Surrogate</string><!--Changes done removed mother-->
     <string name="invite_surrogate_dialog_tittle">Invite Surrogate</string>
     <string name="invite_surrogate_dialog_email_text">Surrogate\'s Email</string>
     <string name="invite_surrogate_email_hint">Email</string>
     <string name="invite_surrogate_dialog_btn_text">Send invitation</string>
     <string name="title_activity_splash">SplashActivity</string>
-    <string name="label_surrogate_parent_not_available">Expect your parent\n to invite you</string>
+    <string name="label_surrogate_parent_not_available">Check back in after\nyour intended parent connects you to their profile</string><!--Changes Done in text-->
     <string name="label_add_milestone_date">Please add milestone date\n in 2nd milestone \nin milestone listing screen</string>
     <string name="send_invitation">Send invitation</string>
 
@@ -311,9 +311,12 @@
     <string name="add_community">+ Add a new Community</string>
     <string name="add_contact">+ Add a new Contact</string>
     <string name="agency_rep_name">Agency rep name</string>
+    <string name="contact_rep_name">Contact rep name</string>
     <string name="agency_email">Agency email</string>
+    <string name="contact_email">Contact email</string>
     <string name="agency_email_hint">agencyemail@gmail.ua</string>
     <string name="agency_phone_number">Agency phone number</string>
+    <string name="contact_phone_number">Contact phone number</string>
     <string name="minimum_8_character_required">minimum 8 character required</string>
     <string name="to_forum">To Forum</string>
     <string name="instagram">Instagram</string>

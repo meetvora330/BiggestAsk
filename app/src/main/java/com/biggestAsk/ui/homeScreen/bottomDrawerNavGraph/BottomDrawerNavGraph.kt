@@ -66,7 +66,8 @@ fun BottomNavigationDrawerGraph(
                 navHostController = navHostController,
                 milestoneViewModel = bottomMilestoneViewModel,
                 homeActivity = homeActivity,
-                scaffoldState = scaffoldState
+                scaffoldState = scaffoldState,
+                context = context
             )
         }
         composable(

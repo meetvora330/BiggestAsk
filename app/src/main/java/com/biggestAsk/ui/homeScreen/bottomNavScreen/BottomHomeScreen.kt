@@ -76,7 +76,8 @@ fun BottomHomeScreen(
             userId = userId,
             type = type!!,
             homeActivity = homeActivity,
-            partnerId = partnerId
+            partnerId = partnerId,
+            context = context
         )
     }
     BottomSheetScaffold(
@@ -794,6 +795,7 @@ fun updateHomeScreenData(
     type: String,
     homeActivity: HomeActivity,
     partnerId: Int,
+    context: Context,
 ) {
     bottomHomeViewModel.getPregnancyMilestone(
         GetPregnancyMilestoneRequest(
