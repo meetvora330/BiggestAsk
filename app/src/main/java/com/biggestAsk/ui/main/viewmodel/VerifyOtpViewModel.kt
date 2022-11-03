@@ -24,6 +24,7 @@ class VerifyOtpViewModel @Inject constructor(
 
     var isOtpValueVerified: Boolean by mutableStateOf(false)
     var ticks: Int by mutableStateOf(60)
+    var minute: Int by mutableStateOf(0)
     var isLoading: Boolean by mutableStateOf(false)
     var checkOtpResponse: MutableLiveData<NetworkResult<CommonResponse>> = MutableLiveData()
     var reSendOtpResponse: MutableLiveData<NetworkResult<CommonResponse>> = MutableLiveData()

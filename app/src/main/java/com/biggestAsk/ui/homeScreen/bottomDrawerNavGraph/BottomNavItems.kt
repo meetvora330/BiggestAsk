@@ -10,7 +10,7 @@ sealed class BottomNavItems(
     @DrawableRes val selectedIcon: Int,
     val navRoute: String,
 ) {
-    object Milestones : BottomNavItems(
+    object Milestone : BottomNavItems(
         tittle = Constants.MILESTONE,
         defaultIcon = R.drawable.ic_img_bottom_nav_icon_milestone,
         selectedIcon = R.drawable.img_milestone_bottom_bar_selected,

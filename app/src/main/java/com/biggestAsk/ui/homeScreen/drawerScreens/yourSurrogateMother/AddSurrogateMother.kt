@@ -89,7 +89,7 @@ fun AddSurrogateMother(
         Text(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = if (surrogateViewModel.invitationSend.value) 60.dp else 22.dp)
+                .padding(top = if (surrogateViewModel.invitationSend.value) 60.dp else 22.dp, start = 10.dp, end = 10.dp)
                 .constrainAs(tv_tittle_your_surrogate_mother) {
                     top.linkTo(parent.top)
                     start.linkTo(parent.start)

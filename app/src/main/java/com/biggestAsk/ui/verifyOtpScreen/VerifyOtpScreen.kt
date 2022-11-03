@@ -63,20 +63,24 @@ fun VerifyOtpScreen(
     navHostController: NavHostController,
     modifier: Modifier,
     mainActivity: MainActivity,
-    verifyOtpViewModel: VerifyOtpViewModel
+    verifyOtpViewModel: VerifyOtpViewModel,
 ) {
     var otpValue by remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
-
     var loadingText by remember {
         mutableStateOf("")
     }
+    val isSmall = if (verifyOtpViewModel.ticks < 10) "0" else ""
     val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
-        verifyOtpViewModel.ticks = 120
-        while (verifyOtpViewModel.ticks != 0) {
-            delay(1.seconds)
-            verifyOtpViewModel.ticks--
+        verifyOtpViewModel.minute = 120
+        repeat(2) {
+            verifyOtpViewModel.ticks = 60
+            while (verifyOtpViewModel.ticks != 0) {
+                delay(1.seconds)
+                verifyOtpViewModel.ticks--
+                verifyOtpViewModel.minute--
+            }
         }
     }
     val context = LocalContext.current
@@ -175,9 +179,10 @@ fun VerifyOtpScreen(
         }
         Text(
             modifier = modifier
-                .alpha(if (verifyOtpViewModel.ticks < 1) 0f else 1f).width(200.dp)
+                .alpha(if (verifyOtpViewModel.ticks < 1) 0f else 1f)
+                .width(200.dp)
                 .align(CenterHorizontally),
-            text = "Resend Code: 0:${verifyOtpViewModel.ticks}",
+            text = if (verifyOtpViewModel.minute > 60) "Resend Code: 1:$isSmall${verifyOtpViewModel.ticks}" else "Resend Code: 0:$isSmall${verifyOtpViewModel.ticks}",
             fontSize = 16.sp,
             textAlign = TextAlign.Center,
             fontStyle = FontStyle.Normal,
@@ -198,7 +203,6 @@ fun VerifyOtpScreen(
                     if (TextUtils.isEmpty(otpValue) || otpValue.length < 4) {
                         verifyOtpViewModel.isOtpValueVerified = true
                         if (verifyOtpViewModel.ticks <= 0) {
-                            verifyOtpViewModel.ticks = 120
                             verifyOtpViewModel.isOtpValueVerified = false
                             verifyOtpViewModel.resendOtp(SendOtpRequest(email = email))
                             otpValue = ""
@@ -213,7 +217,6 @@ fun VerifyOtpScreen(
                                 }
                             }
                             loadingText = context.getString(R.string.resending_otp)
-                            verifyOtpViewModel.ticks = 120
                         }
                     } else if (verifyOtpViewModel.ticks <= 0) {
                         verifyOtpViewModel.resendOtp(SendOtpRequest(email = email))
@@ -229,7 +232,7 @@ fun VerifyOtpScreen(
                             }
                         }
                         loadingText = context.getString(R.string.resending_otp)
-                        verifyOtpViewModel.ticks = 120
+                        verifyOtpViewModel.ticks = 60
                     } else {
                         verifyOtpViewModel.checkOtp(CheckOtpRequest(otp = otpValue, email = email))
                         verifyOtpViewModel.checkOtpResponse.observe(mainActivity) {
@@ -279,7 +282,7 @@ private fun handleUserResendOtp(
     result: NetworkResult<CommonResponse>,
     verifyOtpViewModel: VerifyOtpViewModel,
     context: Context,
-    coroutineScope: CoroutineScope
+    coroutineScope: CoroutineScope,
 ) {
     when (result) {
         is NetworkResult.Loading -> {
@@ -298,9 +301,14 @@ private fun handleUserResendOtp(
                 .show()
             ticker?.cancel()
             ticker = coroutineScope.launch {
-                while (verifyOtpViewModel.ticks != 0) {
-                    delay(1.seconds)
-                    verifyOtpViewModel.ticks--
+                verifyOtpViewModel.minute = 120
+                repeat(2) {
+                    verifyOtpViewModel.ticks = 60
+                    while (verifyOtpViewModel.ticks != 0) {
+                        delay(1.seconds)
+                        verifyOtpViewModel.ticks--
+                        verifyOtpViewModel.minute--
+                    }
                 }
             }
             verifyOtpViewModel.isLoading = false
@@ -320,7 +328,7 @@ private fun handleUserData(
     result: NetworkResult<CommonResponse>,
     email: String,
     verifyOtpViewModel: VerifyOtpViewModel,
-    context: Context
+    context: Context,
 ) {
     when (result) {
         is NetworkResult.Loading -> {
@@ -352,7 +360,7 @@ private fun CharView(
     containerSize: Dp,
     charBackground: Color = Color.Transparent,
     password: Boolean = false,
-    passwordChar: String = ""
+    passwordChar: String = "",
 ) {
     val modifier = Modifier
         .width(containerSize)

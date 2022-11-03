@@ -4,7 +4,6 @@ package com.biggestAsk.ui.homeScreen
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -159,7 +158,7 @@ fun HomeScreen(
                                     BottomNavScreen.AddNewMileStones.route,
                                     true
                                 )
-                                navController.navigate(BottomNavItems.Milestones.navRoute)
+                                navController.navigate(BottomNavItems.Milestone.navRoute)
                                 navController.popBackStack(BottomNavScreen.MileStones.route, true)
                             }
                             if (notificationViewModel.isNotificationDetailsScreen.value) {
@@ -558,7 +557,7 @@ fun currentRoute(
             viewModel.isSettingSubTermsOfServiceScreen.value = false
             viewModel.isSettingSubPrivacyPolicyScreen.value = false
         }
-        BottomNavItems.Milestones.navRoute -> {
+        BottomNavItems.Milestone.navRoute -> {
             notificationViewModel.isNotificationScreenVisible.value = false
             notificationViewModel.isSearchClicked.value = false
             viewModel.toolbarTittle = stringResource(id = R.string.text_home_bottom_nav_milestone)
@@ -990,7 +989,7 @@ fun NavigationDrawerContent(
                     provider.getValue(Constants.PREGNANCY_MILESTONE_STATUS, "")
                 homeViewModel.getPregnancyStatus =
                     if (getPregnancyStatus == Constants.ACTIVE) true else if (getPregnancyStatus == Constants.IN_ACTIVE) false else false
-                if (getPregnancyStatus == Constants.ACTIVE){
+                if (getPregnancyStatus == Constants.ACTIVE) {
                     homeViewModel.getPregnancyMilestone(
                         GetPregnancyMilestoneRequest(
                             user_id = userId,
@@ -1000,9 +999,9 @@ fun NavigationDrawerContent(
                 }
                 Text(
                     text = stringResource(id = R.string.show_pregnancy_milestone),
-                    style = MaterialTheme.typography.body1,
                     fontSize = 16.sp,
-                    color = Color.Black
+                    color = Color.Black,
+                    style = MaterialTheme.typography.body1,
                 )
                 Switch(
                     modifier = Modifier
@@ -1130,6 +1129,7 @@ fun getPregnancyStatus(
             )
         }
     }
+
 }
 
 private fun handlePregnancyStatusData(
@@ -1199,7 +1199,7 @@ object ClearRippleTheme : RippleTheme {
 
 @Composable
 fun BottomNavigation(navController: NavController, viewModel: MainViewModel) {
-    val navItems = listOf(BottomNavItems.Milestones, BottomNavItems.Home, BottomNavItems.Questions)
+    val navItems = listOf(BottomNavItems.Milestone, BottomNavItems.Home, BottomNavItems.Questions)
     CompositionLocalProvider(
         LocalRippleTheme provides ClearRippleTheme
     ) {

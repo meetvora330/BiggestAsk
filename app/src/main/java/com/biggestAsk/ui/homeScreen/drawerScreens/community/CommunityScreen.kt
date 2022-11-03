@@ -9,7 +9,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -286,26 +285,20 @@ private fun handleGetCommunityApi(
         is NetworkResult.Success -> {
             // bind data to the view
             communityViewModel.isLoading = false
-            if (result.data?.data?.isEmpty() == true) {
-                communityViewModel.communityList.clear()
-                communityViewModel.communityList.add(
-                    GetCommunityResponseData(
-                        created_at = "",
-                        description = "Your Surrogacy Community",
-                        forum_link = Constants.BIGGEST_ASK_FORUM_LINK,
-                        id = 0,
-                        image = "",
-                        insta_link = Constants.BIGGEST_ASK_INSTA_LINK,
-                        title = "Biggest Ask",
-                        type = type,
-                        updated_at = null,
-                        user_id = user_id
-                    )
-                )
-            } else {
-                communityViewModel.communityList.clear()
-                communityViewModel.communityList = result.data!!.data.toMutableStateList()
-            }
+            communityViewModel.communityList.clear()
+            communityViewModel.communityList.add(0, GetCommunityResponseData(
+                created_at = "",
+                description = "Your Surrogacy Community",
+                forum_link = Constants.BIGGEST_ASK_FORUM_LINK,
+                id = 0,
+                image = "https://biggestaskbackend.justcodenow.com/images/logo/logo.png",
+                insta_link = Constants.BIGGEST_ASK_INSTA_LINK,
+                title = "Biggest Ask",
+                type = type,
+                updated_at = null,
+                user_id = user_id
+            ))
+            communityViewModel.communityList.addAll(result.data!!.data)
             communityViewModel.isDataNull = communityViewModel.communityList.isEmpty()
         }
         is NetworkResult.Error -> {

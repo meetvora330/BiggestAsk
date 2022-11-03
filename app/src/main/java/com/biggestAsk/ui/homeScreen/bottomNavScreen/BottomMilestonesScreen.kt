@@ -39,6 +39,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import com.biggestAsk.data.model.request.CreateMilestoneRequest
@@ -59,6 +60,8 @@ import com.biggestAsk.util.*
 import com.example.biggestAsk.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.text.DateFormat
+import java.text.SimpleDateFormat
 import java.util.*
 
 @OptIn(
@@ -767,6 +770,7 @@ fun MilestonesScreen(
                                             Card(
                                                 modifier = Modifier
                                                     .fillMaxWidth()
+                                                    .wrapContentHeight()
                                                     .padding(start = 24.dp, end = 24.dp)
                                                     .combinedClickable(
                                                         onClick = {
@@ -794,7 +798,8 @@ fun MilestonesScreen(
                                                                 milestoneViewModel.milestoneList[index].id
                                                                     ?.let { it1 ->
                                                                         BottomNavScreen.AddNewMileStones.editMilestone(
-                                                                            id = it1
+                                                                            id = it1,
+                                                                            index = index
                                                                         )
                                                                     }
                                                                     ?.let { it2 ->
@@ -843,47 +848,73 @@ fun MilestonesScreen(
                                                     Row(
                                                         modifier = Modifier
                                                             .fillMaxWidth()
-                                                            .padding(bottom = 18.dp)
+                                                            .padding(bottom = 10.dp)
                                                     ) {
-                                                        Image(
-                                                            modifier = Modifier.padding(
-                                                                top = 33.dp,
-                                                                start = 24.dp
-                                                            ),
-                                                            painter = painterResource(id = R.drawable.img_medical_calender_icon),
-                                                            contentDescription = stringResource(id = R.string.content_description),
-                                                        )
-                                                        var localDate: String? = null
-                                                        var localTime: String? = null
-                                                        if (milestoneViewModel.milestoneList[index].date?.isNotEmpty() == true) {
-                                                            val dateTime =
-                                                                milestoneViewModel.milestoneList[index].date?.let { it1 ->
-                                                                    changeLocalFormat(it1)?.trim()
+                                                        ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
+                                                            val (txt_date_time, img_calendar, img_location) = createRefs()
+                                                            var localDate: String? = null
+                                                            var localTime: String? = null
+                                                            if (milestoneViewModel.milestoneList[index].date?.isNotEmpty() == true) {
+                                                                val dateTime =
+                                                                    milestoneViewModel.milestoneList[index].date?.let { it1 ->
+                                                                        changeLocalFormat(it1,
+                                                                            Constants.DATE_FORMAT_UTC,
+                                                                            Constants.DATE_FORMAT_LOCAL)?.trim()
+                                                                    }
+                                                                localDate = dateTime?.let {
+                                                                    changeLocalDateFormat(it.trim())
                                                                 }
-                                                            localDate = dateTime?.let {
-                                                                changeLocalDateFormat(it.trim())
+                                                                localTime = dateTime?.let {
+                                                                    changeLocalTimeFormat(it.trim())
+                                                                }
                                                             }
-                                                            localTime = dateTime?.let {
-                                                                changeLocalTimeFormat(it.trim())
-                                                            }
-                                                        }
-                                                        Text(
-                                                            modifier = Modifier.padding(
-                                                                start = 8.dp,
-                                                                top = 35.dp
-                                                            ),
-                                                            text = if (milestoneViewModel.milestoneList[index].date != null && milestoneViewModel.milestoneList[index].date != "") "$localDate at $localTime" else "N/A",
-                                                            style = MaterialTheme.typography.body2,
-                                                            color = Color(0xFF9F9D9B),
-                                                            fontSize = 13.sp,
-                                                        )
-                                                        Row(
-                                                            modifier = Modifier.fillMaxWidth(),
-                                                            verticalAlignment = Alignment.Top,
-                                                            horizontalArrangement = Arrangement.End
-                                                        ) {
+                                                            val getTimeZoneShort: DateFormat =
+                                                                SimpleDateFormat("zzzz", Locale.US)
+                                                            val timeZoneLong: String =
+                                                                getTimeZoneShort.format(Calendar.getInstance().time)
                                                             Image(
                                                                 modifier = Modifier
+                                                                    .constrainAs(
+                                                                        img_calendar) {
+                                                                        start.linkTo(parent.start)
+                                                                        top.linkTo(parent.top)
+                                                                    }
+                                                                    .padding(
+                                                                        top = 33.dp,
+                                                                        start = 24.dp
+                                                                    ),
+                                                                painter = painterResource(id = R.drawable.img_medical_calender_icon),
+                                                                contentDescription = stringResource(
+                                                                    id = R.string.content_description),
+                                                            )
+                                                            Text(
+                                                                modifier = Modifier
+                                                                    .padding(
+                                                                        start = 8.dp,
+                                                                        top = 35.dp,
+                                                                        end = 10.dp
+                                                                    )
+                                                                    .constrainAs(txt_date_time) {
+                                                                        start.linkTo(img_calendar.end)
+                                                                        top.linkTo(parent.top)
+                                                                        end.linkTo(img_location.start)
+                                                                        width =
+                                                                            Dimension.fillToConstraints
+                                                                    },
+                                                                text = if (milestoneViewModel.milestoneList[index].date != null && milestoneViewModel.milestoneList[index].date != "") "$localDate at $localTime $timeZoneLong" else "N/A",
+                                                                style = MaterialTheme.typography.body2,
+                                                                color = Color(0xFF9F9D9B),
+                                                                fontSize = 13.sp,
+                                                                textAlign = TextAlign.Start,
+                                                                maxLines = 2
+                                                            )
+                                                            Image(
+                                                                modifier = Modifier
+                                                                    .constrainAs(img_location) {
+                                                                        start.linkTo(txt_date_time.end)
+                                                                        top.linkTo(parent.top)
+                                                                        end.linkTo(parent.end)
+                                                                    }
                                                                     .padding(
                                                                         top = 32.dp,
                                                                         end = 28.dp
@@ -893,6 +924,13 @@ fun MilestonesScreen(
                                                                     id = R.string.content_description),
                                                             )
                                                         }
+//                                                        Row(
+//                                                            modifier = Modifier.fillMaxWidth(),
+//                                                            verticalAlignment = Alignment.Top,
+//                                                            horizontalArrangement = Arrangement.End
+//                                                        ) {
+//
+//                                                        }
                                                         Card(
                                                             modifier = Modifier
                                                                 .fillMaxWidth()

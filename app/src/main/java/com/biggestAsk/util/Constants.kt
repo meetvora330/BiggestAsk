@@ -106,7 +106,7 @@ object Constants {
     const val BOTTOM_NAV_SURROGATE_PARENT_NOT_ASSIGN_SCREEN = "surrogate_parent_not_assign"
 
     //BottomNavItems
-    const val MILESTONE = "Milestone"
+    const val MILESTONE = "Milestones"
     const val HOME = "Home"
     const val QUESTIONS = "Questions"
 
@@ -147,6 +147,7 @@ object Constants {
     const val NOTIFICATION_COUNT = "notification_count"
     const val ACTIVE = "active"
     const val IN_ACTIVE = "inactive"
+    const val SELECTED_MILESTONE_INDEX = "selected_milestone_index"
 
 
     //EditMileStone Screen

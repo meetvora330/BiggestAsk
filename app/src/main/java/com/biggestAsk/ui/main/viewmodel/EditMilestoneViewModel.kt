@@ -24,6 +24,8 @@ class EditMilestoneViewModel @Inject constructor(
 ) : AndroidViewModel(application) {
     var editMilestoneTittle: MutableState<String> = mutableStateOf("")
     var editMilestoneTittleEmpty: MutableState<Boolean> = mutableStateOf(false)
+    var isEditMilestoneDateProper: MutableState<Boolean> = mutableStateOf(false)
+    var commonMilestoneList = mutableStateListOf<Milestone>()
     var editMilestoneDate: MutableState<String> = mutableStateOf("")
     var editMilestoneTitleImage: MutableState<String> = mutableStateOf("")
     var editMilestoneDateEmpty: MutableState<Boolean> = mutableStateOf(false)

@@ -254,7 +254,7 @@ fun PaymentScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(top = 2.dp, start = 16.dp, bottom = 20.dp),
-                                text = stringResource(id = R.string.payment_tv_text_option2_app_av_365),
+                                text = stringResource(id = R.string.payment_tv_text_option2_app_av_1month),
                                 fontSize = 15.sp,
                                 color = Color(0xFFF8F5F2),
                                 fontWeight = FontWeight.Light,

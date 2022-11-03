@@ -5,7 +5,7 @@ data class MilestoneData(
     val id: Int,
     val location: String,
     val milestone_id: Int,
-    val milestone_image: String,
+    val milestone_image: String?,
     val parent_id: Int,
     val parent_note: String,
     val share_note_with_biggestask_status: Int,

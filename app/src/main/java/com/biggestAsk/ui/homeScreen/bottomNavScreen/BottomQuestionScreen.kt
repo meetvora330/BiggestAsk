@@ -313,7 +313,7 @@ fun BottomQuestionScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = 24.dp, end = 24.dp, top = 30.dp),
-                        text = stringResource(id = R.string.bottom_ques_screen_desc),
+                        text = questionViewModel.questionBankInfo,
                         style = MaterialTheme.typography.body2,
                         fontWeight = FontWeight.Normal,
                         fontSize = 16.sp,
@@ -687,8 +687,10 @@ private fun handleQuestionData(
                 questionViewModel.questionScreenQuestionId = result.data.data.id
                 questionViewModel.questionScreenLatestQuestion = result.data.data.question
                 questionViewModel.questionParentList.clear()
-                if (result.data.user_name.isNotEmpty()) {
-                    questionViewModel.questionParentList.addAll(result.data.user_name)
+                result.data.user_name?.forEach {
+                    if (it != null) {
+                        questionViewModel.questionParentList.add(it)
+                    }
                 }
             }
         }

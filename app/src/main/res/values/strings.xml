@@ -165,7 +165,7 @@
     <string name="payment_tv_text_option2_price">$5</string><!--Changes done text-->
     <string name="kate_gorushenko_gmail_com">kate.gorushenko@gmail.com</string>
     <string name="payment_tv_text_option2_12_subscription">Monthly subscription</string><!--Changes done text-->
-    <string name="payment_tv_text_option2_app_av_365">Application available 365 days</string>
+    <string name="payment_tv_text_option2_app_av_1month">Application available for 1 Month</string>
     <string name="payment_bs_subscribe_btn_text">Subscribe</string>
 
     <!--   Register Screen  -->
@@ -209,7 +209,7 @@
     <string name="bottom_home_screen_latest_question_sub_tittle">Do you like sports? \nIf so, who is your favorite sports team?</string>
     <string name="bottom_home_screen_your_surrogate_mother">Your Surrogate:</string><!--Changes done mother removed-->
     <string name="bottom_home_screen_your_intended_parents">Your Intended Parents:</string>
-    <string name="text_home_bottom_nav_milestone">Milestone</string>
+    <string name="text_home_bottom_nav_milestone">Milestones</string>
     <string name="text_home_bottom_nav_home">Home</string>
     <string name="text_home_bottom_nav_question">Question Bank</string>
     <string name="select_user_name_hint">Select user name</string>
@@ -275,7 +275,7 @@
     <string name="invite_surrogate_email_hint">Email</string>
     <string name="invite_surrogate_dialog_btn_text">Send invitation</string>
     <string name="title_activity_splash">SplashActivity</string>
-    <string name="label_surrogate_parent_not_available">Check back in after\nyour intended parent connects you to their profile</string><!--Changes Done in text-->
+    <string name="label_surrogate_parent_not_available">Check back in after\nyour intended parent connects you\nto their profile</string><!--Changes Done in text-->
     <string name="label_add_milestone_date">Please add milestone date\n in 2nd milestone \nin milestone listing screen</string>
     <string name="send_invitation">Send invitation</string>
 
@@ -301,7 +301,7 @@
     <!--    Create Contact and Community Dialog-->
     <string name="create_community">Create Community</string>
     <string name="create_contact">Create Contact</string>
-    <string name="the_happy_agency">The Happy Agency</string>
+    <string name="the_happy_agency">The Happy Community</string>
     <string name="jane_doe">Jane Doe</string>
     <string name="description">Description</string>
     <string name="link_to_forum">Link to Forum</string>

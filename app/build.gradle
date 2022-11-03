@@ -14,8 +14,8 @@ android {
         applicationId "com.biggestAsk"
         minSdkVersion 21
         targetSdkVersion 32
-        versionCode 7
-        versionName "1.6"
+        versionCode 8
+        versionName "1.7"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         vectorDrawables {

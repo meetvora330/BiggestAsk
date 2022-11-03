@@ -85,16 +85,18 @@ fun SimpleDropDown(
                     selectedText = label
                     expanded = false
                 }) {
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        text = label,
-                        style = MaterialTheme.typography.body2.copy(
-                            fontWeight = FontWeight.W600,
-                            fontSize = 16.sp,
-                            color = Color.Black
-                        ),
-                    )
+                    if (label != null && label!="") {
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            text = label,
+                            style = MaterialTheme.typography.body2.copy(
+                                fontWeight = FontWeight.W600,
+                                fontSize = 16.sp,
+                                color = Color.Black
+                            ),
+                        )
+                    }
                 }
             }
         }

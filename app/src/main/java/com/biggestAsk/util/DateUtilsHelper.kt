@@ -20,9 +20,9 @@ fun changeDateFormat(date: String): String? {
 }
 
 @SuppressLint("SimpleDateFormat")
-fun changeLocalFormat(date: String): String? {
-    val format1 = SimpleDateFormat(Constants.DATE_FORMAT_UTC)
-    val format2 = SimpleDateFormat(Constants.DATE_FORMAT_LOCAL)
+fun changeLocalFormat(date: String,input_date_format:String,output_date_format:String): String? {
+    val format1 = SimpleDateFormat(input_date_format)
+    val format2 = SimpleDateFormat(output_date_format)
     var mDate: Date? = null
     try {
         mDate = format1.parse(date)
@@ -31,6 +31,7 @@ fun changeLocalFormat(date: String): String? {
     }
     return format2.format(mDate!!)
 }
+
 
 @SuppressLint("SimpleDateFormat")
 fun changeLocalDateFormat(date: String):String?{

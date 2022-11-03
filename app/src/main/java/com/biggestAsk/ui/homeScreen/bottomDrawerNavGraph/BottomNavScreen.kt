@@ -1,6 +1,7 @@
 package com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph
 
 import com.biggestAsk.util.Constants
+import com.biggestAsk.util.Constants.SELECTED_MILESTONE_INDEX
 
 const val ADD_NEW_MILESTONE_ARGS_ID = Constants.MILESTONE_ID
 
@@ -14,11 +15,12 @@ sealed class BottomNavScreen(
         BottomNavScreen(Constants.BOTTOM_NAV_SURROGATE_PARENT_NOT_ASSIGN_SCREEN)
 
     object AddNewMileStones :
-        BottomNavScreen("edit_milestone/{$ADD_NEW_MILESTONE_ARGS_ID}") {
+        BottomNavScreen("edit_milestone/{$ADD_NEW_MILESTONE_ARGS_ID}/{$SELECTED_MILESTONE_INDEX}") {
         fun editMilestone(
             id: Int,
+            index:Int
         ): String {
-            return "edit_milestone/$id"
+            return "edit_milestone/$id/$index"
         }
     }
 }

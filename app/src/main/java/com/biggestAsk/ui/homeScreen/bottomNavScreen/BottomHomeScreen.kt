@@ -51,6 +51,9 @@ import com.example.biggestAsk.R
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
 @OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -411,7 +414,8 @@ fun BottomHomeScreen(
                                         Text(
                                             modifier = Modifier.padding(
                                                 start = 24.dp,
-                                                top = 19.dp
+                                                top = 19.dp,
+                                                end = 24.dp
                                             ),
                                             text = bottomHomeViewModel.homeScreenImportantQuestion,
                                             color = Color.Black,
@@ -556,13 +560,17 @@ fun BottomHomeScreen(
                                             painter = painterResource(id = R.drawable.img_medical_calender_icon),
                                             contentDescription = stringResource(id = R.string.content_description),
                                         )
+                                        val getTimeZoneLong: DateFormat =
+                                            SimpleDateFormat("zzzz", Locale.US)
+                                        val timeZoneLong =
+                                            getTimeZoneLong.format(Calendar.getInstance().time)
                                         Text(
                                             modifier = Modifier.padding(
                                                 start = 8.dp,
                                                 top = 17.dp
                                             ),
                                             text = bottomHomeViewModel.nearestMilestoneDate + " " + stringResource(
-                                                id = R.string.date_time_concat) + " " + bottomHomeViewModel.nearestMilestoneTime,
+                                                id = R.string.date_time_concat) + " " + bottomHomeViewModel.nearestMilestoneTime +" "+ timeZoneLong,
                                             color = Color(0xFF9F9D9B),
                                             style = MaterialTheme.typography.body2,
                                             fontWeight = FontWeight.W400,
@@ -1021,7 +1029,7 @@ private fun handleHomeQuestionData(
                 bottomHomeViewModel.homeScreenLatestQuestion = result.data.data.question
                 bottomHomeViewModel.homeScreenQuestionAns = ""
                 bottomHomeViewModel.parentList.clear()
-                result.data.user_name.forEach {
+                result.data.user_name?.forEach {
                     if (it != null)
                         bottomHomeViewModel.parentList.add(it)
                 }
@@ -1056,12 +1064,13 @@ private fun handleNearestMilestoneData(
             bottomHomeViewModel.nearestMilestoneTittle = result.data?.title!!
             Log.d("TAG", "d: ${result.data.date}")
             if (result.data.date.isNotEmpty()) {
-                val dateTime = changeLocalFormat(result.data.date)
+                val dateTime = changeLocalFormat(result.data.date,Constants.DATE_FORMAT_UTC,Constants.DATE_FORMAT_LOCAL)
                 Log.d("TAG", "handleNearestMilestoneData: $dateTime")
                 val localDate = dateTime?.let { changeLocalDateFormat(it.trim()) }
                 val localTime = dateTime?.let { changeLocalTimeFormat(it.trim()) }
                 if (localDate != null) {
                     bottomHomeViewModel.nearestMilestoneDate = localDate
+                    Log.d("TAG", "handleNearestMilestoneData: ${TimeZone.getTimeZone(result.data.date)}")
                 } else {
                     bottomHomeViewModel.nearestMilestoneDate = ""
                 }

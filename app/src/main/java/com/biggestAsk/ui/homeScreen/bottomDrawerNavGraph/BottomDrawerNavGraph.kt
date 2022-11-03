@@ -26,6 +26,7 @@ import com.biggestAsk.ui.homeScreen.drawerScreens.yourSurrogateMother.SurrogateP
 import com.biggestAsk.ui.homeScreen.drawerScreens.yourSurrogateMother.YourSurrogateMother
 import com.biggestAsk.ui.main.viewmodel.*
 import com.biggestAsk.util.Constants
+import com.biggestAsk.util.Constants.SELECTED_MILESTONE_INDEX
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 import java.util.*
@@ -120,13 +121,17 @@ fun BottomNavigationDrawerGraph(
             arguments = listOf(
                 navArgument(ADD_NEW_MILESTONE_ARGS_ID) {
                     type = NavType.IntType
+                }, navArgument(SELECTED_MILESTONE_INDEX) {
+                    type = NavType.IntType
                 })
         ) {
             EditMilestoneScreen(
                 navHostController,
                 it.arguments?.getInt(ADD_NEW_MILESTONE_ARGS_ID)!!,
                 editMilestoneViewModel,
-                homeActivity = homeActivity
+                homeActivity = homeActivity,
+                milestoneViewModel = bottomMilestoneViewModel,
+                selectedMilestoneIndex = it.arguments?.getInt(SELECTED_MILESTONE_INDEX)!!
             )
         }
         composable(route = NavDrawerItem.IntendedParents.route) {
