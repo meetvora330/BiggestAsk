@@ -391,14 +391,16 @@ fun BottomHomeScreen(
                                                 lineHeight = 22.sp
                                             )
                                         }
-                                        GlideImage(
-                                            modifier = Modifier
-                                                .width(100.dp)
-                                                .height(110.dp)
-                                                .padding(top = 10.dp, start = 24.dp),
-                                            imageModel = bottomHomeViewModel.pregnancyImageUrl,
-                                            contentScale = ContentScale.Crop
-                                        )
+                                        Column(modifier = Modifier.fillMaxWidth(),horizontalAlignment = Alignment.End) {
+                                            GlideImage(
+                                                modifier = Modifier
+                                                    .width(100.dp)
+                                                    .height(110.dp)
+                                                    .padding(top = 10.dp, start = 24.dp),
+                                                imageModel = bottomHomeViewModel.pregnancyImageUrl,
+                                                contentScale = ContentScale.Crop
+                                            )
+                                        }
                                     }
                                 }
                             } else if (!bottomHomeViewModel.isQuestionDataEmpty) {
@@ -570,7 +572,7 @@ fun BottomHomeScreen(
                                                 top = 17.dp
                                             ),
                                             text = bottomHomeViewModel.nearestMilestoneDate + " " + stringResource(
-                                                id = R.string.date_time_concat) + " " + bottomHomeViewModel.nearestMilestoneTime +" "+ timeZoneLong,
+                                                id = R.string.date_time_concat) + " " + bottomHomeViewModel.nearestMilestoneTime + " " + timeZoneLong,
                                             color = Color(0xFF9F9D9B),
                                             style = MaterialTheme.typography.body2,
                                             fontWeight = FontWeight.W400,
@@ -739,7 +741,7 @@ fun BottomHomeScreen(
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .padding(top = 10.dp, end = 24.dp),
-                                            text = "${bottomHomeViewModel.intendedParentDays} Day ago",
+                                            text = "${bottomHomeViewModel.intendedParentDays} Days ago",
                                             color = Color(0xFF9F9D9B),
                                             style = MaterialTheme.typography.body2,
                                             fontSize = 14.sp,
@@ -1064,13 +1066,16 @@ private fun handleNearestMilestoneData(
             bottomHomeViewModel.nearestMilestoneTittle = result.data?.title!!
             Log.d("TAG", "d: ${result.data.date}")
             if (result.data.date.isNotEmpty()) {
-                val dateTime = changeLocalFormat(result.data.date,Constants.DATE_FORMAT_UTC,Constants.DATE_FORMAT_LOCAL)
+                val dateTime = changeLocalFormat(result.data.date,
+                    Constants.DATE_FORMAT_UTC,
+                    Constants.DATE_FORMAT_LOCAL)
                 Log.d("TAG", "handleNearestMilestoneData: $dateTime")
                 val localDate = dateTime?.let { changeLocalDateFormat(it.trim()) }
                 val localTime = dateTime?.let { changeLocalTimeFormat(it.trim()) }
                 if (localDate != null) {
                     bottomHomeViewModel.nearestMilestoneDate = localDate
-                    Log.d("TAG", "handleNearestMilestoneData: ${TimeZone.getTimeZone(result.data.date)}")
+                    Log.d("TAG",
+                        "handleNearestMilestoneData: ${TimeZone.getTimeZone(result.data.date)}")
                 } else {
                     bottomHomeViewModel.nearestMilestoneDate = ""
                 }

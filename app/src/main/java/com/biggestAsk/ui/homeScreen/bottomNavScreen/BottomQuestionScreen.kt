@@ -216,6 +216,9 @@ fun BottomQuestionScreen(
                         color = Color.Black
                     )
                 )
+            } else {
+                selectedUser.value =
+                    PreferenceProvider(context).getValue(Constants.USER_NAME, "").toString()
             }
             Row(
                 modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom

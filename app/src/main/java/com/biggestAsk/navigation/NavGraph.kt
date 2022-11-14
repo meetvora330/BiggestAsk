@@ -166,11 +166,8 @@ fun SetUpNavGraph(
                 }
             )
         ) {
-            val email :String = if (it.arguments?.get(REGISTERED_EMAIL).toString().equals(null)){
-                ""
-            }else{
+            val email: String =
                 it.arguments?.get(REGISTERED_EMAIL).toString()
-            }
             LoginScreen(
                 navHostController = navHostController,
                 mainActivity = mainActivity,

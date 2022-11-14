@@ -520,12 +520,8 @@ fun CreateContactDialog(
                         TextUtils.isEmpty(tf_text_fourth.value) -> {
                             tfTextFourthEmpty.value = true
                         }*/
-                        !TextUtils.isEmpty(tf_text_third.value) -> {
-                            if (!Patterns.EMAIL_ADDRESS.matcher(tf_text_third.value.trim())
-                                    .matches()
-                            ) {
-                                contactYourProviderViewModel.isLoginEmailValid = true
-                            }
+                        !TextUtils.isEmpty(tf_text_third.value) && !Patterns.EMAIL_ADDRESS.matcher(tf_text_third.value.trim()).matches() ->{
+                            contactYourProviderViewModel.isLoginEmailValid = true
                         }
                         /*!contactYourProviderViewModel.isImagePresent.value -> {
                             Toast.makeText(context, Constants.PLEASE_ADD_LOGO, Toast.LENGTH_SHORT)

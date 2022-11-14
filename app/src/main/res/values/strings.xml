@@ -204,7 +204,7 @@
     <string name="text_home_bottom_sheet_parent">Parents</string>
     <string name="bottom_home_screen_pregnancy_milestone">Pregnancy milestone</string>
     <string name="bottom_home_screen_next_milestone">Next Milestone</string>
-    <string name="bottom_home_screen_your_last_question">Your last questions</string>
+    <string name="bottom_home_screen_your_last_question">Your latest questions</string>
     <string name="bottom_home_screen_latest_question_tittle">Your latest questions</string>
     <string name="bottom_home_screen_latest_question_sub_tittle">Do you like sports? \nIf so, who is your favorite sports team?</string>
     <string name="bottom_home_screen_your_surrogate_mother">Your Surrogate:</string><!--Changes done mother removed-->
@@ -310,12 +310,13 @@
     <string name="instagram_hint">https://instagram.com</string>
     <string name="add_community">+ Add a new Community</string>
     <string name="add_contact">+ Add a new Contact</string>
-    <string name="agency_rep_name">Agency rep name</string>
+    <string name="agency_rep_name">Contact rep name</string>
     <string name="contact_rep_name">Contact rep name</string>
     <string name="agency_email">Agency email</string>
+    <string name="agency_contact_email">Contact email</string>
     <string name="contact_email">Contact email</string>
     <string name="agency_email_hint">agencyemail@gmail.ua</string>
-    <string name="agency_phone_number">Agency phone number</string>
+    <string name="agency_phone_number">Contact phone number</string>
     <string name="contact_phone_number">Contact phone number</string>
     <string name="minimum_8_character_required">minimum 8 character required</string>
     <string name="to_forum">To Forum</string>

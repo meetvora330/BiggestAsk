@@ -67,7 +67,9 @@ fun LoginScreen(
         loginViewModel.isLoginEmailEmpty = false
         loginViewModel.isLoginPassEmpty = false
     }
-    loginViewModel.loginTextEmail = email
+    if (email!="null") {
+        loginViewModel.loginTextEmail = email
+    }
     Image(
         modifier = Modifier.fillMaxSize(),
         painter = painterResource(id = R.drawable.img_login_bg),

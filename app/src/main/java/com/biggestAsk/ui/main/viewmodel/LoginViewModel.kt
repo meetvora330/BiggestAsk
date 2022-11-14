@@ -29,7 +29,7 @@ class LoginViewModel @Inject constructor(
     var isLoading: Boolean by mutableStateOf(false)
     var loginScreen: MutableLiveData<NetworkResult<LoginBodyResponse>> = MutableLiveData()
 
-    fun login(loginBodyRequest: LoginBodyRequest) {
+    fun  login(loginBodyRequest: LoginBodyRequest) {
         viewModelScope.launch {
             loginScreen.value = NetworkResult.Loading()
             loginRepository.login(loginBodyRequest).collect {

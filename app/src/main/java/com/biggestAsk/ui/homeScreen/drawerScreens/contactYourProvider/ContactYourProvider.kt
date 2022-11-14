@@ -89,16 +89,15 @@ fun ContactYourProvider(
                             contentDescription = stringResource(id = R.string.content_description),
                         )
                         Column(modifier = Modifier.padding(start = 16.dp)) {
-                            item.title?.let {
-                                Text(
-                                    modifier = Modifier.padding(top = 16.dp),
-                                    text = it,
-                                    style = MaterialTheme.typography.body1,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.W600,
-                                    color = Color.Black,
-                                )
-                            }
+                            Text(
+                                modifier = Modifier.padding(top = 16.dp),
+                                text = item.title ?: "N/A",
+                                style = MaterialTheme.typography.body1,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.W600,
+                                color = Color.Black,
+                            )
+
                             Text(
                                 modifier = Modifier.padding(top = 16.dp),
                                 text = stringResource(id = R.string.agency_rep_name),
@@ -106,35 +105,31 @@ fun ContactYourProvider(
                                 fontSize = 14.sp,
                                 color = Color(0xFF8995A3)
                             )
-                            item.agency_name?.let {
-                                Text(
-                                    modifier = Modifier.padding(top = 3.dp),
-                                    text = it,
-                                    style = MaterialTheme.typography.body1,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.W600,
-                                    color = Color.Black,
-                                    lineHeight = 22.sp
-                                )
-                            }
+                            Text(
+                                modifier = Modifier.padding(top = 3.dp),
+                                text = item.agency_name ?: "N/A",
+                                style = MaterialTheme.typography.body1,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.W600,
+                                color = Color.Black,
+                                lineHeight = 22.sp
+                            )
                             Text(
                                 modifier = Modifier.padding(top = 16.dp),
-                                text = stringResource(id = R.string.agency_email),
+                                text = stringResource(id = R.string.agency_contact_email),
                                 style = MaterialTheme.typography.body1,
                                 fontSize = 14.sp,
                                 color = Color(0xFF8995A3)
                             )
-                            item.agency_email?.let {
-                                Text(
-                                    modifier = Modifier.padding(top = 3.dp),
-                                    text = it,
-                                    style = MaterialTheme.typography.body1,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.W600,
-                                    color = Color.Black,
-                                    lineHeight = 22.sp
-                                )
-                            }
+                            Text(
+                                modifier = Modifier.padding(top = 3.dp),
+                                text = item.agency_email ?: "N/A",
+                                style = MaterialTheme.typography.body1,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.W600,
+                                color = Color.Black,
+                                lineHeight = 22.sp
+                            )
                             Text(
                                 modifier = Modifier.padding(top = 16.dp),
                                 text = stringResource(id = R.string.agency_phone_number),
@@ -142,17 +137,15 @@ fun ContactYourProvider(
                                 fontSize = 14.sp,
                                 color = Color(0xFF8995A3)
                             )
-                            item.agency_number?.let {
-                                Text(
-                                    modifier = Modifier.padding(top = 3.dp),
-                                    text = it,
-                                    style = MaterialTheme.typography.body1,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.W600,
-                                    color = Color.Black,
-                                    lineHeight = 22.sp
-                                )
-                            }
+                            Text(
+                                modifier = Modifier.padding(top = 3.dp),
+                                text = item.agency_number ?: "N/A",
+                                style = MaterialTheme.typography.body1,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.W600,
+                                color = Color.Black,
+                                lineHeight = 22.sp
+                            )
                         }
                     }
                     Divider(
@@ -204,6 +197,7 @@ fun ContactYourProvider(
                                 disabledElevation = 0.dp,
                                 focusedElevation = 0.dp
                             ),
+                            enabled = !item.agency_number.equals(null),
                             onClick = {
                                 val intent = Intent(Intent.ACTION_DIAL)
                                 intent.data = Uri.parse("tel:" + item.agency_number)
