@@ -11,9 +11,7 @@ import android.util.Patterns
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,12 +25,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -44,6 +39,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.biggestAsk.data.model.request.UpdateContactRequest
+import com.biggestAsk.data.model.response.CommonResponse
 import com.biggestAsk.data.model.response.CreateContactResponse
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.ui.activity.HomeActivity
@@ -79,6 +76,8 @@ fun CreateContactDialog(
     tf_hint_tv4: String,
     tv_text_fourth: String,
     btn_text_add: String,
+    isEditDetails: Boolean,
+    contact_id:Int = 0
 ) {
     val tfTextFirstEmpty = remember {
         mutableStateOf(false)
@@ -132,6 +131,8 @@ fun CreateContactDialog(
     val userId = PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
     val tittleSuggestion =
         listOf("Fertility Doctor", "Agency Case Manager", "Surrogacy Lawyer", "ObGyn")
+    val suggestionIndex =
+        if (tf_text_first.value == "Fertility Doctor") 0 else if (tf_text_first.value == "Agency Case Manager") 1 else if (tf_text_first.value == "Surrogacy Lawyer") 2 else if (tf_text_first.value == "ObGyn") 3 else 0
 
     Column(
         modifier = Modifier
@@ -205,7 +206,7 @@ fun CreateContactDialog(
                     fontWeight = FontWeight.W600,
                     fontSize = 16.sp,
                     color = Color.Black
-                ), text = tittleSuggestion[0])
+                ), text = if (isEditDetails) tittleSuggestion[suggestionIndex] else tittleSuggestion[0], color = Color(0xFFF2F2F7))
             if (tf_text_first.value.isNotBlank()) {
                 tfTextFirstEmpty.value = false
             }
@@ -431,159 +432,199 @@ fun CreateContactDialog(
                     fontSize = 12.sp
                 )
             }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 26.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_icon_attachment_community_add_logo),
-                    contentDescription = stringResource(id = R.string.content_description),
-                )
-                Text(
-                    modifier = Modifier
-                        .padding(start = 11.dp)
-                        .clickable {
-                            if (ActivityCompat.checkSelfPermission(
-                                    homeActivity,
-                                    Manifest.permission.READ_EXTERNAL_STORAGE
-                                ) != PackageManager.PERMISSION_GRANTED
-                            ) {
-                                homeActivity.callPermissionRequestLauncher(launcher)
-                                contactYourProviderViewModel.isPermissionAllowed = false
-                            } else {
-                                launcher.launch(Constants.IMAGE_LAUNCHER)
-                                contactYourProviderViewModel.isPermissionAllowed = false
-                            }
-                        },
-                    text = stringResource(id = R.string.add_logo),
-                    style = MaterialTheme.typography.body1,
-                    color = Color(0xFF007AFF),
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.W400,
-                )
-            }
+//            Row(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(top = 26.dp),
+//                horizontalArrangement = Arrangement.Center,
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                Image(
+//                    painter = painterResource(id = R.drawable.ic_icon_attachment_community_add_logo),
+//                    contentDescription = stringResource(id = R.string.content_description),
+//                )
+//                Text(
+//                    modifier = Modifier
+//                        .padding(start = 11.dp)
+//                        .clickable {
+//                            if (ActivityCompat.checkSelfPermission(
+//                                    homeActivity,
+//                                    Manifest.permission.READ_EXTERNAL_STORAGE
+//                                ) != PackageManager.PERMISSION_GRANTED
+//                            ) {
+//                                homeActivity.callPermissionRequestLauncher(launcher)
+//                                contactYourProviderViewModel.isPermissionAllowed = false
+//                            } else {
+//                                launcher.launch(Constants.IMAGE_LAUNCHER)
+//                                contactYourProviderViewModel.isPermissionAllowed = false
+//                            }
+//                        },
+//                    text = stringResource(id = R.string.add_logo),
+//                    style = MaterialTheme.typography.body1,
+//                    color = Color(0xFF007AFF),
+//                    fontSize = 16.sp,
+//                    fontWeight = FontWeight.W400,
+//                )
+//            }
 
-            contactYourProviderViewModel.bitmap.value?.let {
-                Card(
-                    modifier = Modifier
-                        .width(88.dp)
-                        .padding(top = 15.dp)
-                        .height(88.dp),
-                    shape = RoundedCornerShape(10.dp)
-                ) {
-                    Image(
-                        modifier = Modifier
-                            .clickable(
-                                indication = null,
-                                interactionSource = MutableInteractionSource()
-                            ) {
-                            },
-                        bitmap = it.asImageBitmap(),
-                        contentDescription = stringResource(id = R.string.content_description),
-                        contentScale = ContentScale.FillBounds
-                    )
-                }
-            }
+//            contactYourProviderViewModel.bitmap.value?.let {
+//                Card(
+//                    modifier = Modifier
+//                        .width(88.dp)
+//                        .padding(top = 15.dp)
+//                        .height(88.dp),
+//                    shape = RoundedCornerShape(10.dp)
+//                ) {
+//                    Image(
+//                        modifier = Modifier
+//                            .clickable(
+//                                indication = null,
+//                                interactionSource = MutableInteractionSource()
+//                            ) {
+//                            },
+//                        bitmap = it.asImageBitmap(),
+//                        contentDescription = stringResource(id = R.string.content_description),
+//                        contentScale = ContentScale.FillBounds
+//                    )
+//                }
+//            }
             Button(
                 onClick = {
-                    var image: MultipartBody.Part? = null
-                    when {
-                        /*TextUtils.isEmpty(tf_text_first.value)*//* &&
+                    if (isEditDetails){
+                        when {
+                            TextUtils.isEmpty(tf_text_first.value) -> {
+                                tfTextFirstEmpty.value = true
+                            }
+                            !TextUtils.isEmpty(tf_text_third.value) && !Patterns.EMAIL_ADDRESS.matcher(
+                                tf_text_third.value.trim()).matches() -> {
+                                contactYourProviderViewModel.isLoginEmailValid = true
+                            }
+                            !contactYourProviderViewModel.phoneErrorVisible && !TextUtils.isEmpty(tf_text_first.value)->{
+                                contactYourProviderViewModel.updateContact(
+                                    updateContactRequest = UpdateContactRequest(
+                                        id =contact_id ,
+                                        title = tf_text_first.value,
+                                        agency_name =tf_text_second.value,
+                                        agency_email = tf_text_third.value,
+                                        agency_number = tf_text_fourth.value,
+                                        user_id = userId,
+                                        type = type!!
+                                    )
+                                )
+                                contactYourProviderViewModel.updatedContactResponse.observe(homeActivity){
+                                    if (it!=null){
+                                        handleUpdatedContactData(
+                                            result = it,
+                                            contactYourProviderViewModel = contactYourProviderViewModel,
+                                            context = context,
+                                            openDialogCustom = openDialogCustom,
+                                            type = type,
+                                            user_id = userId,
+                                            homeActivity = homeActivity
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }else{
+                        var image: MultipartBody.Part? = null
+                        when {
+                            /*TextUtils.isEmpty(tf_text_first.value)*//* &&
                                 TextUtils.isEmpty(tf_text_second.value) &&
                                 TextUtils.isEmpty(tf_text_third.value) &&
                                 TextUtils.isEmpty(tf_text_fourth.value)*/ /*-> {
                             tfTextFirstEmpty.value = true*/
-                        /*tfTextSecondEmpty.value = true
-                        tfTextThirdEmpty.value = true
-                        tfTextFourthEmpty.value = true
-                        if (!contactYourProviderViewModel.isImagePresent.value) {
-                            Toast.makeText(
-                                context,
-                                Constants.PLEASE_ADD_LOGO,
-                                Toast.LENGTH_SHORT
-                            )
-                                .show()
-                        }*/
-//                        }
-                        TextUtils.isEmpty(tf_text_first.value) -> {
-                            tfTextFirstEmpty.value = true
-                        }
-                        /*TextUtils.isEmpty(tf_text_second.value) -> {
-                            tfTextSecondEmpty.value = true
-                        }
-                        TextUtils.isEmpty(tf_text_third.value) -> {
+                            /*tfTextSecondEmpty.value = true
                             tfTextThirdEmpty.value = true
-                        }
-                        TextUtils.isEmpty(tf_text_fourth.value) -> {
                             tfTextFourthEmpty.value = true
-                        }*/
-                        !TextUtils.isEmpty(tf_text_third.value) && !Patterns.EMAIL_ADDRESS.matcher(tf_text_third.value.trim()).matches() ->{
-                            contactYourProviderViewModel.isLoginEmailValid = true
-                        }
-                        /*!contactYourProviderViewModel.isImagePresent.value -> {
-                            Toast.makeText(context, Constants.PLEASE_ADD_LOGO, Toast.LENGTH_SHORT)
-                                .show()
-                        }*/
-                        !contactYourProviderViewModel.phoneErrorVisible/* && contactYourProviderViewModel.isImagePresent.value*/ && !TextUtils.isEmpty(
-                            tf_text_first.value
-                        ) /*&&
+                            if (!contactYourProviderViewModel.isImagePresent.value) {
+                                Toast.makeText(
+                                    context,
+                                    Constants.PLEASE_ADD_LOGO,
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
+                            }*/
+//                        }
+                            TextUtils.isEmpty(tf_text_first.value) -> {
+                                tfTextFirstEmpty.value = true
+                            }
+                            /*TextUtils.isEmpty(tf_text_second.value) -> {
+                                tfTextSecondEmpty.value = true
+                            }
+                            TextUtils.isEmpty(tf_text_third.value) -> {
+                                tfTextThirdEmpty.value = true
+                            }
+                            TextUtils.isEmpty(tf_text_fourth.value) -> {
+                                tfTextFourthEmpty.value = true
+                            }*/
+                            !TextUtils.isEmpty(tf_text_third.value) && !Patterns.EMAIL_ADDRESS.matcher(
+                                tf_text_third.value.trim()).matches() -> {
+                                contactYourProviderViewModel.isLoginEmailValid = true
+                            }
+                            /*!contactYourProviderViewModel.isImagePresent.value -> {
+                                Toast.makeText(context, Constants.PLEASE_ADD_LOGO, Toast.LENGTH_SHORT)
+                                    .show()
+                            }*/
+                            !contactYourProviderViewModel.phoneErrorVisible/* && contactYourProviderViewModel.isImagePresent.value*/ && !TextUtils.isEmpty(
+                                tf_text_first.value
+                            ) /*&&
                                 !TextUtils.isEmpty(tf_text_second.value) &&
                                 !TextUtils.isEmpty(tf_text_third.value) &&
                                 !TextUtils.isEmpty(tf_text_fourth.value)*/ -> {
-                            image = if (contactYourProviderViewModel.isImagePresent.value) {
-                                contactYourProviderViewModel.uriPath?.let { convertImageMultiPart(it) }
-                            } else {
-                                null
-                            }
-                            contactYourProviderViewModel.createContact(
-                                MultipartBody.Part.createFormData(
-                                    Constants.TITLE,
-                                    tf_text_first.value
-                                ),
-                                MultipartBody.Part.createFormData(
-                                    Constants.AGENCY_NAME_CREATE_CONTACT,
-                                    tf_text_second.value
-                                ),
-                                MultipartBody.Part.createFormData(
-                                    Constants.AGENCY_EMAIL_CREATE_CONTACT,
-                                    tf_text_third.value
-                                ),
-                                MultipartBody.Part.createFormData(
-                                    Constants.AGENCY_NUMBER_CREATE_CONTACT,
-                                    tf_text_fourth.value
-                                ),
-                                image,
-                                MultipartBody.Part.createFormData(
-                                    Constants.USER_ID,
-                                    userId.toString()
-                                ),
-                                MultipartBody.Part.createFormData(Constants.TYPE, type!!)
-                            )
-                            contactYourProviderViewModel.createContactResponse.observe(homeActivity) {
-                                if (it != null) {
-                                    handleCreateContactData(
-                                        result = it,
-                                        contactYourProviderViewModel = contactYourProviderViewModel,
-                                        context = context,
-                                        openDialogCustom,
-                                        tf_text_first,
-                                        tf_text_second,
-                                        tf_text_third,
-                                        tf_text_fourth,
-                                        user_id = userId,
-                                        type = type,
-                                        homeActivity = homeActivity
-                                    )
+                                image = if (contactYourProviderViewModel.isImagePresent.value) {
+                                    contactYourProviderViewModel.uriPath?.let { convertImageMultiPart(it) }
+                                } else {
+                                    null
+                                }
+                                contactYourProviderViewModel.createContact(
+                                    MultipartBody.Part.createFormData(
+                                        Constants.TITLE,
+                                        tf_text_first.value
+                                    ),
+                                    MultipartBody.Part.createFormData(
+                                        Constants.AGENCY_NAME_CREATE_CONTACT,
+                                        tf_text_second.value
+                                    ),
+                                    MultipartBody.Part.createFormData(
+                                        Constants.AGENCY_EMAIL_CREATE_CONTACT,
+                                        tf_text_third.value
+                                    ),
+                                    MultipartBody.Part.createFormData(
+                                        Constants.AGENCY_NUMBER_CREATE_CONTACT,
+                                        tf_text_fourth.value
+                                    ),
+                                    image,
+                                    MultipartBody.Part.createFormData(
+                                        Constants.USER_ID,
+                                        userId.toString()
+                                    ),
+                                    MultipartBody.Part.createFormData(Constants.TYPE, type!!)
+                                )
+                                contactYourProviderViewModel.createContactResponse.observe(homeActivity) {
+                                    if (it != null) {
+                                        handleCreateContactData(
+                                            result = it,
+                                            contactYourProviderViewModel = contactYourProviderViewModel,
+                                            context = context,
+                                            openDialogCustom,
+                                            tf_text_first,
+                                            tf_text_second,
+                                            tf_text_third,
+                                            tf_text_fourth,
+                                            user_id = userId,
+                                            type = type,
+                                            homeActivity = homeActivity
+                                        )
+                                    }
                                 }
                             }
-                        }
-                        else -> {
-                            openDialogCustom.value = contactYourProviderViewModel.phoneErrorVisible
+                            else -> {
+                                openDialogCustom.value = contactYourProviderViewModel.phoneErrorVisible
+                            }
                         }
                     }
+
                 },
                 modifier = Modifier
                     .padding(top = 31.dp, bottom = 12.dp)
@@ -677,6 +718,41 @@ private fun handleCreateContactData(
             tf_text_second.value = ""
             tf_text_third.value = ""
             tf_text_fourth.value = ""
+            contactYourProviderViewModel.bitmap.value = null
+            Toast.makeText(context, result.data!!.message, Toast.LENGTH_SHORT).show()
+            if (!openDialogCustom.value) {
+                getUpdatedContact(type = type,
+                    user_id = user_id,
+                    contactYourProviderViewModel = contactYourProviderViewModel,
+                    homeActivity)
+            }
+        }
+        is NetworkResult.Error -> {
+            // show error message
+            contactYourProviderViewModel.isLoading = false
+            Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
+        }
+    }
+}
+
+private fun handleUpdatedContactData(
+    result: NetworkResult<CommonResponse>,
+    contactYourProviderViewModel: ContactYourProviderViewModel,
+    context: Context,
+    openDialogCustom: MutableState<Boolean>,
+    type: String,
+    user_id: Int,
+    homeActivity:HomeActivity
+){
+    when (result) {
+        is NetworkResult.Loading -> {
+            // show a progress bar
+            contactYourProviderViewModel.isLoading = true
+        }
+        is NetworkResult.Success -> {
+            // bind data to the view
+            contactYourProviderViewModel.isLoading = false
+            openDialogCustom.value = false
             contactYourProviderViewModel.bitmap.value = null
             Toast.makeText(context, result.data!!.message, Toast.LENGTH_SHORT).show()
             if (!openDialogCustom.value) {

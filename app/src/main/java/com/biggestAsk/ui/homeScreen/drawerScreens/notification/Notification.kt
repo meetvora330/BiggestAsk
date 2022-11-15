@@ -142,7 +142,7 @@ fun Notification(
                                                 end.linkTo(parent.end)
                                             }
                                             .padding(top = 2.dp, end = 24.dp),
-                                        text = "${notificationViewModel.notificationDaysList[index]} Day ago",
+                                        text = "${notificationViewModel.notificationDaysList[index]} days ago",
                                         style = MaterialTheme.typography.body1,
                                         fontSize = 14.sp,
                                         fontWeight = FontWeight.W400,

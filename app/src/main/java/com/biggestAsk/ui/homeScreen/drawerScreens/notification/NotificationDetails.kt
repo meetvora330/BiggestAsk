@@ -51,7 +51,7 @@ fun NotificationDetails(
             modifier = Modifier
                 .wrapContentWidth()
                 .padding(top = 20.dp),
-            text = "${notificationDetailsDays!!} Day ago",
+            text = "${notificationDetailsDays!!} days ago",
             style = MaterialTheme.typography.body1,
             fontSize = 14.sp,
             fontWeight = FontWeight.W400,

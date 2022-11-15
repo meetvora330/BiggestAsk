@@ -78,6 +78,8 @@
     <string name="add">Add</string>
     <string name="alert_dialog_text_logout">Are you sure want to logout?</string>
     <string name="no_image_available">No image available</string>
+    <string name="no_image_available_parent">Any pictures your surrogate takes at your appointment will load here</string>
+    <string name="no_image_available_surrogate">No image available</string>
     <string name="no_internet_available">No Internet available</string>
     <string name="please_wait">Please wait....</string>
     <string name="surrogate">surrogate</string>
@@ -335,6 +337,7 @@
     <string name="your_date_of_birth">Your date of birth</string>
     <string name="date_of_birth">Date of birth</string>
     <string name="save_editing">Save Editing</string>
+    <string name="update_contact">Update Contact</string>
 
 
 </resources>

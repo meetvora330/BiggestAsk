@@ -292,7 +292,7 @@ fun YourSurrogateMother(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(top = 10.dp, end = 24.dp),
-                                    text = "${yourSurrogateMotherViewModel.intendedProfileResponseDaysList[index]} Day ago",
+                                    text = "${yourSurrogateMotherViewModel.intendedProfileResponseDaysList[index]} days ago",
                                     color = Color(0xFF9F9D9B),
                                     style = MaterialTheme.typography.body1,
                                     fontSize = 12.sp,

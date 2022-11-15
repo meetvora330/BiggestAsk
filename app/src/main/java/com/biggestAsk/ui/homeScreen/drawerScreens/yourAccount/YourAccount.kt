@@ -928,7 +928,7 @@ fun YourAccountScreen(
                                                 modifier = Modifier
                                                     .fillMaxWidth()
                                                     .padding(top = 10.dp, end = 24.dp),
-                                                text = if (yourAccountViewModel.questionAnsweredDaysList[index] == 0) "Today" else "${yourAccountViewModel.questionAnsweredDaysList[index]} Day ago",
+                                                text = if (yourAccountViewModel.questionAnsweredDaysList[index] == 0) "Today" else "${yourAccountViewModel.questionAnsweredDaysList[index]} days ago",
                                                 color = Color(0xFF9F9D9B),
                                                 style = MaterialTheme.typography.body1,
                                                 fontSize = 12.sp,
@@ -1439,7 +1439,7 @@ fun YourAccountScreen(
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .padding(top = 10.dp, end = 24.dp),
-                                            text = if (yourAccountViewModel.questionAnsweredDaysList[index] == 0) "Today" else "${yourAccountViewModel.questionAnsweredDaysList[index]} Day ago",
+                                            text = if (yourAccountViewModel.questionAnsweredDaysList[index] == 0) "Today" else "${yourAccountViewModel.questionAnsweredDaysList[index]} days ago",
                                             color = Color(0xFF9F9D9B),
                                             style = MaterialTheme.typography.body1,
                                             fontSize = 12.sp,

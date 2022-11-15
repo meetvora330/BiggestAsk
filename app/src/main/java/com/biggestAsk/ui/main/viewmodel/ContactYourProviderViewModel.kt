@@ -16,6 +16,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.biggestAsk.data.model.request.GetContactRequest
+import com.biggestAsk.data.model.request.UpdateContactRequest
+import com.biggestAsk.data.model.response.CommonResponse
 import com.biggestAsk.data.model.response.CreateContactResponse
 import com.biggestAsk.data.model.response.GetContactResponse
 import com.biggestAsk.data.model.response.GetContactResponseData
@@ -23,6 +25,7 @@ import com.biggestAsk.data.repository.ContactYourProviderRepository
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.util.PathUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 import javax.inject.Inject
@@ -50,6 +53,7 @@ class ContactYourProviderViewModel @Inject constructor(
     var uriPath: String? = ""
     val isImagePresent = mutableStateOf(false)
     var isDataNull: Boolean by mutableStateOf(false)
+    var updatedContactResponse:MutableLiveData<NetworkResult<CommonResponse>> = MutableLiveData()
 
 
     fun createContact(
@@ -76,6 +80,17 @@ class ContactYourProviderViewModel @Inject constructor(
         viewModelScope.launch {
             contactYourProviderRepository.getContact(getContactRequest).collect {
                 getContactResponse.value = it
+            }
+        }
+    }
+
+    fun updateContact(updateContactRequest: UpdateContactRequest){
+        updatedContactResponse.value = NetworkResult.Loading()
+        viewModelScope.launch {
+            contactYourProviderRepository.updateContact(
+                updateContactRequest = updateContactRequest
+            ).collect{
+                updatedContactResponse.value = it
             }
         }
     }

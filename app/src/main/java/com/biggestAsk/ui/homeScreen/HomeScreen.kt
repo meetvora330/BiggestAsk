@@ -453,7 +453,8 @@ fun HomeScreen(
                             tf_text_first = tfTextFirstContact,
                             tf_text_second = tfTextSecondContact,
                             tf_text_third = tfTextThirdContact,
-                            tf_text_fourth = tfTextFourthContact
+                            tf_text_fourth = tfTextFourthContact,
+                            isEditDetails = false
                         )
                     }
                 }
@@ -987,16 +988,6 @@ fun NavigationDrawerContent(
             ) {
                 val getPregnancyStatus =
                     provider.getValue(Constants.PREGNANCY_MILESTONE_STATUS, "")
-                homeViewModel.getPregnancyStatus =
-                    if (getPregnancyStatus == Constants.ACTIVE) true else if (getPregnancyStatus == Constants.IN_ACTIVE) false else false
-                if (getPregnancyStatus == Constants.ACTIVE) {
-                    homeViewModel.getPregnancyMilestone(
-                        GetPregnancyMilestoneRequest(
-                            user_id = userId,
-                            type = type!!
-                        )
-                    )
-                }
                 Text(
                     text = stringResource(id = R.string.show_pregnancy_milestone),
                     fontSize = 16.sp,
@@ -1007,7 +998,7 @@ fun NavigationDrawerContent(
                     modifier = Modifier
                         .height(25.dp)
                         .padding(start = 35.dp),
-                    checked = homeViewModel.getPregnancyStatus,
+                    checked = if (getPregnancyStatus == Constants.ACTIVE) true else if (getPregnancyStatus == Constants.IN_ACTIVE) false else false,
                     onCheckedChange = {
                         homeViewModel.getPregnancyStatus = it
                         getPregnancyStatus(
@@ -1153,6 +1144,16 @@ private fun handlePregnancyStatusData(
                     it
                 )
             }
+            val userId = PreferenceProvider(context).getIntValue(Constants.USER_ID,0)
+            val type = PreferenceProvider(context).getValue(Constants.TYPE,"")
+            bottomHomeViewModel.getPregnancyStatus =
+                if (result.data?.status == Constants.ACTIVE) true else if (result.data?.status == Constants.IN_ACTIVE) false else false
+                bottomHomeViewModel.getPregnancyMilestone(
+                    GetPregnancyMilestoneRequest(
+                        user_id = userId,
+                        type = type!!
+                    )
+                )
         }
         is NetworkResult.Error -> {
             // show error message

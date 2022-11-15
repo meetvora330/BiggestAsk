@@ -1046,19 +1046,22 @@ fun EditMilestoneScreen(
                                             start.linkTo(border_image_bg.start)
                                             end.linkTo(border_image_bg.end)
                                             top.linkTo(border_image_bg.top)
+                                            bottom.linkTo(tv_no_img_desc.top)
                                         },
-                                        text = stringResource(id = R.string.no_image_available),
+                                        text = if (type==Constants.PARENT) stringResource(id = R.string.no_image_available_parent) else stringResource(
+                                            id = R.string.no_image_available),
                                         style = MaterialTheme.typography.body2.copy(color = Color(
                                             0xFF7F7D7C), fontSize = 16.sp, lineHeight = 24.sp),
                                         textAlign = TextAlign.Center)
                                     Text(modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(start = 22.dp, top = 8.dp, end = 22.dp)
+                                        .padding(start = 22.dp, top = 8.dp, end = 22.dp, bottom = 18.dp)
                                         .alpha(if (isPicAvailable.value) 1f else 0f)
                                         .constrainAs(tv_no_img_desc) {
                                             start.linkTo(border_image_bg.start)
                                             end.linkTo(border_image_bg.end)
                                             top.linkTo(tv_no_img_tittle.bottom)
+                                            bottom.linkTo(border_image_bg.bottom)
                                         },
                                         text = stringResource(id = R.string.attach_photo_and_comment),
                                         style = MaterialTheme.typography.body2.copy(color = Color(

@@ -42,6 +42,7 @@ object Constants {
     const val GET_USER_DETAIL = "get_user_detail"
     const val USER_PROFILE_UPDATE = "user_profile_update/"
     const val CREATE_CONTACT = "contact_create"
+    const val UPDATE_CONTACT = "contact_update"
     const val CREATE_COMMUNITY = "community_create"
     const val GET_CONTACT = "get_contact"
     const val GET_COMMUNITY = "get_community"

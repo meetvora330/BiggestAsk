@@ -2,6 +2,8 @@ package com.biggestAsk.data.repository
 
 import android.content.Context
 import com.biggestAsk.data.model.request.GetContactRequest
+import com.biggestAsk.data.model.request.UpdateContactRequest
+import com.biggestAsk.data.model.response.CommonResponse
 import com.biggestAsk.data.model.response.CreateContactResponse
 import com.biggestAsk.data.model.response.GetContactResponse
 import com.biggestAsk.data.source.network.ApiService
@@ -46,6 +48,16 @@ class ContactYourProviderRepository @Inject constructor(
                 apiService.getContact(
                     type = getContactRequest.type,
                     user_id = getContactRequest.user_id
+                )
+            })
+        }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun updateContact(updateContactRequest: UpdateContactRequest):Flow<NetworkResult<CommonResponse>>{
+        return flow {
+            emit(safeApiCall {
+                apiService.updateContact(
+                    updateContactRequest = updateContactRequest
                 )
             })
         }.flowOn(Dispatchers.IO)

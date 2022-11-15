@@ -7,6 +7,7 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -391,7 +392,8 @@ fun BottomHomeScreen(
                                                 lineHeight = 22.sp
                                             )
                                         }
-                                        Column(modifier = Modifier.fillMaxWidth(),horizontalAlignment = Alignment.End) {
+                                        Column(modifier = Modifier.fillMaxWidth(),
+                                            horizontalAlignment = Alignment.End) {
                                             GlideImage(
                                                 modifier = Modifier
                                                     .width(100.dp)
@@ -580,6 +582,27 @@ fun BottomHomeScreen(
                                             fontSize = 13.sp
                                         )
                                     }
+                                    if (type == Constants.PARENT && bottomHomeViewModel.nearestMilestoneDate.isEmpty()) {
+                                        Button(modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(start = 24.dp, end = 24.dp, bottom = 10.dp),
+                                            shape = RoundedCornerShape(12.dp),
+                                            border = BorderStroke(1.dp, Color(0xFFF4F4F4)),
+                                            onClick = { },
+                                            elevation = ButtonDefaults.elevation(defaultElevation = 0.dp,
+                                                pressedElevation = 0.dp,
+                                                hoveredElevation = 0.dp,
+                                                disabledElevation = 0.dp,
+                                                focusedElevation = 0.dp),
+                                            colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)) {
+                                            Text(text = stringResource(id = R.string.ask_surrogate),
+                                                style = MaterialTheme.typography.body1,
+                                                fontWeight = FontWeight.W600,
+                                                fontSize = 16.sp,
+                                                color = Custom_Blue,
+                                                textAlign = TextAlign.Center)
+                                        }
+                                    }
                                 }
                             }
                         } else {
@@ -741,7 +764,7 @@ fun BottomHomeScreen(
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .padding(top = 10.dp, end = 24.dp),
-                                            text = "${bottomHomeViewModel.intendedParentDays} Days ago",
+                                            text = "${bottomHomeViewModel.intendedParentDays} days ago",
                                             color = Color(0xFF9F9D9B),
                                             style = MaterialTheme.typography.body2,
                                             fontSize = 14.sp,

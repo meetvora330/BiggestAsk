@@ -143,6 +143,9 @@ interface ApiService {
         @Part type: MultipartBody.Part?,
     ): Response<CreateContactResponse>
 
+    @POST(Constants.UPDATE_CONTACT)
+    suspend fun updateContact(@Body updateContactRequest: UpdateContactRequest):Response<CommonResponse>
+
     @GET(Constants.GET_CONTACT)
     suspend fun getContact(
         @Query(Constants.TYPE) type: String,
