@@ -65,6 +65,7 @@ object Constants {
     const val GET_NOTIFICATION_COUNT = "get_notification_count"
     const val NOTIFICATION_STATUS_UPDATE = "notification_status_update"
     const val GET_NOTIFICATION_STATUS = "get_notification_status"
+    const val ASK_SURROGATE = "ask_surrogate"
 
     //preference data
     const val LOGIN_STATUS = "login_status"

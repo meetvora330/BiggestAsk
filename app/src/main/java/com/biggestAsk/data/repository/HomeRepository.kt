@@ -88,12 +88,13 @@ class HomeRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    suspend fun getNearestMilestone(getPregnancyMilestoneRequest: GetPregnancyMilestoneRequest): Flow<NetworkResult<GetNearestMilestoneResponse>> {
+    suspend fun getNearestMilestone(getNearestMilestoneRequest: GetNearestMilestoneRequest): Flow<NetworkResult<GetNearestMilestoneResponse>> {
         return flow {
             emit(safeApiCall {
                 apiService.getNearestMilestone(
-                    user_id = getPregnancyMilestoneRequest.user_id,
-                    type = getPregnancyMilestoneRequest.type
+                    user_id = getNearestMilestoneRequest.user_id,
+                    type = getNearestMilestoneRequest.type,
+                    partner_id = getNearestMilestoneRequest.partner_id
                 )
             })
         }.flowOn(Dispatchers.IO)
@@ -219,6 +220,16 @@ class HomeRepository @Inject constructor(
         return flow {
             emit(safeApiCall {
                 apiService.getNotificationCount(type = type, user_id = userId)
+            })
+        }
+    }
+
+    suspend fun askSurrogate(
+        askSurrogateRequest: AskSurrogateRequest
+    ):Flow<NetworkResult<CommonResponse>>{
+        return flow {
+            emit(safeApiCall {
+                apiService.askSurrogate(askSurrogateRequest = askSurrogateRequest)
             })
         }
     }

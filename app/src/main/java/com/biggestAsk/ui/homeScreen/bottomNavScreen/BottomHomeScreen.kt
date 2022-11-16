@@ -7,6 +7,7 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -573,8 +574,8 @@ fun BottomHomeScreen(
                                                 start = 8.dp,
                                                 top = 17.dp
                                             ),
-                                            text = bottomHomeViewModel.nearestMilestoneDate + " " + stringResource(
-                                                id = R.string.date_time_concat) + " " + bottomHomeViewModel.nearestMilestoneTime + " " + timeZoneLong,
+                                            text = if (bottomHomeViewModel.nearestMilestoneDate.isNotEmpty()) bottomHomeViewModel.nearestMilestoneDate + " " + stringResource(
+                                                id = R.string.date_time_concat) + " " + bottomHomeViewModel.nearestMilestoneTime + " " + timeZoneLong else "N/A",
                                             color = Color(0xFF9F9D9B),
                                             style = MaterialTheme.typography.body2,
                                             fontWeight = FontWeight.W400,
@@ -582,13 +583,37 @@ fun BottomHomeScreen(
                                             fontSize = 13.sp
                                         )
                                     }
-                                    if (type == Constants.PARENT && bottomHomeViewModel.nearestMilestoneDate.isEmpty()) {
+                                    if (bottomHomeViewModel.nearestMilestoneDate.isEmpty() && type == Constants.PARENT) {
+//                                        if (!bottomHomeViewModel.isSurrogateAsked) {
                                         Button(modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(start = 24.dp, end = 24.dp, bottom = 10.dp),
                                             shape = RoundedCornerShape(12.dp),
                                             border = BorderStroke(1.dp, Color(0xFFF4F4F4)),
-                                            onClick = { },
+                                            onClick = {
+                                                if (bottomHomeViewModel.isSurrogateAsked) {
+                                                    bottomHomeViewModel.askSurrogate(
+                                                        AskSurrogateRequest(
+                                                            user_id = userId,
+                                                            title = bottomHomeViewModel.nearestMilestoneTittle,
+                                                            milestone_id = bottomHomeViewModel.nearestMilestoneId
+                                                        )
+                                                    )
+                                                    bottomHomeViewModel.askSurrogate.observe(
+                                                        homeActivity) {
+                                                        if (it != null) {
+                                                            handleAskSurrogateData(
+                                                                result = it,
+                                                                user_id = userId,
+                                                                type = type,
+                                                                partnerId = partnerId,
+                                                                homeActivity = homeActivity,
+                                                                bottomHomeViewModel = bottomHomeViewModel
+                                                            )
+                                                        }
+                                                    }
+                                                }
+                                            },
                                             elevation = ButtonDefaults.elevation(defaultElevation = 0.dp,
                                                 pressedElevation = 0.dp,
                                                 hoveredElevation = 0.dp,
@@ -601,6 +626,7 @@ fun BottomHomeScreen(
                                                 fontSize = 16.sp,
                                                 color = Custom_Blue,
                                                 textAlign = TextAlign.Center)
+//                                            }
                                         }
                                     }
                                 }
@@ -797,6 +823,37 @@ fun BottomHomeScreen(
     )
 }
 
+fun handleAskSurrogateData(
+    result: NetworkResult<CommonResponse>,
+    user_id: Int,
+    type: String,
+    partnerId: Int,
+    homeActivity: HomeActivity,
+    bottomHomeViewModel: BottomHomeViewModel,
+) {
+    when (result) {
+        is NetworkResult.Loading -> {
+            // show a progress bar
+        }
+        is NetworkResult.Success -> {
+            // bind data to the view
+            Log.i("TAG", result.message.toString())
+            Toast.makeText(homeActivity, "Notification sent successfully", Toast.LENGTH_SHORT)
+                .show()
+            updateNearestMilestone(
+                userId = user_id,
+                type = type,
+                partnerId = partnerId,
+                homeActivity = homeActivity,
+                bottomHomeViewModel = bottomHomeViewModel
+            )
+        }
+        is NetworkResult.Error -> {
+            // show error message
+        }
+    }
+}
+
 @Composable
 fun HideKeyboard(activity: Activity) {
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -836,11 +893,12 @@ fun updateHomeScreenData(
             type = type
         )
     )
-    bottomHomeViewModel.getNearestMilestone(
-        GetPregnancyMilestoneRequest(
-            user_id = userId,
-            type = type
-        )
+    updateNearestMilestone(
+        userId = userId,
+        type = type,
+        partnerId = partnerId,
+        homeActivity = homeActivity,
+        bottomHomeViewModel = bottomHomeViewModel
     )
     getHomeScreenQuestion(
         user_id = userId,
@@ -863,17 +921,33 @@ fun updateHomeScreenData(
             )
         }
     }
-    bottomHomeViewModel.getNearestMilestoneResponse.observe(homeActivity) {
+    bottomHomeViewModel.intendedPartnerQuestionAnsResponse.observe(homeActivity) {
         if (it != null) {
-            handleNearestMilestoneData(
+            handleIntendedParentQuestionAnsData(
                 result = it,
                 bottomHomeViewModel = bottomHomeViewModel,
             )
         }
     }
-    bottomHomeViewModel.intendedPartnerQuestionAnsResponse.observe(homeActivity) {
+}
+
+fun updateNearestMilestone(
+    userId: Int,
+    type: String,
+    partnerId: Int,
+    homeActivity: HomeActivity,
+    bottomHomeViewModel: BottomHomeViewModel,
+) {
+    bottomHomeViewModel.getNearestMilestone(
+        GetNearestMilestoneRequest(
+            user_id = userId,
+            type = type,
+            partner_id = partnerId
+        )
+    )
+    bottomHomeViewModel.getNearestMilestoneResponse.observe(homeActivity) {
         if (it != null) {
-            handleIntendedParentQuestionAnsData(
+            handleNearestMilestoneData(
                 result = it,
                 bottomHomeViewModel = bottomHomeViewModel,
             )
@@ -1086,19 +1160,20 @@ private fun handleNearestMilestoneData(
         is NetworkResult.Success -> {
             // bind data to the view
             Log.i("TAG", result.message.toString())
-            bottomHomeViewModel.nearestMilestoneTittle = result.data?.title!!
-            Log.d("TAG", "d: ${result.data.date}")
-            if (result.data.date.isNotEmpty()) {
-                val dateTime = changeLocalFormat(result.data.date,
+            bottomHomeViewModel.nearestMilestoneTittle = result.data?.nearest_milestone?.title!!
+            Log.d("TAG", "d: ${result.data.nearest_milestone.date}")
+            if (result.data.nearest_milestone.date?.isNotEmpty() == true) {
+                val dateTime = changeLocalFormat(result.data.nearest_milestone.date,
                     Constants.DATE_FORMAT_UTC,
                     Constants.DATE_FORMAT_LOCAL)
                 Log.d("TAG", "handleNearestMilestoneData: $dateTime")
                 val localDate = dateTime?.let { changeLocalDateFormat(it.trim()) }
                 val localTime = dateTime?.let { changeLocalTimeFormat(it.trim()) }
+                bottomHomeViewModel.nearestMilestoneDate = ""
                 if (localDate != null) {
                     bottomHomeViewModel.nearestMilestoneDate = localDate
                     Log.d("TAG",
-                        "handleNearestMilestoneData: ${TimeZone.getTimeZone(result.data.date)}")
+                        "handleNearestMilestoneData: ${TimeZone.getTimeZone(result.data.nearest_milestone.date)}")
                 } else {
                     bottomHomeViewModel.nearestMilestoneDate = ""
                 }
@@ -1108,10 +1183,15 @@ private fun handleNearestMilestoneData(
                     bottomHomeViewModel.nearestMilestoneTime = ""
                 }
             }
-            if (result.data.milestone_image == null)
+            if (result.data.nearest_milestone.milestone_image == null)
                 bottomHomeViewModel.nearestMilestoneImage = ""
             else
-                bottomHomeViewModel.nearestMilestoneImage = result.data.milestone_image
+                bottomHomeViewModel.nearestMilestoneImage =
+                    result.data.nearest_milestone.milestone_image
+            bottomHomeViewModel.isSurrogateAsked = result.data.state
+            if (result.data.nearest_milestone.milestone_id != null) {
+                bottomHomeViewModel.nearestMilestoneId = result.data.nearest_milestone.milestone_id
+            }
             bottomHomeViewModel.isAllDataLoaded = false
             bottomHomeViewModel.isErrorOccurred = false
             bottomHomeViewModel.isNearestMilestoneDataLoaded = true

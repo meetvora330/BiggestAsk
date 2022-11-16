@@ -63,6 +63,7 @@ interface ApiService {
     suspend fun getNearestMilestone(
         @Query(Constants.USER_ID) user_id: Int,
         @Query(Constants.TYPE) type: String,
+        @Query(Constants.PARTNER_ID) partner_id: Int
     ): Response<GetNearestMilestoneResponse>
 
     @GET(Constants.GET_MILESTONE)
@@ -255,4 +256,9 @@ interface ApiService {
         @Query("type") type: String,
         @Query("user_id") user_id: Int,
     ): Response<LogoutResponse>
+
+    @POST(Constants.ASK_SURROGATE)
+    suspend fun askSurrogate(
+        @Body askSurrogateRequest: AskSurrogateRequest
+    ):Response<CommonResponse>
 }

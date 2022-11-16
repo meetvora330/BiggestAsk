@@ -34,8 +34,10 @@ class BottomHomeViewModel @Inject constructor(
     var intendedParentUserName: String by mutableStateOf("")
     var nearestMilestoneTittle: String by mutableStateOf("")
     var nearestMilestoneDate: String by mutableStateOf("")
+    var isSurrogateAsked: Boolean by mutableStateOf(false)
     var nearestMilestoneTime: String by mutableStateOf("")
     var nearestMilestoneImage: String by mutableStateOf("")
+    var nearestMilestoneId:Int by mutableStateOf(0)
     var homeScreenQuestionAns: String by mutableStateOf("")
     var notificationCount: String by mutableStateOf("")
     var homeScreenQuestionCategeryId: Int by mutableStateOf(0)
@@ -55,6 +57,7 @@ class BottomHomeViewModel @Inject constructor(
     var isBottomSheetOpen: Boolean by mutableStateOf(false)
     var isNearestMilestoneDataLoaded: Boolean by mutableStateOf(false)
     var isPregnancyStatusLoaded: Boolean by mutableStateOf(false)
+    var askSurrogate: MutableLiveData<NetworkResult<CommonResponse>> = MutableLiveData()
     var getPregnancyMilestoneResponse: MutableLiveData<NetworkResult<GetImportantQuestionResponse>> =
         MutableLiveData()
     var isHomeScreenQuestionAnsEmpty: Boolean by mutableStateOf(false)
@@ -105,10 +108,10 @@ class BottomHomeViewModel @Inject constructor(
         }
     }
 
-    fun getNearestMilestone(getPregnancyMilestoneRequest: GetPregnancyMilestoneRequest) {
+    fun getNearestMilestone(getNearestMilestoneRequest: GetNearestMilestoneRequest) {
         getNearestMilestoneResponse.value = NetworkResult.Loading()
         viewModelScope.launch {
-            homeRepository.getNearestMilestone(getPregnancyMilestoneRequest).collect {
+            homeRepository.getNearestMilestone(getNearestMilestoneRequest).collect {
                 getNearestMilestoneResponse.value = it
             }
         }
@@ -148,6 +151,15 @@ class BottomHomeViewModel @Inject constructor(
         viewModelScope.launch {
             homeRepository.getNotificationCount(type = type, userId = user_id).collect {
                 getNotificationCountResponse.value = it
+            }
+        }
+    }
+
+    fun askSurrogate(askSurrogateRequest: AskSurrogateRequest) {
+        askSurrogate.value = NetworkResult.Loading()
+        viewModelScope.launch {
+            homeRepository.askSurrogate(askSurrogateRequest = askSurrogateRequest).collect {
+                askSurrogate.value = it
             }
         }
     }
