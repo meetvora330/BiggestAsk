@@ -34,7 +34,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.biggestAsk.data.model.request.*
 import com.biggestAsk.data.model.request.Answer
@@ -68,7 +67,6 @@ fun BottomHomeScreen(
     context: Context,
     homeActivity: HomeActivity,
     bottomHomeViewModel: BottomHomeViewModel,
-    navController: NavController,
 ) {
     val homeBottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
@@ -88,6 +86,7 @@ fun BottomHomeScreen(
             type = type!!,
             homeActivity = homeActivity,
             partnerId = partnerId,
+            context = context
         )
     }
     BottomSheetScaffold(
@@ -596,7 +595,7 @@ fun BottomHomeScreen(
                                             shape = RoundedCornerShape(12.dp),
                                             border = BorderStroke(1.dp, Color(0xFFF4F4F4)),
                                             onClick = {
-                                                if (!bottomHomeViewModel.isSurrogateAsked) {
+                                                if (bottomHomeViewModel.isSurrogateAsked) {
                                                     bottomHomeViewModel.askSurrogate(
                                                         AskSurrogateRequest(
                                                             user_id = userId,
@@ -828,7 +827,6 @@ fun BottomHomeScreen(
     )
 }
 
-
 fun handleAskSurrogateData(
     result: NetworkResult<CommonResponse>,
     user_id: Int,
@@ -885,22 +883,20 @@ fun HideKeyboard(activity: Activity) {
     )
 }
 
-
 fun updateHomeScreenData(
     bottomHomeViewModel: BottomHomeViewModel,
     userId: Int,
     type: String,
     homeActivity: HomeActivity,
     partnerId: Int,
+    context: Context,
 ) {
-
     bottomHomeViewModel.getPregnancyMilestone(
         GetPregnancyMilestoneRequest(
             user_id = userId,
             type = type
         )
     )
-
     updateNearestMilestone(
         userId = userId,
         type = type,
@@ -921,7 +917,6 @@ fun updateHomeScreenData(
             type = type
         )
     )
-
     bottomHomeViewModel.getPregnancyMilestoneResponse.observe(homeActivity) {
         if (it != null) {
             handleGetImportantQuestionData(
@@ -939,7 +934,6 @@ fun updateHomeScreenData(
         }
     }
 }
-
 
 fun updateNearestMilestone(
     userId: Int,
@@ -1175,41 +1169,34 @@ private fun handleNearestMilestoneData(
                     Constants.DATE_FORMAT_UTC,
                     Constants.DATE_FORMAT_LOCAL)
                 Log.d("TAG", "handleNearestMilestoneData: $dateTime")
-                bottomHomeViewModel.nearestMilestoneTittle = result.data.nearest_milestone.title
-                if (result.data.nearest_milestone.date.isNotEmpty()) {
-                    val dateTime = changeLocalFormat(result.data.nearest_milestone.date,
-                        Constants.DATE_FORMAT_UTC,
-                        Constants.DATE_FORMAT_LOCAL)
-                    val localDate = dateTime?.let { changeLocalDateFormat(it.trim()) }
-                    val localTime = dateTime?.let { changeLocalTimeFormat(it.trim()) }
+                val localDate = dateTime?.let { changeLocalDateFormat(it.trim()) }
+                val localTime = dateTime?.let { changeLocalTimeFormat(it.trim()) }
+                bottomHomeViewModel.nearestMilestoneDate = ""
+                if (localDate != null) {
+                    bottomHomeViewModel.nearestMilestoneDate = localDate
+                    Log.d("TAG",
+                        "handleNearestMilestoneData: ${TimeZone.getTimeZone(result.data.nearest_milestone.date)}")
+                } else {
                     bottomHomeViewModel.nearestMilestoneDate = ""
-                    if (localDate != null) {
-                        bottomHomeViewModel.nearestMilestoneDate = localDate
-                        Log.d("TAG",
-                            "handleNearestMilestoneData: ${TimeZone.getTimeZone(result.data.nearest_milestone.date)}")
-                    } else {
-                        bottomHomeViewModel.nearestMilestoneDate = ""
-                    }
-                    if (localTime != null) {
-                        bottomHomeViewModel.nearestMilestoneTime = localTime
-                    } else {
-                        bottomHomeViewModel.nearestMilestoneTime = ""
-                    }
                 }
-                if (result.data.nearest_milestone.milestone_image == null)
-                    bottomHomeViewModel.nearestMilestoneImage = ""
-                else
-                    bottomHomeViewModel.nearestMilestoneImage =
-                        result.data.nearest_milestone.milestone_image
-                bottomHomeViewModel.isSurrogateAsked = result.data.state
-                if (result.data.nearest_milestone.milestone_id != null) {
-                    bottomHomeViewModel.nearestMilestoneId =
-                        result.data.nearest_milestone.milestone_id
+                if (localTime != null) {
+                    bottomHomeViewModel.nearestMilestoneTime = localTime
+                } else {
+                    bottomHomeViewModel.nearestMilestoneTime = ""
                 }
-                bottomHomeViewModel.isAllDataLoaded = false
-                bottomHomeViewModel.isErrorOccurred = false
-                bottomHomeViewModel.isNearestMilestoneDataLoaded = true
             }
+            if (result.data.nearest_milestone.milestone_image == null)
+                bottomHomeViewModel.nearestMilestoneImage = ""
+            else
+                bottomHomeViewModel.nearestMilestoneImage =
+                    result.data.nearest_milestone.milestone_image
+            bottomHomeViewModel.isSurrogateAsked = result.data.state
+            if (result.data.nearest_milestone.milestone_id != null) {
+                bottomHomeViewModel.nearestMilestoneId = result.data.nearest_milestone.milestone_id
+            }
+            bottomHomeViewModel.isAllDataLoaded = false
+            bottomHomeViewModel.isErrorOccurred = false
+            bottomHomeViewModel.isNearestMilestoneDataLoaded = true
         }
         is NetworkResult.Error -> {
             // show error message
@@ -1254,4 +1241,5 @@ private fun handleIntendedParentQuestionAnsData(
         }
     }
 }
+
 

@@ -108,7 +108,6 @@ fun BottomNavigationDrawerGraph(
                         context = context,
                         homeActivity = homeActivity,
                         bottomHomeViewModel = bottomHomeViewModel,
-                        navController = navHostController
                     )
                 }
                 else -> {
@@ -116,7 +115,6 @@ fun BottomNavigationDrawerGraph(
                         context = context,
                         homeActivity = homeActivity,
                         bottomHomeViewModel = bottomHomeViewModel,
-                        navController = navHostController
                     )
                 }
             }
