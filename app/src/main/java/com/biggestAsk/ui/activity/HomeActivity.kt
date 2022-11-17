@@ -23,6 +23,9 @@ import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
+/**
+ * first activity of app all the view models defined here once and used everywhere in app
+ */
 class HomeActivity : BaseActivity() {
     private var launcher: ManagedActivityResultLauncher<String, Uri?>? = null
     private val mainViewModel: MainViewModel by viewModels()

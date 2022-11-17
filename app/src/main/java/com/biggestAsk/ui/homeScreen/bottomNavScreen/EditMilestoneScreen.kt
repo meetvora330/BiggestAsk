@@ -12,7 +12,6 @@ import android.os.Build
 import android.provider.MediaStore
 import android.provider.Settings
 import android.text.TextUtils
-import android.util.Log
 import android.view.Gravity
 import android.widget.DatePicker
 import android.widget.Toast
@@ -187,12 +186,9 @@ fun EditMilestoneScreen(
         editMilestoneViewModel.commonMilestoneList.clear()
         milestoneViewModel.milestoneList.forEach {
             if (it.type == "common") {
-                Log.d("TAG", "commonMilestoneList data adding...")
                 editMilestoneViewModel.commonMilestoneList.add(it)
             }
         }
-        Log.d("TAG", "EditMilestoneScreen: $selectedMilestoneIndex")
-        Log.d("TAG", "commonMilestoneList size ${editMilestoneViewModel.commonMilestoneList.size}")
     }
 
     if (!editMilestoneViewModel.isEditMilestoneDataLoaded.value) {
@@ -1652,7 +1648,7 @@ private fun handleEditMilestoneData(
             val type = PreferenceProvider(context).getValue(Constants.TYPE, "")
             editMilestoneViewModel.editMilestoneTittle.value =
                 result.data?.milestone?.get(0)?.title!!
-            if (result.data.milestone[0].date != null && result.data.milestone[0].date != "") {
+            if (!result.data.milestone[0].date.isNullOrBlank()) {
                 val dateTime = changeLocalFormat(result.data.milestone[0].date,
                     Constants.DATE_FORMAT_UTC,
                     Constants.DATE_FORMAT_LOCAL)?.trim()
@@ -1844,7 +1840,6 @@ private fun checkDate(
     var upDate = ""
     var downDate = ""
     var isDateNotProper = false
-    Log.d("TAG", "Common milestone list size ${commonMilestoneList.size}")
     if (selectedMilestoneIndex == 0) {
         val dateDown = downDate(commonMilestoneList, selectedMilestoneIndex)
         if (dateDown != null) {
@@ -1859,6 +1854,8 @@ private fun checkDate(
                 Toast.makeText(context,
                     "Date should be lower then next milestone.",
                     Toast.LENGTH_SHORT).show()
+            if (isDateNotProper){
+                Toast.makeText(context,context.getString(R.string.date_lower),Toast.LENGTH_SHORT).show()
             }
         } else {
             isDateNotProper = false
@@ -1884,6 +1881,8 @@ private fun checkDate(
                 Toast.makeText(context,
                     "Date should be between previous and next milestone.",
                     Toast.LENGTH_SHORT).show()
+            if (isDateNotProper){
+                Toast.makeText(context,context.getString(R.string.date_between),Toast.LENGTH_SHORT).show()
             }
         } else if (dateDown != null && dateUp == null) {
             downDate = changeLocalFormat(dateDown,
@@ -1898,6 +1897,8 @@ private fun checkDate(
                 Toast.makeText(context,
                     "Date should be lower then next milestone.",
                     Toast.LENGTH_SHORT).show()
+            if (isDateNotProper){
+                Toast.makeText(context,context.getString(R.string.date_lower),Toast.LENGTH_SHORT).show()
             }
         } else if (dateUp != null && dateDown == null) {
             upDate = changeLocalFormat(dateUp,
@@ -1912,6 +1913,8 @@ private fun checkDate(
                 Toast.makeText(context,
                     "Date should be greater then previous milestone.",
                     Toast.LENGTH_SHORT).show()
+            if (isDateNotProper){
+                Toast.makeText(context,context.getString(R.string.date_grater),Toast.LENGTH_SHORT).show()
             }
         } else if (dateUp == null && dateDown == null) {
             isDateNotProper = false
@@ -1930,6 +1933,8 @@ private fun checkDate(
                 Toast.makeText(context,
                     "Date should be greater then previous milestone.",
                     Toast.LENGTH_SHORT).show()
+            if (isDateNotProper){
+                Toast.makeText(context,context.getString(R.string.date_grater),Toast.LENGTH_SHORT).show()
             }
         } else {
             isDateNotProper = false

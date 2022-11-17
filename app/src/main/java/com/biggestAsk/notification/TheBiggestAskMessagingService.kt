@@ -8,6 +8,9 @@ import com.biggestAsk.util.PreferenceProvider
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
+/**
+ * Firebase notification class
+ */
 class TheBiggestAskMessagingService : FirebaseMessagingService() {
     private var broadcaster: LocalBroadcastManager? = null
 
@@ -34,10 +37,5 @@ class TheBiggestAskMessagingService : FirebaseMessagingService() {
     override fun onNewToken(token: String) {
         Log.d("Notification token", token)
         PreferenceProvider(this).setValue(Constants.NOTIFICATION_TOKEN, token)
-//        CleverTapAPI.getDefaultInstance(this)?.pushFcmRegistrationId(token, true)
-//        FreshchatManager.onNewFCMToken(this, token)
-//        AppsFlyerLib.getInstance().updateServerUninstallToken(this, token)
     }
-
-
 }

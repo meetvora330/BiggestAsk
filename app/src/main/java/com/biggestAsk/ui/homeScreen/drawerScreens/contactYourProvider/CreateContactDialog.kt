@@ -560,8 +560,70 @@ fun CreateContactDialog(
                             }*/
                             !TextUtils.isEmpty(tf_text_third.value) && !Patterns.EMAIL_ADDRESS.matcher(
                                 tf_text_third.value.trim()).matches() -> {
+                    var image: MultipartBody.Part? = null
+                    when {
+                        TextUtils.isEmpty(tf_text_first.value) -> {
+                            tfTextFirstEmpty.value = true
+                        }
+                        !TextUtils.isEmpty(tf_text_third.value) -> {
+                            if (!Patterns.EMAIL_ADDRESS.matcher(tf_text_third.value.trim())
+                                    .matches()
+                            ) {
                                 contactYourProviderViewModel.isLoginEmailValid = true
                             }
+                        }
+                        !contactYourProviderViewModel.phoneErrorVisible && !TextUtils.isEmpty(
+                            tf_text_first.value
+                        ) -> {
+                            image = if (contactYourProviderViewModel.isImagePresent.value) {
+                                contactYourProviderViewModel.uriPath?.let { convertImageMultiPart(it) }
+                            } else {
+                                null
+                            }
+                            contactYourProviderViewModel.createContact(
+                                MultipartBody.Part.createFormData(
+                                    Constants.TITLE,
+                                    tf_text_first.value
+                                ),
+                                MultipartBody.Part.createFormData(
+                                    Constants.AGENCY_NAME_CREATE_CONTACT,
+                                    tf_text_second.value
+                                ),
+                                MultipartBody.Part.createFormData(
+                                    Constants.AGENCY_EMAIL_CREATE_CONTACT,
+                                    tf_text_third.value
+                                ),
+                                MultipartBody.Part.createFormData(
+                                    Constants.AGENCY_NUMBER_CREATE_CONTACT,
+                                    tf_text_fourth.value
+                                ),
+                                image,
+                                MultipartBody.Part.createFormData(
+                                    Constants.USER_ID,
+                                    userId.toString()
+                                ),
+                                MultipartBody.Part.createFormData(Constants.TYPE, type!!)
+                            )
+                            contactYourProviderViewModel.createContactResponse.observe(homeActivity) {
+                                if (it != null) {
+                                    handleCreateContactData(
+                                        result = it,
+                                        contactYourProviderViewModel = contactYourProviderViewModel,
+                                        context = context,
+                                        openDialogCustom,
+                                        tf_text_first,
+                                        tf_text_second,
+                                        tf_text_third,
+                                        tf_text_fourth,
+                                        user_id = userId,
+                                        type = type,
+                                        homeActivity = homeActivity
+                                    )
+                                }
+                            }
+                        }
+                        else -> {
+                            openDialogCustom.value = contactYourProviderViewModel.phoneErrorVisible
                             /*!contactYourProviderViewModel.isImagePresent.value -> {
                                 Toast.makeText(context, Constants.PLEASE_ADD_LOGO, Toast.LENGTH_SHORT)
                                     .show()

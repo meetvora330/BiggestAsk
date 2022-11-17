@@ -20,6 +20,9 @@ import androidx.compose.ui.unit.sp
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.skydoves.landscapist.glide.GlideImage
 
+/**
+ * all shimmer item put her
+ */
 @Composable
 fun shimmerTheme(): Brush {
     val shimmerColorShades = listOf(

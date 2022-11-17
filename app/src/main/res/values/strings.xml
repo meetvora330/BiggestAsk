@@ -338,6 +338,9 @@
     <string name="date_of_birth">Date of birth</string>
     <string name="save_editing">Save Editing</string>
     <string name="update_contact">Update Contact</string>
+    <string name="date_lower">Date should be lower then next milestone.</string>
+    <string name="date_between">Date should be between previous and next milestone.</string>
+    <string name="date_grater">Date should be greater then previous milestone.</string>
 
 
 </resources>

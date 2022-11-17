@@ -64,6 +64,9 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * milestone screen
+ */
 @OptIn(
     ExperimentalMaterialApi::class, ExperimentalFoundationApi::class,
     ExperimentalComposeUiApi::class
@@ -924,13 +927,6 @@ fun MilestonesScreen(
                                                                     id = R.string.content_description),
                                                             )
                                                         }
-//                                                        Row(
-//                                                            modifier = Modifier.fillMaxWidth(),
-//                                                            verticalAlignment = Alignment.Top,
-//                                                            horizontalArrangement = Arrangement.End
-//                                                        ) {
-//
-//                                                        }
                                                         Card(
                                                             modifier = Modifier
                                                                 .fillMaxWidth()

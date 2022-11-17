@@ -57,6 +57,9 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * home screen
+ */
 @OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -994,7 +997,6 @@ private fun handleStoreQuestionAnsData(
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.i("TAG", result.message.toString())
             getHomeScreenQuestion(user_id, type, bottomHomeViewModel, homeActivity)
             coroutineScope.launch {
                 bottomSheetScaffoldState.bottomSheetState.collapse()
@@ -1065,7 +1067,6 @@ private fun handleGetImportantQuestionData(
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.i("TAG", result.message.toString())
             if (result.data?.question == null) {
                 bottomHomeViewModel.isQuestionDataEmpty = true
                 bottomHomeViewModel.pregnancyTittle =
@@ -1167,6 +1168,9 @@ private fun handleNearestMilestoneData(
                     Constants.DATE_FORMAT_UTC,
                     Constants.DATE_FORMAT_LOCAL)
                 Log.d("TAG", "handleNearestMilestoneData: $dateTime")
+            bottomHomeViewModel.nearestMilestoneTittle = result.data?.title!!
+            if (result.data.date.isNotEmpty()) {
+                val dateTime = changeLocalFormat(result.data.date,Constants.DATE_FORMAT_UTC,Constants.DATE_FORMAT_LOCAL)
                 val localDate = dateTime?.let { changeLocalDateFormat(it.trim()) }
                 val localTime = dateTime?.let { changeLocalTimeFormat(it.trim()) }
                 bottomHomeViewModel.nearestMilestoneDate = ""

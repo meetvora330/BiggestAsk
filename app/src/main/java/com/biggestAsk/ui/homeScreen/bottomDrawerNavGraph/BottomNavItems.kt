@@ -4,6 +4,9 @@ import androidx.annotation.DrawableRes
 import com.biggestAsk.util.Constants
 import com.example.biggestAsk.R
 
+/**
+ * sealed class for bottom item of home screen
+ */
 sealed class BottomNavItems(
     val tittle: String,
     @DrawableRes val defaultIcon: Int,

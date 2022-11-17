@@ -280,15 +280,8 @@ class MainActivity : BaseActivity() {
             )
             if (!introViewModel.isAPILoadingFailed) {
                 CircularProgressIndicator(
-                    // below line is use to add padding
-                    // to our progress bar.
                     modifier = Modifier.padding(top = 15.dp),
-                    // below line is use to add color
-                    // to our progress bar.
                     color = colorResource(id = R.color.custom_blue),
-
-                    // below line is use to add stroke
-                    // width to our progress bar.
                     strokeWidth = Dp(value = 3F)
                 )
             }

@@ -41,7 +41,9 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.*
 
-
+/**
+ * select frequency screen
+ */
 @Composable
 fun SelectFrequencyScreen(
     frequencyViewModel: FrequencyViewModel,
@@ -49,7 +51,7 @@ fun SelectFrequencyScreen(
 ) {
     val context = LocalContext.current
     val suggestions =
-        listOf("every day", "every 3 days", "every week")
+        listOf(stringResource(id = R.string.question_rb_everyday), stringResource(id = R.string.question_rb_3_days), stringResource(id = R.string.question_rb_week))
     var selectedText by remember { mutableStateOf("") }
     Box(
         modifier = Modifier
