@@ -14,6 +14,7 @@ import com.biggestAsk.data.model.response.*
 import com.biggestAsk.data.repository.HomeRepository
 import com.biggestAsk.data.source.network.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -60,6 +61,7 @@ class BottomHomeViewModel @Inject constructor(
     var askSurrogate: MutableLiveData<NetworkResult<CommonResponse>> = MutableLiveData()
     var getPregnancyMilestoneResponse: MutableLiveData<NetworkResult<GetImportantQuestionResponse>> =
         MutableLiveData()
+    var getUpdatedStatus:MutableLiveData<NetworkResult<UpdatedStatusResponse>> = MutableLiveData()
     var isHomeScreenQuestionAnsEmpty: Boolean by mutableStateOf(false)
     var isHomeScreenQuestionAnswered: Boolean by mutableStateOf(false)
 
@@ -86,6 +88,19 @@ class BottomHomeViewModel @Inject constructor(
         viewModelScope.launch {
             homeRepository.getPregnancyMilestone(getPregnancyMilestoneRequest).collect {
                 getPregnancyMilestoneResponse.value = it
+            }
+        }
+    }
+
+    fun getUpdatedStatus(userId: Int, type: String, fcm_token: String){
+        getUpdatedStatus.value = NetworkResult.Loading()
+        viewModelScope.launch {
+            homeRepository.getUpdatedStatus(
+                userId = userId,
+                type = type,
+                fcmToken = fcm_token
+            ).collect{
+                getUpdatedStatus.value = it
             }
         }
     }

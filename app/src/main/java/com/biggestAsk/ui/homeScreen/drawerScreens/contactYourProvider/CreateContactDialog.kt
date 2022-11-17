@@ -77,7 +77,7 @@ fun CreateContactDialog(
     tv_text_fourth: String,
     btn_text_add: String,
     isEditDetails: Boolean,
-    contact_id:Int = 0
+    contact_id: Int = 0,
 ) {
     val tfTextFirstEmpty = remember {
         mutableStateOf(false)
@@ -206,7 +206,9 @@ fun CreateContactDialog(
                     fontWeight = FontWeight.W600,
                     fontSize = 16.sp,
                     color = Color.Black
-                ), text = if (isEditDetails) tittleSuggestion[suggestionIndex] else tittleSuggestion[0], color = Color(0xFFF2F2F7))
+                ),
+                text = if (isEditDetails) tittleSuggestion[suggestionIndex] else tittleSuggestion[0],
+                color = Color(0xFFF2F2F7))
             if (tf_text_first.value.isNotBlank()) {
                 tfTextFirstEmpty.value = false
             }
@@ -490,7 +492,7 @@ fun CreateContactDialog(
 //            }
             Button(
                 onClick = {
-                    if (isEditDetails){
+                    if (isEditDetails) {
                         when {
                             TextUtils.isEmpty(tf_text_first.value) -> {
                                 tfTextFirstEmpty.value = true
@@ -500,30 +502,7 @@ fun CreateContactDialog(
                                 contactYourProviderViewModel.isLoginEmailValid = true
                             }
                             !contactYourProviderViewModel.phoneErrorVisible && !TextUtils.isEmpty(tf_text_first.value)->{
-                                contactYourProviderViewModel.updateContact(
-                                    updateContactRequest = UpdateContactRequest(
-                                        id =contact_id ,
-                                        title = tf_text_first.value,
-                                        agency_name =tf_text_second.value,
-                                        agency_email = tf_text_third.value,
-                                        agency_number = tf_text_fourth.value,
-                                        user_id = userId,
-                                        type = type!!
-                                    )
-                                )
-                                contactYourProviderViewModel.updatedContactResponse.observe(homeActivity){
-                                    if (it!=null){
-                                        handleUpdatedContactData(
-                                            result = it,
-                                            contactYourProviderViewModel = contactYourProviderViewModel,
-                                            context = context,
-                                            openDialogCustom = openDialogCustom,
-                                            type = type,
-                                            user_id = userId,
-                                            homeActivity = homeActivity
-                                        )
-                                    }
-                                }
+
                             }
                         }
                     }else{
@@ -560,70 +539,8 @@ fun CreateContactDialog(
                             }*/
                             !TextUtils.isEmpty(tf_text_third.value) && !Patterns.EMAIL_ADDRESS.matcher(
                                 tf_text_third.value.trim()).matches() -> {
-                    var image: MultipartBody.Part? = null
-                    when {
-                        TextUtils.isEmpty(tf_text_first.value) -> {
-                            tfTextFirstEmpty.value = true
-                        }
-                        !TextUtils.isEmpty(tf_text_third.value) -> {
-                            if (!Patterns.EMAIL_ADDRESS.matcher(tf_text_third.value.trim())
-                                    .matches()
-                            ) {
                                 contactYourProviderViewModel.isLoginEmailValid = true
                             }
-                        }
-                        !contactYourProviderViewModel.phoneErrorVisible && !TextUtils.isEmpty(
-                            tf_text_first.value
-                        ) -> {
-                            image = if (contactYourProviderViewModel.isImagePresent.value) {
-                                contactYourProviderViewModel.uriPath?.let { convertImageMultiPart(it) }
-                            } else {
-                                null
-                            }
-                            contactYourProviderViewModel.createContact(
-                                MultipartBody.Part.createFormData(
-                                    Constants.TITLE,
-                                    tf_text_first.value
-                                ),
-                                MultipartBody.Part.createFormData(
-                                    Constants.AGENCY_NAME_CREATE_CONTACT,
-                                    tf_text_second.value
-                                ),
-                                MultipartBody.Part.createFormData(
-                                    Constants.AGENCY_EMAIL_CREATE_CONTACT,
-                                    tf_text_third.value
-                                ),
-                                MultipartBody.Part.createFormData(
-                                    Constants.AGENCY_NUMBER_CREATE_CONTACT,
-                                    tf_text_fourth.value
-                                ),
-                                image,
-                                MultipartBody.Part.createFormData(
-                                    Constants.USER_ID,
-                                    userId.toString()
-                                ),
-                                MultipartBody.Part.createFormData(Constants.TYPE, type!!)
-                            )
-                            contactYourProviderViewModel.createContactResponse.observe(homeActivity) {
-                                if (it != null) {
-                                    handleCreateContactData(
-                                        result = it,
-                                        contactYourProviderViewModel = contactYourProviderViewModel,
-                                        context = context,
-                                        openDialogCustom,
-                                        tf_text_first,
-                                        tf_text_second,
-                                        tf_text_third,
-                                        tf_text_fourth,
-                                        user_id = userId,
-                                        type = type,
-                                        homeActivity = homeActivity
-                                    )
-                                }
-                            }
-                        }
-                        else -> {
-                            openDialogCustom.value = contactYourProviderViewModel.phoneErrorVisible
                             /*!contactYourProviderViewModel.isImagePresent.value -> {
                                 Toast.makeText(context, Constants.PLEASE_ADD_LOGO, Toast.LENGTH_SHORT)
                                     .show()
@@ -780,41 +697,6 @@ private fun handleCreateContactData(
             tf_text_second.value = ""
             tf_text_third.value = ""
             tf_text_fourth.value = ""
-            contactYourProviderViewModel.bitmap.value = null
-            Toast.makeText(context, result.data!!.message, Toast.LENGTH_SHORT).show()
-            if (!openDialogCustom.value) {
-                getUpdatedContact(type = type,
-                    user_id = user_id,
-                    contactYourProviderViewModel = contactYourProviderViewModel,
-                    homeActivity)
-            }
-        }
-        is NetworkResult.Error -> {
-            // show error message
-            contactYourProviderViewModel.isLoading = false
-            Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
-        }
-    }
-}
-
-private fun handleUpdatedContactData(
-    result: NetworkResult<CommonResponse>,
-    contactYourProviderViewModel: ContactYourProviderViewModel,
-    context: Context,
-    openDialogCustom: MutableState<Boolean>,
-    type: String,
-    user_id: Int,
-    homeActivity:HomeActivity
-){
-    when (result) {
-        is NetworkResult.Loading -> {
-            // show a progress bar
-            contactYourProviderViewModel.isLoading = true
-        }
-        is NetworkResult.Success -> {
-            // bind data to the view
-            contactYourProviderViewModel.isLoading = false
-            openDialogCustom.value = false
             contactYourProviderViewModel.bitmap.value = null
             Toast.makeText(context, result.data!!.message, Toast.LENGTH_SHORT).show()
             if (!openDialogCustom.value) {

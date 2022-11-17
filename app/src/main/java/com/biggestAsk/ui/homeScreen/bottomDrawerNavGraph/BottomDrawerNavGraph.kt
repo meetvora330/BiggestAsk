@@ -58,6 +58,7 @@ fun BottomNavigationDrawerGraph(
     detailedSettingsViewModel: DetailedSettingsViewModel,
     settingViewModel: SettingViewModel,
     logoutViewModel: LogoutViewModel,
+    introViewModel: IntroViewModel,
 ) {
     val provider = PreferenceProvider(context)
     NavHost(
@@ -88,17 +89,34 @@ fun BottomNavigationDrawerGraph(
                             navHostController
                         )
                     } else {
-                        SurrogateParentNotAssignScreen(stringResource(id = R.string.label_surrogate_parent_not_available))
+                        SurrogateParentNotAssignScreen(stringResource(id = R.string.label_surrogate_parent_not_available),
+                            homeViewModel = bottomHomeViewModel,
+                            homeActivity,
+                            navController = navHostController)
                     }
                 }
                 LoginStatus.MILESTONE_DATE_NOT_ADDED.name.lowercase(Locale.getDefault()) -> {
-                    SurrogateParentNotAssignScreen(stringResource(id = R.string.label_add_milestone_date))
+                    SurrogateParentNotAssignScreen(
+                        stringResource(id = R.string.label_add_milestone_date),
+                        homeViewModel = bottomHomeViewModel,
+                        homeActivity,
+                        navController = navHostController,
+                    )
                 }
                 LoginStatus.ON_BOARDING.name.lowercase(Locale.getDefault()) -> {
                     BottomHomeScreen(
                         context = context,
                         homeActivity = homeActivity,
                         bottomHomeViewModel = bottomHomeViewModel,
+                        navController = navHostController
+                    )
+                }
+                else -> {
+                    BottomHomeScreen(
+                        context = context,
+                        homeActivity = homeActivity,
+                        bottomHomeViewModel = bottomHomeViewModel,
+                        navController = navHostController
                     )
                 }
             }
@@ -117,7 +135,10 @@ fun BottomNavigationDrawerGraph(
         composable(
             route = BottomNavScreen.SurrogateParentNotAssignScreen.route
         ) {
-            SurrogateParentNotAssignScreen(stringResource(id = R.string.label_add_milestone_date))
+            SurrogateParentNotAssignScreen(stringResource(id = R.string.label_add_milestone_date),
+                homeViewModel = bottomHomeViewModel,
+                homeActivity,
+                navController = navHostController)
         }
         composable(
             route = BottomNavScreen.AddNewMileStones.route,
@@ -142,7 +163,10 @@ fun BottomNavigationDrawerGraph(
             when (provider.getValue(Constants.LOGIN_STATUS, "")) {
                 LoginStatus.PARTNER_NOT_ASSIGN.name.lowercase(Locale.getDefault()) -> {
                     if (type == Constants.SURROGATE) {
-                        SurrogateParentNotAssignScreen(stringResource(id = R.string.label_surrogate_parent_not_available))
+                        SurrogateParentNotAssignScreen(stringResource(id = R.string.label_surrogate_parent_not_available),
+                            homeViewModel = bottomHomeViewModel,
+                            homeActivity,
+                            navController = navHostController)
                     }
                 }
                 LoginStatus.MILESTONE_DATE_NOT_ADDED.name.lowercase(Locale.getDefault()) -> {

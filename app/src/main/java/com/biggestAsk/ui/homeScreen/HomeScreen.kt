@@ -47,6 +47,7 @@ import com.biggestAsk.data.model.request.GetNotificationRequest
 import com.biggestAsk.data.model.request.GetPregnancyMilestoneRequest
 import com.biggestAsk.data.model.response.GetNotificationCountResponse
 import com.biggestAsk.data.model.response.GetPregnancyMilestoneStatusResponse
+import com.biggestAsk.data.model.response.UpdatedStatusResponse
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.ui.activity.HomeActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
@@ -91,6 +92,7 @@ fun HomeScreen(
     detailedSettingsViewModel: DetailedSettingsViewModel,
     settingViewModel: SettingViewModel,
     logoutViewModel: LogoutViewModel,
+    introViewModel: IntroViewModel,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val requester = FocusRequester()
@@ -131,7 +133,9 @@ fun HomeScreen(
                 yourAccountViewModel = yourAccountViewModel,
                 contactYourProviderViewModel = contactYourProviderViewModel,
                 communityViewModel = communityViewModel,
-                notificationViewModel = notificationViewModel
+                notificationViewModel = notificationViewModel,
+                homeViewModel = bottomHomeViewModel,
+                homeActivity = homeActivity
             )
             ConstraintLayout(
                 modifier = Modifier
@@ -483,7 +487,8 @@ fun HomeScreen(
                 termsOfServiceViewModel = termsOfServiceViewModel,
                 detailedSettingsViewModel = detailedSettingsViewModel,
                 settingViewModel = settingViewModel,
-                logoutViewModel = logoutViewModel
+                logoutViewModel = logoutViewModel,
+                introViewModel = introViewModel
             )
             BackHandler(scaffoldState.drawerState.isOpen) {
                 scope.launch {
@@ -493,8 +498,11 @@ fun HomeScreen(
         },
         bottomBar = {
             BottomNavigation(
-                navController = navController, viewModel = mainViewModel
-            )
+                navController = navController,
+                viewModel = mainViewModel,
+                context = context,
+                homeViewModel = bottomHomeViewModel,
+                homeActivity = homeActivity)
         },
         drawerBackgroundColor = Color(0xFFF8F5F2),
         drawerGesturesEnabled = scaffoldState.drawerState.isOpen,
@@ -512,6 +520,7 @@ fun HomeScreen(
         })
 }
 
+
 @Composable
 fun currentRoute(
     navController: NavHostController,
@@ -520,6 +529,8 @@ fun currentRoute(
     contactYourProviderViewModel: ContactYourProviderViewModel,
     communityViewModel: CommunityViewModel,
     notificationViewModel: NotificationViewModel,
+    homeViewModel: BottomHomeViewModel,
+    homeActivity: HomeActivity,
 ): String? {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     when (navController.currentDestination?.route) {
@@ -1144,16 +1155,16 @@ private fun handlePregnancyStatusData(
                     it
                 )
             }
-            val userId = PreferenceProvider(context).getIntValue(Constants.USER_ID,0)
-            val type = PreferenceProvider(context).getValue(Constants.TYPE,"")
+            val userId = PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
+            val type = PreferenceProvider(context).getValue(Constants.TYPE, "")
             bottomHomeViewModel.getPregnancyStatus =
                 if (result.data?.status == Constants.ACTIVE) true else if (result.data?.status == Constants.IN_ACTIVE) false else false
-                bottomHomeViewModel.getPregnancyMilestone(
-                    GetPregnancyMilestoneRequest(
-                        user_id = userId,
-                        type = type!!
-                    )
+            bottomHomeViewModel.getPregnancyMilestone(
+                GetPregnancyMilestoneRequest(
+                    user_id = userId,
+                    type = type!!
                 )
+            )
         }
         is NetworkResult.Error -> {
             // show error message
@@ -1199,7 +1210,13 @@ object ClearRippleTheme : RippleTheme {
 }
 
 @Composable
-fun BottomNavigation(navController: NavController, viewModel: MainViewModel) {
+fun BottomNavigation(
+    navController: NavController,
+    viewModel: MainViewModel,
+    context: Context,
+    homeViewModel: BottomHomeViewModel,
+    homeActivity: HomeActivity,
+) {
     val navItems = listOf(BottomNavItems.Milestone, BottomNavItems.Home, BottomNavItems.Questions)
     CompositionLocalProvider(
         LocalRippleTheme provides ClearRippleTheme
@@ -1243,6 +1260,9 @@ fun BottomNavigation(navController: NavController, viewModel: MainViewModel) {
                         viewModel.toolbarTittle = item.tittle
                         navController.navigate(item.navRoute) {
                             if (item.navRoute == BottomNavItems.Home.navRoute) {
+                                getUpdatedStatus(
+                                    homeViewModel, homeActivity, navController
+                                )
                                 viewModel.isCommunityScreen.value = false
                             }
                             popUpTo(navController.graph.findStartDestination().id) {
@@ -1253,6 +1273,58 @@ fun BottomNavigation(navController: NavController, viewModel: MainViewModel) {
                     },
                 )
             }
+        }
+    }
+}
+
+fun getUpdatedStatus(
+    homeViewModel: BottomHomeViewModel,
+    homeActivity: HomeActivity,
+    navController: NavController,
+) {
+    PreferenceProvider(homeActivity).getValue(Constants.TYPE, "")?.let {
+        PreferenceProvider(homeActivity).getValue(Constants.NOTIFICATION_TOKEN, "")?.let { it1 ->
+            homeViewModel.getUpdatedStatus(
+                userId = PreferenceProvider(homeActivity).getIntValue(Constants.USER_ID, 0),
+                type = it,
+                fcm_token = it1
+            )
+        }
+    }
+    homeViewModel.getUpdatedStatus.observe(homeActivity) {
+        if (it != null) {
+            handleUpdatedStatusData(
+                result = it,
+                context = homeActivity,
+                navController = navController,
+            )
+        }
+    }
+
+}
+
+private fun handleUpdatedStatusData(
+    result: NetworkResult<UpdatedStatusResponse>,
+    navController: NavController,
+    context: Context,
+) {
+    val provider = PreferenceProvider(context)
+    when (result) {
+        is NetworkResult.Loading -> {
+
+        }
+        is NetworkResult.Success -> {
+            // bind data to the view
+            result.data?.let {
+                provider.setValue(Constants.LOGIN_STATUS, it.status)
+            }
+            if (result.data?.status == "on_boarding") {
+                navController.popBackStack()
+                navController.navigate(BottomNavItems.Home.navRoute)
+            }
+        }
+        is NetworkResult.Error -> {
+
         }
     }
 }

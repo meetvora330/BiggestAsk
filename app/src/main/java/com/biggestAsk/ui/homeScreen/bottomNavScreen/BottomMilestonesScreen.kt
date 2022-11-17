@@ -1057,7 +1057,8 @@ fun getMilestones(
         if (it != null) {
             handleGetMilestoneData(
                 result = it,
-                milestoneViewModel = milestoneViewModel
+                milestoneViewModel = milestoneViewModel,
+                context = context
             )
         }
     }
@@ -1212,6 +1213,10 @@ private fun handleResetMilestoneData(
         is NetworkResult.Success -> {
             // bind data to the view
             milestoneViewModel.isAllMilestoneLoaded = true
+            result.data?.status?.let {
+                PreferenceProvider(context).setValue(Constants.LOGIN_STATUS,
+                    it)
+            }
             getMilestones(milestoneViewModel, context, homeActivity)
         }
         is NetworkResult.Error -> {
@@ -1224,6 +1229,7 @@ private fun handleResetMilestoneData(
 private fun handleGetMilestoneData(
     result: NetworkResult<GetMilestoneResponse>,
     milestoneViewModel: BottomMilestoneViewModel,
+    context: Context
 ) {
     when (result) {
         is NetworkResult.Loading -> {

@@ -668,7 +668,7 @@ fun EditMilestoneScreen(
                                     val timeZoneLong =
                                         getTimeZoneLong.format(Calendar.getInstance().time)
                                     val dateTime =
-                                        if (editMilestoneViewModel.milestoneDate.value == "" && editMilestoneViewModel.milestoneTime.value == "") "N/A" else "${editMilestoneViewModel.milestoneDate.value} at ${editMilestoneViewModel.milestoneTime.value} $timeZoneLong"
+                                        if (editMilestoneViewModel.editMilestoneDate.value == "" && editMilestoneViewModel.editMilestoneTime.value == "") "N/A" else "${editMilestoneViewModel.editMilestoneDate.value} at ${editMilestoneViewModel.editMilestoneTime.value} $timeZoneLong"
                                     Image(
                                         painter = painterResource(id = R.drawable.img_medical_calender_icon),
                                         contentDescription = stringResource(id = R.string.content_description),
@@ -1044,14 +1044,17 @@ fun EditMilestoneScreen(
                                             top.linkTo(border_image_bg.top)
                                             bottom.linkTo(tv_no_img_desc.top)
                                         },
-                                        text = if (type==Constants.PARENT) stringResource(id = R.string.no_image_available_parent) else stringResource(
+                                        text = if (type == Constants.PARENT) stringResource(id = R.string.no_image_available_parent) else stringResource(
                                             id = R.string.no_image_available),
                                         style = MaterialTheme.typography.body2.copy(color = Color(
                                             0xFF7F7D7C), fontSize = 16.sp, lineHeight = 24.sp),
                                         textAlign = TextAlign.Center)
                                     Text(modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(start = 22.dp, top = 8.dp, end = 22.dp, bottom = 18.dp)
+                                        .padding(start = 22.dp,
+                                            top = 8.dp,
+                                            end = 22.dp,
+                                            bottom = 18.dp)
                                         .alpha(if (isPicAvailable.value) 1f else 0f)
                                         .constrainAs(tv_no_img_desc) {
                                             start.linkTo(border_image_bg.start)
@@ -1750,8 +1753,10 @@ private fun handleUpdateMilestoneData(
             coroutineScope.launch {
                 editMilestoneBottomSheetScaffoldState.bottomSheetState.collapse()
             }
-            editMilestoneViewModel.milestoneDate.value = editMilestoneViewModel.editMilestoneDate.value
-            editMilestoneViewModel.milestoneTime.value = editMilestoneViewModel.editMilestoneTime.value
+            editMilestoneViewModel.milestoneDate.value =
+                editMilestoneViewModel.editMilestoneDate.value
+            editMilestoneViewModel.milestoneTime.value =
+                editMilestoneViewModel.editMilestoneTime.value
             val provider = PreferenceProvider(context)
             val type = provider.getValue(Constants.TYPE, "")
             val userId = provider.getIntValue(Constants.USER_ID, 0)
@@ -1854,90 +1859,106 @@ private fun checkDate(
                 Toast.makeText(context,
                     "Date should be lower then next milestone.",
                     Toast.LENGTH_SHORT).show()
-            if (isDateNotProper){
-                Toast.makeText(context,context.getString(R.string.date_lower),Toast.LENGTH_SHORT).show()
+                if (isDateNotProper) {
+                    Toast.makeText(context,
+                        context.getString(R.string.date_lower),
+                        Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                isDateNotProper = false
             }
-        } else {
-            isDateNotProper = false
-        }
-    } else if (selectedMilestoneIndex in 1..6) {
-        val dateDown = downDate(list = commonMilestoneList, selectedMilestoneIndex)
-        val dateUp = upDate(list = commonMilestoneList, selectedMilestoneIndex)
-        if (dateUp != null && dateDown != null) {
-            upDate = changeLocalFormat(dateUp,
-                Constants.DATE_FORMAT_UTC,
-                Constants.SIMPLE_DATE_FORMAT).toString()
-            downDate = changeLocalFormat(dateDown,
-                Constants.DATE_FORMAT_UTC,
-                Constants.SIMPLE_DATE_FORMAT).toString()
-            val dateFormat = SimpleDateFormat(Constants.SIMPLE_DATE_FORMAT, Locale.US)
-            val comparingUpDate: Date = dateFormat.parse(upDate) as Date
-            val comparingDownDate: Date = dateFormat.parse(downDate) as Date
-            val inputDate: Date =
-                dateFormat.parse(userInputDate) as Date
-            isDateNotProper =
-                !(inputDate.after(comparingUpDate) && inputDate.before(comparingDownDate))
-            if (isDateNotProper) {
-                Toast.makeText(context,
-                    "Date should be between previous and next milestone.",
-                    Toast.LENGTH_SHORT).show()
-            if (isDateNotProper){
-                Toast.makeText(context,context.getString(R.string.date_between),Toast.LENGTH_SHORT).show()
+        } else if (selectedMilestoneIndex in 1..6) {
+            val dateDown = downDate(list = commonMilestoneList, selectedMilestoneIndex)
+            val dateUp = upDate(list = commonMilestoneList, selectedMilestoneIndex)
+            if (dateUp != null && dateDown != null) {
+                upDate = changeLocalFormat(dateUp,
+                    Constants.DATE_FORMAT_UTC,
+                    Constants.SIMPLE_DATE_FORMAT).toString()
+                downDate = changeLocalFormat(dateDown,
+                    Constants.DATE_FORMAT_UTC,
+                    Constants.SIMPLE_DATE_FORMAT).toString()
+                val dateFormat = SimpleDateFormat(Constants.SIMPLE_DATE_FORMAT, Locale.US)
+                val comparingUpDate: Date = dateFormat.parse(upDate) as Date
+                val comparingDownDate: Date = dateFormat.parse(downDate) as Date
+                val inputDate: Date =
+                    dateFormat.parse(userInputDate) as Date
+                isDateNotProper =
+                    !(inputDate.after(comparingUpDate) && inputDate.before(comparingDownDate))
+                if (isDateNotProper) {
+                    Toast.makeText(context,
+                        "Date should be between previous and next milestone.",
+                        Toast.LENGTH_SHORT).show()
+                    if (isDateNotProper) {
+                        Toast.makeText(context,
+                            context.getString(R.string.date_between),
+                            Toast.LENGTH_SHORT).show()
+                    }
+                } else if (dateDown != null && dateUp == null) {
+                    downDate = changeLocalFormat(dateDown,
+                        Constants.DATE_FORMAT_UTC,
+                        Constants.SIMPLE_DATE_FORMAT).toString()
+                    val dateFormat = SimpleDateFormat(Constants.SIMPLE_DATE_FORMAT, Locale.US)
+                    val comparingDownDate: Date = dateFormat.parse(downDate) as Date
+                    val inputDate: Date =
+                        dateFormat.parse(userInputDate) as Date
+                    isDateNotProper = !inputDate.before(comparingDownDate)
+                    if (isDateNotProper) {
+                        Toast.makeText(context,
+                            "Date should be lower then next milestone.",
+                            Toast.LENGTH_SHORT).show()
+                        if (isDateNotProper) {
+                            Toast.makeText(context,
+                                context.getString(R.string.date_lower),
+                                Toast.LENGTH_SHORT).show()
+                        }
+                    } else if (dateUp != null && dateDown == null) {
+                        upDate = changeLocalFormat(dateUp,
+                            Constants.DATE_FORMAT_UTC,
+                            Constants.SIMPLE_DATE_FORMAT).toString()
+                        val dateFormat = SimpleDateFormat(Constants.SIMPLE_DATE_FORMAT, Locale.US)
+                        val comparingUpDate: Date = dateFormat.parse(upDate) as Date
+                        val inputDate: Date =
+                            dateFormat.parse(userInputDate) as Date
+                        isDateNotProper = !inputDate.after(comparingUpDate)
+                        if (isDateNotProper) {
+                            Toast.makeText(context,
+                                "Date should be greater then previous milestone.",
+                                Toast.LENGTH_SHORT).show()
+                            if (isDateNotProper) {
+                                Toast.makeText(context,
+                                    context.getString(R.string.date_grater),
+                                    Toast.LENGTH_SHORT).show()
+                            }
+                        } else if (dateUp == null && dateDown == null) {
+                            isDateNotProper = false
+                        }
+                    } else if (selectedMilestoneIndex == commonMilestoneList.lastIndex) {
+                        val dateUp = upDate(commonMilestoneList, selectedMilestoneIndex)
+                        if (dateUp != null) {
+                            upDate = changeLocalFormat(dateUp,
+                                Constants.DATE_FORMAT_UTC,
+                                Constants.SIMPLE_DATE_FORMAT).toString()
+                            val dateFormat =
+                                SimpleDateFormat(Constants.SIMPLE_DATE_FORMAT, Locale.US)
+                            val comparingUpDate: Date = dateFormat.parse(upDate) as Date
+                            val inputDate = Date(userInputDate)
+                            isDateNotProper = !inputDate.after(comparingUpDate)
+                            if (isDateNotProper) {
+                                Toast.makeText(context,
+                                    "Date should be greater then previous milestone.",
+                                    Toast.LENGTH_SHORT).show()
+                                if (isDateNotProper) {
+                                    Toast.makeText(context,
+                                        context.getString(R.string.date_grater),
+                                        Toast.LENGTH_SHORT).show()
+                                }
+                            } else {
+                                isDateNotProper = false
+                            }
+                        }
+                    }
+                }
             }
-        } else if (dateDown != null && dateUp == null) {
-            downDate = changeLocalFormat(dateDown,
-                Constants.DATE_FORMAT_UTC,
-                Constants.SIMPLE_DATE_FORMAT).toString()
-            val dateFormat = SimpleDateFormat(Constants.SIMPLE_DATE_FORMAT, Locale.US)
-            val comparingDownDate: Date = dateFormat.parse(downDate) as Date
-            val inputDate: Date =
-                dateFormat.parse(userInputDate) as Date
-            isDateNotProper = !inputDate.before(comparingDownDate)
-            if (isDateNotProper) {
-                Toast.makeText(context,
-                    "Date should be lower then next milestone.",
-                    Toast.LENGTH_SHORT).show()
-            if (isDateNotProper){
-                Toast.makeText(context,context.getString(R.string.date_lower),Toast.LENGTH_SHORT).show()
-            }
-        } else if (dateUp != null && dateDown == null) {
-            upDate = changeLocalFormat(dateUp,
-                Constants.DATE_FORMAT_UTC,
-                Constants.SIMPLE_DATE_FORMAT).toString()
-            val dateFormat = SimpleDateFormat(Constants.SIMPLE_DATE_FORMAT, Locale.US)
-            val comparingUpDate: Date = dateFormat.parse(upDate) as Date
-            val inputDate: Date =
-                dateFormat.parse(userInputDate) as Date
-            isDateNotProper = !inputDate.after(comparingUpDate)
-            if (isDateNotProper) {
-                Toast.makeText(context,
-                    "Date should be greater then previous milestone.",
-                    Toast.LENGTH_SHORT).show()
-            if (isDateNotProper){
-                Toast.makeText(context,context.getString(R.string.date_grater),Toast.LENGTH_SHORT).show()
-            }
-        } else if (dateUp == null && dateDown == null) {
-            isDateNotProper = false
-        }
-    } else if (selectedMilestoneIndex == commonMilestoneList.lastIndex) {
-        val dateUp = upDate(commonMilestoneList, selectedMilestoneIndex)
-        if (dateUp != null) {
-            upDate = changeLocalFormat(dateUp,
-                Constants.DATE_FORMAT_UTC,
-                Constants.SIMPLE_DATE_FORMAT).toString()
-            val dateFormat = SimpleDateFormat(Constants.SIMPLE_DATE_FORMAT, Locale.US)
-            val comparingUpDate: Date = dateFormat.parse(upDate) as Date
-            val inputDate = Date(userInputDate)
-            isDateNotProper = !inputDate.after(comparingUpDate)
-            if (isDateNotProper) {
-                Toast.makeText(context,
-                    "Date should be greater then previous milestone.",
-                    Toast.LENGTH_SHORT).show()
-            if (isDateNotProper){
-                Toast.makeText(context,context.getString(R.string.date_grater),Toast.LENGTH_SHORT).show()
-            }
-        } else {
-            isDateNotProper = false
         }
     }
     return isDateNotProper

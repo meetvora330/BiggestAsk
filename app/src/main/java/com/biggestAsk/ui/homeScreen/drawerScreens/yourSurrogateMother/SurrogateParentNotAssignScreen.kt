@@ -1,5 +1,6 @@
 package com.biggestAsk.ui.homeScreen.drawerScreens.yourSurrogateMother
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -7,22 +8,41 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.navigation.NavController
+import com.biggestAsk.data.model.response.UpdatedStatusResponse
+import com.biggestAsk.data.source.network.NetworkResult
+import com.biggestAsk.ui.activity.HomeActivity
+import com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph.BottomNavItems
+import com.biggestAsk.ui.homeScreen.bottomNavScreen.updateHomeScreenData
+import com.biggestAsk.ui.main.viewmodel.BottomHomeViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
+import com.biggestAsk.util.Constants
+import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 
 @Composable
-fun SurrogateParentNotAssignScreen(title: String) {
+fun SurrogateParentNotAssignScreen(
+    title: String,
+    homeViewModel: BottomHomeViewModel,
+    homeActivity: HomeActivity,
+    navController: NavController,
+) {
+    LaunchedEffect(Unit) {
+//        getUpdatedStatus(homeViewModel = homeViewModel,
+//            homeActivity = homeActivity,
+//            navController = navController)
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -84,8 +104,4 @@ fun SurrogateParentNotAssignScreen(title: String) {
     }
 }
 
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun SurrogateParentNotAssignScreenPreview() {
-    SurrogateParentNotAssignScreen(stringResource(id = R.string.label_surrogate_parent_not_available))
-}
+
