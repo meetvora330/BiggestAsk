@@ -2,7 +2,6 @@
 
 package com.biggestAsk.navigation
 
-import android.util.Log
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -35,6 +34,9 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
 import java.util.*
 
+/**
+ * Navigation graph with different view models and NavHostController used for navigations
+ */
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun SetUpNavGraph(
@@ -80,7 +82,6 @@ fun SetUpNavGraph(
             Screen.Intro.route
         ) {
             val configuration = LocalConfiguration.current
-            Log.i("TAG", "${configuration.screenHeightDp}")
             if (configuration.screenHeightDp > 700) {
                 IntroScreen(
                     state = pagerState,

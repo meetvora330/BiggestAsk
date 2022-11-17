@@ -491,35 +491,9 @@ fun CreateContactDialog(
                 onClick = {
                     var image: MultipartBody.Part? = null
                     when {
-                        /*TextUtils.isEmpty(tf_text_first.value)*//* &&
-                                TextUtils.isEmpty(tf_text_second.value) &&
-                                TextUtils.isEmpty(tf_text_third.value) &&
-                                TextUtils.isEmpty(tf_text_fourth.value)*/ /*-> {
-                            tfTextFirstEmpty.value = true*/
-                        /*tfTextSecondEmpty.value = true
-                        tfTextThirdEmpty.value = true
-                        tfTextFourthEmpty.value = true
-                        if (!contactYourProviderViewModel.isImagePresent.value) {
-                            Toast.makeText(
-                                context,
-                                Constants.PLEASE_ADD_LOGO,
-                                Toast.LENGTH_SHORT
-                            )
-                                .show()
-                        }*/
-//                        }
                         TextUtils.isEmpty(tf_text_first.value) -> {
                             tfTextFirstEmpty.value = true
                         }
-                        /*TextUtils.isEmpty(tf_text_second.value) -> {
-                            tfTextSecondEmpty.value = true
-                        }
-                        TextUtils.isEmpty(tf_text_third.value) -> {
-                            tfTextThirdEmpty.value = true
-                        }
-                        TextUtils.isEmpty(tf_text_fourth.value) -> {
-                            tfTextFourthEmpty.value = true
-                        }*/
                         !TextUtils.isEmpty(tf_text_third.value) -> {
                             if (!Patterns.EMAIL_ADDRESS.matcher(tf_text_third.value.trim())
                                     .matches()
@@ -527,16 +501,9 @@ fun CreateContactDialog(
                                 contactYourProviderViewModel.isLoginEmailValid = true
                             }
                         }
-                        /*!contactYourProviderViewModel.isImagePresent.value -> {
-                            Toast.makeText(context, Constants.PLEASE_ADD_LOGO, Toast.LENGTH_SHORT)
-                                .show()
-                        }*/
-                        !contactYourProviderViewModel.phoneErrorVisible/* && contactYourProviderViewModel.isImagePresent.value*/ && !TextUtils.isEmpty(
+                        !contactYourProviderViewModel.phoneErrorVisible && !TextUtils.isEmpty(
                             tf_text_first.value
-                        ) /*&&
-                                !TextUtils.isEmpty(tf_text_second.value) &&
-                                !TextUtils.isEmpty(tf_text_third.value) &&
-                                !TextUtils.isEmpty(tf_text_fourth.value)*/ -> {
+                        ) -> {
                             image = if (contactYourProviderViewModel.isImagePresent.value) {
                                 contactYourProviderViewModel.uriPath?.let { convertImageMultiPart(it) }
                             } else {

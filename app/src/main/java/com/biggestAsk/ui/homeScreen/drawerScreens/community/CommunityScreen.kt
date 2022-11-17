@@ -35,6 +35,9 @@ import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 
+/**
+ * community screen
+ */
 @Composable
 fun Community(
     communityViewModel: CommunityViewModel,
@@ -146,8 +149,8 @@ fun Community(
                                 onClick = {
                                     try {
                                         val instaLink = "Instagram.com/thebiggestask"
-                                        if (instaLink?.startsWith("https://") == true || instaLink?.startsWith(
-                                                "http://") == true
+                                        if (instaLink.startsWith("https://") || instaLink.startsWith(
+                                                "http://")
                                         ) {
                                             val instagramIntent =
                                                 Intent(Intent.ACTION_VIEW, Uri.parse(instaLink))
@@ -195,8 +198,8 @@ fun Community(
                                 onClick = {
                                     try {
                                         val forumLink = "thebiggestask.com/forums/"
-                                        if (forumLink?.startsWith("https://") == true || forumLink?.startsWith(
-                                                "http://") == true
+                                        if (forumLink.startsWith("https://") || forumLink.startsWith(
+                                                "http://")
                                         ) {
                                             val instagramIntent =
                                                 Intent(Intent.ACTION_VIEW, Uri.parse(forumLink))

@@ -44,6 +44,9 @@ import com.biggestAsk.ui.ui.theme.Login_Sub_Tittle
 import com.biggestAsk.ui.ui.theme.Text_Color
 import com.example.biggestAsk.R
 
+/**
+ * email verification screen
+ */
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun EmailVerification(
@@ -286,15 +289,8 @@ fun ProgressBarTransparentBackground(loadingText: String, id: Int = R.color.cust
             verticalAlignment = Alignment.CenterVertically
         ) {
             CircularProgressIndicator(
-                // below line is use to add padding
-                // to our progress bar.
                 modifier = Modifier.padding(top = 5.dp),
-                // below line is use to add color
-                // to our progress bar.
                 color = colorResource(id = R.color.custom_blue),
-
-                // below line is use to add stroke
-                // width to our progress bar.
                 strokeWidth = Dp(value = 4F)
             )
             Text(

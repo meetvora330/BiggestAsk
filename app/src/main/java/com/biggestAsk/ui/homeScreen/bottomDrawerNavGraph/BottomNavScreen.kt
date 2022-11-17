@@ -4,7 +4,11 @@ import com.biggestAsk.util.Constants
 import com.biggestAsk.util.Constants.SELECTED_MILESTONE_INDEX
 
 const val ADD_NEW_MILESTONE_ARGS_ID = Constants.MILESTONE_ID
+const val editMilestone = "edit_milestone"
 
+/**
+ * used for bottom navigation route
+ */
 sealed class BottomNavScreen(
     val route: String,
 ) {
@@ -15,12 +19,12 @@ sealed class BottomNavScreen(
         BottomNavScreen(Constants.BOTTOM_NAV_SURROGATE_PARENT_NOT_ASSIGN_SCREEN)
 
     object AddNewMileStones :
-        BottomNavScreen("edit_milestone/{$ADD_NEW_MILESTONE_ARGS_ID}/{$SELECTED_MILESTONE_INDEX}") {
+        BottomNavScreen("$editMilestone/{$ADD_NEW_MILESTONE_ARGS_ID}/{$SELECTED_MILESTONE_INDEX}") {
         fun editMilestone(
             id: Int,
             index:Int
         ): String {
-            return "edit_milestone/$id/$index"
+            return "$editMilestone/$id/$index"
         }
     }
 }

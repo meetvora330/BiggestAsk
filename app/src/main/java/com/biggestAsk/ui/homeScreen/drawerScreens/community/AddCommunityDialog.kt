@@ -58,6 +58,9 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.util.regex.Pattern
 
+/**
+ * add community dialog
+ */
 @Composable
 fun AddCommunityDialog(
     homeActivity: HomeActivity,
@@ -102,8 +105,10 @@ fun AddCommunityDialog(
         effect = {
             val observer = LifecycleEventObserver { _, event ->
                 if (event == Lifecycle.Event.ON_RESUME) {
-                    if (ActivityCompat.checkSelfPermission(homeActivity,
-                            Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                    if (ActivityCompat.checkSelfPermission(
+                            homeActivity,
+                            Manifest.permission.READ_EXTERNAL_STORAGE
+                        ) == PackageManager.PERMISSION_GRANTED
                     ) {
                         communityViewModel.isPermissionAllowed = false
                     }
@@ -456,84 +461,60 @@ fun AddCommunityDialog(
                 onClick = {
                     var image: MultipartBody.Part? = null
                     when {
-                        TextUtils.isEmpty(tf_text_first.value) /*&&
-                                TextUtils.isEmpty(tf_text_second.value) &&
-                                TextUtils.isEmpty(tf_text_third.value) &&
-                                TextUtils.isEmpty(tf_text_fourth.value)*/ -> {
+                        TextUtils.isEmpty(tf_text_first.value) -> {
                             tfTextFirstEmpty.value = true
-//                            tfTextSecondEmpty.value = true
-//                            tfTextThirdEmpty.value = true
-//                            tfTextFourthEmpty.value = true
-
-//                            if (!communityViewModel.isImagePresent.value) {
-//                                Toast.makeText(context,
-//                                    Constants.PLEASE_ADD_LOGO,
-//                                    Toast.LENGTH_SHORT)
-//                                    .show()
-//                            }
                         }
                         TextUtils.isEmpty(tf_text_first.value) -> {
                             tfTextFirstEmpty.value = true
                         }
-//                        TextUtils.isEmpty(tf_text_second.value) -> {
-//                            tfTextSecondEmpty.value = true
-//                        }
-//                        TextUtils.isEmpty(tf_text_third.value) -> {
-//                            tfTextThirdEmpty.value = true
-//                        }
-//                        TextUtils.isEmpty(tf_text_fourth.value) -> {
-//                            tfTextFourthEmpty.value = true
-//                        }
-//                        !communityViewModel.isImagePresent.value -> {
-//                            Toast.makeText(context, Constants.PLEASE_ADD_LOGO, Toast.LENGTH_SHORT)
-//                                .show()
-//                        }
-
-
-                        /*communityViewModel.isImagePresent.value &&*/ !TextUtils.isEmpty(
-                        tf_text_first.value) /*&&
-                                !TextUtils.isEmpty(tf_text_second.value) &&
-                                !TextUtils.isEmpty(tf_text_third.value) &&
-                                !TextUtils.isEmpty(tf_text_fourth.value) && !communityViewModel.isValidInstagramUrl.value && Pattern.compile(
-                            validUrlRegex)
-                            .matcher(tf_text_fourth.value).matches()*/ -> {
-                        image = if (communityViewModel.isImagePresent.value) {
-                            communityViewModel.uriPath?.let { convertImageMultiPart(it) }
-                        } else {
-                            null
-                        }
-                        communityViewModel.createCommunity(
-                            MultipartBody.Part.createFormData(Constants.TITLE,
-                                tf_text_first.value),
-                            MultipartBody.Part.createFormData(Constants.DESCRIPTION,
-                                tf_text_second.value),
-                            MultipartBody.Part.createFormData(Constants.FORUM_LINK,
-                                tf_text_third.value),
-                            MultipartBody.Part.createFormData(Constants.INST_LINK,
-                                tf_text_fourth.value),
-                            image,
-                            MultipartBody.Part.createFormData(Constants.USER_ID,
-                                userId.toString()),
-                            MultipartBody.Part.createFormData(Constants.TYPE, type!!)
-                        )
-                        communityViewModel.createCommunityResponse.observe(homeActivity) {
-                            if (it != null) {
-                                handleCreateCommunityApi(
-                                    result = it,
-                                    communityViewModel = communityViewModel,
-                                    context = context,
-                                    openDialogCustom,
-                                    tf_text_first,
-                                    tf_text_second,
-                                    tf_text_third,
-                                    tf_text_fourth,
-                                    type,
-                                    userId,
-                                    homeActivity
-                                )
+                        !TextUtils.isEmpty(tf_text_first.value) -> {
+                            image = if (communityViewModel.isImagePresent.value) {
+                                communityViewModel.uriPath?.let { convertImageMultiPart(it) }
+                            } else {
+                                null
+                            }
+                            communityViewModel.createCommunity(
+                                MultipartBody.Part.createFormData(
+                                    Constants.TITLE,
+                                    tf_text_first.value
+                                ),
+                                MultipartBody.Part.createFormData(
+                                    Constants.DESCRIPTION,
+                                    tf_text_second.value
+                                ),
+                                MultipartBody.Part.createFormData(
+                                    Constants.FORUM_LINK,
+                                    tf_text_third.value
+                                ),
+                                MultipartBody.Part.createFormData(
+                                    Constants.INST_LINK,
+                                    tf_text_fourth.value
+                                ),
+                                image,
+                                MultipartBody.Part.createFormData(
+                                    Constants.USER_ID,
+                                    userId.toString()
+                                ),
+                                MultipartBody.Part.createFormData(Constants.TYPE, type!!)
+                            )
+                            communityViewModel.createCommunityResponse.observe(homeActivity) {
+                                if (it != null) {
+                                    handleCreateCommunityApi(
+                                        result = it,
+                                        communityViewModel = communityViewModel,
+                                        context = context,
+                                        openDialogCustom,
+                                        tf_text_first,
+                                        tf_text_second,
+                                        tf_text_third,
+                                        tf_text_fourth,
+                                        type,
+                                        userId,
+                                        homeActivity
+                                    )
+                                }
                             }
                         }
-                    }
                     }
                 },
                 modifier = Modifier
@@ -632,10 +613,12 @@ private fun handleCreateCommunityApi(
             communityViewModel.isValidInstagramUrl.value = false
             communityViewModel.bitmap.value = null
             if (!openDialogCustom.value) {
-                getUpdatedCommunity(type = type,
+                getUpdatedCommunity(
+                    type = type,
                     user_id = user_id,
                     communityViewModel = communityViewModel,
-                    homeActivity = homeActivity)
+                    homeActivity = homeActivity
+                )
             }
         }
         is NetworkResult.Error -> {

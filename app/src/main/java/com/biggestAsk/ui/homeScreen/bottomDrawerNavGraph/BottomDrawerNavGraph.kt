@@ -31,6 +31,9 @@ import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 import java.util.*
 
+/**
+ * used for bottom bar navigation and for navigation drawer
+ */
 @Composable
 fun BottomNavigationDrawerGraph(
     navHostController: NavHostController,

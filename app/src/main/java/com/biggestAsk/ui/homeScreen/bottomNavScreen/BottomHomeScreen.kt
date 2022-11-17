@@ -55,6 +55,9 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * home screen
+ */
 @OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -895,7 +898,6 @@ private fun handleStoreQuestionAnsData(
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.i("TAG", result.message.toString())
             getHomeScreenQuestion(user_id, type, bottomHomeViewModel, homeActivity)
             coroutineScope.launch {
                 bottomSheetScaffoldState.bottomSheetState.collapse()
@@ -966,7 +968,6 @@ private fun handleGetImportantQuestionData(
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.i("TAG", result.message.toString())
             if (result.data?.question == null) {
                 bottomHomeViewModel.isQuestionDataEmpty = true
                 bottomHomeViewModel.pregnancyTittle =
@@ -1060,17 +1061,13 @@ private fun handleNearestMilestoneData(
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.i("TAG", result.message.toString())
             bottomHomeViewModel.nearestMilestoneTittle = result.data?.title!!
-            Log.d("TAG", "d: ${result.data.date}")
             if (result.data.date.isNotEmpty()) {
                 val dateTime = changeLocalFormat(result.data.date,Constants.DATE_FORMAT_UTC,Constants.DATE_FORMAT_LOCAL)
-                Log.d("TAG", "handleNearestMilestoneData: $dateTime")
                 val localDate = dateTime?.let { changeLocalDateFormat(it.trim()) }
                 val localTime = dateTime?.let { changeLocalTimeFormat(it.trim()) }
                 if (localDate != null) {
                     bottomHomeViewModel.nearestMilestoneDate = localDate
-                    Log.d("TAG", "handleNearestMilestoneData: ${TimeZone.getTimeZone(result.data.date)}")
                 } else {
                     bottomHomeViewModel.nearestMilestoneDate = ""
                 }

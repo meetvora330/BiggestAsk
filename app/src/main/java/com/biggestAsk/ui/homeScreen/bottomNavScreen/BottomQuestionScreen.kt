@@ -46,6 +46,9 @@ import com.example.biggestAsk.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+/**
+ * question screen
+ */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun BottomQuestionScreen(
@@ -55,7 +58,11 @@ fun BottomQuestionScreen(
     frequencyViewModel: FrequencyViewModel,
 ) {
     val suggestions =
-        listOf("every day", "every 3 days", "every week")
+        listOf(
+            stringResource(id = R.string.question_rb_everyday),
+            stringResource(id = R.string.question_rb_3_days),
+            stringResource(id = R.string.question_rb_week)
+        )
     val questionBottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = BottomSheetState(BottomSheetValue.Collapsed)
     )

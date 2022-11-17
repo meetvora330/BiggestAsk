@@ -130,8 +130,7 @@ fun selectionChangeDropDown(
                                                 context = context,
                                                 user_id = userId,
                                                 type = type,
-                                                questionViewModel = questionViewModel,
-                                                homeActivity = homeActivity
+                                                questionViewModel = questionViewModel
                                             )
                                         }
                                     }
@@ -155,7 +154,6 @@ private fun handleFrequencyChangedData(
     user_id: Int,
     type: String,
     questionViewModel: BottomQuestionViewModel,
-    homeActivity: HomeActivity,
     result: NetworkResult<CommonResponse>,
     frequencyViewModel: FrequencyViewModel,
     context: Context,

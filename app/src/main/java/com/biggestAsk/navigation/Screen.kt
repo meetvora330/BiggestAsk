@@ -6,6 +6,9 @@ import com.biggestAsk.util.Constants.ROUTE_LOGIN_SCREEN
 const val EMAIL_VERIFICATION = "email_verification"
 const val REGISTERED_EMAIL = "registered_email"
 
+/**
+ * sealed class with route defined inside
+ */
 sealed class Screen(val route: String) {
     object Intro : Screen(route = Constants.ROUTE_INTRO_SCREEN)
     object VerifyEmail : Screen(route = Constants.ROUTE_VERIFY_EMAIL_SCREEN)

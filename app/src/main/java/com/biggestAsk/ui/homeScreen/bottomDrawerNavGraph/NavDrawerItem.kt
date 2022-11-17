@@ -3,6 +3,9 @@ package com.biggestAsk.ui.homeScreen.bottomDrawerNavGraph
 import com.biggestAsk.util.Constants
 import com.example.biggestAsk.R
 
+/**
+ * navigation drawer item
+ */
 sealed class NavDrawerItem(
     var route: String,
     var icon: Int,

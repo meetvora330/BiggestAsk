@@ -24,6 +24,9 @@ import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.ET_Bg
 import com.example.biggestAsk.R
 
+/**
+ * custom drop down
+ */
 @Composable
 fun SimpleDropDown(
     suggestions: List<String>,
