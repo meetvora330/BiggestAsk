@@ -22,7 +22,9 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer.shimmerTheme
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.skydoves.landscapist.glide.GlideImage
-
+/**
+ * your account shimmer
+ */
 @Composable
 fun YourAccountSurrogateShimmerAnimation() {
     val brush = shimmerTheme()

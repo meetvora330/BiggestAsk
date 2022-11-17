@@ -2,6 +2,10 @@ package com.biggestAsk.ui.homeScreen.drawerScreens.settingScreens
 
 import com.example.biggestAsk.R
 
+/**
+ * about app image item
+ */
+
 data class AboutAppImageItem(
     val img: Int,
 )

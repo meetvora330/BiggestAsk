@@ -11,7 +11,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
+/**
+ * notification details screen
+ */
 @Composable
 fun NotificationDetails(
     notificationDetailsIcon: Int?,

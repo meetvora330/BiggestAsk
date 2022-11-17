@@ -35,6 +35,10 @@ import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
 
+/**
+ * intended parents screen
+ */
+
 @Composable
 fun IntendParentsScreen(
     homeActivity: HomeActivity,

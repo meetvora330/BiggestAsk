@@ -324,6 +324,16 @@
     <string name="to_forum">To Forum</string>
     <string name="instagram">Instagram</string>
     <string name="invalid_url">Invalid Url</string>
+    <string-array name="contact_type">
+        <item>Fertility Doctor</item>
+        <item>Agency Case Manager</item>
+        <item>Surrogacy Lawyer</item>
+        <item>ObGyn</item>
+    </string-array>
+    <string name="fertility_doctor">Fertility Doctor</string>
+    <string name="agency_case_manager">Agency Case Manager</string>
+    <string name="surrogacy_lawyer">Surrogacy Lawyer</string>
+    <string name="obgyn">ObGyn</string>
 
     <!--    Notification Screen-->
     <string name="NO_NOTIFICATION_FOUND">No Notification Found</string>
@@ -341,6 +351,7 @@
     <string name="date_lower">Date should be lower then next milestone.</string>
     <string name="date_between">Date should be between previous and next milestone.</string>
     <string name="date_grater">Date should be greater then previous milestone.</string>
+    <string name="happy_contact">The Happy Contact</string>
 
 
 </resources>

@@ -1,5 +1,8 @@
 package com.biggestAsk.ui.homeScreen.drawerScreens.settingScreens
 
+/**
+ * detailed setting item
+ */
 data class DetailedSettingsItem(
     val startTittle: String,
     val endTittle: String,

@@ -9,7 +9,6 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.text.TextUtils
-import android.util.Log
 import android.widget.DatePicker
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -79,6 +78,9 @@ import java.time.LocalDate
 import java.time.Period
 import java.util.*
 
+/**
+ * your account screen
+ */
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun YourAccountScreen(
@@ -134,7 +136,6 @@ fun YourAccountScreen(
                 yourAccountViewModel.isParentClicked = true
                 yourAccountViewModel.isGenderSelected = false
                 yourAccountViewModel.yourAccountFullNameEmpty = false
-                Log.e("TAG", "handleUserUpdateData: First")
                 getUserDetailsParent(userId = userId,
                     type = type,
                     yourAccountViewModel = yourAccountViewModel)
@@ -145,7 +146,6 @@ fun YourAccountScreen(
         ) {
             if (it != null) {
                 type?.let { it1 ->
-                    Log.e("TAG", "updateUserProfileResponse: response")
                     handleUserUpdateData(
                         result = it,
                         yourAccountViewModel = yourAccountViewModel,
@@ -159,7 +159,6 @@ fun YourAccountScreen(
         }
         yourAccountViewModel.getUserDetailResponseParent.observe(homeActivity) {
             if (it != null) {
-                Log.e("TAG", "getUserDetailsParent: res")
                 handleUserDataParent(
                     result = it,
                     yourAccountViewModel = yourAccountViewModel,
@@ -169,7 +168,6 @@ fun YourAccountScreen(
         }
         yourAccountViewModel.getUserDetailResponseSurrogate.observe(homeActivity) {
             if (it != null) {
-                Log.e("TAG", "getUserDetailsSurrogate: res")
                 handleUserDataSurrogate(
                     result = it,
                     yourAccountViewModel = yourAccountViewModel,
@@ -651,13 +649,14 @@ fun YourAccountScreen(
                                         }
                                         else -> {
                                             yourAccountViewModel.isEditable.value = false
-                                            val image = if (yourAccountViewModel.uriPathParent.isNullOrEmpty()) {
-                                                null
-                                            } else {
-                                                yourAccountViewModel.uriPathParent?.let {
-                                                    convertImageMultiPart(it, "image1")
+                                            val image =
+                                                if (yourAccountViewModel.uriPathParent.isNullOrEmpty()) {
+                                                    null
+                                                } else {
+                                                    yourAccountViewModel.uriPathParent?.let {
+                                                        convertImageMultiPart(it, "image1")
+                                                    }
                                                 }
-                                            }
                                             yourAccountViewModel.updateUserProfile(
                                                 userId = userId,
                                                 name = MultipartBody.Part.createFormData(
@@ -2692,7 +2691,6 @@ private fun handleUserUpdateData(
             val provider = PreferenceProvider(context)
             when (type) {
                 SURROGATE -> {
-                    Log.d("TAG", "handleUserUpdateData: ${yourAccountViewModel.surrogateFullName}")
                     provider.setValue(Constants.USER_NAME, yourAccountViewModel.surrogateFullName)
                     provider.setValue(Constants.UPDATED_IMAGE, yourAccountViewModel.surrogateImg)
                     clearSurrogateDetails(yourAccountViewModel)

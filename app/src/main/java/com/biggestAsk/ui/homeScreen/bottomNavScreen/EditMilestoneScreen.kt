@@ -86,6 +86,9 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * edit milestone screen
+ */
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -185,7 +188,7 @@ fun EditMilestoneScreen(
         )
         editMilestoneViewModel.commonMilestoneList.clear()
         milestoneViewModel.milestoneList.forEach {
-            if (it.type == "common") {
+            if (it.type == Constants.COMMON) {
                 editMilestoneViewModel.commonMilestoneList.add(it)
             }
         }
@@ -483,16 +486,14 @@ fun EditMilestoneScreen(
                                 }
                                 else -> {
                                     val isDateChecked: Boolean
-                                    if (milestoneViewModel.milestoneList[selectedMilestoneIndex].type == "common") {
+                                    if (milestoneViewModel.milestoneList[selectedMilestoneIndex].type == Constants.COMMON) {
                                         isDateChecked = checkDate(
                                             editMilestoneViewModel.editMilestoneDate.value,
                                             selectedMilestoneIndex,
                                             commonMilestoneList = editMilestoneViewModel.commonMilestoneList,
                                             context = context
                                         )
-                                        if (isDateChecked) {
-
-                                        } else {
+                                        if (!isDateChecked) {
                                             val userId =
                                                 PreferenceProvider(context).getIntValue(Constants.USER_ID,
                                                     0)
@@ -1717,7 +1718,7 @@ private fun handleEditMilestoneData(
                     result.data.milestone[0].location
             }
             editMilestoneViewModel.isMilestoneTittleEditable.value =
-                result.data.milestone[0].type == "common"
+                result.data.milestone[0].type == Constants.COMMON
             editMilestoneViewModel.milestoneType.value = result.data.milestone[0].type
             editMilestoneViewModel.milestoneId.value = result.data.milestone[0].milestone_id
             editMilestoneViewModel.imageList.clear()
@@ -1842,8 +1843,8 @@ private fun checkDate(
     commonMilestoneList: SnapshotStateList<Milestone>,
     context: Context,
 ): Boolean {
-    var upDate = ""
-    var downDate = ""
+    var upDate: String
+    var downDate: String
     var isDateNotProper = false
     if (selectedMilestoneIndex == 0) {
         val dateDown = downDate(commonMilestoneList, selectedMilestoneIndex)

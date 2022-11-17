@@ -89,18 +89,12 @@ fun BottomNavigationDrawerGraph(
                             navHostController
                         )
                     } else {
-                        SurrogateParentNotAssignScreen(stringResource(id = R.string.label_surrogate_parent_not_available),
-                            homeViewModel = bottomHomeViewModel,
-                            homeActivity,
-                            navController = navHostController)
+                        SurrogateParentNotAssignScreen(stringResource(id = R.string.label_surrogate_parent_not_available))
                     }
                 }
                 LoginStatus.MILESTONE_DATE_NOT_ADDED.name.lowercase(Locale.getDefault()) -> {
                     SurrogateParentNotAssignScreen(
-                        stringResource(id = R.string.label_add_milestone_date),
-                        homeViewModel = bottomHomeViewModel,
-                        homeActivity,
-                        navController = navHostController,
+                        stringResource(id = R.string.label_add_milestone_date)
                     )
                 }
                 LoginStatus.ON_BOARDING.name.lowercase(Locale.getDefault()) -> {
@@ -133,10 +127,7 @@ fun BottomNavigationDrawerGraph(
         composable(
             route = BottomNavScreen.SurrogateParentNotAssignScreen.route
         ) {
-            SurrogateParentNotAssignScreen(stringResource(id = R.string.label_add_milestone_date),
-                homeViewModel = bottomHomeViewModel,
-                homeActivity,
-                navController = navHostController)
+            SurrogateParentNotAssignScreen(stringResource(id = R.string.label_add_milestone_date))
         }
         composable(
             route = BottomNavScreen.AddNewMileStones.route,
@@ -161,10 +152,7 @@ fun BottomNavigationDrawerGraph(
             when (provider.getValue(Constants.LOGIN_STATUS, "")) {
                 LoginStatus.PARTNER_NOT_ASSIGN.name.lowercase(Locale.getDefault()) -> {
                     if (type == Constants.SURROGATE) {
-                        SurrogateParentNotAssignScreen(stringResource(id = R.string.label_surrogate_parent_not_available),
-                            homeViewModel = bottomHomeViewModel,
-                            homeActivity,
-                            navController = navHostController)
+                        SurrogateParentNotAssignScreen(stringResource(id = R.string.label_surrogate_parent_not_available))
                     }
                 }
                 LoginStatus.MILESTONE_DATE_NOT_ADDED.name.lowercase(Locale.getDefault()) -> {

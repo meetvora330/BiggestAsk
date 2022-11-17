@@ -40,7 +40,7 @@ import com.example.biggestAsk.R
 
 @OptIn(ExperimentalComposeUiApi::class)
 /**
- * contact your provider screeb
+ * contact your provider screen
  */
 @Composable
 fun ContactYourProvider(
@@ -285,21 +285,19 @@ fun ContactYourProvider(
                     homeActivity = homeActivity,
                     contactYourProviderViewModel = contactYourProviderViewModel,
                     openDialogCustom = openEditDialogCustomContact,
-                    tv_text_tittle = stringResource(R.string.update_contact),
-                    tf_hint_tv1 = stringResource(id = R.string.the_happy_agency),
-                    tf_hint_tv2 = stringResource(id = R.string.jane_doe),
-                    tv_text_second = stringResource(id = R.string.contact_rep_name),
-                    tv_text_third = stringResource(id = R.string.contact_email),
-                    tf_hint_tv3 = stringResource(id = R.string.agency_email_hint),
-                    tv_text_fourth = stringResource(id = R.string.contact_phone_number),
-                    tf_hint_tv4 = stringResource(id = R.string.dialog_phone),
-                    btn_text_add = stringResource(id = R.string.update_contact),
                     tf_text_first = editTfTextFirstContact,
                     tf_text_second = editTfTextSecondContact,
                     tf_text_third = editTfTextThirdContact,
                     tf_text_fourth = editTfTextFourthContact,
-                    isEditDetails = true,
-                contact_id = editedContactId.value)
+                    tv_text_tittle = stringResource(R.string.update_contact),
+                    tf_hint_tv2 = stringResource(id = R.string.jane_doe),
+                    tv_text_second = stringResource(id = R.string.contact_rep_name),
+                    tf_hint_tv3 = stringResource(id = R.string.agency_email_hint),
+                    tv_text_third = stringResource(id = R.string.contact_email),
+                    tf_hint_tv4 = stringResource(id = R.string.dialog_phone),
+                    tv_text_fourth = stringResource(id = R.string.contact_phone_number),
+                    btn_text_add = stringResource(id = R.string.update_contact),
+                    isEditDetails = true)
 
             }
         }

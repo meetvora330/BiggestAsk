@@ -39,6 +39,10 @@ import com.example.biggestAsk.R
 
 const val HELP_URL = Constants.HELP_URL
 
+/**
+ * setting screen
+ */
+
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun Settings(

@@ -24,7 +24,9 @@ import com.biggestAsk.ui.activity.HomeActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
 import com.biggestAsk.ui.main.viewmodel.AboutAppViewModel
 import com.example.biggestAsk.R
-
+/**
+ * about app screen
+ */
 @Composable
 fun AboutApp(
     homeActivity: HomeActivity,

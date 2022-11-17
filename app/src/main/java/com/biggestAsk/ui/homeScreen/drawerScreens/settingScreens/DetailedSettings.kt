@@ -24,7 +24,9 @@ import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
-
+/**
+ * detailed setting screen
+ */
 @Composable
 fun DetailedSettings(
     context: Context,
@@ -199,117 +201,9 @@ fun DetailedSettings(
                     )
                 )
             }
-//        Surface(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(top = 40.dp),
-//            shape = RoundedCornerShape(10.dp),
-//            elevation = 1.dp,
-//        ) {
-//            Column {
-//                Row(modifier = Modifier.fillMaxWidth()) {
-//                    Image(
-//                        modifier = Modifier.padding(top = 8.dp, start = 8.dp, bottom = 8.dp),
-//                        painter = painterResource(id = R.drawable.ic_icon_setting_detailed_screen),
-//                        contentDescription = ""
-//                    )
-//                    Column(modifier = Modifier.padding(start = 12.dp)) {
-//                        Text(
-//                            modifier = Modifier.padding(top = 12.dp),
-//                            text = stringResource(id = R.string.changes_saved_success_message),
-//                            style = MaterialTheme.typography.body2.copy(
-//                                fontWeight = FontWeight.W600,
-//                                fontSize = 16.sp,
-//                                color = Color.Black
-//                            )
-//                        )
-//                        Row(Modifier) {
-//                            Image(
-//                                modifier = Modifier.padding(top = 5.dp),
-//                                painter = painterResource(id = R.drawable.ic_icon_clock_detailed_setting),
-//                                contentDescription = ""
-//                            )
-//                            Text(
-//                                modifier = Modifier.padding(start = 4.dp, top = 3.dp),
-//                                text = stringResource(id = R.string.just_now),
-//                                style = MaterialTheme.typography.body1.copy(
-//                                    fontSize = 12.sp,
-//                                    color = Color(0xFFC7C7CC),
-//                                    fontWeight = FontWeight.W500,
-//                                    lineHeight = 16.sp
-//                                )
-//                            )
-//                        }
-//
-//                    }
-//
-//                }
-//            }
-//        }
-//        Text(
-//            modifier = Modifier
-//                .wrapContentWidth()
-//                .padding(top = 37.dp, bottom = 20.dp)
-//                .clickable(indication = null, interactionSource = MutableInteractionSource()) {
-//
-//                    if (type != null) {
-//                        detailedSettingsViewModel.userLogout(
-//                            user_id = userId,
-//                            type = type
-//                        )
-//                    }
-//                    detailedSettingsViewModel.userLogoutResponse.observe(homeActivity) {
-//                        if (it != null) {
-//                            handleUserLogoutData(
-//                                result = it,
-//                                detailedSettingsViewModel = detailedSettingsViewModel
-//                            )
-//                        }
-//                    }
-//                },
-//            text = buildAnnotatedString {
-//                val logout = context.resources.getString(R.string.logout)
-//                withStyle(
-//                    style = SpanStyle(
-//                        fontWeight = FontWeight.W600,
-//                        textDecoration = TextDecoration.Underline,
-//                        color = Custom_Blue,
-//                        fontSize = 16.sp,
-//                    )
-//                ) {
-//                    append(logout)
-//                }
-//            },
-//            style = MaterialTheme.typography.body2,
-//            textAlign = TextAlign.Center
-//        )
         }
     }
 }
-
-
-//private fun handleUserLogoutData(
-//    result: NetworkResult<CommonResponse>,
-//    detailedSettingsViewModel: DetailedSettingsViewModel,
-//) {
-//    when (result) {
-//        is NetworkResult.Loading -> {
-//            // show a progress bar
-//            Log.e("TAG", "handleUserData() --> Loading  $result")
-//            detailedSettingsViewModel.isNotificationStatusFetched = true
-//        }
-//        is NetworkResult.Success -> {
-//            // bind data to the view
-//            Log.e("TAG", "handleUserData() --> Success  $result")
-//            detailedSettingsViewModel.isNotificationStatusFetched = false
-//        }
-//        is NetworkResult.Error -> {
-//            // show error message
-//            Log.e("TAG", "handleUserData() --> Error ${result.message}")
-//            detailedSettingsViewModel.isNotificationStatusFetched = false
-//        }
-//    }
-//}
 
 fun getNotificationStatus(
     userId: Int,
