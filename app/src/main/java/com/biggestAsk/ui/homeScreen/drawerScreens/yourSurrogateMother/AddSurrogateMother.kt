@@ -378,6 +378,9 @@ private fun handleUserData(
                 Constants.LOGIN_STATUS,
                 LoginStatus.MILESTONE_DATE_NOT_ADDED.name.lowercase(Locale.getDefault())
             )
+            result.data?.partner_id?.let {
+                provider.setValue(Constants.PARTNER_ID, it)
+            }
             navHostController.navigate(BottomNavScreen.SurrogateParentNotAssignScreen.route)
         }
 

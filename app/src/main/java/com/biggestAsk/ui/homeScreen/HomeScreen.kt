@@ -136,9 +136,7 @@ fun HomeScreen(
                 yourAccountViewModel = yourAccountViewModel,
                 contactYourProviderViewModel = contactYourProviderViewModel,
                 communityViewModel = communityViewModel,
-                notificationViewModel = notificationViewModel,
-                homeViewModel = bottomHomeViewModel,
-                homeActivity = homeActivity
+                notificationViewModel = notificationViewModel
             )
             ConstraintLayout(
                 modifier = Modifier
@@ -502,7 +500,6 @@ fun HomeScreen(
             BottomNavigation(
                 navController = navController,
                 viewModel = mainViewModel,
-                context = context,
                 homeViewModel = bottomHomeViewModel,
                 homeActivity = homeActivity)
         },
@@ -531,8 +528,6 @@ fun currentRoute(
     contactYourProviderViewModel: ContactYourProviderViewModel,
     communityViewModel: CommunityViewModel,
     notificationViewModel: NotificationViewModel,
-    homeViewModel: BottomHomeViewModel,
-    homeActivity: HomeActivity,
 ): String? {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     when (navController.currentDestination?.route) {
@@ -1215,7 +1210,6 @@ object ClearRippleTheme : RippleTheme {
 fun BottomNavigation(
     navController: NavController,
     viewModel: MainViewModel,
-    context: Context,
     homeViewModel: BottomHomeViewModel,
     homeActivity: HomeActivity,
 ) {
@@ -1323,6 +1317,9 @@ private fun handleUpdatedStatusData(
             if (result.data?.status == "on_boarding") {
                 navController.popBackStack()
                 navController.navigate(BottomNavItems.Home.navRoute)
+            }
+            result.data?.partner_id?.let {
+                provider.setValue(Constants.PARTNER_ID, it)
             }
         }
         is NetworkResult.Error -> {

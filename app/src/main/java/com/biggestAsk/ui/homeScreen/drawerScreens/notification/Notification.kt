@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
 import com.biggestAsk.data.model.request.GetNotificationRequest
 import com.biggestAsk.data.model.response.GetNotificationResponse
@@ -131,6 +132,8 @@ fun Notification(
                                         modifier = Modifier.constrainAs(tv_nTittle) {
                                             start.linkTo(parent.start)
                                             top.linkTo(parent.top)
+                                            end.linkTo(tv_nDays.start)
+                                            width = Dimension.fillToConstraints
                                         },
                                         text = item.title,
                                         style = MaterialTheme.typography.body1,
@@ -143,9 +146,10 @@ fun Notification(
                                             .constrainAs(tv_nDays) {
                                                 top.linkTo(parent.top)
                                                 end.linkTo(parent.end)
+                                                width = Dimension.fillToConstraints
                                             }
                                             .padding(top = 2.dp, end = 24.dp),
-                                        text = "${notificationViewModel.notificationDaysList[index]} days ago",
+                                        text = if (notificationViewModel.notificationDaysList[index] == 0) "Today" else "${notificationViewModel.notificationDaysList[index]} days ago",
                                         style = MaterialTheme.typography.body1,
                                         fontSize = 14.sp,
                                         fontWeight = FontWeight.W400,
