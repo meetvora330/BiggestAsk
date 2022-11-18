@@ -17,6 +17,10 @@ import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 import javax.inject.Inject
 
+/**
+ * Created by Abhin.
+ * edit milestone screen viewModel
+ */
 @HiltViewModel
 class EditMilestoneViewModel @Inject constructor(
     private val homeRepository: HomeRepository,

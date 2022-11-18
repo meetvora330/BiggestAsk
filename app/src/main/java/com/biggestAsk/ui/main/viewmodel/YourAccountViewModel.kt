@@ -8,16 +8,16 @@ import android.graphics.Matrix
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import android.util.Log
-import androidx.compose.runtime.* // ktlint-disable no-wildcard-imports
+import androidx.compose.runtime.*
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.biggestAsk.data.model.request.GetUserDetailsParentRequest
 import com.biggestAsk.data.model.request.GetUserDetailsSurrogateRequest
-import com.biggestAsk.data.model.response.* // ktlint-disable no-wildcard-imports
+import com.biggestAsk.data.model.response.*
 import com.biggestAsk.data.repository.YourAccountRepository
 import com.biggestAsk.data.source.network.NetworkResult
+import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PathUtil
 import com.biggestAsk.util.PreferenceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,6 +25,10 @@ import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 import javax.inject.Inject
 
+/**
+ * Created by Abhin.
+ * your account screen viewModel
+ */
 @HiltViewModel
 class YourAccountViewModel @Inject constructor(
     private val yourAccountRepository: YourAccountRepository,
@@ -57,7 +61,6 @@ class YourAccountViewModel @Inject constructor(
     var parentPartnerPhoneNumberMinimumValidate: Boolean by mutableStateOf(false)
     var phoneNumberMaximumValidate: Boolean by mutableStateOf(false)
     var surrogatePhoneNumber: String by mutableStateOf("")
-    var yourAccountPhoneNumberEmpty: Boolean by mutableStateOf(false)
     var surrogateEmail: String by mutableStateOf("")
     var yourAccountEmailIsValid: Boolean by mutableStateOf(false)
     var yourAccountEmailEmpty: Boolean by mutableStateOf(false)
@@ -98,7 +101,6 @@ class YourAccountViewModel @Inject constructor(
         getUserDetailResponseSurrogate.value = NetworkResult.Loading()
         viewModelScope.launch {
             yourAccountRepository.getUserDetailsSurrogate(getUserDetailsRequestSurrogate).collect {
-                Log.e("TAG", "getUserDetailsSurrogate: collect", )
                 getUserDetailResponseSurrogate.value = it
             }
         }
@@ -108,7 +110,6 @@ class YourAccountViewModel @Inject constructor(
         getUserDetailResponseParent.value = NetworkResult.Loading()
         viewModelScope.launch {
             yourAccountRepository.getUserDetailsParent(getUserDetailsRequestParent).collect {
-                Log.e("TAG", "getUserDetailsParent: collect", )
                 getUserDetailResponseParent.value = it
             }
         }
@@ -118,8 +119,7 @@ class YourAccountViewModel @Inject constructor(
         viewModelScope.launch {
             imageData.let {
                 val uri = it
-                Log.e("uri", "AddCommunityDialog: $uri")
-                if (PreferenceProvider(context).getValue("type", "") == "parent") {
+                if (PreferenceProvider(context).getValue(Constants.TYPE, "") == Constants.PARENT) {
                     if (isParentClicked) {
                         uriPathParent = uri?.let { it1 -> PathUtil.getPath(context, it1) }
                     }
@@ -129,7 +129,6 @@ class YourAccountViewModel @Inject constructor(
                 } else {
                     uriPathParent = uri?.let { it1 -> PathUtil.getPath(context, it1) }
                 }
-                Log.e("uriPath", "AddCommunityDialog: $uriPathParent")
                 if (Build.VERSION.SDK_INT < 29) {
                     if (isParentClicked) {
                         bitmapImage1.value =

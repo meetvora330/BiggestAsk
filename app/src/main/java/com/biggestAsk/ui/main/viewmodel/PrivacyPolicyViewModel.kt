@@ -18,6 +18,7 @@ import javax.inject.Inject
 
 /**
  * Created by Abhin.
+ * privacy policy screen viewModel
  */
 @HiltViewModel
 class PrivacyPolicyViewModel @Inject constructor(

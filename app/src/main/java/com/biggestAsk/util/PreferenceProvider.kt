@@ -7,7 +7,9 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 
-
+/**
+ * preference provider
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 class PreferenceProvider(private val appContext: Context) {

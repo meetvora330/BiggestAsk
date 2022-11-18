@@ -51,7 +51,9 @@ fun SelectFrequencyScreen(
 ) {
     val context = LocalContext.current
     val suggestions =
-        listOf(stringResource(id = R.string.question_rb_everyday), stringResource(id = R.string.question_rb_3_days), stringResource(id = R.string.question_rb_week))
+        listOf(stringResource(id = R.string.question_rb_everyday),
+            stringResource(id = R.string.question_rb_3_days),
+            stringResource(id = R.string.question_rb_week))
     var selectedText by remember { mutableStateOf("") }
     Box(
         modifier = Modifier

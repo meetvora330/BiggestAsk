@@ -1,6 +1,5 @@
 package com.biggestAsk.notification
 
-import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.biggestAsk.util.Constants
 import com.biggestAsk.util.NotificationUtils
@@ -21,7 +20,6 @@ class TheBiggestAskMessagingService : FirebaseMessagingService() {
 
     override fun onMessageReceived(message: RemoteMessage) {
         try {
-            Log.d("Notification", message.toString() + message.data.toString())
             if (message.notification?.title!!.isNotEmpty()) {
                 makeClNotification(message)
             }
@@ -35,7 +33,6 @@ class TheBiggestAskMessagingService : FirebaseMessagingService() {
     }
 
     override fun onNewToken(token: String) {
-        Log.d("Notification token", token)
         PreferenceProvider(this).setValue(Constants.NOTIFICATION_TOKEN, token)
     }
 }

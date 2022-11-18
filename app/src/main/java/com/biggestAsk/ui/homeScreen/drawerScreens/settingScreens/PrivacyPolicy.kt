@@ -24,6 +24,7 @@ import com.biggestAsk.ui.activity.HomeActivity
 import com.biggestAsk.ui.emailVerification.ProgressBarTransparentBackground
 import com.biggestAsk.ui.main.viewmodel.PrivacyPolicyViewModel
 import com.example.biggestAsk.R
+
 /**
  * privacy policy screen
  */

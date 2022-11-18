@@ -18,6 +18,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * Created by Abhin.
+ * milestone screen viewModel
+ */
 @HiltViewModel
 class BottomMilestoneViewModel @Inject constructor(
     private val homeRepository: HomeRepository,

@@ -5,7 +5,9 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
-
+/**
+ * date helper
+ */
 @SuppressLint("SimpleDateFormat")
 fun changeDateFormat(date: String): String? {
     val format1 = SimpleDateFormat(Constants.DATE_FORMAT_LOCAL)
@@ -20,7 +22,11 @@ fun changeDateFormat(date: String): String? {
 }
 
 @SuppressLint("SimpleDateFormat")
-fun changeLocalFormat(date: String,input_date_format:String,output_date_format:String): String? {
+fun changeLocalFormat(
+    date: String,
+    input_date_format: String,
+    output_date_format: String,
+): String? {
     val format1 = SimpleDateFormat(input_date_format)
     val format2 = SimpleDateFormat(output_date_format)
     var mDate: Date? = null
@@ -34,7 +40,7 @@ fun changeLocalFormat(date: String,input_date_format:String,output_date_format:S
 
 
 @SuppressLint("SimpleDateFormat")
-fun changeLocalDateFormat(date: String):String?{
+fun changeLocalDateFormat(date: String): String? {
     val format1 = SimpleDateFormat(Constants.DATE_FORMAT_LOCAL)
     val format2 = SimpleDateFormat(Constants.SIMPLE_DATE_FORMAT)
     var mDate: Date? = null
@@ -47,7 +53,7 @@ fun changeLocalDateFormat(date: String):String?{
 }
 
 @SuppressLint("SimpleDateFormat")
-fun changeLocalTimeFormat(date: String):String?{
+fun changeLocalTimeFormat(date: String): String? {
     val format1 = SimpleDateFormat(Constants.DATE_FORMAT_LOCAL)
     val format2 = SimpleDateFormat(Constants.SIMPLE_TIME_FORMAT)
     var mDate: Date? = null

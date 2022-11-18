@@ -352,6 +352,7 @@
     <string name="date_between">Date should be between previous and next milestone.</string>
     <string name="date_grater">Date should be greater then previous milestone.</string>
     <string name="happy_contact">The Happy Contact</string>
+    <string name="on_boarding">on_boarding</string>
 
 
 </resources>

@@ -7,7 +7,6 @@ import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -29,6 +28,7 @@ import javax.inject.Inject
 
 /**
  * Created by Abhin.
+ * community screen viewModel
  */
 @HiltViewModel
 class CommunityViewModel @Inject constructor(
@@ -83,9 +83,7 @@ class CommunityViewModel @Inject constructor(
         viewModelScope.launch {
             imageData.let {
                 val uri = it
-                Log.e("uri", "AddCommunityDialog: $uri")
                 uriPath = uri?.let { it1 -> PathUtil.getPath(context, it1) }
-                Log.e("uriPath", "AddCommunityDialog: $uriPath")
                 if (Build.VERSION.SDK_INT < 28) {
                     bitmap.value = MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
                 } else {

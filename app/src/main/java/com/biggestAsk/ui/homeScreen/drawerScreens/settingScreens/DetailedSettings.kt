@@ -24,6 +24,7 @@ import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
+
 /**
  * detailed setting screen
  */
@@ -46,7 +47,8 @@ fun DetailedSettings(
     }
     if (detailedSettingsViewModel.isNotificationStatusUpdated || detailedSettingsViewModel.isNotificationStatusFetched) {
         ProgressBarTransparentBackground(
-            loadingText = if (detailedSettingsViewModel.isNotificationStatusUpdated) stringResource(id = R.string.updating) else "Fetching",
+            loadingText = if (detailedSettingsViewModel.isNotificationStatusUpdated) stringResource(
+                id = R.string.updating) else "Fetching",
             id = R.color.transparent
         )
     } else {

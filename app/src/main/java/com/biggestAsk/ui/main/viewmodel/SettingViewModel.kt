@@ -15,6 +15,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * Created by Abhin.
+ * setting screen viewModel
+ */
 @HiltViewModel
 class SettingViewModel @Inject constructor(
     private val settingRepository: SettingRepository,

@@ -88,7 +88,7 @@ fun SimpleDropDown(
                     selectedText = label
                     expanded = false
                 }) {
-                    if (label != null && label!="") {
+                    if (label != null && label != "") {
                         Text(
                             modifier = Modifier
                                 .fillMaxWidth(),

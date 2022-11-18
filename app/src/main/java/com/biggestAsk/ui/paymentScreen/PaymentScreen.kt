@@ -2,8 +2,10 @@
 
 package com.biggestAsk.ui.paymentScreen
 
+/**
+ * payment screen
+ */
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -178,7 +180,6 @@ fun PaymentScreen(
                                                         billingResult,
                                                         productDetailsList,
                                                     ->
-                                                    Log.e("aa", "queryProductDetailsAsync")
                                                     // check billingResult
                                                     // process returned productDetailsList
                                                     val productDetailsParamsList = listOf(
@@ -203,14 +204,11 @@ fun PaymentScreen(
                                                             billingFlowParams)
                                                 }
                                             }
-                                            Log.e("aa",
-                                                "onBillingSetupFinished " + billingResult.responseCode)
                                         }
 
                                         override fun onBillingServiceDisconnected() {
                                             // Try to restart the connection on the next request to
                                             // Google Play by calling the startConnection() method.
-                                            Log.e("aa", "onBillingServiceDisconnected")
                                         }
                                     })
 

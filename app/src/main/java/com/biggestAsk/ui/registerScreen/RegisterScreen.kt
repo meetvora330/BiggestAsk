@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.text.TextUtils
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -51,7 +50,9 @@ import com.example.biggestAsk.R
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import java.util.*
 
-
+/**
+ * register screen
+ */
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun RegisterScreen(
@@ -508,7 +509,6 @@ private fun handleUserData(
             // bind data to the view
             registerViewModel.isLoading = false
             navHostController.popBackStack()
-            Log.d("TAG", "handleUserData: $email")
             navHostController.navigate(Screen.Login.login(email = email))
             navHostController.popBackStack(Screen.Register.route, true)
             emailVerificationViewModel.textEmailVerify = ""

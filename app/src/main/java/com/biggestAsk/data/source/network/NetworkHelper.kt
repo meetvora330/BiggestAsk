@@ -5,7 +5,6 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.NetworkInfo
 import android.os.Build
-import android.util.Log
 import com.biggestAsk.util.Constants
 import com.biggestAsk.util.Constants.ERROR_BODY_MESSAGE
 import com.example.biggestAsk.R
@@ -44,7 +43,6 @@ abstract class BaseApiResponse(val context: Context) {
                         error(response.errorBody().toString())
                     }
                     response.errorBody() != null -> {
-                        Log.d("TAG", "safeApiCall: ${response.errorBody().toString()}")
                         error(apiErrorBody(response.errorBody()!!))
                     }
                     response.code() == Constants.UNAUTHORISED -> {

@@ -18,6 +18,7 @@ import javax.inject.Inject
 
 /**
  * Created by Abhin.
+ * about app screen viewModel
  */
 @HiltViewModel
 class AboutAppViewModel @Inject constructor(

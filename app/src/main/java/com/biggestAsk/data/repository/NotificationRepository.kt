@@ -15,6 +15,7 @@ import javax.inject.Inject
 
 /**
  * Created by Abhin.
+ * about app screen repository
  */
 class NotificationRepository @Inject constructor(
     private val apiService: ApiService, @ApplicationContext context: Context,

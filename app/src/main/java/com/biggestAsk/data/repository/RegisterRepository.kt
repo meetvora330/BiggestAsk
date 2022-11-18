@@ -14,6 +14,10 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
+/**
+ * Created by Abhin.
+ * register screen repository
+ */
 @ActivityRetainedScoped
 class RegisterRepository @Inject constructor(
     private val apiService: ApiService, @ApplicationContext context: Context,

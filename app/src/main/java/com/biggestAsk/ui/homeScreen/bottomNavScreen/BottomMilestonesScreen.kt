@@ -1229,7 +1229,7 @@ private fun handleResetMilestoneData(
 private fun handleGetMilestoneData(
     result: NetworkResult<GetMilestoneResponse>,
     milestoneViewModel: BottomMilestoneViewModel,
-    context: Context
+    context: Context,
 ) {
     when (result) {
         is NetworkResult.Loading -> {

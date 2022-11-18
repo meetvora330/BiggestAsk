@@ -1,6 +1,8 @@
 package com.biggestAsk.util
 
-
+/**
+ * constants used in app define here
+ */
 object Constants {
     const val UNAUTHORISED = 401
     const val SERVER_ERROR = 500

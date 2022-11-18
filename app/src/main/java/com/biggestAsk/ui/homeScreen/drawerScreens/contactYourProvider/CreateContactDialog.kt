@@ -28,7 +28,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -40,6 +39,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.biggestAsk.data.model.request.UpdateContactRequest
+import com.biggestAsk.data.model.response.CommonResponse
 import com.biggestAsk.data.model.response.CreateContactResponse
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.ui.activity.HomeActivity
@@ -56,6 +57,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.util.regex.Pattern
+
 /**
  * create contact dialog
  */
@@ -77,6 +79,7 @@ fun CreateContactDialog(
     tv_text_fourth: String,
     btn_text_add: String,
     isEditDetails: Boolean,
+    milestoneId: Int = 0,
 ) {
     val tfTextFirstEmpty = remember {
         mutableStateOf(false)
@@ -129,9 +132,16 @@ fun CreateContactDialog(
     val type = PreferenceProvider(context).getValue(Constants.TYPE, "")
     val userId = PreferenceProvider(context).getIntValue(Constants.USER_ID, 0)
     val tittleSuggestion =
-        listOf(stringResource(id = R.string.fertility_doctor),stringResource(id = R.string.agency_case_manager),stringResource(id = R.string.surrogacy_lawyer),stringResource(id = R.string.obgyn))
+        listOf(stringResource(id = R.string.fertility_doctor),
+            stringResource(id = R.string.agency_case_manager),
+            stringResource(id = R.string.surrogacy_lawyer),
+            stringResource(id = R.string.obgyn))
     val suggestionIndex =
-        if (tf_text_first.value == stringResource(id = R.string.fertility_doctor)) 0 else if (tf_text_first.value == stringResource(id = R.string.agency_case_manager)) 1 else if (tf_text_first.value == stringResource(id = R.string.surrogacy_lawyer)) 2 else if (tf_text_first.value == stringResource(id = R.string.obgyn)) 3 else 0
+        if (tf_text_first.value == stringResource(id = R.string.fertility_doctor)) 0 else if (tf_text_first.value == stringResource(
+                id = R.string.agency_case_manager)
+        ) 1 else if (tf_text_first.value == stringResource(id = R.string.surrogacy_lawyer)) 2 else if (tf_text_first.value == stringResource(
+                id = R.string.obgyn)
+        ) 3 else 0
 
     Column(
         modifier = Modifier
@@ -418,6 +428,37 @@ fun CreateContactDialog(
                             !contactYourProviderViewModel.phoneErrorVisible && !TextUtils.isEmpty(
                                 tf_text_first.value) -> {
 
+                                type?.let {
+                                    UpdateContactRequest(
+                                        id = milestoneId,
+                                        title = tf_text_first.value,
+                                        agency_name = tf_text_second.value,
+                                        agency_email = tf_text_third.value,
+                                        agency_number = tf_text_fourth.value,
+                                        user_id = userId,
+                                        type = it
+                                    )
+                                }?.let {
+                                    contactYourProviderViewModel.updateContact(
+                                        it
+                                    )
+                                }
+                                contactYourProviderViewModel.updatedContactResponse.observe(
+                                    homeActivity) {
+                                    if (it != null) {
+                                        if (type != null) {
+                                            handleUpdateContactData(
+                                                result = it,
+                                                contactYourProviderViewModel = contactYourProviderViewModel,
+                                                context = context,
+                                                openDialogCustom = openDialogCustom,
+                                                homeActivity = homeActivity,
+                                                type = type,
+                                                user_id = userId
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         }
                     } else {
@@ -583,6 +624,41 @@ private fun handleCreateContactData(
             tf_text_second.value = ""
             tf_text_third.value = ""
             tf_text_fourth.value = ""
+            contactYourProviderViewModel.bitmap.value = null
+            Toast.makeText(context, result.data!!.message, Toast.LENGTH_SHORT).show()
+            if (!openDialogCustom.value) {
+                getUpdatedContact(type = type,
+                    user_id = user_id,
+                    contactYourProviderViewModel = contactYourProviderViewModel,
+                    homeActivity)
+            }
+        }
+        is NetworkResult.Error -> {
+            // show error message
+            contactYourProviderViewModel.isLoading = false
+            Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
+        }
+    }
+}
+
+private fun handleUpdateContactData(
+    result: NetworkResult<CommonResponse>,
+    contactYourProviderViewModel: ContactYourProviderViewModel,
+    context: Context,
+    openDialogCustom: MutableState<Boolean>,
+    homeActivity: HomeActivity,
+    type: String,
+    user_id: Int,
+) {
+    when (result) {
+        is NetworkResult.Loading -> {
+            // show a progress bar
+            contactYourProviderViewModel.isLoading = true
+        }
+        is NetworkResult.Success -> {
+            // bind data to the view
+            contactYourProviderViewModel.isLoading = false
+            openDialogCustom.value = false
             contactYourProviderViewModel.bitmap.value = null
             Toast.makeText(context, result.data!!.message, Toast.LENGTH_SHORT).show()
             if (!openDialogCustom.value) {

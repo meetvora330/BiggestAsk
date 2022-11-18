@@ -63,7 +63,7 @@ interface ApiService {
     suspend fun getNearestMilestone(
         @Query(Constants.USER_ID) user_id: Int,
         @Query(Constants.TYPE) type: String,
-        @Query(Constants.PARTNER_ID) partner_id: Int
+        @Query(Constants.PARTNER_ID) partner_id: Int,
     ): Response<GetNearestMilestoneResponse>
 
     @GET(Constants.GET_MILESTONE)
@@ -124,7 +124,7 @@ interface ApiService {
         @Part imgFileName1: MultipartBody.Part?,
         @Part imgFileName2: MultipartBody.Part?,
         @Part type: MultipartBody.Part?,
-        @Part partner_type:MultipartBody.Part,
+        @Part partner_type: MultipartBody.Part,
         @Part parent_partner_name: MultipartBody.Part?,
         @Part parent_partner_phone: MultipartBody.Part?,
         @Part parent_partner_dob: MultipartBody.Part?,
@@ -145,7 +145,7 @@ interface ApiService {
     ): Response<CreateContactResponse>
 
     @POST(Constants.UPDATE_CONTACT)
-    suspend fun updateContact(@Body updateContactRequest: UpdateContactRequest):Response<CommonResponse>
+    suspend fun updateContact(@Body updateContactRequest: UpdateContactRequest): Response<CommonResponse>
 
     @GET(Constants.GET_CONTACT)
     suspend fun getContact(
@@ -259,6 +259,6 @@ interface ApiService {
 
     @POST(Constants.ASK_SURROGATE)
     suspend fun askSurrogate(
-        @Body askSurrogateRequest: AskSurrogateRequest
-    ):Response<CommonResponse>
+        @Body askSurrogateRequest: AskSurrogateRequest,
+    ): Response<CommonResponse>
 }

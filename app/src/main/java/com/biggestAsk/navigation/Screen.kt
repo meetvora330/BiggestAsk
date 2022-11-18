@@ -26,7 +26,7 @@ sealed class Screen(val route: String) {
 
     fun login(
         email: String,
-    ) :String{
+    ): String {
         return "$ROUTE_LOGIN_SCREEN/$email"
     }
 

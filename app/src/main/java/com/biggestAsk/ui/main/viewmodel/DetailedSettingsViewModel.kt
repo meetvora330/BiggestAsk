@@ -18,6 +18,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * Created by Abhin.
+ * detailed setting screen viewModel
+ */
 @HiltViewModel
 class DetailedSettingsViewModel @Inject constructor(
     private val detailedSettingsRepository: DetailedSettingsRepository,

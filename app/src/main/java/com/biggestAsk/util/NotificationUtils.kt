@@ -13,7 +13,9 @@ import com.biggestAsk.ui.activity.MainActivity
 import com.example.biggestAsk.R
 import com.google.firebase.messaging.RemoteMessage
 
-
+/**
+ * notification utils
+ */
 object NotificationUtils {
 
     fun buildSimpleNotification(context: Context, message: RemoteMessage) {

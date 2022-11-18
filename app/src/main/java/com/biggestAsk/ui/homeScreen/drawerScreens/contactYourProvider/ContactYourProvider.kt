@@ -79,7 +79,7 @@ fun ContactYourProvider(
         .fillMaxSize()
         .padding(bottom = 55.dp)
         .verticalScroll(rememberScrollState())) {
-        contactYourProviderViewModel.contactList.forEachIndexed { index,item ->
+        contactYourProviderViewModel.contactList.forEachIndexed { index, item ->
             Surface(modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 26.dp, end = 24.dp, top = 16.dp, bottom = 14.dp),
@@ -145,9 +145,10 @@ fun ContactYourProvider(
                                                 editTfTextFourthContact.value =
                                                     contactYourProviderViewModel.contactList[index].agency_number.toString()
                                             }
-                                            if (contactYourProviderViewModel.contactList[index].id!=null){
+                                            if (contactYourProviderViewModel.contactList[index].id != null) {
                                                 editedContactId.value = 0
-                                                editedContactId.value = contactYourProviderViewModel.contactList[index].id
+                                                editedContactId.value =
+                                                    contactYourProviderViewModel.contactList[index].id
                                             }
                                         },
                                     painter = painterResource(id = R.drawable.ic_icon_your_account_edit_disable),
@@ -297,7 +298,9 @@ fun ContactYourProvider(
                     tf_hint_tv4 = stringResource(id = R.string.dialog_phone),
                     tv_text_fourth = stringResource(id = R.string.contact_phone_number),
                     btn_text_add = stringResource(id = R.string.update_contact),
-                    isEditDetails = true)
+                    isEditDetails = true,
+                    milestoneId = editedContactId.value
+                )
 
             }
         }

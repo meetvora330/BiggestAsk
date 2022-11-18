@@ -17,6 +17,7 @@ import javax.inject.Inject
 
 /**
  * Created by Abhin.
+ * home repository
  */
 @ActivityRetainedScoped
 class HomeRepository @Inject constructor(
@@ -228,8 +229,8 @@ class HomeRepository @Inject constructor(
     }
 
     suspend fun askSurrogate(
-        askSurrogateRequest: AskSurrogateRequest
-    ):Flow<NetworkResult<CommonResponse>>{
+        askSurrogateRequest: AskSurrogateRequest,
+    ): Flow<NetworkResult<CommonResponse>> {
         return flow {
             emit(safeApiCall {
                 apiService.askSurrogate(askSurrogateRequest = askSurrogateRequest)

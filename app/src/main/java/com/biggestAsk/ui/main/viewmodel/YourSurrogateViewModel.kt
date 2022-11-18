@@ -14,6 +14,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * Created by Abhin.
+ * your surrogate screen viewModel
+ */
 @HiltViewModel
 class YourSurrogateViewModel @Inject constructor(
     private val inviteSurrogateRepository: InviteSurrogateRepository,
@@ -21,7 +25,6 @@ class YourSurrogateViewModel @Inject constructor(
 ) : AndroidViewModel(application) {
     //Your Surrogate Mother
     var isSurrogateInvited: MutableState<Boolean> = mutableStateOf(false)
-    var isSurrogateAdded: MutableState<Boolean> = mutableStateOf(false)
     var textSurrogateDialogEmail: MutableState<String> = mutableStateOf("")
     val invitationSend: MutableState<Boolean> = mutableStateOf(false)
     var inviteSurrogateResponse: MutableLiveData<NetworkResult<InviteSurrogateResponse>> =

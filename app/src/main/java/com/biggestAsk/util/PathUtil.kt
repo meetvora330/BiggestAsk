@@ -12,7 +12,9 @@ import android.provider.MediaStore
 import android.text.TextUtils
 import java.net.URISyntaxException
 
-
+/**
+ * file path utils
+ */
 object PathUtil {
 
     @SuppressLint("NewApi", "Recycle")

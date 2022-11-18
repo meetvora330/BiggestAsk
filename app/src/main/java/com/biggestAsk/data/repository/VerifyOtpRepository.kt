@@ -16,6 +16,7 @@ import javax.inject.Inject
 
 /**
  * Created by Abhin.
+ * verify otp screen repository
  */
 class VerifyOtpRepository @Inject constructor(
     private val apiService: ApiService, @ApplicationContext context: Context,

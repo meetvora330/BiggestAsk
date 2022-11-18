@@ -15,6 +15,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * Created by Abhin.
+ * login screen viewModel
+ */
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val loginRepository: LoginRepository,
@@ -29,7 +33,7 @@ class LoginViewModel @Inject constructor(
     var isLoading: Boolean by mutableStateOf(false)
     var loginScreen: MutableLiveData<NetworkResult<LoginBodyResponse>> = MutableLiveData()
 
-    fun  login(loginBodyRequest: LoginBodyRequest) {
+    fun login(loginBodyRequest: LoginBodyRequest) {
         viewModelScope.launch {
             loginScreen.value = NetworkResult.Loading()
             loginRepository.login(loginBodyRequest).collect {

@@ -16,6 +16,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * Created by Abhin.
+ * intro screen viewModel
+ */
 @HiltViewModel
 class IntroViewModel @Inject constructor(
     private val homeRepository: HomeRepository,

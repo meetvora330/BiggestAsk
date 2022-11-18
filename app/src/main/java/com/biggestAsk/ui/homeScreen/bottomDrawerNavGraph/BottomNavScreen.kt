@@ -22,7 +22,7 @@ sealed class BottomNavScreen(
         BottomNavScreen("$editMilestone/{$ADD_NEW_MILESTONE_ARGS_ID}/{$SELECTED_MILESTONE_INDEX}") {
         fun editMilestone(
             id: Int,
-            index:Int
+            index: Int,
         ): String {
             return "$editMilestone/$id/$index"
         }

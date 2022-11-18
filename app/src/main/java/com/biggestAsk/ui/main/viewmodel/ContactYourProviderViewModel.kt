@@ -7,7 +7,6 @@ import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -25,13 +24,13 @@ import com.biggestAsk.data.repository.ContactYourProviderRepository
 import com.biggestAsk.data.source.network.NetworkResult
 import com.biggestAsk.util.PathUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 import javax.inject.Inject
 
 /**
  * Created by Abhin.
+ * contact your provider screen viewModel
  */
 @HiltViewModel
 class ContactYourProviderViewModel @Inject constructor(
@@ -53,7 +52,7 @@ class ContactYourProviderViewModel @Inject constructor(
     var uriPath: String? = ""
     val isImagePresent = mutableStateOf(false)
     var isDataNull: Boolean by mutableStateOf(false)
-    var updatedContactResponse:MutableLiveData<NetworkResult<CommonResponse>> = MutableLiveData()
+    var updatedContactResponse: MutableLiveData<NetworkResult<CommonResponse>> = MutableLiveData()
 
 
     fun createContact(
@@ -84,12 +83,12 @@ class ContactYourProviderViewModel @Inject constructor(
         }
     }
 
-    fun updateContact(updateContactRequest: UpdateContactRequest){
+    fun updateContact(updateContactRequest: UpdateContactRequest) {
         updatedContactResponse.value = NetworkResult.Loading()
         viewModelScope.launch {
             contactYourProviderRepository.updateContact(
                 updateContactRequest = updateContactRequest
-            ).collect{
+            ).collect {
                 updatedContactResponse.value = it
             }
         }
@@ -99,9 +98,7 @@ class ContactYourProviderViewModel @Inject constructor(
         viewModelScope.launch {
             imageData.let {
                 val uri = it
-                Log.e("uri", "AddCommunityDialog: $uri")
                 uriPath = uri?.let { it1 -> PathUtil.getPath(context, it1) }
-                Log.e("uriPath", "AddCommunityDialog: $uriPath")
                 if (Build.VERSION.SDK_INT < 28) {
                     bitmap.value = MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
                 } else {

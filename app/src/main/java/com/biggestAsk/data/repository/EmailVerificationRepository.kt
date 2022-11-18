@@ -16,6 +16,7 @@ import javax.inject.Inject
 
 /**
  * Created by Abhin.
+ * email verification screen repository
  */
 @ActivityRetainedScoped
 class EmailVerificationRepository @Inject constructor(

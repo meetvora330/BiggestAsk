@@ -14,6 +14,7 @@ import javax.inject.Inject
 
 /**
  * Created by Abhin.
+ * privacy policy screen repository
  */
 class PrivacyPolicyRepository @Inject constructor(
     private val apiService: ApiService, @ApplicationContext context: Context,

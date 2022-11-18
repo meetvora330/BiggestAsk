@@ -16,6 +16,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * Created by Abhin.
+ * your surrogate mother screen viewModel
+ */
 @HiltViewModel
 class YourSurrogateMotherViewModel @Inject constructor(
     private val yourSurrogateMotherRepository: YourSurrogateMotherRepository,

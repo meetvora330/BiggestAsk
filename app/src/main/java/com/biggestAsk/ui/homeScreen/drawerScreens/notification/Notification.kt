@@ -39,6 +39,7 @@ import com.biggestAsk.ui.main.viewmodel.NotificationViewModel
 import com.biggestAsk.util.Constants
 import com.biggestAsk.util.PreferenceProvider
 import com.example.biggestAsk.R
+
 /**
  * notification screen
  */

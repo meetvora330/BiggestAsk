@@ -14,6 +14,7 @@ import javax.inject.Inject
 
 /**
  * Created by Abhin.
+ * about app screen repository
  */
 class AboutAppRepository @Inject constructor(
     private val apiService: ApiService, @ApplicationContext context: Context,

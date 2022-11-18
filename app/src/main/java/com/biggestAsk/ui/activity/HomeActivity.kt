@@ -29,7 +29,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 class HomeActivity : BaseActivity() {
     private var launcher: ManagedActivityResultLauncher<String, Uri?>? = null
     private val mainViewModel: MainViewModel by viewModels()
-    private val introViewModel:IntroViewModel by viewModels()
+    private val introViewModel: IntroViewModel by viewModels()
     private val bottomHomeViewModel: BottomHomeViewModel by viewModels()
     private val bottomMilestoneViewModel: BottomMilestoneViewModel by viewModels()
     private val editMilestoneViewModel: EditMilestoneViewModel by viewModels()

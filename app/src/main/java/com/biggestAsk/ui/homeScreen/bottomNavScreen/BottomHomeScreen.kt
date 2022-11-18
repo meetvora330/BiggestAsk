@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.text.TextUtils
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
@@ -47,6 +46,7 @@ import com.biggestAsk.ui.homeScreen.bottomNavScreen.shimmer.PregnancyMilestoneSh
 import com.biggestAsk.ui.main.viewmodel.BottomHomeViewModel
 import com.biggestAsk.ui.ui.theme.Custom_Blue
 import com.biggestAsk.ui.ui.theme.ET_Bg
+import com.biggestAsk.ui.ui.theme.Text_Accept_Terms
 import com.biggestAsk.ui.ui.theme.Text_Color
 import com.biggestAsk.util.*
 import com.example.biggestAsk.R
@@ -86,7 +86,6 @@ fun BottomHomeScreen(
             type = type!!,
             homeActivity = homeActivity,
             partnerId = partnerId,
-            context = context
         )
     }
     BottomSheetScaffold(
@@ -588,14 +587,13 @@ fun BottomHomeScreen(
                                         )
                                     }
                                     if (bottomHomeViewModel.nearestMilestoneDate.isEmpty() && type == Constants.PARENT) {
-//                                        if (!bottomHomeViewModel.isSurrogateAsked) {
                                         Button(modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(start = 24.dp, end = 24.dp, bottom = 10.dp),
                                             shape = RoundedCornerShape(12.dp),
                                             border = BorderStroke(1.dp, Color(0xFFF4F4F4)),
                                             onClick = {
-                                                if (bottomHomeViewModel.isSurrogateAsked) {
+                                                if (!bottomHomeViewModel.isSurrogateAsked) {
                                                     bottomHomeViewModel.askSurrogate(
                                                         AskSurrogateRequest(
                                                             user_id = userId,
@@ -618,19 +616,22 @@ fun BottomHomeScreen(
                                                     }
                                                 }
                                             },
-                                            elevation = ButtonDefaults.elevation(defaultElevation = 0.dp,
+                                            enabled = !bottomHomeViewModel.isSurrogateAsked,
+                                            elevation = ButtonDefaults.elevation(
+                                                defaultElevation = 0.dp,
                                                 pressedElevation = 0.dp,
                                                 hoveredElevation = 0.dp,
                                                 disabledElevation = 0.dp,
-                                                focusedElevation = 0.dp),
-                                            colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)) {
+                                                focusedElevation = 0.dp
+                                            ),
+                                            colors = ButtonDefaults.buttonColors(backgroundColor = Color.White,
+                                                disabledBackgroundColor = Color.Transparent)) {
                                             Text(text = stringResource(id = R.string.ask_surrogate),
                                                 style = MaterialTheme.typography.body1,
                                                 fontWeight = FontWeight.W600,
                                                 fontSize = 16.sp,
-                                                color = Custom_Blue,
+                                                color = if (!bottomHomeViewModel.isSurrogateAsked) Custom_Blue else Text_Accept_Terms,
                                                 textAlign = TextAlign.Center)
-//                                            }
                                         }
                                     }
                                 }
@@ -838,10 +839,10 @@ fun handleAskSurrogateData(
     when (result) {
         is NetworkResult.Loading -> {
             // show a progress bar
+            bottomHomeViewModel.isAllDataLoaded = true
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.i("TAG", result.message.toString())
             Toast.makeText(homeActivity, "Notification sent successfully", Toast.LENGTH_SHORT)
                 .show()
             updateNearestMilestone(
@@ -851,9 +852,11 @@ fun handleAskSurrogateData(
                 homeActivity = homeActivity,
                 bottomHomeViewModel = bottomHomeViewModel
             )
+            bottomHomeViewModel.isAllDataLoaded = false
         }
         is NetworkResult.Error -> {
             // show error message
+            bottomHomeViewModel.isAllDataLoaded = false
         }
     }
 }
@@ -889,7 +892,6 @@ fun updateHomeScreenData(
     type: String,
     homeActivity: HomeActivity,
     partnerId: Int,
-    context: Context,
 ) {
     bottomHomeViewModel.getPregnancyMilestone(
         GetPregnancyMilestoneRequest(
@@ -1161,21 +1163,16 @@ private fun handleNearestMilestoneData(
         }
         is NetworkResult.Success -> {
             // bind data to the view
-            Log.i("TAG", result.message.toString())
             bottomHomeViewModel.nearestMilestoneTittle = result.data?.nearest_milestone?.title!!
-            Log.d("TAG", "d: ${result.data.nearest_milestone.date}")
             if (result.data.nearest_milestone.date?.isNotEmpty() == true) {
                 val dateTime = changeLocalFormat(result.data.nearest_milestone.date,
                     Constants.DATE_FORMAT_UTC,
                     Constants.DATE_FORMAT_LOCAL)
-                Log.d("TAG", "handleNearestMilestoneData: $dateTime")
                 val localDate = dateTime?.let { changeLocalDateFormat(it.trim()) }
                 val localTime = dateTime?.let { changeLocalTimeFormat(it.trim()) }
                 bottomHomeViewModel.nearestMilestoneDate = ""
                 if (localDate != null) {
                     bottomHomeViewModel.nearestMilestoneDate = localDate
-                    Log.d("TAG",
-                        "handleNearestMilestoneData: ${TimeZone.getTimeZone(result.data.nearest_milestone.date)}")
                 } else {
                     bottomHomeViewModel.nearestMilestoneDate = ""
                 }

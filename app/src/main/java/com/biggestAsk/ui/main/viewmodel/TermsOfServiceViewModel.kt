@@ -18,6 +18,7 @@ import javax.inject.Inject
 
 /**
  * Created by Abhin.
+ * terms of policy screen viewModel
  */
 @HiltViewModel
 class TermsOfServiceViewModel @Inject constructor(

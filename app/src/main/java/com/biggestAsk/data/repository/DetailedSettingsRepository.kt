@@ -18,6 +18,7 @@ import javax.inject.Inject
 
 /**
  * Created by Abhin.
+ * detailed setting screen repository
  */
 class DetailedSettingsRepository @Inject constructor(
     private val apiService: ApiService, @ApplicationContext context: Context,

@@ -19,6 +19,7 @@ import javax.inject.Inject
 
 /**
  * Created by Abhin.
+ * contact your provider screen repository
  */
 class ContactYourProviderRepository @Inject constructor(
     private val apiService: ApiService, @ApplicationContext context: Context,
@@ -53,7 +54,7 @@ class ContactYourProviderRepository @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    suspend fun updateContact(updateContactRequest: UpdateContactRequest):Flow<NetworkResult<CommonResponse>>{
+    suspend fun updateContact(updateContactRequest: UpdateContactRequest): Flow<NetworkResult<CommonResponse>> {
         return flow {
             emit(safeApiCall {
                 apiService.updateContact(

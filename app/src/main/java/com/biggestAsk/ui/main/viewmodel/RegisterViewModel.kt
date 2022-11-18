@@ -15,6 +15,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * Created by Abhin.
+ * register screen viewModel
+ */
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
     private val registerRepository: RegisterRepository,
@@ -25,7 +29,6 @@ class RegisterViewModel @Inject constructor(
     var textReEnterPass: String by mutableStateOf("")
     var termCheckedState: Boolean by mutableStateOf(false)
     var isNameEmpty: Boolean by mutableStateOf(false)
-    var isEmailEmpty: Boolean by mutableStateOf(false)
     var isPassEmpty: Boolean by mutableStateOf(false)
     var isGenderSelected: Boolean by mutableStateOf(false)
     var isRePassEmpty: Boolean by mutableStateOf(false)

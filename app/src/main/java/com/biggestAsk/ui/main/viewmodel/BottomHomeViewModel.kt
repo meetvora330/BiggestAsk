@@ -14,10 +14,13 @@ import com.biggestAsk.data.model.response.*
 import com.biggestAsk.data.repository.HomeRepository
 import com.biggestAsk.data.source.network.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * Created by Abhin.
+ * home screen viewModel
+ */
 @HiltViewModel
 class BottomHomeViewModel @Inject constructor(
     private val homeRepository: HomeRepository,
@@ -38,7 +41,7 @@ class BottomHomeViewModel @Inject constructor(
     var isSurrogateAsked: Boolean by mutableStateOf(false)
     var nearestMilestoneTime: String by mutableStateOf("")
     var nearestMilestoneImage: String by mutableStateOf("")
-    var nearestMilestoneId:Int by mutableStateOf(0)
+    var nearestMilestoneId: Int by mutableStateOf(0)
     var homeScreenQuestionAns: String by mutableStateOf("")
     var notificationCount: String by mutableStateOf("")
     var homeScreenQuestionCategeryId: Int by mutableStateOf(0)
@@ -61,7 +64,7 @@ class BottomHomeViewModel @Inject constructor(
     var askSurrogate: MutableLiveData<NetworkResult<CommonResponse>> = MutableLiveData()
     var getPregnancyMilestoneResponse: MutableLiveData<NetworkResult<GetImportantQuestionResponse>> =
         MutableLiveData()
-    var getUpdatedStatus:MutableLiveData<NetworkResult<UpdatedStatusResponse>> = MutableLiveData()
+    var getUpdatedStatus: MutableLiveData<NetworkResult<UpdatedStatusResponse>> = MutableLiveData()
     var isHomeScreenQuestionAnsEmpty: Boolean by mutableStateOf(false)
     var isHomeScreenQuestionAnswered: Boolean by mutableStateOf(false)
 
@@ -92,14 +95,14 @@ class BottomHomeViewModel @Inject constructor(
         }
     }
 
-    fun getUpdatedStatus(userId: Int, type: String, fcm_token: String){
+    fun getUpdatedStatus(userId: Int, type: String, fcm_token: String) {
         getUpdatedStatus.value = NetworkResult.Loading()
         viewModelScope.launch {
             homeRepository.getUpdatedStatus(
                 userId = userId,
                 type = type,
                 fcmToken = fcm_token
-            ).collect{
+            ).collect {
                 getUpdatedStatus.value = it
             }
         }

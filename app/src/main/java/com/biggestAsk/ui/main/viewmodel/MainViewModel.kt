@@ -7,6 +7,10 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
+/**
+ * Created by Abhin.
+ * main home screen viewModel
+ */
 class MainViewModel : ViewModel() {
     var toolbarTittle: String by mutableStateOf("Home")
 

@@ -66,6 +66,9 @@ import com.example.biggestAsk.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+/**
+ * home screen with bottom navigation and navigation drawer with it's route
+ */
 @OptIn(ExperimentalComposeUiApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -1020,7 +1023,7 @@ fun NavigationDrawerContent(
                         )
                     },
                     enabled = !homeViewModel.isPregnancyStatusLoaded && provider.getValue(Constants.LOGIN_STATUS,
-                        "") == "on_boarding",
+                        "") == stringResource(R.string.on_boarding),
                     colors = SwitchDefaults.colors(
                         checkedThumbColor = Color.White,
                         checkedTrackColor = Custom_Blue,

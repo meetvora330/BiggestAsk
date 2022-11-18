@@ -2,6 +2,9 @@ package com.biggestAsk.ui.introScreen
 
 import com.example.biggestAsk.R
 
+/**
+ * intro screen items
+ */
 data class SampleOnBoard(
     val image: Int,
     val tittle: String = "",

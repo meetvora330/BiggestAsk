@@ -14,6 +14,7 @@ import javax.inject.Inject
 
 /**
  * Created by Abhin.
+ * terms of service screen repository
  */
 class TermsOfServiceRepository @Inject constructor(
     private val apiService: ApiService, @ApplicationContext context: Context,

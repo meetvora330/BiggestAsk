@@ -16,6 +16,7 @@ import javax.inject.Inject
 
 /**
  * Created by Abhin.
+ * login screen repository
  */
 @ActivityRetainedScoped
 class LoginRepository @Inject constructor(

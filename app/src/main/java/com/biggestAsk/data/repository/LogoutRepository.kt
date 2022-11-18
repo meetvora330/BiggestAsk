@@ -16,6 +16,7 @@ import javax.inject.Inject
 
 /**
  * Created by Abhin.
+ * logout repository
  */
 @ActivityRetainedScoped
 class LogoutRepository @Inject constructor(

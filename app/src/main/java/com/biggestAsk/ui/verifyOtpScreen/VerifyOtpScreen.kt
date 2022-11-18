@@ -55,6 +55,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
+/**
+ * verify otp screen
+ */
 var ticker: Job? = null
 
 @Composable

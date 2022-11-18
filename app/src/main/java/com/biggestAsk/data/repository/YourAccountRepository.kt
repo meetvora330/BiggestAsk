@@ -21,6 +21,7 @@ import javax.inject.Inject
 
 /**
  * Created by Abhin.
+ * your account screen repository
  */
 @ActivityRetainedScoped
 class YourAccountRepository @Inject constructor(

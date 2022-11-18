@@ -6,5 +6,5 @@ data class SaveNoteRequest(
     val type: String,
     val share_note_with_partner: Boolean = false,
     val share_note_with_biggestask: Boolean = false,
-    val surrogate_share_note_with_biggestask: Boolean = false
+    val surrogate_share_note_with_biggestask: Boolean = false,
 )

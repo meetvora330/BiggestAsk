@@ -13,6 +13,7 @@ import javax.inject.Inject
 
 /**
  * Created by Abhin.
+ * setting screen repository
  */
 class SettingRepository @Inject constructor(
     private val apiService: ApiService, @ApplicationContext context: Context,

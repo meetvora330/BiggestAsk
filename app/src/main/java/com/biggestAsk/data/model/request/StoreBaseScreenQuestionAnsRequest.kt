@@ -6,5 +6,5 @@ data class StoreBaseScreenQuestionAnsRequest(
     val partner_id: String,
     val type: String,
     val user_id: Int,
-    val user_name:String
+    val user_name: String,
 )

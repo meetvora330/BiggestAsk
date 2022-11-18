@@ -16,6 +16,7 @@ import javax.inject.Inject
 
 /**
  * Created by Abhin.
+ * notification screen viewModel
  */
 @HiltViewModel
 class NotificationViewModel @Inject constructor(
